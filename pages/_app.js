@@ -1,7 +1,22 @@
-import '../styles/globals.css'
+import "../styles/globals.css";
+import "../less/antd-custom.less";
+import "../styles/index.ant.less";
+import App from "next/app";
+import { wrapper } from "../stores/store";
+class B2BMarket extends App {
+  static async getInitialProps({ Component, ctx }) {
+    const pageProps = Component.getInitialProps
+      ? await Component.getInitialProps(ctx)
+      : {};
 
-function MyApp({ Component, pageProps }) {
-  return <Component {...pageProps} />
+    return { pageProps };
+  }
+
+  render() {
+    const { Component, pageProps } = this.props;
+
+    return <Component {...pageProps} />;
+  }
 }
 
-export default MyApp
+export default wrapper.withRedux(B2BMarket);

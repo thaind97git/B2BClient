@@ -1,0 +1,64 @@
+/* Layout */
+
+ul {
+  list-style-type: none;
+}
+
+#header {
+  background-color: #fff;
+  box-shadow: 0 0 7px 0 rgba(0, 0, 0, 0.07);
+  min-height: 200px;
+}
+
+#content {
+  min-height: 100vh;
+  background-color: #f0f1f2;
+}
+
+.ant-input-group {
+  border: 1px solid #0a6dd9;
+  overflow: hidden;
+}
+
+#header .ant-input-group-addon .ant-input-search-button {
+  right: -3px;
+}
+
+/* Footer */
+
+.footer-contact {
+  position: relative;
+}
+.footer-contact .logo .title {
+  /* color: #ffffff; */
+  font-size: 36px;
+  line-height: 36px;
+  letter-spacing: 0.05em;
+  font-weight: 500;
+  font-style: normal;
+}
+.footer-contact .contact ul li {
+  /* color: #ffffff; */
+  font-size: 18px;
+  line-height: 36px;
+  font-weight: normal;
+  letter-spacing: 0.05em;
+  opacity: 0.6;
+  transition: all 0.3s;
+  font-size: 16px;
+}
+.footer-contact .contact ul li:first-child {
+  opacity: 1;
+  padding-bottom: 16px;
+  font-weight: 500;
+  font-size: 18px;
+}
+.footer-contact .contact ul li:not(:first-child):hover {
+  cursor: pointer;
+
+  opacity: 1;
+}
+.footer-contact hr {
+  width: 100%;
+  border: 1px solid #ffffff;
+}

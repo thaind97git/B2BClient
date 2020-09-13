@@ -1,0 +1,137 @@
+// @import "./node_modules/antd/dist/antd.less";
+@import "../node_modules/antd/dist/antd.less";
+@primary-color: #096dd9; // primary color for all components
+@link-color: #1890ff; // link color
+@success-color: #52c41a; // success state color
+@warning-color: #faad14; // warning state color
+@error-color: #f5222d; // error state color
+@font-size-base: 14px; // major text font size
+@heading-color: rgba(0, 0, 0, 0.85); // heading text color
+@text-color: rgba(0, 0, 0, 0.65); // major text color
+@text-color-secondary: rgba(0, 0, 0, 0.45); // secondary text color
+@disabled-color: rgba(0, 0, 0, 0.25); // disable state color
+@border-radius-base: 4px; // major border radius
+@border-color-base: #d9d9d9; // major border color
+@box-shadow-base: 0 2px 8px rgba(0, 0, 0, 0.15); // major shadow for layers
+
+// Color used by default to control hover and active backgrounds and for
+// alert info backgrounds.
+@primary-1: color(
+  ~`colorPalette("@{primary-color}", 1) `
+); // replace tint(@primary-color, 90%)
+@primary-2: color(
+  ~`colorPalette("@{primary-color}", 2) `
+); // replace tint(@primary-color, 80%)
+@primary-5: color(
+  ~`colorPalette("@{primary-color}", 5) `
+); // color used to control the text color in many active and hover states, replace tint(@primary-color, 20%)
+@primary-6: @primary-color; // color used to control the text color of active buttons, don't use, use @primary-color
+@primary-7: color(
+  ~`colorPalette("@{primary-color}", 7) `
+); // replace shade(@primary-color, 5%)
+
+// Layout
+@layout-body-background: #fff;
+@layout-header-background: #fff;
+@layout-header-height: 64px;
+@layout-header-padding: 0 50px;
+@layout-header-color: @text-color;
+@layout-footer-padding: 24px 50px;
+@layout-footer-background: @layout-body-background;
+@layout-sider-background: @layout-header-background;
+@layout-trigger-height: 48px;
+@layout-trigger-background: #002140;
+@layout-trigger-color: #fff;
+@layout-zero-trigger-width: 36px;
+@layout-zero-trigger-height: 42px;
+// Layout light theme
+@layout-sider-background-light: #fff;
+@layout-trigger-background-light: #fff;
+@layout-trigger-color-light: @text-color;
+
+// LINK
+@link-color: @text-color;
+@link-hover-color: @primary-color;
+@link-active-color: @primary-color;
+@link-decoration: none;
+@link-hover-decoration: none;
+@link-focus-decoration: none;
+@link-focus-outline: 0;
+
+// BUTTONS
+@btn-font-weight: 400;
+@btn-border-radius-base: @border-radius-base;
+@btn-border-radius-sm: @border-radius-base;
+@btn-border-width: @border-width-base;
+@btn-border-style: @border-style-base;
+@btn-shadow: 0 2px 0 rgba(0, 0, 0, 0.015);
+@btn-primary-shadow: 0 2px 0 rgba(0, 0, 0, 0.045);
+@btn-text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.12);
+
+@btn-primary-color: #fff;
+@btn-primary-bg: @primary-color;
+
+@btn-default-color: @text-color;
+@btn-default-bg: @component-background;
+@btn-default-border: @border-color-base;
+
+@btn-danger-color: #fff;
+@btn-danger-bg: @error-color;
+@btn-danger-border: @error-color;
+
+@btn-disable-color: @disabled-color;
+@btn-disable-bg: @disabled-bg;
+@btn-disable-border: @border-color-base;
+
+@btn-default-ghost-color: @component-background;
+@btn-default-ghost-bg: transparent;
+@btn-default-ghost-border: @component-background;
+
+@btn-font-size-lg: @font-size-lg;
+@btn-font-size-sm: @font-size-base;
+@btn-padding-horizontal-base: @padding-md - 1px;
+@btn-padding-horizontal-lg: @btn-padding-horizontal-base;
+@btn-padding-horizontal-sm: @padding-xs - 1px;
+
+@btn-height-base: @height-base;
+@btn-height-lg: @height-lg;
+@btn-height-sm: @height-sm;
+
+@btn-line-height: @line-height-base;
+
+@btn-circle-size: @btn-height-base;
+@btn-circle-size-lg: @btn-height-lg;
+@btn-circle-size-sm: @btn-height-sm;
+
+@btn-square-size: @btn-height-base;
+@btn-square-size-lg: @btn-height-lg;
+@btn-square-size-sm: @btn-height-sm;
+@btn-square-only-icon-size: @font-size-base + 2px;
+@btn-square-only-icon-size-sm: @font-size-base;
+@btn-square-only-icon-size-lg: @btn-font-size-lg + 2px;
+
+@btn-group-border: @primary-5;
+
+@btn-link-hover-bg: transparent;
+@btn-text-hover-bg: rgba(0, 0, 0, 0.018);
+
+// .container {
+//   width: 100%;
+//   display: flex;
+//   align-self: center;
+//   margin: auto;
+// }
+
+// .make-container(@minWidth, @breakpoint) {
+//   @media (min-width: @minWidth) {
+//     .container {
+//       max-width: @breakpoint;
+//     }
+//   }
+// }
+
+// .make-container(@screen-xs-min, @screen-xs);
+// .make-container(@screen-sm-min, @screen-sm);
+// .make-container(@screen-md-min, @screen-md);
+// .make-container(@screen-lg-min, @screen-lg);
+// .make-container(@screen-xl-min, @screen-xl);
