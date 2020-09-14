@@ -2,6 +2,9 @@ import { isArray } from "lodash/fp";
 import { getToken } from "../libs";
 import axios from "axios";
 import moment from "moment";
+import Router from "next/router";
+
+export const currentPath = () => !isServer && Router.route;
 
 export const isServer = !process.browser;
 
