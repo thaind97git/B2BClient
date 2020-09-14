@@ -13,6 +13,7 @@ import {
 } from "@ant-design/icons";
 import MemberNavComponent from "../component/MemberNavComponent";
 import { currentPath } from "../utils";
+import Link from "next/link";
 
 const { Header, Content, Sider } = Layout;
 
@@ -79,12 +80,16 @@ const MemberLayout = ({ children, MENUS = SUPPLIER_MENU }) => {
             collapsed={collapsed}
           >
             <Row style={{ minHeight: 64 }} justify="center" align="middle">
-              <img
-                alt="B2BMarket"
-                src="/static/images/logo.png"
-                height={collapsed ? 16 : 32}
-                style={{ margin: "16px 0px" }}
-              />
+              <Link href="/">
+                <a>
+                  <img
+                    alt="B2BMarket"
+                    src="/static/images/logo.png"
+                    height={collapsed ? 16 : 32}
+                    style={{ margin: "16px 0px" }}
+                  />
+                </a>
+              </Link>
             </Row>
             <MemberNavComponent path={currentPath()} menus={MENUS} />
           </Sider>

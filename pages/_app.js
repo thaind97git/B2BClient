@@ -3,6 +3,14 @@ import "../less/antd-custom.less";
 import "../styles/index.ant.less";
 import App from "next/app";
 import { wrapper } from "../stores/store";
+import dynamic from "next/dynamic";
+
+const TopProgressBar = dynamic(
+  () => {
+    return import("../component/TopProgressBar");
+  },
+  { ssr: false }
+);
 class B2BMarket extends App {
   static async getInitialProps({ Component, ctx }) {
     const pageProps = Component.getInitialProps
@@ -15,7 +23,12 @@ class B2BMarket extends App {
   render() {
     const { Component, pageProps } = this.props;
 
-    return <Component {...pageProps} />;
+    return (
+      <>
+        <TopProgressBar />
+        <Component {...pageProps} />
+      </>
+    );
   }
 }
 

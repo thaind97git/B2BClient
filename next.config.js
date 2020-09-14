@@ -20,22 +20,76 @@ const nextConfig = {
   distDir: ".next",
 };
 
-const plugins = [
-  withCSS({
-    cssModules: true,
-    // cssLoaderOptions: {
-    //   importLoaders: 1,
-    //   localIdentName: "[local]___[hash:base64:5]",
-    // },
-  }),
-  withLess({
+// const plugins = [
+//   withCSS({
+//     cssModules: true,
+//     // cssLoaderOptions: {
+//     //   importLoaders: 1,
+//     //   localIdentName: "[local]___[hash:base64:5]",
+//     // },
+//   }),
+//   withLess({
+//     lessLoaderOptions: {
+//       javascriptEnabled: true,
+//       modifyVars: themeVariables,
+//     },
+//     webpack: (config, { isServer }) => {
+//       config.plugins = config.plugins || [];
+
+//       config.plugins = [
+//         ...config.plugins,
+
+//         // Read the .env file
+//         new Dotenv({
+//           path: path.join(__dirname, "env/.env"),
+//           systemvars: true,
+//         }),
+//       ];
+//       if (isServer) {
+//         const antStyles = /antd\/.*?\/style.*?/;
+//         const origExternals = [...config.externals];
+//         config.externals = [
+//           (context, request, callback) => {
+//             if (request.match(antStyles)) return callback();
+//             if (typeof origExternals[0] === "function") {
+//               origExternals[0](context, request, callback);
+//             } else {
+//               callback();
+//             }
+//           },
+//           ...(typeof origExternals[0] === "function" ? [] : origExternals),
+//         ];
+
+//         config.module.rules.unshift({
+//           test: antStyles,
+//           use: "null-loader",
+//         });
+//       }
+
+//       config.module.rules.push({
+//         test: /\.css$/,
+//         loader: ["css-loader"],
+//       });
+//       return config;
+//     },
+//   }),
+// ];
+// module.exports = withPlugins(plugins, nextConfig);
+
+module.exports = withCSS({
+  cssModules: true,
+  ...withLess({
     lessLoaderOptions: {
       javascriptEnabled: true,
-      modifyVars: themeVariables,
+      modifyVars: themeVariables, // make your antd custom effective
+      importLoaders: 0,
+    },
+    cssLoaderOptions: {
+      importLoaders: 3,
+      localIdentName: "[local]___[hash:base64:5]",
     },
     webpack: (config, { isServer }) => {
-      config.plugins = config.plugins || [];
-
+      //Make Ant styles work with less
       config.plugins = [
         ...config.plugins,
 
@@ -65,38 +119,7 @@ const plugins = [
           use: "null-loader",
         });
       }
-
-      config.module.rules.push({
-        test: /\.css$/,
-        loader: ["css-loader"],
-      });
-
-      // const builtInLoader = config.module.rules.find((rule) => {
-      //   if (rule.oneOf) {
-      //     return (
-      //       rule.oneOf.find((deepRule) => {
-      //         return deepRule.test && deepRule.test.toString().includes("/a^/");
-      //       }) !== undefined
-      //     );
-      //   }
-      //   return false;
-      // });
-
-      // if (typeof builtInLoader !== "undefined") {
-      //   config.module.rules.push({
-      //     oneOf: [
-      //       ...builtInLoader.oneOf.filter((rule) => {
-      //         return (
-      //           (rule.test && rule.test.toString().includes("/a^/")) !== true
-      //         );
-      //       }),
-      //     ],
-      //   });
-      // }
-
-      // config.resolve.alias["@"] = path.resolve(__dirname);
       return config;
     },
   }),
-];
-module.exports = withPlugins(plugins, nextConfig);
+});
