@@ -1,5 +1,5 @@
-import "../styles/globals.css";
-import "../less/antd-custom.less";
+// import "../styles/globals.css";
+import "../styles/antd-custom.less";
 import "../styles/index.ant.less";
 import App from "next/app";
 import { wrapper } from "../stores/store";
