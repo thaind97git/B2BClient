@@ -70,7 +70,6 @@ const LoginComponent = () => {
         >
           Log in
         </Button>
-        {/* Or <a href="">register now!</a> */}
       </FormItem>
       <FormItem>
         <div className="other">
