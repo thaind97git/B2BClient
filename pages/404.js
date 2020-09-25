@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import Exception from "../component/Exception.";
+import Exception from "../component/Exception";
 
 const Exception404 = () => (
   <Exception
