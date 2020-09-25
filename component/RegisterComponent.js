@@ -1,13 +1,20 @@
 import React, { useState } from "react";
-import { Form, Input, Button, Row, Col, Radio } from "antd";
+import { Form, Input, Button, Row, Col, Radio, Typography } from "antd";
 import {
   UserOutlined,
   LockOutlined,
   AuditOutlined,
   PhoneOutlined,
+  MailOutlined,
 } from "@ant-design/icons";
 import Link from "next/link";
+const { Title } = Typography;
 const FormItem = Form.Item;
+const styles = {
+  colStyle: { padding: "0 8px" },
+  titleStyle: { fontWeight: 500 },
+};
+
 const RegisterComponent = () => {
   const [role, setRole] = useState(1);
 
@@ -17,33 +24,43 @@ const RegisterComponent = () => {
 
   return (
     <Row align="middle" justify="center">
-      <Col sm={12} md={8}>
+      <Col sm={20} md={10}>
         <Form
+          autoComplete="new-password"
           className="register-form"
-          initialValues={{
-            remember: true,
-          }}
           onFinish={onFinish}
+          initialValues={{
+            role: role,
+          }}
         >
-          <Row align="middle">
-            <Col className="label" span={8}>
-              Please select trade role:
-            </Col>
-            <Col span={16}>
+          <Row justify="center">
+            <Title style={styles.titleStyle} level={2}>
+              CHOOSE YOUR ACCOUNT TYPE
+            </Title>
+          </Row>
+          <FormItem
+            name="role"
+            rules={[
+              {
+                required: true,
+              },
+            ]}
+          >
+            <Row justify="center">
               <Radio.Group
+                initialValues={role}
                 onChange={(e) => setRole(e.target.value)}
                 value={role}
+                buttonStyle="solid"
               >
-                <Radio value={1}>Buyer</Radio>
-                <Radio value={2}>Supplier</Radio>
+                <Radio.Button value={1}>Buyer</Radio.Button>
+                <Radio.Button value={2}>Supplier</Radio.Button>
               </Radio.Group>
-            </Col>
-          </Row>
+            </Row>
+          </FormItem>
           <Row align="middle">
-            <Col className="label" span={8}>
-              Email:
-            </Col>
-            <Col span={16}>
+            <Col style={styles.colStyle} span={12}>
+              <div className="label">Email:</div>
               <FormItem
                 name="email"
                 rules={[
@@ -55,90 +72,33 @@ const RegisterComponent = () => {
               >
                 <Input
                   size="large"
-                  autoComplete="new-password"
-                  prefix={<UserOutlined className="site-form-item-icon" />}
+                  prefix={<MailOutlined className="site-form-item-icon" />}
                   placeholder="Email will be used as Login ID"
                 />
               </FormItem>
             </Col>
-          </Row>
-          <Row align="middle">
-            <Col className="label" span={8}>
-              Password:
-            </Col>
-            <Col span={16}>
+            <Col style={styles.colStyle} span={12}>
+              <div className="label">Phone Number:</div>
               <FormItem
-                autoComplete="new-password"
-                name="password"
+                name="phone"
                 rules={[
                   {
                     required: true,
-                    message: "Please set login password",
-                  },
-                ]}
-              >
-                <Input
-                  autoComplete="dontshow"
-                  size="large"
-                  prefix={<LockOutlined className="site-form-item-icon" />}
-                  type="password"
-                  placeholder="Please set login password"
-                />
-              </FormItem>
-            </Col>
-          </Row>
-          <Row align="middle">
-            <Col className="label" span={8}>
-              Confirm password:
-            </Col>
-            <Col span={16}>
-              <FormItem
-                autoComplete="new-password"
-                name="re-password"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please enter your login password again",
+                    message: "Please enter your phone",
                   },
                 ]}
               >
                 <Input
                   size="large"
-                  prefix={<LockOutlined className="site-form-item-icon" />}
-                  type="password"
-                  placeholder="Please enter your login password again"
+                  prefix={<PhoneOutlined className="site-form-item-icon" />}
+                  placeholder="Please enter your phone"
                 />
               </FormItem>
             </Col>
           </Row>
           <Row align="middle">
-            <Col className="label" span={8}>
-              Company Name:
-            </Col>
-            <Col span={16}>
-              <FormItem
-                name="company-name"
-                rules={[
-                  {
-                    required: true,
-                    message: "Enter the company name",
-                  },
-                ]}
-              >
-                <Input
-                  size="large"
-                  prefix={<AuditOutlined className="site-form-item-icon" />}
-                  type="password"
-                  placeholder="Must be a legally registered company"
-                />
-              </FormItem>
-            </Col>
-          </Row>
-          <Row align="middle">
-            <Col className="label" span={8}>
-              First Name:
-            </Col>
-            <Col span={16}>
+            <Col style={styles.colStyle} span={12}>
+              <div className="label">First Name:</div>
               <FormItem
                 name="first-name"
                 rules={[
@@ -151,20 +111,14 @@ const RegisterComponent = () => {
                 <Input
                   size="large"
                   prefix={<UserOutlined className="site-form-item-icon" />}
-                  type="password"
                   placeholder="Please enter your first name"
                 />
               </FormItem>
             </Col>
-          </Row>
-          <Row align="middle">
-            <Col className="label" span={8}>
-              Last Name:
-            </Col>
-            <Col span={16}>
+            <Col style={styles.colStyle} span={12}>
+              <div className="label">Last Name:</div>
               <FormItem
-                autoComplete="new-password"
-                name="company-name"
+                name="last-name"
                 rules={[
                   {
                     required: true,
@@ -175,61 +129,94 @@ const RegisterComponent = () => {
                 <Input
                   size="large"
                   prefix={<UserOutlined className="site-form-item-icon" />}
-                  type="password"
                   placeholder="Please enter your last name"
                 />
               </FormItem>
             </Col>
           </Row>
           <Row align="middle">
-            <Col className="label" span={8}>
-              Tel:
-            </Col>
-            <Col span={16}>
+            <Col style={styles.colStyle} span={12}>
+              <div className="label">Password:</div>
               <FormItem
-                name="tel"
+                name="password"
                 rules={[
                   {
                     required: true,
-                    message: "Please enter your phone",
+                    message: "Please set login password",
+                  },
+                ]}
+              >
+                <Input
+                  autoComplete="new-password"
+                  size="large"
+                  prefix={<LockOutlined className="site-form-item-icon" />}
+                  type="password"
+                  placeholder="Please set login password"
+                />
+              </FormItem>
+            </Col>
+            <Col style={styles.colStyle} span={12}>
+              <div className="label">Confirm Password:</div>
+              <FormItem
+                name="re-password"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please set login password",
+                  },
+                ]}
+              >
+                <Input
+                  autoComplete="new-password"
+                  size="large"
+                  prefix={<LockOutlined className="site-form-item-icon" />}
+                  type="password"
+                  placeholder="Please set login password"
+                />
+              </FormItem>
+            </Col>
+          </Row>
+          <Row align="middle">
+            <Col style={styles.colStyle} span={24}>
+              <div className="label">Company Name:</div>
+              <FormItem
+                name="company-name"
+                rules={[
+                  {
+                    required: true,
+                    message: "Enter the company name",
                   },
                 ]}
               >
                 <Input
                   size="large"
-                  prefix={<PhoneOutlined className="site-form-item-icon" />}
-                  type="password"
-                  placeholder="Please enter your phone"
+                  prefix={<AuditOutlined className="site-form-item-icon" />}
+                  placeholder="Must be a legally registered company"
                 />
               </FormItem>
             </Col>
           </Row>
-          <Row align="middle" justify="center">
-            <Col span={8}></Col>
-            <Col span={16}>
+          <Row align="middle">
+            <Col span={12}>
               <Row justify="center">
-                <Button
-                  // style={{ margin: "auto" }}
-                  size="large"
-                  className="submit"
-                  type="primary"
-                  htmlType="submit"
-                >
-                  Register
-                </Button>
-              </Row>
-              <Row style={{ marginTop: 12 }} justify="center">
                 Existing Account? <span>&nbsp;</span>
                 <div className="login">
                   <Link href="/login">LOGIN</Link>
                 </div>
               </Row>
             </Col>
+            <Col span={12}>
+              <Button
+                block
+                size="large"
+                className="submit"
+                type="primary"
+                htmlType="submit"
+              >
+                Get Started
+              </Button>
+            </Col>
           </Row>
-          {/* <Row align="middle">
-            <Col className="label" span={8}></Col>
-            <Col span={16}></Col>
-          </Row> */}
         </Form>
       </Col>
     </Row>

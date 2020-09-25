@@ -15,6 +15,7 @@ const LoginComponent = () => {
       initialValues={{
         remember: true,
       }}
+      autoComplete="new-password"
       onFinish={onFinish}
     >
       <FormItem
@@ -22,16 +23,11 @@ const LoginComponent = () => {
         rules={[
           {
             required: true,
-            message: "Please input your Email!",
+            message: "Please enter your Email",
           },
         ]}
       >
-        <Input
-          size="large"
-          autoComplete="new-password"
-          prefix={<MailOutlined />}
-          placeholder="Email"
-        />
+        <Input size="large" prefix={<MailOutlined />} placeholder="Email" />
       </FormItem>
       <FormItem
         autoComplete="new-password"
@@ -39,12 +35,12 @@ const LoginComponent = () => {
         rules={[
           {
             required: true,
-            message: "Please input your Password!",
+            message: "Please enter your Password",
           },
         ]}
       >
         <Input
-          autoComplete="dontshow"
+          autoComplete="new-password"
           size="large"
           prefix={<LockOutlined className="site-form-item-icon" />}
           type="password"
