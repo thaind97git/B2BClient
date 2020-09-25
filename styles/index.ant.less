@@ -1,4 +1,21 @@
 @import "~antd/lib/style/index";
+@import "~antd/lib/style/themes/default.less";
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  background-color: #f0f2f5 !important;
+}
+
+* {
+  box-sizing: border-box;
+}
+.ant-layout-sider {
+  min-width: 240px !important;
+}
 
 .container {
   width: 100%;
@@ -20,3 +37,226 @@
 .make-container(@screen-md-min, @screen-md);
 .make-container(@screen-lg-min, @screen-lg);
 .make-container(@screen-xl-min, @screen-xl);
+
+.exception {
+  display: flex;
+  align-items: center;
+  height: 80%;
+  min-height: 500px;
+
+  .imgBlock {
+    flex: 0 0 62.5%;
+    width: 62.5%;
+    padding-right: 152px;
+    zoom: 1;
+    &:before,
+    &:after {
+      content: " ";
+      display: table;
+    }
+    &:after {
+      clear: both;
+      visibility: hidden;
+      font-size: 0;
+      height: 0;
+    }
+  }
+
+  .imgEle {
+    height: 360px;
+    width: 100%;
+    max-width: 430px;
+    float: right;
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+    background-size: contain;
+  }
+
+  .content {
+    flex: auto;
+
+    h1 {
+      color: #434e59;
+      font-size: 72px;
+      font-weight: 600;
+      line-height: 72px;
+      margin-bottom: 24px;
+    }
+
+    .desc {
+      color: @text-color-secondary;
+      font-size: 20px;
+      line-height: 28px;
+      margin-bottom: 16px;
+    }
+
+    .actions {
+      button:not(:last-child) {
+        margin-right: 8px;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: @screen-xl) {
+  .exception {
+    .imgBlock {
+      padding-right: 88px;
+    }
+  }
+}
+
+@media screen and (max-width: @screen-sm) {
+  .exception {
+    display: block;
+    text-align: center;
+    .imgBlock {
+      padding-right: 0;
+      margin: 0 auto 24px;
+    }
+  }
+}
+
+@media screen and (max-width: @screen-xs) {
+  .exception {
+    .imgBlock {
+      margin-bottom: -24px;
+      overflow: hidden;
+    }
+  }
+}
+
+// LOGIN - REGISTER
+@media (min-width: @screen-md-min) {
+  .user-layout-container {
+    background-image: url("https://gw.alipayobjects.com/zos/rmsportal/TVYTbAXWheQpRcWDaDMu.svg");
+    background-repeat: no-repeat;
+    background-position: center 110px;
+    background-size: 100%;
+  }
+
+  .content {
+    padding: 112px 0 24px 0;
+  }
+}
+.user-layout-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: auto;
+  .login-form {
+    width: 368px;
+    margin: 0 auto;
+    @media screen and (max-width: @screen-sm) {
+      width: 95%;
+    }
+    .login-form-forgot {
+      float: right;
+    }
+    .login-form-button {
+      width: 100%;
+    }
+    a {
+      color: @primary-color;
+    }
+    a:hover {
+      color: @primary-5;
+    }
+    .icon {
+      font-size: 24px;
+      color: rgba(0, 0, 0, 0.2);
+      margin-left: 16px;
+      vertical-align: middle;
+      cursor: pointer;
+      transition: color 0.3s;
+
+      &:hover {
+        color: @primary-color;
+      }
+    }
+
+    .other {
+      text-align: center;
+      line-height: 22px;
+
+      .register {
+        float: right;
+      }
+    }
+  }
+  .top {
+    text-align: center;
+  }
+
+  .header {
+    height: 44px;
+    line-height: 44px;
+    a {
+      text-decoration: none;
+    }
+  }
+
+  .logo {
+    height: 44px;
+    vertical-align: top;
+    margin-right: 16px;
+  }
+
+  .title {
+    font-size: 33px;
+    color: @heading-color;
+    font-family: "Myriad Pro", "Helvetica Neue", Arial, Helvetica, sans-serif;
+    font-weight: 600;
+    position: relative;
+    top: 2px;
+  }
+
+  .desc {
+    font-size: @font-size-base;
+    color: @text-color-secondary;
+    margin-top: 12px;
+    margin-bottom: 40px;
+  }
+  .globalFooter {
+    bottom: 0;
+    position: absolute;
+    padding: 0px 16px;
+    margin: 48px 0px 24px;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+
+    .copyright {
+      color: @text-color-secondary;
+      font-size: @font-size-base;
+    }
+  }
+  .register-form {
+    .login {
+      color: @primary-color !important;
+    }
+    .label {
+      // text-align: right;
+      padding-right: 24px;
+    }
+    .label:before {
+      content: "* ";
+      color: red;
+    }
+    :global {
+      .ant-form-item {
+        margin: 4px 0px 18px 0px;
+      }
+    }
+
+    h3 {
+      font-size: 16px;
+      margin-bottom: 20px;
+    }
+
+    .getCaptcha {
+      display: block;
+      width: 100%;
+    }
+  }
+}
