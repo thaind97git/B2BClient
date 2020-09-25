@@ -30,7 +30,7 @@ const RegisterComponent = () => {
           className="register-form"
           onFinish={onFinish}
           initialValues={{
-            role: role,
+            isBuyer: role,
           }}
         >
           <Row justify="center">
@@ -39,7 +39,7 @@ const RegisterComponent = () => {
             </Title>
           </Row>
           <FormItem
-            name="role"
+            name="isBuyer"
             rules={[
               {
                 required: true,
@@ -54,7 +54,7 @@ const RegisterComponent = () => {
                 buttonStyle="solid"
               >
                 <Radio.Button value={1}>Buyer</Radio.Button>
-                <Radio.Button value={2}>Supplier</Radio.Button>
+                <Radio.Button value={0}>Supplier</Radio.Button>
               </Radio.Group>
             </Row>
           </FormItem>
@@ -180,7 +180,7 @@ const RegisterComponent = () => {
             <Col style={styles.colStyle} span={24}>
               <div className="label">Company Name:</div>
               <FormItem
-                name="company-name"
+                name="companyName"
                 rules={[
                   {
                     required: true,
@@ -192,6 +192,24 @@ const RegisterComponent = () => {
                   size="large"
                   prefix={<AuditOutlined className="site-form-item-icon" />}
                   placeholder="Must be a legally registered company"
+                />
+              </FormItem>
+            </Col>
+            <Col style={styles.colStyle} span={24}>
+              <div className="label">Address:</div>
+              <FormItem
+                name="address"
+                rules={[
+                  {
+                    required: true,
+                    message: "Enter the company address",
+                  },
+                ]}
+              >
+                <Input
+                  size="large"
+                  prefix={<AuditOutlined className="site-form-item-icon" />}
+                  placeholder="Please enter the company address"
                 />
               </FormItem>
             </Col>

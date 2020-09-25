@@ -9,11 +9,11 @@ import {
   MenuFoldOutlined,
   ExperimentOutlined,
   OrderedListOutlined,
-  PlusOutlined,
 } from "@ant-design/icons";
 import MemberNavComponent from "../component/MemberNavComponent";
 import { currentPath } from "../utils";
 import Link from "next/link";
+import { BUYER, SUPPLIER } from "../enums/accountRoles";
 
 const { Header, Content, Sider } = Layout;
 
@@ -28,20 +28,51 @@ const SUPPLIER_MENU = [
   {
     key: "2",
     icon: <ExperimentOutlined />,
-    label: "Product",
+    label: "Company Category",
     link: undefined,
     subMenu: [
       {
         subKey: "2.1",
-        subLink: "/member/product/manage",
+        subLink: "/member/category/manage",
+        subIcon: <OrderedListOutlined />,
+        subLabel: "Categories",
+      },
+    ],
+  },
+  {
+    key: "3",
+    icon: <ExperimentOutlined />,
+    label: "Bidding",
+    link: undefined,
+    subMenu: [
+      {
+        subKey: "3.1",
+        subLink: "/member/bidding/manage",
+        subIcon: <OrderedListOutlined />,
+        subLabel: "Available Bidding",
+      },
+    ],
+  },
+];
+const BUYER_MENU = [
+  {
+    key: "1",
+    icon: <UserOutlined />,
+    label: "Dashboard",
+    link: "/member",
+    subMenu: [],
+  },
+  {
+    key: "2",
+    icon: <ExperimentOutlined />,
+    label: "Quotes",
+    link: undefined,
+    subMenu: [
+      {
+        subKey: "2.1",
+        subLink: "/member/quotes/manage",
         subIcon: <OrderedListOutlined />,
         subLabel: "List product",
-      },
-      {
-        subKey: "2.2",
-        subLink: "/member/product/create",
-        subIcon: <PlusOutlined />,
-        subLabel: "Create product",
       },
     ],
   },
@@ -50,7 +81,9 @@ const SUPPLIER_MENU = [
 const PROFILE_MENU = (
   <Menu>
     <Menu.Item>
-      <a href="#">Profile</a>
+      <Link href="member/profile">
+        <a>Profile</a>
+      </Link>
     </Menu.Item>
     <Menu.Item>
       <a href="#">Company Profile</a>
@@ -61,7 +94,7 @@ const PROFILE_MENU = (
   </Menu>
 );
 
-const MemberLayout = ({ children, MENUS = SUPPLIER_MENU }) => {
+const MemberLayout = ({ children, role = SUPPLIER }) => {
   const [collapsed, setCollapsed] = useState(false);
   return (
     <div
@@ -74,7 +107,7 @@ const MemberLayout = ({ children, MENUS = SUPPLIER_MENU }) => {
       <div className="container">
         <Layout>
           <Sider
-            style={{ minHeight: "100vh" }}
+            style={{ minHeight: "100vh", minWidth: "240px !important" }}
             trigger={null}
             collapsible
             collapsed={collapsed}
@@ -91,7 +124,10 @@ const MemberLayout = ({ children, MENUS = SUPPLIER_MENU }) => {
                 </a>
               </Link>
             </Row>
-            <MemberNavComponent path={currentPath()} menus={MENUS} />
+            <MemberNavComponent
+              path={currentPath()}
+              menus={role === BUYER ? BUYER_MENU : SUPPLIER_MENU}
+            />
           </Sider>
 
           <Layout style={{ background: "#f8f8f8" }} className="site-layout">

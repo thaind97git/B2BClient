@@ -1,12 +1,33 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Checkbox, Form, Input, Button } from "antd";
 import { LockOutlined, MailOutlined } from "@ant-design/icons";
 import Link from "next/link";
+import { connect } from "react-redux";
+import { createStructuredSelector } from "reselect";
+import { userLogin, userLoginDataSelector } from "../stores/UserState";
+import { compose } from "redux";
 const FormItem = Form.Item;
-const LoginComponent = () => {
+
+const connectToRedux = connect(
+  createStructuredSelector({
+    userLoginData: userLoginDataSelector,
+  }),
+  (dispatch) => ({
+    loginUser: ({ email, password }) =>
+      dispatch(userLogin({ email, password })),
+  })
+);
+
+const enhance = compose(connectToRedux);
+
+const LoginComponent = ({ loginUser, userLoginData }) => {
   const onFinish = (values) => {
+    loginUser(values);
     console.log("Received values of form: ", values);
   };
+  useEffect(() => {
+    console.log({ userLoginData });
+  }, [userLoginData]);
 
   return (
     <Form
@@ -77,4 +98,4 @@ const LoginComponent = () => {
     </Form>
   );
 };
-export default LoginComponent;
+export default enhance(LoginComponent);
