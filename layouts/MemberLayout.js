@@ -28,7 +28,7 @@ const SUPPLIER_MENU = [
   {
     key: "2",
     icon: <ExperimentOutlined />,
-    label: "Company Category",
+    label: "Category",
     link: undefined,
     subMenu: [
       {
@@ -47,7 +47,7 @@ const SUPPLIER_MENU = [
     subMenu: [
       {
         subKey: "3.1",
-        subLink: "/member/bidding/manage",
+        subLink: "/member/bidding",
         subIcon: <OrderedListOutlined />,
         subLabel: "Available Bidding",
       },
@@ -95,7 +95,7 @@ const PROFILE_MENU = (
 );
 
 const MemberLayout = ({ children, role = SUPPLIER }) => {
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
   return (
     <div
       style={{
@@ -104,10 +104,10 @@ const MemberLayout = ({ children, role = SUPPLIER }) => {
         position: "relative",
       }}
     >
-      <div className="container">
+      <div className="">
         <Layout>
           <Sider
-            style={{ minHeight: "100vh", minWidth: "240px !important" }}
+            style={{ minHeight: "100vh" }}
             trigger={null}
             collapsible
             collapsed={collapsed}
