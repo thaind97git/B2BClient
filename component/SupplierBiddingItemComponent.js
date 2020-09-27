@@ -1,7 +1,11 @@
-import { Row, Col, Typography, Divider, Button, Badge } from "antd";
-import { ClockCircleOutlined, EditOutlined } from "@ant-design/icons";
+import { Row, Col, Typography, Divider, Button, Badge, Tag, Space } from "antd";
+import {
+  ClockCircleOutlined,
+  EditOutlined,
+  MoneyCollectOutlined,
+} from "@ant-design/icons";
 import Link from "next/link";
-import React, { Fragment } from "react";
+import React from "react";
 import Moment from "react-moment";
 import Router from "next/router";
 const { Title } = Typography;
@@ -55,12 +59,12 @@ const getDurationWithMinutes = (minutes) => {
 //   );
 // };
 
-const BiddingComponent = ({
+const SupplierBiddingItemComponent = ({
   bidding = {},
   isInvitation = false,
   closed = false,
 }) => {
-  const { id, title, category, startTime, duration, owner } = bidding;
+  const { id, title, category, startTime, duration, owner, currency } = bidding;
   return (
     <div style={styles.root}>
       <Badge.Ribbon
@@ -76,9 +80,16 @@ const BiddingComponent = ({
             {/* <div>Posted on September 14th, 2020 by admin</div> */}
             <div>
               Posted in{" "}
-              <Link href="">
-                <a>{category}</a>
-              </Link>
+              <Tag color="processing">
+                <Link href="">
+                  <a>{category}</a>
+                </Link>
+              </Tag>
+              {/* <Badge color="blue">
+                <Link href="">
+                  <a>{category}</a>
+                </Link>
+              </Badge> */}
             </div>
           </Col>
           <Col md={9} sm={24} style={{ marginTop: 24 }}>
@@ -102,34 +113,38 @@ const BiddingComponent = ({
                 <EditOutlined /> Host by:
               </Col>
               <Col span={18}> {owner}</Col>
+              <Col span={6} style={styles.labelInfo}>
+                <MoneyCollectOutlined /> Currency:
+              </Col>
+              <Col span={18}> {currency}</Col>
             </Row>
             <Row>
               {!closed && isInvitation && (
-                <Fragment>
+                <Space>
                   <Button
                     onClick={() => {
                       Router.push(`/member/bidding/details?id=${id}`);
                     }}
-                    style={styles.buttonAction}
                     type="primary"
                     size="small"
                   >
                     Accept
                   </Button>
-                  <Button
-                    style={styles.buttonAction}
-                    type="ghost"
-                    danger
-                    size="small"
-                  >
+                  <Button type="ghost" danger size="small">
                     Decline
                   </Button>
-                </Fragment>
+                </Space>
               )}
               {!closed && !isInvitation && (
-                <Button style={styles.buttonAction} type="primary" size="small">
-                  Join to auction
-                </Button>
+                <Space>
+                  <Button
+                    style={styles.buttonAction}
+                    type="primary"
+                    size="small"
+                  >
+                    Join to auction
+                  </Button>
+                </Space>
               )}
             </Row>
           </Col>
@@ -140,4 +155,4 @@ const BiddingComponent = ({
   );
 };
 
-export default BiddingComponent;
+export default SupplierBiddingItemComponent;

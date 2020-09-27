@@ -1,7 +1,7 @@
 import React from "react";
 import { Tabs } from "antd";
 import { ApartmentOutlined, ClusterOutlined } from "@ant-design/icons";
-import BiddingComponent from "./BiddingComponent";
+import SupplierBiddingItemComponent from "./SupplierBiddingItemComponent";
 
 const { TabPane } = Tabs;
 
@@ -21,6 +21,7 @@ const BIDDING_INVITE = [
     startTime: getFeatureDate(1),
     owner: "John Smith",
     duration: 200,
+    currency: "VND",
   },
   {
     id: 2,
@@ -29,6 +30,7 @@ const BIDDING_INVITE = [
     startTime: getFeatureDate(1),
     owner: "John Smith",
     duration: 500,
+    currency: "VND",
   },
   {
     id: 3,
@@ -37,6 +39,7 @@ const BIDDING_INVITE = [
     startTime: getFeatureDate(1),
     owner: "John Smith",
     duration: 400,
+    currency: "USD",
   },
   {
     id: 4,
@@ -45,6 +48,7 @@ const BIDDING_INVITE = [
     startTime: getFeatureDate(1),
     owner: "John Smith",
     duration: 100,
+    currency: "USD",
   },
 ];
 
@@ -61,7 +65,11 @@ const SupplierBiddingComponent = () => {
         key="1"
       >
         {BIDDING_INVITE.map((bidding, index) => (
-          <BiddingComponent bidding={bidding} key={index} isInvitation={true} />
+          <SupplierBiddingItemComponent
+            bidding={bidding}
+            key={index}
+            isInvitation={true}
+          />
         ))}
       </TabPane>
       <TabPane
@@ -74,7 +82,7 @@ const SupplierBiddingComponent = () => {
         key="2"
       >
         {BIDDING_INVITE.map((bidding, index) => (
-          <BiddingComponent bidding={bidding} key={index} />
+          <SupplierBiddingItemComponent bidding={bidding} key={index} />
         ))}
       </TabPane>
       <TabPane
@@ -87,7 +95,7 @@ const SupplierBiddingComponent = () => {
         key="3"
       >
         {BIDDING_INVITE.map((bidding, index) => (
-          <BiddingComponent closed key={index} bidding={bidding} />
+          <SupplierBiddingItemComponent closed key={index} bidding={bidding} />
         ))}
       </TabPane>
     </Tabs>

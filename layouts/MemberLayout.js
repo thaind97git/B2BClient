@@ -9,6 +9,7 @@ import {
   MenuFoldOutlined,
   ExperimentOutlined,
   OrderedListOutlined,
+  PicLeftOutlined,
 } from "@ant-design/icons";
 import MemberNavComponent from "../component/MemberNavComponent";
 import { currentPath } from "../utils";
@@ -27,7 +28,7 @@ const SUPPLIER_MENU = [
   },
   {
     key: "2",
-    icon: <ExperimentOutlined />,
+    icon: <PicLeftOutlined />,
     label: "Category",
     link: undefined,
     subMenu: [

@@ -1,31 +1,28 @@
 import React from "react";
-import { Row, Tabs } from "antd";
+import { Tabs } from "antd";
 import { ADMIN, SUPPLIER } from "../enums/accountRoles";
-
+import BiddingOverviewComponent from "./BiddingOverviewComponent";
+import BiddingAuctionComponent from "./BiddingAuctionComponent";
 const { TabPane } = Tabs;
 const SupplierBiddingDetailsComponent = ({ role = SUPPLIER }) => {
   return (
-    <Row>
-      <Tabs defaultActiveKey="1">
-        <TabPane tab={<span>Over view</span>} key="1">
-          Overview
+    <Tabs defaultActiveKey="1">
+      <TabPane
+        className="bidding-over-view"
+        tab={<span>Over view</span>}
+        key="1"
+      >
+        <BiddingOverviewComponent />
+      </TabPane>
+      {role === ADMIN && (
+        <TabPane tab={<span>Participants</span>} key="2">
+          Participants
         </TabPane>
-        {role === ADMIN && (
-          <TabPane tab={<span>Participants</span>} key="2">
-            Participants
-          </TabPane>
-        )}
-        <TabPane tab={<span>Term & Condition</span>} key="3">
-          Term
-        </TabPane>
-        <TabPane tab={<span>Qual. Bids</span>} key="4">
-          Qual. Bids
-        </TabPane>
-        <TabPane tab={<span>Auction</span>} key="5">
-          Auction
-        </TabPane>
-      </Tabs>
-    </Row>
+      )}
+      <TabPane tab={<span>Auction</span>} key="5">
+        <BiddingAuctionComponent />
+      </TabPane>
+    </Tabs>
   );
 };
 export default SupplierBiddingDetailsComponent;
