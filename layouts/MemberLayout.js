@@ -81,7 +81,7 @@ const BUYER_MENU = [
 const PROFILE_MENU = (
   <Menu>
     <Menu.Item>
-      <Link href="member/profile">
+      <Link href="/member/user-profile">
         <a>Profile</a>
       </Link>
     </Menu.Item>
