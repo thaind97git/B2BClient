@@ -6,14 +6,96 @@ import {
   Col,
   Collapse,
   Descriptions,
-  Empty,
   InputNumber,
   Row,
   Space,
   Statistic,
+  Table,
 } from "antd";
 import { ArrowUpOutlined, CaretRightOutlined } from "@ant-design/icons";
 const { Panel } = Collapse;
+const Rank = ({ rank }) => {
+  let color;
+  switch (rank) {
+    case 1:
+      color = "#52c41a";
+      break;
+    case 2:
+      color = "#faad14";
+      break;
+    case 3:
+      color = "#f5222d";
+      break;
+    default:
+      color = "black";
+      break;
+  }
+  console.log({ color });
+  return <Badge count={rank} style={{ backgroundColor: color }} />;
+};
+const columns = [
+  {
+    title: "No",
+    dataIndex: "no",
+    key: "no",
+  },
+  {
+    title: "Bid Per UOM",
+    dataIndex: "bid",
+    key: "bid",
+    render: (text, record) => `$ ${record.bid}.00`,
+  },
+  {
+    title: "Total Lot",
+    dataIndex: "total",
+    key: "total",
+    render: (text, record) => `$ ${record.total}.00`,
+  },
+  {
+    title: "Rank",
+    key: "rank",
+    render: (text, record) => <Rank rank={record.rank} />,
+  },
+];
+
+const data = [
+  {
+    no: 1,
+    bid: 55,
+    total: 800,
+    rank: 1,
+  },
+  {
+    no: 2,
+    bid: 53,
+    total: 800,
+    rank: 5,
+  },
+  {
+    no: 3,
+    bid: 51,
+    total: 800,
+    rank: 2,
+  },
+  {
+    no: 4,
+    bid: 48,
+    total: 800,
+    rank: 3,
+  },
+  {
+    no: 5,
+    bid: 47,
+    total: 800,
+    rank: 3,
+  },
+  {
+    no: 6,
+    bid: 45,
+    total: 800,
+    rank: 4,
+  },
+];
 
 const unit = 20;
 const BiddingAuctionComponent = () => {
@@ -95,6 +177,7 @@ const BiddingAuctionComponent = () => {
                 <Row>
                   <Space>
                     <Button
+                      type="primary"
                       onClick={() => {
                         setCurrentBid(bidTemp);
                         setIsPlaceBid(false);
@@ -122,13 +205,12 @@ const BiddingAuctionComponent = () => {
         <Col md={12} sm={24}>
           <Collapse defaultActiveKey="1">
             <Panel header="Your Bidding History" key="1">
-              <Empty />
+              {/* <Empty /> */}
+              <Table columns={columns} dataSource={data} />
             </Panel>
           </Collapse>
         </Col>
       </Row>
-
-      {/* <Table columns={columns} dataSource={data} /> */}
     </div>
   );
 };
