@@ -35,11 +35,11 @@ export default class MyDocument extends Document {
             type="text/css"
             href="/static/assets/custom.css"
           />
-          {/* <link
+          <link
             rel="stylesheet"
             type="text/css"
-            href="/static/customs/nprogress.css"
-          /> */}
+            href="/static/assets/nprogress.css"
+          />
         </Head>
         <body className="">
           <Main {...rootProps} />

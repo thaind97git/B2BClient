@@ -9,24 +9,17 @@ const Dotenv = require("dotenv-webpack");
 
 // Where your antd-custom.less file lives
 const themeVariables = lessToJS(
-  fs.readFileSync(path.resolve(__dirname, "./less/antd-custom.less"), "utf8")
+  fs.readFileSync(path.resolve(__dirname, "./styles/antd-custom.less"), "utf8")
 );
 
 const nextConfig = {
-  env: {
-    // spaceID: process.env.spaceID,
-    // accessTokenDelivery: process.env.accessTokenDelivery,
-  },
+  env: {},
   distDir: ".next",
 };
 
 const plugins = [
   withCSS({
     cssModules: true,
-    // cssLoaderOptions: {
-    //   importLoaders: 1,
-    //   localIdentName: "[local]___[hash:base64:5]",
-    // },
   }),
   withLess({
     lessLoaderOptions: {
@@ -66,37 +59,14 @@ const plugins = [
         });
       }
 
-      config.module.rules.push({
-        test: /\.css$/,
-        loader: ["css-loader"],
-      });
-
-      // const builtInLoader = config.module.rules.find((rule) => {
-      //   if (rule.oneOf) {
-      //     return (
-      //       rule.oneOf.find((deepRule) => {
-      //         return deepRule.test && deepRule.test.toString().includes("/a^/");
-      //       }) !== undefined
-      //     );
-      //   }
-      //   return false;
+      // config.module.rules.push({
+      //   test: /\.css$/,
+      //   loader: ["css-loader"],
       // });
-
-      // if (typeof builtInLoader !== "undefined") {
-      //   config.module.rules.push({
-      //     oneOf: [
-      //       ...builtInLoader.oneOf.filter((rule) => {
-      //         return (
-      //           (rule.test && rule.test.toString().includes("/a^/")) !== true
-      //         );
-      //       }),
-      //     ],
-      //   });
-      // }
-
-      // config.resolve.alias["@"] = path.resolve(__dirname);
       return config;
     },
   }),
 ];
 module.exports = withPlugins(plugins, nextConfig);
+
+// );

@@ -6,7 +6,7 @@ import MyAccountComponent from "./MyAccountComponent";
 import { connect } from "react-redux";
 import { pick } from "lodash/fp";
 import { getCurrentUser } from "../stores/UserState";
-const { Link } = Typography;
+import Link from "next/link";
 const { Search } = Input;
 
 const connectToRedux = connect(pick(["isLogged"]), (dispatch) => ({
@@ -24,8 +24,9 @@ const HeaderComponent = ({ isLogged }) => {
               <div className="item">
                 <Row align="middle">
                   <LoginOutlined /> <span>&nbsp;&nbsp;</span>
-                  <Link>Login</Link>
-                  <span>&nbsp;</span> /<span>&nbsp;</span> <Link>Register</Link>
+                  <Link href="/login">Login</Link>
+                  <span>&nbsp;</span> /<span>&nbsp;</span>{" "}
+                  <Link href="/register">Register</Link>
                 </Row>
               </div>
               <div className="item">
