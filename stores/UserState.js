@@ -35,3 +35,27 @@ export const getCurrentUser = () =>
   });
 
 export const GetCurrentUserDataSelector = GetCurrentUserAPI.dataSelector;
+
+export const verifyScopeAndRoleAdmin = (user) => {
+  if (!user) {
+    return false;
+  }
+
+  return user.systemUserRole;
+};
+
+export const verifyScopeAndRoleSupplier = (user) => {
+  if (!user) {
+    return false;
+  }
+
+  return user.systemUserRole;
+};
+
+export const verifyScopeAndRoleBuyer = (user) => {
+  if (!user) {
+    return false;
+  }
+
+  return user.systemUserRole;
+};
