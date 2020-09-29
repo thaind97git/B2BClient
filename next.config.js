@@ -27,6 +27,10 @@ const plugins = [
       modifyVars: themeVariables,
     },
     webpack: (config, { isServer }) => {
+      config.module.rules.push({
+        test: /\.css$/,
+        loaders: ["style-loader", "css-loader?modules"],
+      });
       config.plugins = config.plugins || [];
 
       config.plugins = [

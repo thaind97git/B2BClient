@@ -18,69 +18,25 @@ import { BUYER, SUPPLIER } from "../enums/accountRoles";
 
 const { Header, Content, Sider } = Layout;
 
-const SUPPLIER_MENU = [
+const ADMIN_MENU = [
   {
     key: "1",
     icon: <UserOutlined />,
     label: "Dashboard",
-    link: "/member",
+    link: "/admin",
     subMenu: [],
   },
   {
     key: "2",
-    icon: <PicLeftOutlined />,
-    label: "Category",
-    link: undefined,
-    subMenu: [
-      {
-        subKey: "2.1",
-        subLink: "/member/category",
-        subIcon: <OrderedListOutlined />,
-        subLabel: "Categories",
-      },
-    ],
-  },
-  {
-    key: "3",
     icon: <ExperimentOutlined />,
     label: "Bidding",
     link: undefined,
     subMenu: [
       {
-        subKey: "3.1",
-        subLink: "/member/bidding",
-        subIcon: <OrderedListOutlined />,
-        subLabel: "Available Bidding",
-      },
-    ],
-  },
-  {
-    key: "4",
-    icon: <UserOutlined />,
-    label: "Group",
-    link: "/admin/group",
-    subMenu: [],
-  },
-];
-const BUYER_MENU = [
-  {
-    key: "1",
-    icon: <UserOutlined />,
-    label: "Dashboard",
-    link: "/member",
-    subMenu: [],
-  },
-  {
-    key: "2",
-    icon: <ExperimentOutlined />,
-    label: "Quotes",
-    link: undefined,
-    subMenu: [
-      {
         subKey: "2.1",
-        subLink: "/member/quotes/manage",
+        subLink: "/admin/bidding",
         subIcon: <OrderedListOutlined />,
-        subLabel: "List product",
+        subLabel: "Biddings",
       },
     ],
   },
@@ -102,7 +58,7 @@ const PROFILE_MENU = (
   </Menu>
 );
 
-const MemberLayout = ({ children, role = SUPPLIER }) => {
+const AdminLayout = ({ children, role = SUPPLIER }) => {
   const [collapsed, setCollapsed] = useState(true);
   return (
     <div
@@ -132,10 +88,7 @@ const MemberLayout = ({ children, role = SUPPLIER }) => {
                 </a>
               </Link>
             </Row>
-            <MemberNavComponent
-              path={currentPath()}
-              menus={role === BUYER ? BUYER_MENU : SUPPLIER_MENU}
-            />
+            <MemberNavComponent path={currentPath()} menus={ADMIN_MENU} />
           </Sider>
 
           <Layout style={{ background: "#f8f8f8" }} className="site-layout">
@@ -148,12 +101,12 @@ const MemberLayout = ({ children, role = SUPPLIER }) => {
                     onClick={() => setCollapsed((prev) => !prev)}
                   />
                 ) : (
-                    <MenuFoldOutlined
-                      style={{ marginLeft: 24 }}
-                      className="trigger"
-                      onClick={() => setCollapsed((prev) => !prev)}
-                    />
-                  )}
+                  <MenuFoldOutlined
+                    style={{ marginLeft: 24 }}
+                    className="trigger"
+                    onClick={() => setCollapsed((prev) => !prev)}
+                  />
+                )}
                 <div style={{ marginRight: 24 }}>
                   <Dropdown overlay={PROFILE_MENU}>
                     <a
@@ -209,4 +162,4 @@ const MemberLayout = ({ children, role = SUPPLIER }) => {
   );
 };
 
-export default MemberLayout;
+export default AdminLayout;

@@ -1,4 +1,5 @@
-import React from 'react';
+import React from "react";
+// import Messenger from '../../component/Chat/Messenger';
 import MemberLayout from "../../layouts/MemberLayout";
 import Messenger from "../../component/Chat/Messenger";
 
