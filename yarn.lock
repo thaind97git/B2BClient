@@ -6795,6 +6795,11 @@ shallowequal@^1.0.2, shallowequal@^1.1.0:
   resolved "https://registry.yarnpkg.com/shallowequal/-/shallowequal-1.1.0.tgz#188d521de95b9087404fd4dcb68b13df0ae4e7f8"
   integrity sha512-y0m1JoUZSlPAjXVtPPW70aZWfIL/dSP7AFkRnniLCrK/8MDKog3TySTBmckD+RObVxH0v4Tox67+F14PdED2oQ==
 
+shave@^2.5.4:
+  version "2.5.9"
+  resolved "https://registry.yarnpkg.com/shave/-/shave-2.5.9.tgz#a44f00b217d370723c885c8d5c299c993046d247"
+  integrity sha512-n9/DU7UL0cor8vRAWC2SaMpCor+Ukd3U3QGTLq5d74D7fMFouzrGT1aeeFnEfjiNwIfdNrhtpWjAEc3d7bMOMg==
+
 shebang-command@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/shebang-command/-/shebang-command-1.2.0.tgz#44aac65b695b03398968c39f363fee5deafdf1ea"

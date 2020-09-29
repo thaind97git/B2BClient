@@ -9,7 +9,7 @@ import {
   MenuFoldOutlined,
   ExperimentOutlined,
   OrderedListOutlined,
-  PicLeftOutlined,
+  FallOutlined,
 } from "@ant-design/icons";
 import MemberNavComponent from "../component/MemberNavComponent";
 import { currentPath } from "../utils";
@@ -28,12 +28,26 @@ const ADMIN_MENU = [
   },
   {
     key: "2",
+    icon: <FallOutlined />,
+    label: "Request",
+    link: undefined,
+    subMenu: [
+      {
+        subKey: "2.1",
+        subLink: "/admin/request",
+        subIcon: <OrderedListOutlined />,
+        subLabel: "Requests",
+      },
+    ],
+  },
+  {
+    key: "3",
     icon: <ExperimentOutlined />,
     label: "Bidding",
     link: undefined,
     subMenu: [
       {
-        subKey: "2.1",
+        subKey: "3.1",
         subLink: "/admin/bidding",
         subIcon: <OrderedListOutlined />,
         subLabel: "Biddings",
