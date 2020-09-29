@@ -15,6 +15,8 @@ import MemberNavComponent from "../component/MemberNavComponent";
 import { currentPath } from "../utils";
 import Link from "next/link";
 import { BUYER, SUPPLIER } from "../enums/accountRoles";
+import { removeToken } from "../libs/localStorage";
+import Router from "next/router";
 
 const { Header, Content, Sider } = Layout;
 
@@ -89,7 +91,13 @@ const PROFILE_MENU = (
     <Menu.Item>
       <a href="#">Company Profile</a>
     </Menu.Item>
-    <Menu.Item danger>
+    <Menu.Item
+      danger
+      onClick={() => {
+        removeToken();
+        Router.push("/login");
+      }}
+    >
       <LoginOutlined /> Sign out
     </Menu.Item>
   </Menu>

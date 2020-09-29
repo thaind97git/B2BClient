@@ -7,7 +7,6 @@ ul {
 #header {
   background-color: #fff;
   box-shadow: 0 0 7px 0 rgba(0, 0, 0, 0.07);
-  min-height: 200px;
 }
 
 #content {
