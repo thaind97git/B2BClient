@@ -4,6 +4,7 @@ import {
   DatePicker,
   Divider,
   Input,
+  InputNumber,
   Row,
   Select,
   Typography,
@@ -34,8 +35,10 @@ function disabledDateTime() {
     disabledSeconds: () => [55, 56],
   };
 }
-const BiddingSettingComponent = () => {
+const BiddingSettingComponent = ({ setDefaultTab }) => {
   const [brief, setBrief] = useState(null);
+  const [currentPrice, setCurrentPrice] = useState(0);
+  const [quantity, setQuantity] = useState(0);
 
   return (
     <div>
@@ -46,8 +49,77 @@ const BiddingSettingComponent = () => {
           </div>
           <Input size="large" placeholder="Enter the auction name" />
         </Col>
-        <Col md={12} sm={24}>
+        {/* <Col md={12} sm={24}>
           <Button type="primary">Choose Group</Button>
+        </Col> */}
+      </Row>
+      <Row>
+        <Col md={12} sm={24}>
+          <div className="label">
+            Quantity <span style={{ color: "red" }}>*</span>
+          </div>
+          <div>
+            <InputNumber
+              style={{ width: "100%" }}
+              value={quantity}
+              onChange={(value) => setQuantity(value)}
+              size="large"
+              defaultValue={10}
+              type="number"
+            />
+          </div>
+        </Col>
+      </Row>
+      <Row>
+        <Col md={12} sm={24}>
+          <div className="label">
+            Unit of Measure <span style={{ color: "red" }}>*</span>
+          </div>
+          <div>
+            <Input disabled size="large" defaultValue="Unit" />
+          </div>
+        </Col>
+      </Row>
+      <Row>
+        <Col md={12} sm={24}>
+          <div className="label">
+            Current Price (Not show to participants){" "}
+            <span style={{ color: "red" }}>*</span>
+          </div>
+          <div>
+            <InputNumber
+              style={{ width: "100%" }}
+              formatter={(value) =>
+                `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+              }
+              parser={(value) => value.replace(/\$\s?|(,*)/g, "")}
+              value={currentPrice}
+              onChange={(value) => setCurrentPrice(value)}
+              size="large"
+              prefix="$"
+            />
+          </div>
+        </Col>
+      </Row>
+      <Row>
+        <Col md={12} sm={24}>
+          <div className="label">
+            Current Value (Not show to participants){" "}
+            <span style={{ color: "red" }}>*</span>
+          </div>
+          <div>
+            <InputNumber
+              style={{ width: "100%" }}
+              formatter={(value) =>
+                `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+              }
+              parser={(value) => value.replace(/\$\s?|(,*)/g, "")}
+              value={quantity * currentPrice}
+              disabled
+              size="large"
+              prefix="$"
+            />
+          </div>
         </Col>
       </Row>
       <Row>
@@ -93,18 +165,18 @@ const BiddingSettingComponent = () => {
           <div className="label">Minimum Duration</div>
           <div>
             <Select
+              defaultValue="10"
               size="large"
-              defaultValue="a1"
               onChange={handleChange}
               style={{ width: "100%" }}
             >
-              <Option>10 Minutes</Option>
-              <Option>15 Minutes</Option>
-              <Option>30 Minutes</Option>
-              <Option>60 Minutes</Option>
-              <Option>2 Hours</Option>
-              <Option>4 Hours</Option>
-              <Option>8 Hours</Option>
+              <Option value="10">10 Minutes</Option>
+              <Option value="15">15 Minutes</Option>
+              <Option value="30">30 Minutes</Option>
+              <Option value="60">60 Minutes</Option>
+              <Option value="1h">2 Hours</Option>
+              <Option value="4h">4 Hours</Option>
+              <Option value="8h">8 Hours</Option>
             </Select>
           </div>
         </Col>
@@ -115,16 +187,16 @@ const BiddingSettingComponent = () => {
           <div>
             <Select
               size="large"
-              defaultValue="a1"
+              defaultValue="none"
               onChange={handleChange}
               style={{ width: "100%" }}
             >
-              <Option>None</Option>
-              <Option>Last minute</Option>
-              <Option>Last 2 minutes</Option>
-              <Option>Last 5 minutes</Option>
-              <Option>Last 10 minutes</Option>
-              <Option>Last 15 minutes</Option>
+              <Option value="none">None</Option>
+              <Option value="last">Last minute</Option>
+              <Option value="2">Last 2 minutes</Option>
+              <Option value="5">Last 5 minutes</Option>
+              <Option value="10">Last 10 minutes</Option>
+              <Option value="15">Last 15 minutes</Option>
             </Select>
           </div>
         </Col>
@@ -150,7 +222,7 @@ const BiddingSettingComponent = () => {
         </Col>
       </Row>
       <Row style={{ padding: 24 }} justify="end">
-        <Button size="large" type="primary">
+        <Button onClick={() => setDefaultTab("2")} size="large" type="primary">
           Save & Go to Next Step
         </Button>
       </Row>
