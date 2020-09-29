@@ -1,4 +1,5 @@
-import { Button, Col, Divider, Radio, Row, Select, Tag } from "antd";
+import { Button, Col, Divider, Input, Radio, Row, Select, Tag } from "antd";
+import TextArea from "antd/lib/input/TextArea";
 import Modal from "antd/lib/modal/Modal";
 import React, { useEffect, useState } from "react";
 import ReactTableLayout from "../layouts/ReactTableLayout";
@@ -112,6 +113,7 @@ const AdminRequestManagement = () => {
   const [dateRange, setDateRange] = useState(DEFAULT_DATE_RANGE);
   const [recordSelected, setRecordSelected] = useState([]);
   const [visible, setVisible] = useState(false);
+  const [openGroupModal, setOpenGroupModal] = useState(false);
   const rowSelection = {
     onChange: (selectedRowKeys, selectedRows) => {
       console.log(
@@ -135,10 +137,46 @@ const AdminRequestManagement = () => {
   return (
     <div>
       <Modal
+        title="Create New Group"
+        visible={openGroupModal}
+        onOk={() => setOpenGroupModal(false)}
+        onCancel={() => setOpenGroupModal(true)}
+        footer={[
+          <Button key="back" onClick={() => setOpenGroupModal(false)}>
+            Cancel
+          </Button>,
+          <Button
+            key="submit"
+            type="primary"
+            onClick={() => setOpenGroupModal(false)}
+          >
+            Submit
+          </Button>,
+        ]}
+      >
+        <Input placeholder="Group name" />
+        <TextArea
+          placeholder="Group description"
+          allowClear
+          onChange={onChange}
+        />
+      </Modal>
+      <Modal
         title="Listing Group"
         visible={visible}
         onOk={() => setVisible(false)}
         onCancel={() => setVisible(true)}
+        footer={[
+          <Button type="primary" onClick={() => setOpenGroupModal(true)}>
+            Create new group
+          </Button>,
+          <Button key="back" onClick={() => setVisible(false)}>
+            Cancel
+          </Button>,
+          <Button key="submit" type="primary" onClick={() => setVisible(false)}>
+            Submit
+          </Button>,
+        ]}
       >
         <Radio.Group style={{ width: "100%" }} onChange={onChange}>
           <Row>
