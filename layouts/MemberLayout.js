@@ -34,7 +34,7 @@ const SUPPLIER_MENU = [
     subMenu: [
       {
         subKey: "2.1",
-        subLink: "/member/category/manage",
+        subLink: "/member/category",
         subIcon: <OrderedListOutlined />,
         subLabel: "Categories",
       },
