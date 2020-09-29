@@ -9,25 +9,25 @@ import { compose } from "redux";
 import { UserOutlined } from '@ant-design/icons';
 import { Descriptions, Row, Avatar, Col, Divider, Modal } from 'antd';
 
-import RegisterComponent from "./RegisterComponent";
+import UserProfileEditComponent from "./UserProfileEditComponent";
 import { render } from "less";
 
 const FormItem = Form.Item;
 
 const connectToRedux = connect(
-    /*createStructuredSelector({
-        userLoginData: userLoginDataSelector,
-    }),
-    (dispatch) => ({
-        loginUser: ({ email, password }) =>
-            dispatch(userLogin({ email, password })),
-    })*/
+  /*createStructuredSelector({
+      userLoginData: userLoginDataSelector,
+  }),
+  (dispatch) => ({
+      loginUser: ({ email, password }) =>
+          dispatch(userLogin({ email, password })),
+  })*/
 );
 
 
 const enhance = compose(connectToRedux);
 
-const USER_PROFILE = 
+const USER_PROFILE =
 {
   "username": "rko2709",
   "email": "duyquanghoang27@gmail.com",
@@ -37,61 +37,60 @@ const USER_PROFILE =
 }
 const UserProfileComponent = () => {
 
-    const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(false);
 
-    const showModal = () => {
+  const showModal = () => {
 
-        console.log('show');
-        setVisible(true);
-    };
+    console.log('show');
+    setVisible(true);
+  };
 
-    const handleOk = e => {
-        console.log('ok');
-        setVisible(false);
-    };
+  const handleOk = e => {
+    console.log('ok');
+    setVisible(false);
+  };
 
-    const handleCancel = e => {
-        console.log('cancel');
-        setVisible(false);
-    };
-    return (
-        <Form>
-            <Row span={24}>
-                <Col span={4}>
-                    <div>
-                        <Avatar size={120} src="/static/images/avatar.png" />
-                    </div>
-                </Col>
-                <Col span={20}>
-                    <Descriptions title={USER_PROFILE.username} extra={<Button type="primary" onClick={showModal}>Edit</Button>} column={1}>
-                        <Descriptions.Item label="at">{USER_PROFILE.companyName}</Descriptions.Item>
-                        <Descriptions.Item label="Email">{USER_PROFILE.email}</Descriptions.Item>
-                    </Descriptions>
-                </Col>
-            </Row>
-            <Divider dashed />
-            <Descriptions title="Contact Information">
-                <Descriptions.Item label="Email">{USER_PROFILE.email}</Descriptions.Item>
-                <Descriptions.Item label="Telephone">{USER_PROFILE.phoneNumber}</Descriptions.Item>
-                <Descriptions.Item label="Address">{USER_PROFILE.address}</Descriptions.Item>
-            </Descriptions>
-            <Divider dashed />
-            <Descriptions title="Company Information">
-                <Descriptions.Item label="Email">{USER_PROFILE.email}</Descriptions.Item>
-                <Descriptions.Item label="Telephone">{USER_PROFILE.phoneNumber}</Descriptions.Item>
-                <Descriptions.Item label="Address">{USER_PROFILE.address}</Descriptions.Item>
-            </Descriptions>
-            <Modal
-                title="Basic Information"
-                visible={visible}
-                onOk={handleOk}
-                onCancel={handleCancel}
-            >
-                <RegisterComponent />
-                abc
-            </Modal>
-        </Form>
-    );
+  const handleCancel = e => {
+    console.log('cancel');
+    setVisible(false);
+  };
+  return (
+    <Form>
+      <Row span={24}>
+        <Col span={4}>
+          <div>
+            <Avatar size={120} src="/static/images/avatar.png" />
+          </div>
+        </Col>
+        <Col span={20}>
+          <Descriptions title={USER_PROFILE.username} extra={<Button type="primary" onClick={showModal}>Edit</Button>} column={1}>
+            <Descriptions.Item label="at">{USER_PROFILE.companyName}</Descriptions.Item>
+            <Descriptions.Item label="Email">{USER_PROFILE.email}</Descriptions.Item>
+          </Descriptions>
+        </Col>
+      </Row>
+      <Divider dashed />
+      <Descriptions title="Contact Information">
+        <Descriptions.Item label="Email">{USER_PROFILE.email}</Descriptions.Item>
+        <Descriptions.Item label="Telephone">{USER_PROFILE.phoneNumber}</Descriptions.Item>
+        <Descriptions.Item label="Address">{USER_PROFILE.address}</Descriptions.Item>
+      </Descriptions>
+      <Divider dashed />
+      <Descriptions title="Company Information">
+        <Descriptions.Item label="Email">{USER_PROFILE.email}</Descriptions.Item>
+        <Descriptions.Item label="Telephone">{USER_PROFILE.phoneNumber}</Descriptions.Item>
+        <Descriptions.Item label="Address">{USER_PROFILE.address}</Descriptions.Item>
+      </Descriptions>
+      <Modal
+        title="Basic Information"
+        visible={visible}
+        onOk={handleOk}
+        onCancel={handleCancel}
+      >
+        <UserProfileEditComponent/>
+      </Modal>
+    </Form>
+  );
 
 };
 export default enhance(UserProfileComponent);
