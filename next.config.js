@@ -3,7 +3,7 @@ const lessToJS = require("less-vars-to-js");
 const fs = require("fs");
 const path = require("path");
 const withLess = require("@zeit/next-less");
-const withCSS = require("@zeit/next-css");
+// const withCSS = require("@zeit/next-css");
 const withPlugins = require("next-compose-plugins");
 const Dotenv = require("dotenv-webpack");
 
@@ -18,19 +18,12 @@ const nextConfig = {
 };
 
 const plugins = [
-  withCSS({
-    cssModules: true,
-  }),
   withLess({
     lessLoaderOptions: {
       javascriptEnabled: true,
       modifyVars: themeVariables,
     },
-    webpack: (config, { isServer }) => {
-      config.module.rules.push({
-        test: /\.css$/,
-        loaders: ["style-loader", "css-loader?modules"],
-      });
+    webpack: (config, { isServer, defaultLoaders }) => {
       config.plugins = config.plugins || [];
 
       config.plugins = [
@@ -56,20 +49,57 @@ const plugins = [
           },
           ...(typeof origExternals[0] === "function" ? [] : origExternals),
         ];
-
-        config.module.rules.unshift({
-          test: antStyles,
-          use: "null-loader",
-        });
       }
 
-      // config.module.rules.push({
-      //   test: /\.css$/,
-      //   loader: ["css-loader"],
-      // });
+      config.module.rules.push({
+        test: /\.(html)$/,
+        use: [
+          defaultLoaders.babel,
+          {
+            loader: "html-loader",
+            options: {
+              attrs: [":data-src"],
+            },
+          },
+        ],
+      });
+      config.module.rules.push({
+        test: /\.css$/,
+        loaders: ["style-loader", "css-loader?modules"],
+      });
+
       return config;
     },
   }),
+  // withCSS({
+  //   cssModules: true,
+  //   cssLoaderOptions: {
+  //     importLoaders: 1,
+  //     localIdentName: "[local]___[hash:base64:5]",
+  //   },
+  //   webpack: (config, options) => {
+  //     config.node = {
+  //       fs: "empty",
+  //     };
+
+  //     config.module.rules.push({
+  //       test: /\.(html)$/,
+  //       use: [
+  //         options.defaultLoaders.babel,
+  //         {
+  //           loader: "html-loader",
+  //           options: {
+  //             attrs: [":data-src"],
+  //           },
+  //         },
+  //       ],
+  //     });
+
+  //     config.plugins = config.plugins || [];
+
+  //     return config;
+  //   },
+  // }),
 ];
 module.exports = withPlugins(plugins, nextConfig);
 
