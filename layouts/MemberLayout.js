@@ -53,6 +53,13 @@ const SUPPLIER_MENU = [
       },
     ],
   },
+  {
+    key: "4",
+    icon: <UserOutlined />,
+    label: "Group",
+    link: "/admin/group",
+    subMenu: [],
+  },
 ];
 const BUYER_MENU = [
   {
@@ -140,12 +147,12 @@ const MemberLayout = ({ children, role = SUPPLIER }) => {
                     onClick={() => setCollapsed((prev) => !prev)}
                   />
                 ) : (
-                  <MenuFoldOutlined
-                    style={{ marginLeft: 24 }}
-                    className="trigger"
-                    onClick={() => setCollapsed((prev) => !prev)}
-                  />
-                )}
+                    <MenuFoldOutlined
+                      style={{ marginLeft: 24 }}
+                      className="trigger"
+                      onClick={() => setCollapsed((prev) => !prev)}
+                    />
+                  )}
                 <div style={{ marginRight: 24 }}>
                   <Dropdown overlay={PROFILE_MENU}>
                     <a
