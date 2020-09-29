@@ -9,11 +9,14 @@ import {
   MenuFoldOutlined,
   ExperimentOutlined,
   OrderedListOutlined,
+  PicLeftOutlined,
 } from "@ant-design/icons";
 import MemberNavComponent from "../component/MemberNavComponent";
 import { currentPath } from "../utils";
 import Link from "next/link";
 import { BUYER, SUPPLIER } from "../enums/accountRoles";
+import { removeToken } from "../libs/localStorage";
+import Router from "next/router";
 
 const { Header, Content, Sider } = Layout;
 
@@ -27,13 +30,13 @@ const SUPPLIER_MENU = [
   },
   {
     key: "2",
-    icon: <ExperimentOutlined />,
-    label: "Company Category",
+    icon: <PicLeftOutlined />,
+    label: "Category",
     link: undefined,
     subMenu: [
       {
         subKey: "2.1",
-        subLink: "/member/category/manage",
+        subLink: "/member/category",
         subIcon: <OrderedListOutlined />,
         subLabel: "Categories",
       },
@@ -47,7 +50,7 @@ const SUPPLIER_MENU = [
     subMenu: [
       {
         subKey: "3.1",
-        subLink: "/member/bidding/manage",
+        subLink: "/member/bidding",
         subIcon: <OrderedListOutlined />,
         subLabel: "Available Bidding",
       },
@@ -95,14 +98,20 @@ const PROFILE_MENU = (
     <Menu.Item>
       <a href="#">Company Profile</a>
     </Menu.Item>
-    <Menu.Item danger>
+    <Menu.Item
+      danger
+      onClick={() => {
+        removeToken();
+        Router.push("/login");
+      }}
+    >
       <LoginOutlined /> Sign out
     </Menu.Item>
   </Menu>
 );
 
 const MemberLayout = ({ children, role = SUPPLIER }) => {
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
   return (
     <div
       style={{
@@ -111,10 +120,10 @@ const MemberLayout = ({ children, role = SUPPLIER }) => {
         position: "relative",
       }}
     >
-      <div className="container">
+      <div className="">
         <Layout>
           <Sider
-            style={{ minHeight: "100vh", minWidth: "240px !important" }}
+            style={{ minHeight: "100vh" }}
             trigger={null}
             collapsible
             collapsed={collapsed}
