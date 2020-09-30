@@ -1,12 +1,11 @@
 import React from "react";
-// import Messenger from '../../component/Chat/Messenger';
 import MemberLayout from "../../layouts/MemberLayout";
-import Messenger from "../../component/Chat/Messenger";
+import GroupRequestComponent from "../../component/GroupRequestComponent";
 
 export default function Home() {
   return (
     <MemberLayout>
-      <Messenger />
+        <GroupRequestComponent />
     </MemberLayout>
   );
 }

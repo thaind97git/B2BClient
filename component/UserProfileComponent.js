@@ -1,12 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { Checkbox, Form, Input, Button } from "antd";
-import { LockOutlined, MailOutlined } from "@ant-design/icons";
-import Link from "next/link";
+import React, { useState } from "react";
+import {  Form,  Button } from "antd";
 import { connect } from "react-redux";
-import { createStructuredSelector } from "reselect";
-import { userLogin, userLoginDataSelector } from "../stores/UserState";
+/*import { createStructuredSelector } from "reselect";
+import { userLogin, userLoginDataSelector } from "../stores/UserState";*/
 import { compose } from "redux";
-import { UserOutlined } from '@ant-design/icons';
 import { Descriptions, Row, Avatar, Col, Divider, Modal } from 'antd';
 
 import UserProfileEditComponent from "./UserProfileEditComponent";
