@@ -1,19 +1,10 @@
-import {
-  Button,
-  Col,
-  Divider,
-  Input,
-  Radio,
-  Row,
-  Select,
-  Space,
-  Tag,
-} from "antd";
+import { Button, Input, Row, Select, Space, Tag } from "antd";
 import { CloseCircleOutlined } from "@ant-design/icons";
 import Modal from "antd/lib/modal/Modal";
 import React, { useState } from "react";
 import ReactTableLayout from "../layouts/ReactTableLayout";
 import { DEFAULT_DATE_RANGE } from "../utils";
+import BuyerRequestCreateComponent from "./BuyerRequestCreateComponent";
 const { Option } = Select;
 const { TextArea } = Input;
 const dataSource = [
@@ -160,55 +151,12 @@ const BuyerRequestManagement = () => {
         />
       </Modal>
       <Modal
-        title="Listing Group"
+        title="Create New Request"
         visible={visible}
         onOk={() => setVisible(false)}
         onCancel={() => setVisible(true)}
-        footer={[
-          <Button type="primary" onClick={() => setOpenGroupModal(true)}>
-            Create new group
-          </Button>,
-          <Button key="back" onClick={() => setVisible(false)}>
-            Cancel
-          </Button>,
-          <Button key="submit" type="primary" onClick={() => setVisible(false)}>
-            Submit
-          </Button>,
-        ]}
       >
-        <Radio.Group style={{ width: "100%" }} onChange={onChange}>
-          <Row>
-            <Col span={24}>
-              <Radio value="A">
-                <b>Group 1</b> created inside <Tag color="blue">Apple</Tag>
-              </Radio>
-            </Col>
-            <Divider />
-            <Col span={24}>
-              <Radio value="B">
-                <b>Group 2</b> created inside <Tag color="blue">Apple</Tag>
-              </Radio>
-            </Col>
-            <Divider />
-            <Col span={24}>
-              <Radio value="C">
-                <b>Group 3</b> created inside <Tag color="blue">Apple</Tag>
-              </Radio>
-            </Col>
-            <Divider />
-            <Col span={24}>
-              <Radio value="D">
-                <b>Group 4</b> created inside <Tag color="blue">Apple</Tag>
-              </Radio>
-            </Col>
-            <Divider />
-            <Col span={24}>
-              <Radio value="E">
-                <b>Group 5</b> created inside <Tag color="blue">Apple</Tag>
-              </Radio>
-            </Col>
-          </Row>
-        </Radio.Group>
+        <BuyerRequestCreateComponent width={24} />
       </Modal>
       <Row justify="end">
         <Button onClick={() => setVisible(true)} type="primary">
@@ -226,9 +174,10 @@ const BuyerRequestManagement = () => {
               style={{ width: 200 }}
               onChange={handleChange}
             >
-              <Option value="jack">Pending</Option>
-              <Option value="lucy">Done</Option>
-              <Option value="Yiminghe">Reject</Option>
+              <Option value="pending">Pending</Option>
+              <Option value="done">Done</Option>
+              <Option value="rejected">Rejected</Option>
+              <Option value="canceled">Canceled</Option>
             </Select>
           ),
         }}

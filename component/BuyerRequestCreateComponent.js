@@ -26,7 +26,7 @@ const formItemLayout = {
     span: 24,
   },
 };
-const BuyerRequestCreateComponent = () => {
+const BuyerRequestCreateComponent = ({ width = 10 }) => {
   const [minRange, setMinRange] = useState(1);
   const [maxRange, setMaxRange] = useState(100);
   const [minPrice, setMinPrice] = useState(0);
@@ -45,7 +45,7 @@ const BuyerRequestCreateComponent = () => {
 
   return (
     <Row align="middle" justify="center">
-      <Col sm={20} md={10}>
+      <Col sm={20} md={width}>
         <Form
           {...formItemLayout}
           autoComplete="new-password"
