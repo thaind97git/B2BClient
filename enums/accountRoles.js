@@ -1,5 +1,5 @@
-export const SUPPLIER = 1;
-export const BUYER = 2;
-export const GUEST = -1;
-export const ADMIN = 3;
-export const MODERATOR = 4;
+export const SUPPLIER = "Supplier";
+export const BUYER = "Buyer";
+export const GUEST = "Guest";
+export const ADMIN = "Admin";
+export const MODERATOR = "Aggregator";

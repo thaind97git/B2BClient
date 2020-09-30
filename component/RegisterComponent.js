@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Form, Input, Button, Row, Col, Radio, Typography } from "antd";
 import {
   UserOutlined,
@@ -8,6 +8,14 @@ import {
   MailOutlined,
 } from "@ant-design/icons";
 import Link from "next/link";
+import { createStructuredSelector } from "reselect";
+import { connect } from "react-redux";
+import {
+  userRegister,
+  userRegisterErrorSelector,
+  userRegisterResetter,
+} from "../stores/UserState";
+import { openNotification } from "../utils";
 const { Title } = Typography;
 const FormItem = Form.Item;
 const styles = {
@@ -15,11 +23,34 @@ const styles = {
   titleStyle: { fontWeight: 500 },
 };
 
-const RegisterComponent = () => {
+const connectToRedux = connect(
+  createStructuredSelector({
+    userRegisterError: userRegisterErrorSelector,
+  }),
+  (dispatch) => ({
+    registerUser: (values) => dispatch(userRegister(values)),
+    resetData: () => dispatch(userRegisterResetter),
+  })
+);
+
+const RegisterComponent = ({ userRegisterError, registerUser, resetData }) => {
   const [role, setRole] = useState(1);
 
+  useEffect(() => {
+    if (userRegisterError) {
+      openNotification("error", { message: "Register account fail" });
+    }
+  }, [userRegisterError]);
+
+  useEffect(() => {
+    return () => {
+      resetData();
+    };
+  }, [resetData]);
+
   const onFinish = (values) => {
-    console.log("Received values of form: ", values);
+    values.isBuyer = !!values.isBuyer;
+    registerUser(values);
   };
 
   return (
@@ -240,4 +271,4 @@ const RegisterComponent = () => {
     </Row>
   );
 };
-export default RegisterComponent;
+export default connectToRedux(RegisterComponent);
