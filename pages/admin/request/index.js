@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import AdminRequestCanceledComponent from "../../../component/AdminRequestCanceledComponent";
 import AdminRequestGroupedComponent from "../../../component/AdminRequestGroupedComponent";
-import AdminRequestManagement from "../../../component/AdminRequestManagement";
+import AdminRequestManagementComponent from "../../../component/AdminRequestManagementComponent";
 import AdminLayout from "../../../layouts/AdminLayout";
 import TabsLayout from "../../../layouts/TabsLayout";
 
@@ -14,7 +14,7 @@ const Page = () => {
       key: "1",
       content: (
         <div>
-          <AdminRequestManagement />
+          <AdminRequestManagementComponent />
         </div>
       ),
     },
