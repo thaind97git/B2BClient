@@ -151,6 +151,7 @@ const BuyerRequestManagement = () => {
         />
       </Modal>
       <Modal
+        width={1000}
         title="Create New Request"
         visible={visible}
         onOk={() => setVisible(false)}

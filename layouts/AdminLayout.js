@@ -14,7 +14,7 @@ import {
 import MemberNavComponent from "../component/MemberNavComponent";
 import { currentPath } from "../utils";
 import Link from "next/link";
-import { BUYER, SUPPLIER } from "../enums/accountRoles";
+import { SUPPLIER } from "../enums/accountRoles";
 
 const { Header, Content, Sider } = Layout;
 
@@ -54,6 +54,13 @@ const ADMIN_MENU = [
       },
     ],
   },
+  {
+    key: "4",
+    icon: <UserOutlined />,
+    label: "Group",
+    link: "/admin/group",
+    subMenu: [],
+  },
 ];
 
 const PROFILE_MENU = (
@@ -72,7 +79,7 @@ const PROFILE_MENU = (
   </Menu>
 );
 
-const AdminLayout = ({ children, role = SUPPLIER }) => {
+const AdminLayout = ({ children }) => {
   const [collapsed, setCollapsed] = useState(true);
   return (
     <div

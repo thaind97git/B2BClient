@@ -99,6 +99,10 @@ const RegisterComponent = ({ userRegisterError, registerUser, resetData }) => {
                     required: true,
                     message: "Please enter Email",
                   },
+                  {
+                    type: "email",
+                    message: "Please enter the correct Email",
+                  },
                 ]}
               >
                 <Input
@@ -131,7 +135,7 @@ const RegisterComponent = ({ userRegisterError, registerUser, resetData }) => {
             <Col style={styles.colStyle} span={12}>
               <div className="label">First Name:</div>
               <FormItem
-                name="first-name"
+                name="firstName"
                 rules={[
                   {
                     required: true,
@@ -149,7 +153,7 @@ const RegisterComponent = ({ userRegisterError, registerUser, resetData }) => {
             <Col style={styles.colStyle} span={12}>
               <div className="label">Last Name:</div>
               <FormItem
-                name="last-name"
+                name="lastName"
                 rules={[
                   {
                     required: true,
@@ -169,6 +173,8 @@ const RegisterComponent = ({ userRegisterError, registerUser, resetData }) => {
             <Col style={styles.colStyle} span={12}>
               <div className="label">Password:</div>
               <FormItem
+                dependencies={["password"]}
+                hasFeedback
                 name="password"
                 rules={[
                   {
@@ -177,11 +183,10 @@ const RegisterComponent = ({ userRegisterError, registerUser, resetData }) => {
                   },
                 ]}
               >
-                <Input
+                <Input.Password
                   autoComplete="new-password"
                   size="large"
                   prefix={<LockOutlined className="site-form-item-icon" />}
-                  type="password"
                   placeholder="Please set login password"
                 />
               </FormItem>
@@ -189,20 +194,30 @@ const RegisterComponent = ({ userRegisterError, registerUser, resetData }) => {
             <Col style={styles.colStyle} span={12}>
               <div className="label">Confirm Password:</div>
               <FormItem
+                hasFeedback
                 name="re-password"
                 rules={[
                   {
                     required: true,
-                    message: "Please set login password",
+                    message: "Please confirm your password",
                   },
+                  ({ getFieldValue }) => ({
+                    validator(rule, value) {
+                      if (!value || getFieldValue("password") === value) {
+                        return Promise.resolve();
+                      }
+                      return Promise.reject(
+                        "The two passwords that you entered do not match!"
+                      );
+                    },
+                  }),
                 ]}
               >
-                <Input
+                <Input.Password
                   autoComplete="new-password"
                   size="large"
                   prefix={<LockOutlined className="site-form-item-icon" />}
-                  type="password"
-                  placeholder="Please set login password"
+                  placeholder="Please confirm your password"
                 />
               </FormItem>
             </Col>

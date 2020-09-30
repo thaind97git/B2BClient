@@ -10,11 +10,11 @@ import {
   ExperimentOutlined,
   OrderedListOutlined,
   PicLeftOutlined,
+  WechatOutlined,
 } from "@ant-design/icons";
 import MemberNavComponent from "../component/MemberNavComponent";
 import { currentPath } from "../utils";
 import Link from "next/link";
-import { BUYER, SUPPLIER } from "../enums/accountRoles";
 import { removeToken } from "../libs/localStorage";
 import Router from "next/router";
 
@@ -58,33 +58,10 @@ const SUPPLIER_MENU = [
   },
   {
     key: "4",
-    icon: <UserOutlined />,
-    label: "Group",
-    link: "/admin/group",
+    icon: <WechatOutlined />,
+    label: "Chat",
+    link: "/member/chat",
     subMenu: [],
-  },
-];
-const BUYER_MENU = [
-  {
-    key: "1",
-    icon: <UserOutlined />,
-    label: "Dashboard",
-    link: "/member",
-    subMenu: [],
-  },
-  {
-    key: "2",
-    icon: <ExperimentOutlined />,
-    label: "Quotes",
-    link: undefined,
-    subMenu: [
-      {
-        subKey: "2.1",
-        subLink: "/member/quotes/manage",
-        subIcon: <OrderedListOutlined />,
-        subLabel: "List product",
-      },
-    ],
   },
 ];
 
@@ -110,7 +87,7 @@ const PROFILE_MENU = (
   </Menu>
 );
 
-const MemberLayout = ({ children, role = SUPPLIER }) => {
+const MemberLayout = ({ children }) => {
   const [collapsed, setCollapsed] = useState(true);
   return (
     <div
@@ -140,10 +117,7 @@ const MemberLayout = ({ children, role = SUPPLIER }) => {
                 </a>
               </Link>
             </Row>
-            <MemberNavComponent
-              path={currentPath()}
-              menus={role === BUYER ? BUYER_MENU : SUPPLIER_MENU}
-            />
+            <MemberNavComponent path={currentPath()} menus={SUPPLIER_MENU} />
           </Sider>
 
           <Layout style={{ background: "#f8f8f8" }} className="site-layout">
@@ -156,12 +130,12 @@ const MemberLayout = ({ children, role = SUPPLIER }) => {
                     onClick={() => setCollapsed((prev) => !prev)}
                   />
                 ) : (
-                    <MenuFoldOutlined
-                      style={{ marginLeft: 24 }}
-                      className="trigger"
-                      onClick={() => setCollapsed((prev) => !prev)}
-                    />
-                  )}
+                  <MenuFoldOutlined
+                    style={{ marginLeft: 24 }}
+                    className="trigger"
+                    onClick={() => setCollapsed((prev) => !prev)}
+                  />
+                )}
                 <div style={{ marginRight: 24 }}>
                   <Dropdown overlay={PROFILE_MENU}>
                     <a
