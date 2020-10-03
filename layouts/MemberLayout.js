@@ -10,11 +10,13 @@ import {
   ExperimentOutlined,
   OrderedListOutlined,
   PicLeftOutlined,
+  WechatOutlined,
 } from "@ant-design/icons";
 import MemberNavComponent from "../component/MemberNavComponent";
 import { currentPath } from "../utils";
 import Link from "next/link";
-import { BUYER, SUPPLIER } from "../enums/accountRoles";
+import { removeToken } from "../libs/localStorage";
+import Router from "next/router";
 
 const { Header, Content, Sider } = Layout;
 
@@ -54,28 +56,12 @@ const SUPPLIER_MENU = [
       },
     ],
   },
-];
-const BUYER_MENU = [
   {
-    key: "1",
-    icon: <UserOutlined />,
-    label: "Dashboard",
-    link: "/member",
+    key: "4",
+    icon: <WechatOutlined />,
+    label: "Chat",
+    link: "/member/chat",
     subMenu: [],
-  },
-  {
-    key: "2",
-    icon: <ExperimentOutlined />,
-    label: "Quotes",
-    link: undefined,
-    subMenu: [
-      {
-        subKey: "2.1",
-        subLink: "/member/quotes/manage",
-        subIcon: <OrderedListOutlined />,
-        subLabel: "List product",
-      },
-    ],
   },
 ];
 
@@ -89,13 +75,19 @@ const PROFILE_MENU = (
     <Menu.Item>
       <a href="#">Company Profile</a>
     </Menu.Item>
-    <Menu.Item danger>
+    <Menu.Item
+      danger
+      onClick={() => {
+        removeToken();
+        Router.push("/login");
+      }}
+    >
       <LoginOutlined /> Sign out
     </Menu.Item>
   </Menu>
 );
 
-const MemberLayout = ({ children, role = SUPPLIER }) => {
+const MemberLayout = ({ children }) => {
   const [collapsed, setCollapsed] = useState(true);
   return (
     <div
@@ -125,10 +117,7 @@ const MemberLayout = ({ children, role = SUPPLIER }) => {
                 </a>
               </Link>
             </Row>
-            <MemberNavComponent
-              path={currentPath()}
-              menus={role === BUYER ? BUYER_MENU : SUPPLIER_MENU}
-            />
+            <MemberNavComponent path={currentPath()} menus={SUPPLIER_MENU} />
           </Sider>
 
           <Layout style={{ background: "#f8f8f8" }} className="site-layout">

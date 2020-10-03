@@ -4,30 +4,43 @@ import { LockOutlined, MailOutlined } from "@ant-design/icons";
 import Link from "next/link";
 import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
-import { userLogin, userLoginDataSelector } from "../stores/UserState";
+import {
+  userLogin,
+  userLoginDataErrorSelector,
+  userLoginResetter,
+} from "../stores/UserState";
 import { compose } from "redux";
+import { openNotification } from "../utils";
 const FormItem = Form.Item;
 
 const connectToRedux = connect(
   createStructuredSelector({
-    userLoginData: userLoginDataSelector,
+    userLoginError: userLoginDataErrorSelector,
   }),
   (dispatch) => ({
     loginUser: ({ email, password }) =>
       dispatch(userLogin({ email, password })),
+    resetData: () => dispatch(userLoginResetter),
   })
 );
 
 const enhance = compose(connectToRedux);
 
-const LoginComponent = ({ loginUser, userLoginData }) => {
+const LoginComponent = ({ loginUser, userLoginError, resetData }) => {
   const onFinish = (values) => {
     loginUser(values);
-    console.log("Received values of form: ", values);
   };
   useEffect(() => {
-    console.log({ userLoginData });
-  }, [userLoginData]);
+    return () => {
+      resetData();
+    };
+  }, [resetData]);
+
+  useEffect(() => {
+    if (userLoginError) {
+      openNotification("error", { message: userLoginError });
+    }
+  }, [userLoginError]);
 
   return (
     <Form

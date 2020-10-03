@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Form, Input, Button, Row, Col, Radio, Typography } from "antd";
 import {
   UserOutlined,
@@ -8,6 +8,14 @@ import {
   MailOutlined,
 } from "@ant-design/icons";
 import Link from "next/link";
+import { createStructuredSelector } from "reselect";
+import { connect } from "react-redux";
+import {
+  userRegister,
+  userRegisterErrorSelector,
+  userRegisterResetter,
+} from "../stores/UserState";
+import { openNotification } from "../utils";
 const { Title } = Typography;
 const FormItem = Form.Item;
 const styles = {
@@ -15,11 +23,34 @@ const styles = {
   titleStyle: { fontWeight: 500 },
 };
 
-const RegisterComponent = () => {
+const connectToRedux = connect(
+  createStructuredSelector({
+    userRegisterError: userRegisterErrorSelector,
+  }),
+  (dispatch) => ({
+    registerUser: (values) => dispatch(userRegister(values)),
+    resetData: () => dispatch(userRegisterResetter),
+  })
+);
+
+const RegisterComponent = ({ userRegisterError, registerUser, resetData }) => {
   const [role, setRole] = useState(1);
 
+  useEffect(() => {
+    if (userRegisterError) {
+      openNotification("error", { message: "Register account fail" });
+    }
+  }, [userRegisterError]);
+
+  useEffect(() => {
+    return () => {
+      resetData();
+    };
+  }, [resetData]);
+
   const onFinish = (values) => {
-    console.log("Received values of form: ", values);
+    values.isBuyer = !!values.isBuyer;
+    registerUser(values);
   };
 
   return (
@@ -68,6 +99,10 @@ const RegisterComponent = () => {
                     required: true,
                     message: "Please enter Email",
                   },
+                  {
+                    type: "email",
+                    message: "Please enter the correct Email",
+                  },
                 ]}
               >
                 <Input
@@ -100,7 +135,7 @@ const RegisterComponent = () => {
             <Col style={styles.colStyle} span={12}>
               <div className="label">First Name:</div>
               <FormItem
-                name="first-name"
+                name="firstName"
                 rules={[
                   {
                     required: true,
@@ -118,7 +153,7 @@ const RegisterComponent = () => {
             <Col style={styles.colStyle} span={12}>
               <div className="label">Last Name:</div>
               <FormItem
-                name="last-name"
+                name="lastName"
                 rules={[
                   {
                     required: true,
@@ -138,6 +173,8 @@ const RegisterComponent = () => {
             <Col style={styles.colStyle} span={12}>
               <div className="label">Password:</div>
               <FormItem
+                dependencies={["password"]}
+                hasFeedback
                 name="password"
                 rules={[
                   {
@@ -146,11 +183,10 @@ const RegisterComponent = () => {
                   },
                 ]}
               >
-                <Input
+                <Input.Password
                   autoComplete="new-password"
                   size="large"
                   prefix={<LockOutlined className="site-form-item-icon" />}
-                  type="password"
                   placeholder="Please set login password"
                 />
               </FormItem>
@@ -158,20 +194,30 @@ const RegisterComponent = () => {
             <Col style={styles.colStyle} span={12}>
               <div className="label">Confirm Password:</div>
               <FormItem
+                hasFeedback
                 name="re-password"
                 rules={[
                   {
                     required: true,
-                    message: "Please set login password",
+                    message: "Please confirm your password",
                   },
+                  ({ getFieldValue }) => ({
+                    validator(rule, value) {
+                      if (!value || getFieldValue("password") === value) {
+                        return Promise.resolve();
+                      }
+                      return Promise.reject(
+                        "The two passwords that you entered do not match!"
+                      );
+                    },
+                  }),
                 ]}
               >
-                <Input
+                <Input.Password
                   autoComplete="new-password"
                   size="large"
                   prefix={<LockOutlined className="site-form-item-icon" />}
-                  type="password"
-                  placeholder="Please set login password"
+                  placeholder="Please confirm your password"
                 />
               </FormItem>
             </Col>
@@ -240,4 +286,4 @@ const RegisterComponent = () => {
     </Row>
   );
 };
-export default RegisterComponent;
+export default connectToRedux(RegisterComponent);

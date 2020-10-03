@@ -1,8 +1,9 @@
 import { isArray } from "lodash/fp";
-import { getToken } from "../libs";
+import { getToken } from "../libs/localStorage";
 import axios from "axios";
 import moment from "moment";
 import Router from "next/router";
+import { notification } from "antd";
 
 export const currentPath = () => !isServer && Router.route;
 
@@ -112,3 +113,13 @@ export const getImageMBFromBase64 = (image) => {
 };
 
 export const imageTypeSupported = ["image/png", "image/jpeg"];
+
+export const openNotification = (
+  type,
+  { message = "Notification Title", description }
+) => {
+  notification[type]({
+    message,
+    description,
+  });
+};

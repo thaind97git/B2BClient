@@ -4,6 +4,8 @@ import { DownOutlined } from "@ant-design/icons";
 import { LoginOutlined } from "@ant-design/icons";
 import { GUEST, SUPPLIER } from "../enums/accountRoles";
 import Link from "next/link";
+import { removeToken } from "../libs/localStorage";
+import Router from "next/router";
 const { Item } = Menu;
 
 const MENU_SUPPLIER = (
@@ -38,7 +40,13 @@ const MENU_SUPPLIER = (
         <a href="#">List product</a>
       </Link>
     </Item>
-    <Item danger>
+    <Item
+      danger
+      onClick={() => {
+        removeToken();
+        Router.push("/login");
+      }}
+    >
       <LoginOutlined /> Sign out
     </Item>
   </Menu>
@@ -60,7 +68,13 @@ const MENU_BUYER = (
     <Item>
       <a href="#">Chats</a>
     </Item>
-    <Item danger>
+    <Item
+      danger
+      onClick={() => {
+        removeToken();
+        Router.push("/login");
+      }}
+    >
       <LoginOutlined /> Sign out
     </Item>
   </Menu>
