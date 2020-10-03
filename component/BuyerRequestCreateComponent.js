@@ -9,6 +9,8 @@ import {
   Typography,
   Slider,
   Cascader,
+  InputNumber,
+  Select,
 } from "antd";
 
 const { Title } = Typography;
@@ -60,16 +62,16 @@ const BuyerRequestCreateComponent = ({ width = 10 }) => {
           <Row align="middle">
             <Col style={styles.colStyle} span={24}>
               <FormItem
-                label="Title"
-                name="title"
+                label="Product Name"
+                name="productName"
                 rules={[
                   {
                     required: true,
-                    message: "Please enter Request Title",
+                    message: "Please enter the product title",
                   },
                 ]}
               >
-                <Input size="large" placeholder="Enter the request title" />
+                <Input size="large" placeholder="Enter the product title" />
               </FormItem>
             </Col>
             <Col style={styles.colStyle} span={24}>
@@ -102,6 +104,36 @@ const BuyerRequestCreateComponent = ({ width = 10 }) => {
                     },
                   ]}
                 />
+              </FormItem>
+            </Col>
+            <Col style={styles.colStyle} span={24}>
+              <FormItem
+                label="Quantity"
+                name="quantity"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please enter the product quantity",
+                  },
+                ]}
+              >
+                <InputNumber
+                  style={{ width: "50%" }}
+                  min={0}
+                  size="large"
+                  placeholder="Enter the product quantity"
+                />
+                <Select
+                  size="large"
+                  placeholder="Pieces"
+                  style={{ width: "50%" }}
+                  onChange={handleChange}
+                >
+                  <Option value="pending">Pending</Option>
+                  <Option value="done">Done</Option>
+                  <Option value="rejected">Rejected</Option>
+                  <Option value="canceled">Canceled</Option>
+                </Select>
               </FormItem>
             </Col>
           </Row>
