@@ -123,3 +123,14 @@ export const openNotification = (
     description,
   });
 };
+
+export const displayCurrency = (amount, prefix, splitChar = ",") =>
+  amount
+    ? `${prefix} ${amount}`.replace(/\B(?=(\d{3})+(?!\d))/g, splitChar)
+    : `${prefix} 0`;
+
+export const parseCurrency = (amount, prefix, splitChar = ",") => {
+  const splitCharRegex = new RegExp(splitChar + " ", "g");
+  const amountTmp = amount.replace(splitCharRegex, "");
+  return amountTmp.replace(/\$\s?|(,*)/g, "");
+};
