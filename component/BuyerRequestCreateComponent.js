@@ -1,18 +1,23 @@
-import React, { Fragment, useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Form,
   Input,
   Button,
   Row,
   Col,
-  Radio,
   Typography,
-  Slider,
   Cascader,
+  InputNumber,
+  Select,
+  Space,
 } from "antd";
+import { displayCurrency } from "../utils";
+import InputRange from "../layouts/InputRange";
+import Router from "next/router";
 
 const { Title } = Typography;
 const FormItem = Form.Item;
+const { Option } = Select;
 
 const styles = {
   colStyle: { padding: "0 8px" },
@@ -27,21 +32,13 @@ const formItemLayout = {
   },
 };
 const BuyerRequestCreateComponent = ({ width = 10 }) => {
-  const [minRange, setMinRange] = useState(1);
-  const [maxRange, setMaxRange] = useState(100);
-  const [minPrice, setMinPrice] = useState(0);
-  const [maxPrice, setMaxPrice] = useState(0);
-  const [isRequireRange, setIsRequireRange] = useState(true);
+  const [priceRange, setPriceRange] = useState({ min: 0, max: 0 });
   const [currency, setCurrency] = useState("$");
-  const [isCustomPrice, setIsCustomPrice] = useState(false);
 
   const onFinish = (values) => {
     console.log("Received values of form: ", values);
+    Router.push("/buyer/request");
   };
-
-  useEffect(() => {
-    console.log({ minRange, maxRange });
-  }, [minRange, maxRange]);
 
   return (
     <Row align="middle" justify="center">
@@ -54,22 +51,22 @@ const BuyerRequestCreateComponent = ({ width = 10 }) => {
         >
           <Row justify="center">
             <Title style={styles.titleStyle} level={2}>
-              Fill full your request details
+              Tell Us what you need
             </Title>
           </Row>
           <Row align="middle">
             <Col style={styles.colStyle} span={24}>
               <FormItem
-                label="Title"
-                name="title"
+                label="Product Name"
+                name="productName"
                 rules={[
                   {
                     required: true,
-                    message: "Please enter Request Title",
+                    message: "Please enter the product title",
                   },
                 ]}
               >
-                <Input size="large" placeholder="Enter the request title" />
+                <Input size="large" placeholder="Enter the product title" />
               </FormItem>
             </Col>
             <Col style={styles.colStyle} span={24}>
@@ -84,6 +81,7 @@ const BuyerRequestCreateComponent = ({ width = 10 }) => {
                 label="Category"
               >
                 <Cascader
+                  placeholder="Select category"
                   size="large"
                   options={[
                     {
@@ -104,117 +102,102 @@ const BuyerRequestCreateComponent = ({ width = 10 }) => {
                 />
               </FormItem>
             </Col>
+            <Col style={styles.colStyle} span={18}>
+              <FormItem
+                label="Quantity"
+                name="quantity"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please enter the product quantity",
+                  },
+                ]}
+              >
+                <InputNumber
+                  style={{ width: "100%" }}
+                  min={1}
+                  size="large"
+                  placeholder="Enter the product quantity"
+                />
+              </FormItem>
+            </Col>
+            <Col style={styles.colStyle} span={6}>
+              <FormItem label="Unit" name="unit">
+                <Select
+                  defaultValue="pieces"
+                  size="large"
+                  style={{ width: "100%", paddingLeft: 16 }}
+                >
+                  <Option value="piece">Pieces</Option>
+                  <Option value="kg">Kilograms</Option>
+                  <Option value="set">Set</Option>
+                </Select>
+              </FormItem>
+            </Col>
           </Row>
           <Row align="middle">
-            <Col span={24}>
-              <Row
-                style={{ paddingTop: 16, paddingBottom: 4 }}
-                justify="space-between"
-              >
-                <div>
-                  {isCustomPrice ? (
-                    <Button
-                      size="small"
-                      onClick={() => {
-                        setIsCustomPrice(false);
-                      }}
-                    >
-                      Choose range
-                    </Button>
-                  ) : (
-                    <Fragment>
-                      <Radio.Group
-                        defaultValue={`${minRange}-${maxRange}`}
-                        onChange={(event) => {
-                          const value = event.target.value;
-                          setMinRange(parseInt(value.split("-")[0]));
-                          setMaxRange(parseInt(value.split("-")[1]));
-                        }}
-                      >
-                        <Radio value="1-100">1 - 100 {currency}</Radio>
-                        <Radio value="100-1000">100 - 1000 {currency}</Radio>
-                        <Radio value="1000-10000">
-                          1000 - 10000 {currency}
-                        </Radio>
-                      </Radio.Group>
-                      <Button
-                        size="small"
-                        onClick={() => {
-                          setIsCustomPrice(true);
-                        }}
-                      >
-                        Custom Price
-                      </Button>
-                    </Fragment>
-                  )}
-                </div>
-                <div>
-                  From: {minPrice} {currency} - To: {maxPrice} {currency}
-                </div>
-              </Row>
-            </Col>
             <Col style={styles.colStyle} span={24}>
               <FormItem
-                label="Choose Price Range:"
+                label="Preferred Unit Price:"
                 name="range"
                 rules={[
                   {
-                    required: isRequireRange,
+                    required: true,
                     message: "Please choose the price range",
                   },
                 ]}
               >
-                {isCustomPrice ? (
-                  <Input.Group style={{ border: "none" }} compact>
-                    <Input
-                      onChange={(event) => {
-                        setMinPrice(event.target.value);
-                      }}
-                      type="number"
-                      style={{ width: "45%", textAlign: "center" }}
-                      placeholder="Minimum Price"
-                    />
-                    <Input
-                      className="site-input-split"
-                      style={{
-                        width: "10%",
-                        borderLeft: 0,
-                        borderRight: 0,
-                        pointerEvents: "none",
-                      }}
-                      placeholder="~"
-                      disabled
-                    />
-                    <Input
-                      onChange={(event) => {
-                        setMaxPrice(event.target.value);
-                      }}
-                      type="number"
-                      className="site-input-right"
-                      style={{
-                        width: "45%",
-                        textAlign: "center",
-                      }}
-                      placeholder="Maximum Price"
-                    />
-                  </Input.Group>
-                ) : (
-                  <Slider
-                    min={minRange}
-                    max={maxRange}
-                    range
-                    onChange={([min, max]) => {
-                      if (min === max) {
-                        setIsRequireRange(true);
-                      } else {
-                        setIsRequireRange(false);
-                      }
-                      setMinPrice(min);
-                      setMaxPrice(max);
-                    }}
-                  />
-                )}
+                <InputRange
+                  setValue={setPriceRange}
+                  value={priceRange}
+                  inputGroupProps={{ style: { border: "none", width: "100%" } }}
+                  minProps={{
+                    formatter: (value) =>
+                      `${currency} ${value}`.replace(
+                        /\B(?=(\d{3})+(?!\d))/g,
+                        ","
+                      ),
+                    parser: (value) => value.replace(/\$\s?|(,*)/g, ""),
+                    min: 0,
+                    style: {
+                      width: "45%",
+                      textAlign: "center",
+                    },
+                    placeholder: "Minimum Price",
+                  }}
+                  maxProps={{
+                    formatter: (value) =>
+                      `${currency} ${value}`.replace(
+                        /\B(?=(\d{3})+(?!\d))/g,
+                        ","
+                      ),
+                    parser: (value) => value.replace(/\$\s?|(,*)/g, ""),
+                    min: priceRange.min,
+                    style: { width: "45%", textAlign: "center" },
+                    placeholder: "Maximum Price",
+                  }}
+                />
               </FormItem>
+            </Col>
+            <Col span={24}>
+              <Row style={{ padding: "0px 4px 20px 4px" }} justify="end">
+                <Space>
+                  <span>
+                    From: {displayCurrency(priceRange.min, currency)} - To:{" "}
+                    {displayCurrency(priceRange.max, currency)}
+                  </span>
+                  {/* <Select
+                    onChange={(value) => {
+                      setCurrency(value);
+                    }}
+                    defaultValue={currency}
+                    size="small"
+                  >
+                    <Option value="$">USD</Option>
+                    <Option value="đ">VND</Option>
+                  </Select> */}
+                </Space>
+              </Row>
             </Col>
             <Col style={styles.colStyle} span={24}>
               <FormItem label="Description" name="description">
@@ -225,6 +208,7 @@ const BuyerRequestCreateComponent = ({ width = 10 }) => {
           <Row justify="center" align="middle">
             <Col span={12}>
               <Button
+                onClick={() => {}}
                 block
                 size="large"
                 className="submit"
