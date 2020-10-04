@@ -1,8 +1,9 @@
-import { Button, Select, Tag } from "antd";
+import { Button, Select } from "antd";
 import React, { Fragment, useState } from "react";
 import ReactTableLayout from "../layouts/ReactTableLayout";
 import { DEFAULT_DATE_RANGE } from "../utils";
-import { CloseCircleOutlined } from "@ant-design/icons";
+import RequestStatusComponent from "./Utils/RequestStatusComponent";
+import { R_CANCELED, R_REJECTED } from "../enums/requestStatus";
 const { Option, OptGroup } = Select;
 const dataSource = [
   {
@@ -15,11 +16,7 @@ const dataSource = [
       </Button>
     ),
     createdBy: "User 1",
-    status: (
-      <Tag icon={<CloseCircleOutlined />} color="error">
-        Canceled
-      </Tag>
-    ),
+    status: <RequestStatusComponent status={R_CANCELED} />,
     dateCreated: "30/09/2020 02:07:26 PM",
   },
   {
@@ -32,11 +29,7 @@ const dataSource = [
       </Button>
     ),
     createdBy: "User 1",
-    status: (
-      <Tag icon={<CloseCircleOutlined />} color="error">
-        Canceled
-      </Tag>
-    ),
+    status: <RequestStatusComponent status={R_CANCELED} />,
     dateCreated: "30/09/2020 02:07:26 PM",
   },
   {
@@ -49,11 +42,7 @@ const dataSource = [
       </Button>
     ),
     createdBy: "User 2",
-    status: (
-      <Tag icon={<CloseCircleOutlined />} color="error">
-        Canceled
-      </Tag>
-    ),
+    status: <RequestStatusComponent status={R_CANCELED} />,
     dateCreated: "30/09/2020 02:07:26 PM",
   },
   {
@@ -66,7 +55,7 @@ const dataSource = [
       </Button>
     ),
     createdBy: "User 2",
-    status: <Tag color="#f50">Rejected</Tag>,
+    status: <RequestStatusComponent status={R_REJECTED} />,
     dateCreated: "30/09/2020 02:07:26 PM",
   },
   {
@@ -79,7 +68,7 @@ const dataSource = [
       </Button>
     ),
     createdBy: "User 3",
-    status: <Tag color="#f50">Rejected</Tag>,
+    status: <RequestStatusComponent status={R_REJECTED} />,
     dateCreated: "30/09/2020 02:07:26 PM",
   },
 ];
