@@ -1,6 +1,8 @@
 import { Button, Row, Table, Tabs } from "antd";
 import Router from "next/router";
 import React from "react";
+import { B_ACTIVE, B_CLOSED, B_DONE, B_FEATURE } from "../enums/biddingStatus";
+import BiddingStatusComponent from "./Utils/BiddingStatusComponent";
 const { TabPane } = Tabs;
 function callback(key) {
   console.log(key);
@@ -13,9 +15,10 @@ const dataSource = [
     duration: "30 Minutes",
     dateCreated: "January 30, 2020 17:00 GTM",
     createdBy: "John Smith",
-    status: (
-      <Button size="small" type="primary">
-        Feature
+    status: <BiddingStatusComponent status={B_FEATURE} />,
+    actions: (
+      <Button size="small" danger>
+        Cancel
       </Button>
     ),
   },
@@ -25,11 +28,7 @@ const dataSource = [
     duration: "1 Hour",
     dateCreated: "January 30, 2020 17:00 GTM",
     createdBy: "Ryota",
-    status: (
-      <Button size="small" type="primary" danger>
-        Closed
-      </Button>
-    ),
+    status: <BiddingStatusComponent status={B_CLOSED} />,
   },
   {
     key: "2",
@@ -37,9 +36,18 @@ const dataSource = [
     duration: "2 Hours",
     dateCreated: "January 30, 2020 17:00 GTM",
     createdBy: "Ryota",
-    status: (
-      <Button size="small" style={{ background: "green" }} type="primary">
-        Done
+    status: <BiddingStatusComponent status={B_DONE} />,
+  },
+  {
+    key: "2",
+    name: "Samsum Galaxy",
+    duration: "2 Hours",
+    dateCreated: "January 30, 2020 17:00 GTM",
+    createdBy: "Ryota",
+    status: <BiddingStatusComponent status={B_ACTIVE} />,
+    actions: (
+      <Button size="small" danger>
+        Cancel
       </Button>
     ),
   },
@@ -70,6 +78,11 @@ const columns = [
     title: "Status",
     dataIndex: "status",
     key: "status",
+  },
+  {
+    title: "Actions",
+    dataIndex: "actions",
+    key: "actions",
   },
 ];
 

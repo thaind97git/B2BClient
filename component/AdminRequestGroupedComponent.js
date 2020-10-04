@@ -1,7 +1,9 @@
-import { Button, Select, Tag } from "antd";
+import { Button, Select } from "antd";
 import React, { Fragment, useState } from "react";
+import { R_DONE, R_GROUPING } from "../enums/requestStatus";
 import ReactTableLayout from "../layouts/ReactTableLayout";
 import { DEFAULT_DATE_RANGE } from "../utils";
+import RequestStatusComponent from "./Utils/RequestStatusComponent";
 const { Option, OptGroup } = Select;
 const dataSource = [
   {
@@ -15,7 +17,7 @@ const dataSource = [
     ),
     createdBy: "User 1",
     group: "Group 1",
-    status: <Tag color="#87d068">Done</Tag>,
+    status: <RequestStatusComponent status={R_DONE} />,
     dateCreated: "30/09/2020 02:07:26 PM",
   },
   {
@@ -29,7 +31,7 @@ const dataSource = [
     ),
     createdBy: "User 1",
     group: "Group 2",
-    status: <Tag color="#87d068">Done</Tag>,
+    status: <RequestStatusComponent status={R_DONE} />,
     dateCreated: "30/09/2020 02:07:26 PM",
   },
   {
@@ -43,7 +45,7 @@ const dataSource = [
     ),
     createdBy: "User 2",
     group: "Group 3",
-    status: <Tag color="#87d068">Done</Tag>,
+    status: <RequestStatusComponent status={R_DONE} />,
     dateCreated: "30/09/2020 02:07:26 PM",
   },
   {
@@ -57,7 +59,7 @@ const dataSource = [
     ),
     createdBy: "User 2",
     group: "Group 4",
-    status: <Tag color="#2db7f5">Grouping</Tag>,
+    status: <RequestStatusComponent status={R_GROUPING} />,
     dateCreated: "30/09/2020 02:07:26 PM",
   },
   {
@@ -71,7 +73,7 @@ const dataSource = [
     ),
     createdBy: "User 3",
     group: "Group 5",
-    status: <Tag color="#87d068">Done</Tag>,
+    status: <RequestStatusComponent status={R_DONE} />,
     dateCreated: "30/09/2020 02:07:26 PM",
   },
 ];
