@@ -7,9 +7,7 @@ import {
   LoginOutlined,
   MenuUnfoldOutlined,
   MenuFoldOutlined,
-  ExperimentOutlined,
   OrderedListOutlined,
-  PicLeftOutlined,
   FallOutlined,
 } from "@ant-design/icons";
 import MemberNavComponent from "../component/MemberNavComponent";
@@ -20,50 +18,6 @@ import Router from "next/router";
 
 const { Header, Content, Sider } = Layout;
 
-const SUPPLIER_MENU = [
-  {
-    key: "1",
-    icon: <UserOutlined />,
-    label: "Dashboard",
-    link: "/member",
-    subMenu: [],
-  },
-  {
-    key: "2",
-    icon: <PicLeftOutlined />,
-    label: "Category",
-    link: undefined,
-    subMenu: [
-      {
-        subKey: "2.1",
-        subLink: "/member/category",
-        subIcon: <OrderedListOutlined />,
-        subLabel: "Categories",
-      },
-    ],
-  },
-  {
-    key: "3",
-    icon: <ExperimentOutlined />,
-    label: "Bidding",
-    link: undefined,
-    subMenu: [
-      {
-        subKey: "3.1",
-        subLink: "/member/bidding",
-        subIcon: <OrderedListOutlined />,
-        subLabel: "Available Bidding",
-      },
-    ],
-  },
-  {
-    key: "4",
-    icon: <UserOutlined />,
-    label: "Group",
-    link: "/admin/group",
-    subMenu: [],
-  },
-];
 const BUYER_MENU = [
   {
     key: "1",

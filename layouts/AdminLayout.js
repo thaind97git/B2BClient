@@ -14,7 +14,6 @@ import {
 import MemberNavComponent from "../component/MemberNavComponent";
 import { currentPath } from "../utils";
 import Link from "next/link";
-import { SUPPLIER } from "../enums/accountRoles";
 
 const { Header, Content, Sider } = Layout;
 

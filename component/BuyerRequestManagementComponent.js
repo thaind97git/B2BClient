@@ -1,12 +1,10 @@
-import { Button, Input, Row, Select, Space, Tag } from "antd";
+import { Button, Row, Select, Space, Tag } from "antd";
 import { CloseCircleOutlined } from "@ant-design/icons";
-import Modal from "antd/lib/modal/Modal";
 import React, { useState } from "react";
 import ReactTableLayout from "../layouts/ReactTableLayout";
 import { DEFAULT_DATE_RANGE } from "../utils";
-import BuyerRequestCreateComponent from "./BuyerRequestCreateComponent";
+import Router from "next/router";
 const { Option } = Select;
-const { TextArea } = Input;
 const dataSource = [
   {
     key: "1",
@@ -117,50 +115,14 @@ function handleChange(value) {
 const BuyerRequestManagement = () => {
   const [searchMessage, setSearchMessage] = useState("");
   const [dateRange, setDateRange] = useState(DEFAULT_DATE_RANGE);
-  const [visible, setVisible] = useState(false);
-  const [openGroupModal, setOpenGroupModal] = useState(false);
-  function onChange(checkedValues) {
-    console.log("checked = ", checkedValues);
-  }
 
   return (
     <div>
-      <Modal
-        title="Create New Group"
-        visible={openGroupModal}
-        onOk={() => setOpenGroupModal(false)}
-        onCancel={() => setOpenGroupModal(true)}
-        footer={[
-          <Button key="back" onClick={() => setOpenGroupModal(false)}>
-            Cancel
-          </Button>,
-          <Button
-            key="submit"
-            type="primary"
-            onClick={() => setOpenGroupModal(false)}
-          >
-            Submit
-          </Button>,
-        ]}
-      >
-        <Input placeholder="Group name" />
-        <TextArea
-          placeholder="Group description"
-          allowClear
-          onChange={onChange}
-        />
-      </Modal>
-      <Modal
-        width={1000}
-        title="Create New Request"
-        visible={visible}
-        onOk={() => setVisible(false)}
-        onCancel={() => setVisible(true)}
-      >
-        <BuyerRequestCreateComponent width={24} />
-      </Modal>
       <Row justify="end">
-        <Button onClick={() => setVisible(true)} type="primary">
+        <Button
+          onClick={() => Router.push("/buyer/request/create")}
+          type="primary"
+        >
           Create new request
         </Button>
       </Row>
