@@ -1,10 +1,11 @@
-import { Button, Row, Select, Space, Tag } from "antd";
+import { Button, Row, Select, Space, Tag, Typography } from "antd";
 import { CloseCircleOutlined } from "@ant-design/icons";
 import React, { useState } from "react";
 import ReactTableLayout from "../layouts/ReactTableLayout";
 import { DEFAULT_DATE_RANGE } from "../utils";
 import Router from "next/router";
 const { Option } = Select;
+const { Title } = Typography;
 const dataSource = [
   {
     key: "1",
@@ -118,7 +119,8 @@ const BuyerRequestManagement = () => {
 
   return (
     <div>
-      <Row justify="end">
+      <Row justify="space-between">
+        <Title level={4}>Your Request</Title>
         <Button
           onClick={() => Router.push("/buyer/request/create")}
           type="primary"

@@ -6,18 +6,15 @@ import {
   Row,
   Col,
   Typography,
-  Cascader,
   InputNumber,
-  Select,
   Space,
+  DatePicker,
 } from "antd";
 import { displayCurrency } from "../utils";
-import InputRange from "../layouts/InputRange";
-import Router from "next/router";
+import moment from "moment";
 
 const { Title } = Typography;
 const FormItem = Form.Item;
-const { Option } = Select;
 
 const styles = {
   colStyle: { padding: "0 8px" },
@@ -31,14 +28,34 @@ const formItemLayout = {
     span: 24,
   },
 };
-const BuyerRequestCreateComponent = ({ width = 10 }) => {
-  const [priceRange, setPriceRange] = useState({ min: 0, max: 0 });
+const BuyerRequestCreateComponent = ({ width = 10, next }) => {
+  const [price, setPrice] = useState(0);
   const [currency, setCurrency] = useState("$");
 
   const onFinish = (values) => {
     console.log("Received values of form: ", values);
-    Router.push("/buyer/request");
+    typeof next === "function" && next();
   };
+  function range(start, end) {
+    const result = [];
+    for (let i = start; i < end; i++) {
+      result.push(i);
+    }
+    return result;
+  }
+
+  function disabledDate(current) {
+    // Can not select days before today and today
+    return current && current < moment().endOf("day");
+  }
+
+  function disabledDateTime() {
+    return {
+      disabledHours: () => range(0, 24).splice(4, 20),
+      disabledMinutes: () => range(30, 60),
+      disabledSeconds: () => [55, 56],
+    };
+  }
 
   return (
     <Row align="middle" justify="center">
@@ -48,6 +65,9 @@ const BuyerRequestCreateComponent = ({ width = 10 }) => {
           autoComplete="new-password"
           className="register-form"
           onFinish={onFinish}
+          initialValues={{
+            unit: "Set",
+          }}
         >
           <Row justify="center">
             <Title style={styles.titleStyle} level={2}>
@@ -67,39 +87,6 @@ const BuyerRequestCreateComponent = ({ width = 10 }) => {
                 ]}
               >
                 <Input size="large" placeholder="Enter the product title" />
-              </FormItem>
-            </Col>
-            <Col style={styles.colStyle} span={24}>
-              <FormItem
-                name="category"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please choose category",
-                  },
-                ]}
-                label="Category"
-              >
-                <Cascader
-                  placeholder="Select category"
-                  size="large"
-                  options={[
-                    {
-                      value: "1",
-                      label: "Category 1",
-                      children: [
-                        {
-                          value: "1-1",
-                          label: "Sub-1 Category 1",
-                        },
-                        {
-                          value: "1-2",
-                          label: "Sub-2 Category 1",
-                        },
-                      ],
-                    },
-                  ]}
-                />
               </FormItem>
             </Col>
             <Col style={styles.colStyle} span={18}>
@@ -123,15 +110,7 @@ const BuyerRequestCreateComponent = ({ width = 10 }) => {
             </Col>
             <Col style={styles.colStyle} span={6}>
               <FormItem label="Unit" name="unit">
-                <Select
-                  defaultValue="pieces"
-                  size="large"
-                  style={{ width: "100%", paddingLeft: 16 }}
-                >
-                  <Option value="piece">Pieces</Option>
-                  <Option value="kg">Kilograms</Option>
-                  <Option value="set">Set</Option>
-                </Select>
+                <Input disabled style={{ width: "100%" }} size="large" />
               </FormItem>
             </Col>
           </Row>
@@ -147,57 +126,66 @@ const BuyerRequestCreateComponent = ({ width = 10 }) => {
                   },
                 ]}
               >
-                <InputRange
-                  setValue={setPriceRange}
-                  value={priceRange}
-                  inputGroupProps={{ style: { border: "none", width: "100%" } }}
-                  minProps={{
-                    formatter: (value) =>
-                      `${currency} ${value}`.replace(
-                        /\B(?=(\d{3})+(?!\d))/g,
-                        ","
-                      ),
-                    parser: (value) => value.replace(/\$\s?|(,*)/g, ""),
-                    min: 0,
-                    style: {
-                      width: "45%",
-                      textAlign: "center",
-                    },
-                    placeholder: "Minimum Price",
-                  }}
-                  maxProps={{
-                    formatter: (value) =>
-                      `${currency} ${value}`.replace(
-                        /\B(?=(\d{3})+(?!\d))/g,
-                        ","
-                      ),
-                    parser: (value) => value.replace(/\$\s?|(,*)/g, ""),
-                    min: priceRange.min,
-                    style: { width: "45%", textAlign: "center" },
-                    placeholder: "Maximum Price",
-                  }}
+                <InputNumber
+                  style={{ width: "100%" }}
+                  size="large"
+                  value={price}
+                  onChange={(value) => setPrice(value)}
+                  formatter={(value) =>
+                    `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                  }
+                  parser={(value) => value.replace(/\$\s?|(,*)/g, "")}
                 />
               </FormItem>
             </Col>
             <Col span={24}>
               <Row style={{ padding: "0px 4px 20px 4px" }} justify="end">
                 <Space>
-                  <span>
-                    From: {displayCurrency(priceRange.min, currency)} - To:{" "}
-                    {displayCurrency(priceRange.max, currency)}
-                  </span>
-                  {/* <Select
-                    onChange={(value) => {
-                      setCurrency(value);
-                    }}
-                    defaultValue={currency}
-                    size="small"
-                  >
-                    <Option value="$">USD</Option>
-                    <Option value="đ">VND</Option>
-                  </Select> */}
+                  <span>{displayCurrency(price, currency)} or Lower</span>
                 </Space>
               </Row>
+            </Col>
+            <Col style={styles.colStyle} span={24}>
+              <FormItem
+                label="Due Date"
+                name="dueDate"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please choose the due date",
+                  },
+                ]}
+              >
+                <DatePicker
+                  size="large"
+                  style={{ width: "100%" }}
+                  format="YYYY-MM-DD HH:mm:ss"
+                  disabledDate={disabledDate}
+                  disabledTime={disabledDateTime}
+                  showTime={{ defaultValue: moment("00:00:00", "HH:mm:ss") }}
+                />
+              </FormItem>
+            </Col>
+            <Col style={styles.colStyle} span={18}>
+              <FormItem
+                rules={[
+                  {
+                    required: true,
+                    message: "Please input delivery address",
+                  },
+                ]}
+                label="Delivery Address"
+                name="address"
+              >
+                <Input placeholder="Input your delivery address" size="large" />
+              </FormItem>
+            </Col>
+            <Col style={styles.colStyle} span={6}>
+              <FormItem label={<span>&nbsp;</span>} name="unit">
+                <Button size="middle" type="primary">
+                  Use my address
+                </Button>
+              </FormItem>
             </Col>
             <Col style={styles.colStyle} span={24}>
               <FormItem label="Description" name="description">
@@ -215,7 +203,7 @@ const BuyerRequestCreateComponent = ({ width = 10 }) => {
                 type="primary"
                 htmlType="submit"
               >
-                Submit
+                Next
               </Button>
             </Col>
           </Row>

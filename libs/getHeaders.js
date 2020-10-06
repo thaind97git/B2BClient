@@ -7,7 +7,7 @@ const getHeaders = (options = {}) =>
   Object.assign(
     {},
     {
-      Authorization: getToken(),
+      Authorization: `Bearer ${getToken()}`,
       "Content-Type": "application/json",
     },
     formatObj(options)
