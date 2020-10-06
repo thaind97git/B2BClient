@@ -1,20 +1,31 @@
 import { Button, Row, Select, Space, Tag, Typography } from "antd";
-import { CloseCircleOutlined } from "@ant-design/icons";
 import React, { useState } from "react";
 import ReactTableLayout from "../layouts/ReactTableLayout";
 import { DEFAULT_DATE_RANGE } from "../utils";
 import Router from "next/router";
+import RequestStatusComponent from "./Utils/RequestStatusComponent";
+import {
+  R_BIDDING,
+  R_CANCELED,
+  R_DONE,
+  R_GROUPED,
+  R_NEGOTIATING,
+  R_ORDERED,
+  R_PENDING,
+  R_REJECTED,
+  R_WAIT_FOR_AUCTION,
+} from "../enums/requestStatus";
 const { Option } = Select;
 const { Title } = Typography;
 const dataSource = [
   {
     key: "1",
-    fromPrice: "60$",
-    toPrice: "80$",
+    price: "80$",
     category: <Tag color="blue">Apple</Tag>,
     createdBy: "User 1",
     dateCreated: "30/09/2020 02:07:26 PM",
-    status: <Tag>Pending</Tag>,
+    dueDate: "30/09/2020 02:07:26 PM",
+    status: <RequestStatusComponent status={R_PENDING} />,
     actions: (
       <Space>
         <Button size="small" danger>
@@ -26,67 +37,100 @@ const dataSource = [
   },
   {
     key: "2",
-    fromPrice: "60$",
-    toPrice: "80$",
+    price: "80$",
     category: <Tag color="blue">Apple</Tag>,
     createdBy: "User 1",
     dateCreated: "30/09/2020 02:07:26 PM",
-    status: (
-      <Tag icon={<CloseCircleOutlined />} color="error">
-        Canceled
-      </Tag>
-    ),
+    dueDate: "30/09/2020 02:07:26 PM",
+    status: <RequestStatusComponent status={R_CANCELED} />,
     actions: "--",
   },
   {
     key: "3",
-    fromPrice: "60$",
-    toPrice: "80$",
+    price: "80$",
     category: <Tag color="blue">Apple</Tag>,
     createdBy: "User 1",
     dateCreated: "30/09/2020 02:07:26 PM",
-    status: <Tag color="#f50">Rejected</Tag>,
+    dueDate: "30/09/2020 02:07:26 PM",
+    status: <RequestStatusComponent status={R_REJECTED} />,
     actions: "--",
   },
   {
     key: "4",
-    fromPrice: "60$",
-    toPrice: "80$",
+    price: "80$",
     category: <Tag color="blue">Apple</Tag>,
     createdBy: "User 1",
     dateCreated: "30/09/2020 02:07:26 PM",
-    status: <Tag color="#87d068">Done</Tag>,
+    dueDate: "30/09/2020 02:07:26 PM",
+    status: <RequestStatusComponent status={R_DONE} />,
     actions: "--",
   },
   {
     key: "5",
-    fromPrice: "60$",
-    toPrice: "80$",
+    price: "80$",
     category: <Tag color="blue">Apple</Tag>,
     createdBy: "User 1",
     dateCreated: "30/09/2020 02:07:26 PM",
-    status: <Tag>Pending</Tag>,
+    dueDate: "30/09/2020 02:07:26 PM",
+    status: <RequestStatusComponent status={R_BIDDING} />,
+  },
+  {
+    key: "5",
+    price: "80$",
+    category: <Tag color="blue">Apple</Tag>,
+    createdBy: "User 1",
+    dateCreated: "30/09/2020 02:07:26 PM",
+    dueDate: "30/09/2020 02:07:26 PM",
+    status: <RequestStatusComponent status={R_WAIT_FOR_AUCTION} />,
+  },
+  {
+    key: "5",
+    price: "80$",
+    category: <Tag color="blue">Apple</Tag>,
+    createdBy: "User 1",
+    dateCreated: "30/09/2020 02:07:26 PM",
+    dueDate: "30/09/2020 02:07:26 PM",
+    status: <RequestStatusComponent status={R_GROUPED} />,
     actions: (
       <Space>
         <Button size="small" danger>
           Cancel
         </Button>
-        <Button size="small">Edit</Button>
       </Space>
     ),
+  },
+  {
+    key: "5",
+    price: "80$",
+    category: <Tag color="blue">Apple</Tag>,
+    createdBy: "User 1",
+    dateCreated: "30/09/2020 02:07:26 PM",
+    dueDate: "30/09/2020 02:07:26 PM",
+    status: <RequestStatusComponent status={R_NEGOTIATING} />,
+    actions: (
+      <Space>
+        <Button size="small" danger>
+          Cancel
+        </Button>
+      </Space>
+    ),
+  },
+  {
+    key: "5",
+    price: "80$",
+    category: <Tag color="blue">Apple</Tag>,
+    createdBy: "User 1",
+    dateCreated: "30/09/2020 02:07:26 PM",
+    dueDate: "30/09/2020 02:07:26 PM",
+    status: <RequestStatusComponent status={R_ORDERED} />,
   },
 ];
 
 const columns = [
   {
-    title: "From Price",
-    dataIndex: "fromPrice",
-    key: "fromPrice",
-  },
-  {
-    title: "To Price",
-    dataIndex: "toPrice",
-    key: "toPrice",
+    title: "Preferred Unit Price",
+    dataIndex: "price",
+    key: "price",
   },
   {
     title: "Category",
@@ -97,6 +141,11 @@ const columns = [
     title: "Date Created",
     dataIndex: "dateCreated",
     key: "dateCreated",
+  },
+  {
+    title: "Due Date",
+    dataIndex: "dueDate",
+    key: "dueDate",
   },
   {
     title: "Status",

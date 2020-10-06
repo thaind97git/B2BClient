@@ -1,6 +1,6 @@
 import { Button, Select } from "antd";
 import React, { Fragment, useState } from "react";
-import { R_DONE, R_GROUPING } from "../enums/requestStatus";
+import { R_DONE, R_GROUPED } from "../enums/requestStatus";
 import ReactTableLayout from "../layouts/ReactTableLayout";
 import { DEFAULT_DATE_RANGE } from "../utils";
 import RequestStatusComponent from "./Utils/RequestStatusComponent";
@@ -59,7 +59,7 @@ const dataSource = [
     ),
     createdBy: "User 2",
     group: "Group 4",
-    status: <RequestStatusComponent status={R_GROUPING} />,
+    status: <RequestStatusComponent status={R_GROUPED} />,
     dateCreated: "30/09/2020 02:07:26 PM",
   },
   {

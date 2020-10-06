@@ -9,7 +9,7 @@ import {
 } from "antd";
 import Modal from "antd/lib/modal/Modal";
 import React, { Fragment, useState } from "react";
-import { G_WAITING } from "../enums/groupStatus";
+import { G_PENDING } from "../enums/groupStatus";
 import ListingRequestForGroupComponent from "./ListingRequestForGroupComponent";
 import ListingSupplierByCategoryComponent from "./ListingSupplierByCategoryComponent";
 import GroupStatusComponent from "./Utils/GroupStatusComponent";
@@ -60,7 +60,7 @@ const GroupRequestDetailsComponent = ({
     dateUpdated: "28/09/2020",
     description: "2000 Mobile",
     reserveAuctionID: "None",
-    status: G_WAITING,
+    status: G_PENDING,
   },
 }) => {
   const [isOpenContact, setIsOpenContact] = useState(false);

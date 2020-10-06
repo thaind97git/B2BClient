@@ -1,14 +1,22 @@
 import React, { useState } from "react";
 import { connect } from "react-redux";
 import { compose } from "redux";
-import { Button, Typography } from "antd";
+import { Button, Space, Typography } from "antd";
 import { Row } from "antd";
 import ReactTableLayout from "../layouts/ReactTableLayout";
 import { DEFAULT_DATE_RANGE } from "../utils";
 import Link from "next/link";
 import { createLink } from "../libs";
 import GroupStatusComponent from "./Utils/GroupStatusComponent";
-import { G_BIDDING, G_CANCELED, G_DONE, G_WAITING } from "../enums/groupStatus";
+import {
+  G_BIDDING,
+  G_DONE,
+  G_FAILED,
+  G_NEGOTIATING,
+  G_ORDERED,
+  G_PENDING,
+  G_WAIT_FOR_AUCTION,
+} from "../enums/groupStatus";
 
 const { Title } = Typography;
 
@@ -34,8 +42,18 @@ const dataSource = [
     ),
     createdBy: "Aggregator 1",
     category: "Apple",
-    status: <GroupStatusComponent status={G_WAITING} />,
+    status: <GroupStatusComponent status={G_PENDING} />,
     dateCreated: "27/09/1999",
+    actions: (
+      <Space>
+        <Button type="primary" size="small">
+          Add request
+        </Button>
+        <Button danger size="small">
+          Cancel Group
+        </Button>
+      </Space>
+    ),
   },
   {
     id: "2",
@@ -49,6 +67,7 @@ const dataSource = [
     category: "Apple",
     status: <GroupStatusComponent status={G_BIDDING} />,
     dateCreated: "27/09/1999",
+    actions: "--",
   },
   {
     id: "2",
@@ -60,8 +79,9 @@ const dataSource = [
     ),
     createdBy: "Aggregator 2",
     category: "Apple",
-    status: <GroupStatusComponent status={G_CANCELED} />,
+    status: <GroupStatusComponent status={G_FAILED} />,
     dateCreated: "27/09/1999",
+    actions: "--",
   },
   {
     id: "2",
@@ -75,6 +95,67 @@ const dataSource = [
     category: "Apple",
     status: <GroupStatusComponent status={G_DONE} />,
     dateCreated: "27/09/1999",
+    actions: (
+      <Space>
+        <Button type="primary" size="small">
+          Export Order
+        </Button>
+      </Space>
+    ),
+  },
+  {
+    id: "2",
+    key: "2",
+    name: (
+      <Link href={createLink(["admin", "group", "details?id=1"])}>
+        Iphone 12
+      </Link>
+    ),
+    createdBy: "Aggregator 2",
+    category: "Apple",
+    status: <GroupStatusComponent status={G_ORDERED} />,
+    dateCreated: "27/09/1999",
+    actions: "--",
+  },
+  {
+    id: "2",
+    key: "2",
+    name: (
+      <Link href={createLink(["admin", "group", "details?id=1"])}>
+        Iphone 12
+      </Link>
+    ),
+    createdBy: "Aggregator 2",
+    category: "Apple",
+    status: <GroupStatusComponent status={G_WAIT_FOR_AUCTION} />,
+    dateCreated: "27/09/1999",
+    actions: (
+      <Space>
+        <Button danger size="small">
+          Cancel Reverse Auction
+        </Button>
+      </Space>
+    ),
+  },
+  {
+    id: "2",
+    key: "2",
+    name: (
+      <Link href={createLink(["admin", "group", "details?id=1"])}>
+        Iphone 12
+      </Link>
+    ),
+    createdBy: "Aggregator 2",
+    category: "Apple",
+    status: <GroupStatusComponent status={G_NEGOTIATING} />,
+    dateCreated: "27/09/1999",
+    actions: (
+      <Space>
+        <Button type="primary" size="small">
+          Create Reverse Auction
+        </Button>
+      </Space>
+    ),
   },
 ];
 

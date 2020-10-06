@@ -109,8 +109,17 @@ const BuyerRequestCreateComponent = ({ width = 10, next }) => {
               </FormItem>
             </Col>
             <Col style={styles.colStyle} span={6}>
-              <FormItem label="Unit" name="unit">
-                <Input disabled style={{ width: "100%" }} size="large" />
+              <FormItem
+                rules={[
+                  {
+                    required: true,
+                    message: "Please enter the unit",
+                  },
+                ]}
+                label="Unit"
+                name="unit"
+              >
+                <Input style={{ width: "100%" }} size="large" />
               </FormItem>
             </Col>
           </Row>
