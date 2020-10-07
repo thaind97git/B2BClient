@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import {  Form,  Button } from "antd";
+import { Form, Button } from "antd";
 import { connect } from "react-redux";
 /*import { createStructuredSelector } from "reselect";
 import { userLogin, userLoginDataSelector } from "../stores/UserState";*/
@@ -26,11 +26,16 @@ const enhance = compose(connectToRedux);
 
 const USER_PROFILE =
 {
-  "username": "rko2709",
   "email": "duyquanghoang27@gmail.com",
+  "firstName":"Duy",
+  "lastName":"Quang",
   "companyName": "B2S Corp",
   "address": "string",
-  "phoneNumber": "0919727775"
+  "phoneNumber": "0919727775",
+  "isEmailVerified": false,
+  "fax": "None",
+  "alternativeEmail": "None",
+  "mobile":"None"
 }
 const UserProfileComponent = () => {
 
@@ -60,15 +65,31 @@ const UserProfileComponent = () => {
           </div>
         </Col>
         <Col span={20}>
-          <Descriptions title={USER_PROFILE.username} extra={<Button type="primary" onClick={showModal}>Edit</Button>} column={1}>
+          <Descriptions title={USER_PROFILE.firstName+" "+USER_PROFILE.lastName} extra={<Button type="primary" onClick={showModal}>Edit</Button>} column={1}>
             <Descriptions.Item label="at">{USER_PROFILE.companyName}</Descriptions.Item>
-            <Descriptions.Item label="Email">{USER_PROFILE.email}</Descriptions.Item>
+            <Descriptions.Item label="Email">{USER_PROFILE.email}
+              {
+                (
+                  () => {
+                    if (USER_PROFILE.isEmailVerified) {
+                      return <font color='green'> [Verified]</font>;
+                    }
+                    else {
+                      return <font color='red'> [Unverified]</font>;
+                    }
+                  }
+                )
+                  ()}
+            </Descriptions.Item>
           </Descriptions>
         </Col>
       </Row>
       <Divider dashed />
       <Descriptions title="Contact Information">
         <Descriptions.Item label="Email">{USER_PROFILE.email}</Descriptions.Item>
+        <Descriptions.Item label="Alternative Email">{USER_PROFILE.alternativeEmail}</Descriptions.Item>
+        <Descriptions.Item label="Fax">{USER_PROFILE.fax}</Descriptions.Item>
+        <Descriptions.Item label="Mobile">{USER_PROFILE.mobile}</Descriptions.Item>
         <Descriptions.Item label="Telephone">{USER_PROFILE.phoneNumber}</Descriptions.Item>
         <Descriptions.Item label="Address">{USER_PROFILE.address}</Descriptions.Item>
       </Descriptions>
@@ -84,7 +105,7 @@ const UserProfileComponent = () => {
         onOk={handleOk}
         onCancel={handleCancel}
       >
-        <UserProfileEditComponent/>
+        <UserProfileEditComponent />
       </Modal>
     </Form>
   );
