@@ -41,7 +41,7 @@ const dataSource = [
       </Link>
     ),
     createdBy: "Aggregator 1",
-    category: "Apple",
+    product: "Iphone 12",
     status: <GroupStatusComponent status={G_PENDING} />,
     dateCreated: "27/09/1999",
     actions: (
@@ -64,7 +64,7 @@ const dataSource = [
       </Link>
     ),
     createdBy: "Aggregator 2",
-    category: "Apple",
+    product: "Iphone 12",
     status: <GroupStatusComponent status={G_BIDDING} />,
     dateCreated: "27/09/1999",
     actions: "--",
@@ -78,7 +78,7 @@ const dataSource = [
       </Link>
     ),
     createdBy: "Aggregator 2",
-    category: "Apple",
+    product: "Iphone 12",
     status: <GroupStatusComponent status={G_FAILED} />,
     dateCreated: "27/09/1999",
     actions: "--",
@@ -92,7 +92,7 @@ const dataSource = [
       </Link>
     ),
     createdBy: "Aggregator 2",
-    category: "Apple",
+    product: "Iphone 12",
     status: <GroupStatusComponent status={G_DONE} />,
     dateCreated: "27/09/1999",
     actions: (
@@ -112,7 +112,7 @@ const dataSource = [
       </Link>
     ),
     createdBy: "Aggregator 2",
-    category: "Apple",
+    product: "Iphone 12",
     status: <GroupStatusComponent status={G_ORDERED} />,
     dateCreated: "27/09/1999",
     actions: "--",
@@ -126,7 +126,7 @@ const dataSource = [
       </Link>
     ),
     createdBy: "Aggregator 2",
-    category: "Apple",
+    product: "Iphone 12",
     status: <GroupStatusComponent status={G_WAIT_FOR_AUCTION} />,
     dateCreated: "27/09/1999",
     actions: (
@@ -146,7 +146,7 @@ const dataSource = [
       </Link>
     ),
     createdBy: "Aggregator 2",
-    category: "Apple",
+    product: "Iphone 12",
     status: <GroupStatusComponent status={G_NEGOTIATING} />,
     dateCreated: "27/09/1999",
     actions: (
@@ -166,9 +166,9 @@ const columns = [
     key: "name",
   },
   {
-    title: "Category",
-    dataIndex: "category",
-    key: "category",
+    title: "Product",
+    dataIndex: "product",
+    key: "product",
   },
   {
     title: "Created By",

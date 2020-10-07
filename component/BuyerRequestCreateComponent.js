@@ -9,11 +9,13 @@ import {
   InputNumber,
   Space,
   DatePicker,
+  Select,
 } from "antd";
 import { displayCurrency } from "../utils";
 import moment from "moment";
 
 const { Title } = Typography;
+const { Option } = Select;
 const FormItem = Form.Item;
 
 const styles = {
@@ -30,7 +32,7 @@ const formItemLayout = {
 };
 const BuyerRequestCreateComponent = ({ width = 10, next }) => {
   const [price, setPrice] = useState(0);
-  const [currency, setCurrency] = useState("$");
+  const [currency, setCurrency] = useState("Vnd");
 
   const onFinish = (values) => {
     console.log("Received values of form: ", values);
@@ -119,7 +121,14 @@ const BuyerRequestCreateComponent = ({ width = 10, next }) => {
                 label="Unit"
                 name="unit"
               >
-                <Input style={{ width: "100%" }} size="large" />
+                <Select>
+                  <Option value="set">Set</Option>
+                  <Option value="kg">Kilograms</Option>
+                  <Option value="pieces">Pieces</Option>
+                  <Option value="inches">Inches</Option>
+                  <Option value="0">Other...</Option>
+                </Select>
+                {/* <Input style={{ width: "100%" }} size="large" /> */}
               </FormItem>
             </Col>
           </Row>
@@ -141,9 +150,9 @@ const BuyerRequestCreateComponent = ({ width = 10, next }) => {
                   value={price}
                   onChange={(value) => setPrice(value)}
                   formatter={(value) =>
-                    `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                    `đ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
                   }
-                  parser={(value) => value.replace(/\$\s?|(,*)/g, "")}
+                  parser={(value) => value.replace(/\đ\s?|(,*)/g, "")}
                 />
               </FormItem>
             </Col>
