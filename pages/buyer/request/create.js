@@ -52,7 +52,7 @@ const Page = ({ setCategorySelected, categorySelected }) => {
       ),
     },
     {
-      title: "Tell Us what you need",
+      title: "Request for Quotation",
       content: <BuyerRequestCreateComponent next={next} />,
     },
     {
@@ -66,11 +66,13 @@ const Page = ({ setCategorySelected, categorySelected }) => {
         <Col sm={24} span={20}>
           <Row justify="center">
             {!!categorySelected.length && (
-              <Title level={4}>
+              <Title level={5}>
                 Category selected:
-                {getCategorySelected(
-                  categorySelected.map((cate) => cate.description)
-                )}
+                <i>
+                  {getCategorySelected(
+                    categorySelected.map((cate) => cate.description)
+                  ).substring(3)}
+                </i>
               </Title>
             )}
           </Row>

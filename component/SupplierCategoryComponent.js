@@ -1,5 +1,7 @@
 import React, { useState } from "react";
-import { Button, Row, Space, Transfer, Tree } from "antd";
+import { Button, Col, Row, Space, Transfer, Tree } from "antd";
+import Modal from "antd/lib/modal/Modal";
+import SupplierRequestProductComponent from "./SupplierRequestProductComponent";
 
 // Customize Table Transfer
 const isChecked = (selectedKeys, eventKey) =>
@@ -77,20 +79,47 @@ const treeData = [
 ];
 const SupplierCategoryComponent = () => {
   const [targetKeys, setTargetKeys] = useState([]);
+  const [openRequestProduct, setOpenRequestProduct] = useState(true);
   const onChange = (keys) => {
     setTargetKeys(keys);
   };
   return (
     <div>
-      <TreeTransfer
-        dataSource={treeData}
-        targetKeys={targetKeys}
-        onChange={onChange}
-      />
-      <Row style={{ marginTop: 8 }} justify="end">
-        <Space>
-          <Button type="primary">Save you change</Button>
-        </Space>
+      <Modal
+        okText="Submit"
+        width={1000}
+        title="Request new product"
+        visible={openRequestProduct}
+        onOk={() => setOpenRequestProduct(false)}
+        // onCancel={this.handleCancel}
+      >
+        <SupplierRequestProductComponent />
+      </Modal>
+      <Row>
+        <Col span={24}>
+          <Row style={{ marginBottom: 32 }} justify="end">
+            <div>
+              <Button
+                onClick={() => setOpenRequestProduct(true)}
+                type="primary"
+              >
+                Request new product
+              </Button>
+            </div>
+          </Row>
+        </Col>
+        <Col span={24}>
+          <TreeTransfer
+            dataSource={treeData}
+            targetKeys={targetKeys}
+            onChange={onChange}
+          />
+          <Row style={{ marginTop: 8 }} justify="end">
+            <Space>
+              <Button type="primary">Save</Button>
+            </Space>
+          </Row>
+        </Col>
       </Row>
     </div>
   );

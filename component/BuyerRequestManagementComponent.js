@@ -1,4 +1,4 @@
-import { Button, Row, Select, Space, Tag, Typography } from "antd";
+import { Button, Row, Select, Space, Typography } from "antd";
 import React, { useState } from "react";
 import ReactTableLayout from "../layouts/ReactTableLayout";
 import { DEFAULT_DATE_RANGE } from "../utils";
@@ -21,7 +21,7 @@ const dataSource = [
   {
     key: "1",
     price: "80$",
-    category: <Tag color="blue">Apple</Tag>,
+    category: "Iphone 5",
     createdBy: "User 1",
     dateCreated: "30/09/2020 02:07:26 PM",
     dueDate: "30/09/2020 02:07:26 PM",
@@ -38,7 +38,7 @@ const dataSource = [
   {
     key: "2",
     price: "80$",
-    category: <Tag color="blue">Apple</Tag>,
+    category: "Iphone 5S",
     createdBy: "User 1",
     dateCreated: "30/09/2020 02:07:26 PM",
     dueDate: "30/09/2020 02:07:26 PM",
@@ -48,7 +48,7 @@ const dataSource = [
   {
     key: "3",
     price: "80$",
-    category: <Tag color="blue">Apple</Tag>,
+    category: "Iphone 6",
     createdBy: "User 1",
     dateCreated: "30/09/2020 02:07:26 PM",
     dueDate: "30/09/2020 02:07:26 PM",
@@ -58,7 +58,7 @@ const dataSource = [
   {
     key: "4",
     price: "80$",
-    category: <Tag color="blue">Apple</Tag>,
+    category: "Iphone 6S",
     createdBy: "User 1",
     dateCreated: "30/09/2020 02:07:26 PM",
     dueDate: "30/09/2020 02:07:26 PM",
@@ -68,7 +68,7 @@ const dataSource = [
   {
     key: "5",
     price: "80$",
-    category: <Tag color="blue">Apple</Tag>,
+    category: "Iphone 7",
     createdBy: "User 1",
     dateCreated: "30/09/2020 02:07:26 PM",
     dueDate: "30/09/2020 02:07:26 PM",
@@ -77,7 +77,7 @@ const dataSource = [
   {
     key: "5",
     price: "80$",
-    category: <Tag color="blue">Apple</Tag>,
+    category: "Iphone 7S",
     createdBy: "User 1",
     dateCreated: "30/09/2020 02:07:26 PM",
     dueDate: "30/09/2020 02:07:26 PM",
@@ -86,7 +86,7 @@ const dataSource = [
   {
     key: "5",
     price: "80$",
-    category: <Tag color="blue">Apple</Tag>,
+    category: "Iphone 7S Plus",
     createdBy: "User 1",
     dateCreated: "30/09/2020 02:07:26 PM",
     dueDate: "30/09/2020 02:07:26 PM",
@@ -102,7 +102,7 @@ const dataSource = [
   {
     key: "5",
     price: "80$",
-    category: <Tag color="blue">Apple</Tag>,
+    category: "Iphone 8",
     createdBy: "User 1",
     dateCreated: "30/09/2020 02:07:26 PM",
     dueDate: "30/09/2020 02:07:26 PM",
@@ -118,7 +118,7 @@ const dataSource = [
   {
     key: "5",
     price: "80$",
-    category: <Tag color="blue">Apple</Tag>,
+    category: "Iphone 10",
     createdBy: "User 1",
     dateCreated: "30/09/2020 02:07:26 PM",
     dueDate: "30/09/2020 02:07:26 PM",
@@ -128,14 +128,14 @@ const dataSource = [
 
 const columns = [
   {
+    title: "Product Name",
+    dataIndex: "category",
+    key: "category",
+  },
+  {
     title: "Preferred Unit Price",
     dataIndex: "price",
     key: "price",
-  },
-  {
-    title: "Category",
-    dataIndex: "category",
-    key: "category",
   },
   {
     title: "Date Created",
