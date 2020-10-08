@@ -201,7 +201,7 @@ const BuyerRequestManagement = () => {
         >
           <RequestDetailsComponent />
         </Drawer>
-        <Title level={4}>Your Request</Title>
+        <Title level={4}>Your Request for Quotation</Title>
         <Button onClick={() => Router.push("/buyer/rfq/create")} type="primary">
           Create new request
         </Button>
