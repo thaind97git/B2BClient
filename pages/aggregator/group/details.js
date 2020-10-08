@@ -1,11 +1,11 @@
 import React from "react";
 import GroupRequestDetailsComponent from "../../../component/GroupRequestDetailsComponent";
-import AdminLayout from "../../../layouts/AdminLayout";
+import AggregatorLayout from "../../../layouts/AggregatorLayout";
 const DetailsPage = () => {
   return (
-    <AdminLayout>
+    <AggregatorLayout>
       <GroupRequestDetailsComponent />
-    </AdminLayout>
+    </AggregatorLayout>
   );
 };
 export default DetailsPage;

@@ -1,11 +1,11 @@
 import React from "react";
 import AdminBiddingCreateComponent from "../../../component/AdminBiddingCreateComponent";
-import AdminLayout from "../../../layouts/AdminLayout";
+import AggregatorLayout from "../../../layouts/AggregatorLayout";
 const Page = () => {
   return (
-    <AdminLayout>
+    <AggregatorLayout>
       <AdminBiddingCreateComponent />
-    </AdminLayout>
+    </AggregatorLayout>
   );
 };
 export default Page;

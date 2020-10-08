@@ -23,13 +23,13 @@ export const userLogin = ({ email, password }) =>
       saveToken(resp.token);
       openNotification("success", { message: "Login success" });
       if (resp.role === BUYER) {
-        Router.push("/buyer");
+        Router.push("/buyer/rfq");
       }
       if (resp.role === SUPPLIER) {
-        Router.push("/member");
+        Router.push("/supplier");
       }
       if (resp.role === MODERATOR) {
-        Router.push("/admin");
+        Router.push("/aggregator");
       }
     }
   });

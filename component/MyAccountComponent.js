@@ -11,32 +11,32 @@ const { Item } = Menu;
 const MENU_SUPPLIER = (
   <Menu>
     <Item>
-      <Link href="/member">
+      <Link href="/supplier">
         <a>Supplier Information</a>
       </Link>
     </Item>
     <Item>
-      <Link href="/member">
+      <Link href="/supplier">
         <a>Promotion</a>
       </Link>
     </Item>
     <Item>
-      <Link href="/member">
+      <Link href="/supplier">
         <a href="#">Notification</a>
       </Link>
     </Item>
     <Item>
-      <Link href="/member">
+      <Link href="/supplier">
         <a href="#">Chats</a>
       </Link>
     </Item>
     <Item>
-      <Link href="/member">
+      <Link href="/supplier">
         <a href="#">Create product</a>
       </Link>
     </Item>
     <Item>
-      <Link href="/member">
+      <Link href="/supplier">
         <a href="#">List product</a>
       </Link>
     </Item>
@@ -55,7 +55,7 @@ const MENU_SUPPLIER = (
 const MENU_BUYER = (
   <Menu>
     <Item>
-      <Link href="/member">
+      <Link href="/supplier">
         <a href="#">Buyer Information</a>
       </Link>
     </Item>

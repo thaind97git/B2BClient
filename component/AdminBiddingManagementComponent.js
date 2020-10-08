@@ -92,7 +92,7 @@ const AdminBiddingManagementComponent = () => {
       <Row justify="end">
         <Button
           onClick={() => {
-            Router.push("/admin/bidding/create");
+            Router.push("/aggregator/bidding/create");
           }}
           type="primary"
           danger

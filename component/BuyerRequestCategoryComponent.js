@@ -57,7 +57,7 @@ const BuyerRequestCategoryComponent = ({
   getChildCategory,
   parentCateData,
   childCateData,
-  next,
+  doneFunc,
   categorySelected,
   addCategorySelected,
   setCategorySelected,
@@ -138,7 +138,7 @@ const BuyerRequestCategoryComponent = ({
             <List.Item
               onClick={() => {
                 if (item.isItem) {
-                  next();
+                  typeof doneFunc === "function" && doneFunc();
                   setIsCallParent(null);
                 } else {
                   setIsCallParent(false);

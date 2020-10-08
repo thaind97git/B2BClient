@@ -1,11 +1,11 @@
 import React from "react";
-import AdminLayout from "../../../layouts/AdminLayout";
+import AggregatorLayout from "../../../layouts/AggregatorLayout";
 import GroupRequestComponent from "../../../component/GroupRequestComponent";
 
 export default function Home() {
   return (
-    <AdminLayout>
+    <AggregatorLayout>
       <GroupRequestComponent />
-    </AdminLayout>
+    </AggregatorLayout>
   );
 }

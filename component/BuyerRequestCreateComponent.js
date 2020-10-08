@@ -8,220 +8,577 @@ import {
   Typography,
   InputNumber,
   Space,
-  DatePicker,
+  Card,
   Select,
+  Upload,
 } from "antd";
 import { displayCurrency } from "../utils";
-import moment from "moment";
+import { InboxOutlined } from "@ant-design/icons";
+import Modal from "antd/lib/modal/Modal";
+import BuyerRequestCategoryComponent from "./BuyerRequestCategoryComponent";
+import { createStructuredSelector } from "reselect";
+import { connect } from "react-redux";
+import { getCategorySelected } from "../libs";
 
 const { Title } = Typography;
 const { Option } = Select;
 const FormItem = Form.Item;
-
+const connectToRedux = connect(
+  createStructuredSelector({
+    categorySelected: (state) => state.categorySelected,
+  })
+);
 const styles = {
   colStyle: { padding: "0 8px" },
   titleStyle: { fontWeight: 500 },
 };
 const formItemLayout = {
-  labelCol: {
-    span: 24,
-  },
-  wrapperCol: {
-    span: 24,
-  },
+  labelCol: { span: 4 },
+  wrapperCol: { span: 20 },
 };
-const BuyerRequestCreateComponent = ({ width = 10, next }) => {
+const PriceInput = ({ value = {}, onChange, price, setPrice }) => {
+  const [currency, setCurrency] = useState("vnd");
+
+  const triggerChange = (changedValue) => {
+    if (onChange) {
+      onChange({
+        price,
+        currency,
+        ...value,
+        ...changedValue,
+      });
+    }
+  };
+
+  const onNumberChange = (value) => {
+    const newNumber = parseInt(value || 0, 10);
+    if (Number.isNaN(price)) {
+      return;
+    }
+
+    // if (!("price" in value)) {
+    setPrice(newNumber);
+    // }
+
+    triggerChange({
+      price: newNumber,
+    });
+  };
+
+  const onCurrencyChange = (newCurrency) => {
+    if (!("currency" in value)) {
+      setCurrency(newCurrency);
+    }
+
+    triggerChange({
+      currency: newCurrency,
+    });
+  };
+
+  return (
+    <span>
+      <InputNumber
+        value={value.price || price}
+        onChange={onNumberChange}
+        style={{ width: "78%" }}
+        formatter={(value) =>
+          `đ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+        }
+        parser={(value) => value.replace(/\đ\s?|(,*)/g, "")}
+      />
+
+      <Select
+        value={value.currency || currency}
+        style={{
+          width: "20%",
+          margin: "0 4px",
+        }}
+        onChange={onCurrencyChange}
+      >
+        <Option value="vnd">VND</Option>
+      </Select>
+    </span>
+  );
+};
+const QuantityInput = ({ value = {}, onChange }) => {
+  const [number, setNumber] = useState(0);
+  const [unit, setUnit] = useState("pieces");
+
+  const triggerChange = (changedValue) => {
+    if (onChange) {
+      onChange({
+        number,
+        unit,
+        ...value,
+        ...changedValue,
+      });
+    }
+  };
+
+  const onNumberChange = (value) => {
+    const newNumber = parseInt(value || 0, 10);
+
+    if (Number.isNaN(number)) {
+      return;
+    }
+
+    triggerChange({
+      number: newNumber,
+    });
+  };
+
+  const onUnitChange = (newUnit) => {
+    if (!("unit" in value)) {
+      setUnit(newUnit);
+    }
+
+    triggerChange({
+      unit: newUnit,
+    });
+  };
+
+  return (
+    <span>
+      <InputNumber
+        value={value.number || number}
+        onChange={onNumberChange}
+        style={{ width: "78%" }}
+        min={1}
+        placeholder="Enter the product quantity"
+      />
+      <Select
+        value={value.unit || unit}
+        style={{
+          width: "20%",
+          margin: "0 4px",
+        }}
+        onChange={onUnitChange}
+      >
+        <Option value="pieces">Pieces</Option>
+        <Option value="bags">Bags</Option>
+        <Option value="boxes">Boxes</Option>
+        <Option value="cartons">Cartons</Option>
+        <Option value="feet">Feet</Option>
+        <Option value="units">Units</Option>
+        <Option value="kilograms">Kilograms</Option>
+        <Option value="Miles">Miles</Option>
+      </Select>
+    </span>
+  );
+};
+const currency = "Vnd";
+const BuyerRequestCreateComponent = ({ next, categorySelected }) => {
+  // const p
   const [price, setPrice] = useState(0);
   const [currency, setCurrency] = useState("Vnd");
+  const [openCategory, setOpenCategory] = useState(false);
+  const normFile = (e) => {
+    console.log("Upload event:", e);
+    if (Array.isArray(e)) {
+      return e;
+    }
+    return e && e.fileList;
+  };
 
   const onFinish = (values) => {
     console.log("Received values of form: ", values);
     typeof next === "function" && next();
   };
-  function range(start, end) {
-    const result = [];
-    for (let i = start; i < end; i++) {
-      result.push(i);
+
+  const checkPrice = (rule, value) => {
+    if (value.price > 0) {
+      return Promise.resolve();
     }
-    return result;
-  }
 
-  function disabledDate(current) {
-    // Can not select days before today and today
-    return current && current < moment().endOf("day");
-  }
+    return Promise.reject("Price must be greater than zero!");
+  };
+  const checkUnit = (rule, value) => {
+    if (value.unit > 0) {
+      return Promise.resolve();
+    }
 
-  function disabledDateTime() {
-    return {
-      disabledHours: () => range(0, 24).splice(4, 20),
-      disabledMinutes: () => range(30, 60),
-      disabledSeconds: () => [55, 56],
-    };
-  }
+    return Promise.reject("Price must be greater than zero!");
+  };
 
   return (
     <Row align="middle" justify="center">
-      <Col sm={20} md={width}>
+      <Modal
+        title="Choose Category"
+        centered
+        visible={openCategory}
+        onOk={() => setOpenCategory(false)}
+        onCancel={() => setOpenCategory(false)}
+        width={1000}
+      >
+        <BuyerRequestCategoryComponent
+          doneFunc={() => setOpenCategory(false)}
+        />
+        <Row>
+          {!!categorySelected.length && (
+            <Title level={4}>
+              Category selected:
+              {getCategorySelected(
+                categorySelected.map((cate) => cate.description)
+              ).substring(3)}
+            </Title>
+          )}
+        </Row>
+      </Modal>
+      <Col sm={20} md={18}>
         <Form
           {...formItemLayout}
           autoComplete="new-password"
           className="register-form"
           onFinish={onFinish}
-          initialValues={{
-            unit: "Set",
-          }}
         >
           <Row justify="center">
             <Title style={styles.titleStyle} level={2}>
               Tell Us what you need
             </Title>
           </Row>
-          <Row align="middle">
-            <Col style={styles.colStyle} span={24}>
-              <FormItem
-                label="Product Name"
-                name="productName"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please enter the product title",
-                  },
-                ]}
-              >
-                <Input size="large" placeholder="Enter the product title" />
-              </FormItem>
-            </Col>
-            <Col style={styles.colStyle} span={18}>
-              <FormItem
-                label="Quantity"
-                name="quantity"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please enter the product quantity",
-                  },
-                ]}
-              >
-                <InputNumber
-                  style={{ width: "100%" }}
-                  min={1}
-                  size="large"
-                  placeholder="Enter the product quantity"
-                />
-              </FormItem>
-            </Col>
-            <Col style={styles.colStyle} span={6}>
-              <FormItem
-                rules={[
-                  {
-                    required: true,
-                    message: "Please enter the unit",
-                  },
-                ]}
-                label="Unit"
-                name="unit"
-              >
-                <Select>
-                  <Option value="set">Set</Option>
-                  <Option value="kg">Kilograms</Option>
-                  <Option value="pieces">Pieces</Option>
-                  <Option value="inches">Inches</Option>
-                  <Option value="0">Other...</Option>
-                </Select>
-                {/* <Input style={{ width: "100%" }} size="large" /> */}
-              </FormItem>
-            </Col>
-          </Row>
-          <Row align="middle">
-            <Col style={styles.colStyle} span={24}>
-              <FormItem
-                label="Preferred Unit Price:"
-                name="range"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please choose the price range",
-                  },
-                ]}
-              >
-                <InputNumber
-                  style={{ width: "100%" }}
-                  size="large"
-                  value={price}
-                  onChange={(value) => setPrice(value)}
-                  formatter={(value) =>
-                    `đ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-                  }
-                  parser={(value) => value.replace(/\đ\s?|(,*)/g, "")}
-                />
-              </FormItem>
-            </Col>
-            <Col span={24}>
-              <Row style={{ padding: "0px 4px 20px 4px" }} justify="end">
-                <Space>
-                  <span>{displayCurrency(price, currency)} or Lower</span>
-                </Space>
-              </Row>
-            </Col>
-            <Col style={styles.colStyle} span={24}>
-              <FormItem
-                label="Due Date"
-                name="dueDate"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please choose the due date",
-                  },
-                ]}
-              >
-                <DatePicker
-                  size="large"
-                  style={{ width: "100%" }}
-                  format="YYYY-MM-DD HH:mm:ss"
-                  disabledDate={disabledDate}
-                  disabledTime={disabledDateTime}
-                  showTime={{ defaultValue: moment("00:00:00", "HH:mm:ss") }}
-                />
-              </FormItem>
-            </Col>
-            <Col style={styles.colStyle} span={18}>
-              <FormItem
-                rules={[
-                  {
-                    required: true,
-                    message: "Please input delivery address",
-                  },
-                ]}
-                label="Delivery Address"
-                name="address"
-              >
-                <Input placeholder="Input your delivery address" size="large" />
-              </FormItem>
-            </Col>
-            <Col style={styles.colStyle} span={6}>
-              <FormItem label={<span>&nbsp;</span>} name="unit">
-                <Button size="middle" type="primary">
-                  Use my address
-                </Button>
-              </FormItem>
-            </Col>
-            <Col style={styles.colStyle} span={24}>
-              <FormItem label="Description" name="description">
-                <Input.TextArea autoSize={{ minRows: 3 }} />
-              </FormItem>
-            </Col>
-          </Row>
+          <Card
+            bordered={false}
+            title={<b>Product Basic Information</b>}
+            style={{
+              width: "100%",
+              boxShadow: "2px 2px 14px 0 rgba(0,0,0,.1)",
+              marginTop: 16,
+            }}
+          >
+            <Row align="middle">
+              <Col style={styles.colStyle} span={24}>
+                <FormItem
+                  label="Product Name"
+                  name="productName"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please enter the product title",
+                    },
+                  ]}
+                >
+                  <Input placeholder="Enter the product title" />
+                </FormItem>
+              </Col>
+              <Col style={styles.colStyle} span={24}>
+                <FormItem
+                  label="Category"
+                  name="category"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please select Category",
+                    },
+                  ]}
+                >
+                  {!!categorySelected.length && (
+                    <div>
+                      Category selected:
+                      {getCategorySelected(
+                        categorySelected.map((cate) => cate.description)
+                      ).substring(3)}
+                    </div>
+                  )}
+                  <Button onClick={() => setOpenCategory(true)}>
+                    Select Category
+                  </Button>
+                </FormItem>
+              </Col>
+              <Col style={styles.colStyle} span={24}>
+                <FormItem
+                  label="Sourcing Type"
+                  name="sourcingType"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please select Sourcing Type",
+                    },
+                  ]}
+                >
+                  <Select>
+                    <Option value="cus">Customized Product</Option>
+                    <Option value="non-cus">Non-customized Product</Option>
+                    <Option value="to">Total Solution</Option>
+                    <Option value="bu">Business Service</Option>
+                    <Option value="other">Other</Option>
+                  </Select>
+                </FormItem>
+              </Col>
+              <Col style={styles.colStyle} span={24}>
+                <FormItem
+                  label="Sourcing Purpose"
+                  name="sourcingPurpose"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please select Sourcing Purpose",
+                    },
+                  ]}
+                >
+                  <Select>
+                    <Option value="who">Wholesale</Option>
+                    <Option value="re">Retail</Option>
+                    <Option value="pro">Product Equipment</Option>
+                    <Option value="raw">Raw Materials for Production</Option>
+                    <Option value="cor">Corporate Consumption</Option>
+                    <Option value="per">Personal Use</Option>
+                    <Option value="other">Other</Option>
+                  </Select>
+                </FormItem>
+              </Col>
+              <Col style={styles.colStyle} span={24}>
+                <FormItem
+                  label="Quantity"
+                  name="quantity"
+                  rules={[
+                    {
+                      validator: checkUnit,
+                    },
+                  ]}
+                >
+                  <QuantityInput />
+                </FormItem>
+              </Col>
+            </Row>
+            <Row align="middle">
+              <Col span={24}>
+                <Row style={{ padding: "0px 12px 0px 4px" }} justify="end">
+                  <Space>{displayCurrency(price, currency)} or Lower</Space>
+                </Row>
+              </Col>
+              <Col style={styles.colStyle} span={24}>
+                <FormItem
+                  name="price"
+                  label="Preferred Unit Price:"
+                  rules={[
+                    {
+                      validator: checkPrice,
+                    },
+                  ]}
+                >
+                  <PriceInput price={price} setPrice={setPrice} />
+                </FormItem>
+              </Col>
+              <Col style={styles.colStyle} span={24}>
+                <FormItem
+                  label="Trade term"
+                  name="tradeTerm"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please select trade term",
+                    },
+                  ]}
+                >
+                  <Select>
+                    <Option value="fob">FOB</Option>
+                    <Option value="exw">EXW</Option>
+                    <Option value="fas">FAS</Option>
+                    <Option value="fca">FCA</Option>
+                    <Option value="cfr">CFR</Option>
+                    <Option value="cpt">CPT</Option>
+                    <Option value="cif">CIF</Option>
+                  </Select>
+                </FormItem>
+              </Col>
+              <Col style={styles.colStyle} span={24}>
+                <FormItem
+                  label="Details"
+                  name="description"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please enter the details",
+                    },
+                  ]}
+                >
+                  <Input.TextArea autoSize={{ minRows: 2 }} />
+                </FormItem>
+              </Col>
+              <Col style={styles.colStyle} span={24}>
+                <Form.Item label="Attachments">
+                  <Form.Item
+                    name="attachments"
+                    valuePropName="fileList"
+                    getValueFromEvent={normFile}
+                    noStyle
+                  >
+                    <Upload.Dragger name="files" action="/upload.do">
+                      <p className="ant-upload-drag-icon">
+                        <InboxOutlined />
+                      </p>
+                      <p className="ant-upload-text">
+                        Click or drag file to this area to upload
+                      </p>
+                    </Upload.Dragger>
+                  </Form.Item>
+                </Form.Item>
+              </Col>
+            </Row>
+          </Card>
+          <Card
+            bordered={false}
+            title={<b>Supplier Capability</b>}
+            style={{
+              width: "100%",
+              boxShadow: "2px 2px 14px 0 rgba(0,0,0,.1)",
+              marginTop: 32,
+            }}
+          >
+            <Row align="middle">
+              <Col style={styles.colStyle} span={24}>
+                <FormItem label="Certifications" name="certifications">
+                  <Select>
+                    <Option value="IOS/TS16949">ISO/TS16949</Option>
+                    <Option value="ISO22000">ISO22000</Option>
+                    <Option value="CCC">CCC</Option>
+                    <Option value="PSE">PSE</Option>
+                    <Option value="MSDS">MSDS</Option>
+                    <Option value="FCCF">FCCF</Option>
+                    <Option value="GMP">GMP</Option>
+                  </Select>
+                </FormItem>
+              </Col>
+              <Col style={styles.colStyle} span={24}>
+                <FormItem label="Other Requirements" name="otherRe">
+                  <Input.TextArea
+                    autoSize={{ minRows: 4 }}
+                    placeholder="To receive fast and accurate quotations from suitable suppliers, please present your supplier requirements as specifically as possible. "
+                  />
+                </FormItem>
+              </Col>
+            </Row>
+          </Card>
+          <Card
+            bordered={false}
+            title={<b>Shipping and Payment</b>}
+            style={{
+              width: "100%",
+              boxShadow: "2px 2px 14px 0 rgba(0,0,0,.1)",
+              marginTop: 32,
+              marginBottom: 32,
+            }}
+          >
+            <Row align="middle">
+              <Col style={styles.colStyle} span={24}>
+                <FormItem label="Shipping Method" name="shipping">
+                  <Select>
+                    <Option value="see">Sea freight</Option>
+                    <Option value="air">Air freight</Option>
+                    <Option value="express">Express</Option>
+                    <Option value="land">Land freight</Option>
+                  </Select>
+                </FormItem>
+              </Col>
+              <Col style={styles.colStyle} span={24}>
+                <FormItem
+                  label="Province"
+                  name="province"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please select province",
+                    },
+                  ]}
+                >
+                  <Select>
+                    <Option value="TP.HCM">TP.HCM</Option>
+                    <Option value="hanoi">Ha Noi</Option>
+                  </Select>
+                </FormItem>
+              </Col>
+              <Col style={styles.colStyle} span={24}>
+                <FormItem
+                  label="District"
+                  name="district"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please select district",
+                    },
+                  ]}
+                >
+                  <Select>
+                    <Option value="1">Q.1</Option>
+                    <Option value="2">Q.2</Option>
+                    <Option value="3">Q.3</Option>
+                    <Option value="4">Q.4</Option>
+                    <Option value="5">Q.5</Option>
+                    <Option value="6">Q.6</Option>
+                  </Select>
+                </FormItem>
+              </Col>
+              <Col style={styles.colStyle} span={24}>
+                <FormItem
+                  label="Ward"
+                  name="ward"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please select ward",
+                    },
+                  ]}
+                >
+                  <Select>
+                    <Option value="TP.HCM">Phường 1</Option>
+                    <Option value="hanoi">Phường 2</Option>
+                  </Select>
+                </FormItem>
+              </Col>
+              <Col style={styles.colStyle} span={24}>
+                <FormItem
+                  label="Address"
+                  name="address"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please enter the address",
+                    },
+                  ]}
+                >
+                  <Input placeholder="Enter the address shipping" />
+                </FormItem>
+              </Col>
+              <Col style={styles.colStyle} span={24}>
+                <FormItem label="Lead Time" name="leadTime">
+                  Ship in <span>&nbsp;</span>
+                  <InputNumber min={0} style={{ width: 100 }} />
+                  <span>&nbsp;</span>
+                  day(s) after supplier receives the initial payment
+                </FormItem>
+              </Col>
+              <Col style={styles.colStyle} span={24}>
+                <FormItem
+                  label="Payment Term"
+                  name="payment term"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please select payment term",
+                    },
+                  ]}
+                >
+                  <Select>
+                    <Option value="tt">T/T</Option>
+                    <Option value="lc">L/C</Option>
+                    <Option value="dp">D/P</Option>
+                    <Option value="union">Western Union</Option>
+                    <Option value="money">Money Gram</Option>
+                  </Select>
+                </FormItem>
+              </Col>
+            </Row>
+          </Card>
           <Row justify="center" align="middle">
-            <Col span={12}>
+            <Col span={6}>
               <Button
                 onClick={() => {}}
                 block
-                size="large"
                 className="submit"
                 type="primary"
                 htmlType="submit"
               >
-                Next
+                Submit
               </Button>
             </Col>
           </Row>
@@ -231,4 +588,4 @@ const BuyerRequestCreateComponent = ({ width = 10, next }) => {
   );
 };
 
-export default BuyerRequestCreateComponent;
+export default connectToRedux(BuyerRequestCreateComponent);
