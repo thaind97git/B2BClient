@@ -199,7 +199,16 @@ const BuyerRequestManagement = () => {
           visible={openDetails}
           key={"right"}
         >
-          <RequestDetailsComponent />
+          <RequestDetailsComponent
+            buttonActions={[
+              {
+                label: "Cancel",
+                buttonProps: {
+                  danger: true,
+                },
+              },
+            ]}
+          />
         </Drawer>
         <Title level={4}>Your Request for Quotation</Title>
         <Button onClick={() => Router.push("/buyer/rfq/create")} type="primary">

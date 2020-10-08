@@ -1,14 +1,6 @@
-import {
-  Button,
-  Col,
-  Descriptions,
-  Divider,
-  Row,
-  Typography,
-  Upload,
-} from "antd";
+import { Button, Col, Divider, Row, Space, Typography, Upload } from "antd";
 import React from "react";
-import { R_NEGOTIATING, R_PENDING } from "../enums/requestStatus";
+import { R_PENDING } from "../enums/requestStatus";
 import RequestStatusComponent from "./Utils/RequestStatusComponent";
 const { Title } = Typography;
 const DescriptionItem = ({ title, content }) => (
@@ -23,31 +15,51 @@ const DescriptionItem = ({ title, content }) => (
     </Row>
   </Col>
 );
-const RequestDetailsComponent = ({ request }) => {
+const requestDefault = {
+  productName: "Iphone 6s",
+  category: "Iphone",
+  sourcingType: "Non-customized Product",
+  sourcingPurpose: "Retail",
+  quantity: "20",
+  unit: "Units",
+  tradeTerms: "FOB",
+  preUnitPrice: "500,000 Vnd",
+  details: "I really want to buy this product",
+  attachments: [
+    {
+      uid: "-1",
+      name: "image.png",
+      status: "done",
+      url:
+        "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png",
+    },
+  ],
+  certifi: "ISO/TS16949",
+  shippingMethod: "Express",
+  destination: "Nguyễn Thị Minh Khai - Phường 2 - Q.1 - TP.HCM",
+  leadTime: 4,
+  status: R_PENDING,
+};
+const RequestDetailsComponent = ({
+  request = requestDefault,
+  buttonActions = [],
+}) => {
   const {
-    productName = "Iphone 6s",
-    category = "Iphone",
-    sourcingType = "Non-customized Product",
-    sourcingPurpose = "Retail",
-    quantity = "20",
-    unit = "Units",
-    tradeTerms = "FOB",
-    preUnitPrice = "500,000 Vnd",
-    details = "I really want to buy this product",
-    attachments = [
-      {
-        uid: "-1",
-        name: "image.png",
-        status: "done",
-        url:
-          "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png",
-      },
-    ],
-    certifi = "ISO/TS16949",
-    shippingMethod = "Express",
-    destination = "Nguyễn Thị Minh Khai - Phường 2 - Q.1 - TP.HCM",
-    leadTime = 4,
-    status = R_PENDING,
+    productName,
+    category,
+    sourcingType,
+    sourcingPurpose,
+    quantity,
+    unit,
+    tradeTerms,
+    preUnitPrice,
+    details,
+    attachments,
+    certifi,
+    shippingMethod,
+    destination,
+    leadTime,
+    status,
   } = request || {};
   const AttachmentsDisplay = () => {
     return (
@@ -73,9 +85,20 @@ const RequestDetailsComponent = ({ request }) => {
         Status: <RequestStatusComponent status={status} />
       </Col>
       <Col style={{ padding: "12px 0px" }} span={24}>
-        <Button danger size="small">
-          Cancel
-        </Button>
+        <Space>
+          {buttonActions.map((button, index) => (
+            <Button
+              key={index}
+              onClick={() => {
+                typeof button.actions === "function" && button.action();
+              }}
+              size="small"
+              {...button.buttonProps}
+            >
+              {button.label}
+            </Button>
+          ))}
+        </Space>
       </Col>
       <Col span={24}>
         <Title level={5}>Product Basic Information</Title>

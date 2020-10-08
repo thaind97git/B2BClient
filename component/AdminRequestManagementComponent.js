@@ -155,11 +155,6 @@ const columns = [
     key: "dateCreated",
   },
   {
-    title: "Due Date",
-    dataIndex: "dueDate",
-    key: "dueDate",
-  },
-  {
     title: "Status",
     dataIndex: "status",
     key: "status",
