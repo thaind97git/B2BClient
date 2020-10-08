@@ -40,7 +40,7 @@ const RequestStatusComponent = ({ status }) => {
   const getLabelByStatus = (status) => {
     switch (status) {
       case R_PENDING:
-        return "WAITING";
+        return "PENDING";
       case R_GROUPED:
         return "GROUPING";
       case R_DONE:

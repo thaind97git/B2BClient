@@ -34,7 +34,7 @@ const BUYER_MENU = [
     subMenu: [
       {
         subKey: "2.1",
-        subLink: "/buyer/request",
+        subLink: "/buyer/rfq",
         subIcon: <OrderedListOutlined />,
         subLabel: "Your Requests",
       },

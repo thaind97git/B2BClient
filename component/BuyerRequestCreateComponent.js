@@ -82,9 +82,9 @@ const PriceInput = ({ value = {}, onChange, price, setPrice }) => {
         onChange={onNumberChange}
         style={{ width: "78%" }}
         formatter={(value) =>
-          `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+          `đ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
         }
-        parser={(value) => value.replace(/\$\s?|(,*)/g, "")}
+        parser={(value) => value.replace(/\đ\s?|(,*)/g, "")}
       />
 
       <Select
@@ -286,6 +286,48 @@ const BuyerRequestCreateComponent = ({ next, categorySelected }) => {
               </Col>
               <Col style={styles.colStyle} span={24}>
                 <FormItem
+                  label="Sourcing Type"
+                  name="sourcingType"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please select Sourcing Type",
+                    },
+                  ]}
+                >
+                  <Select>
+                    <Option value="cus">Customized Product</Option>
+                    <Option value="non-cus">Non-customized Product</Option>
+                    <Option value="to">Total Solution</Option>
+                    <Option value="bu">Business Service</Option>
+                    <Option value="other">Other</Option>
+                  </Select>
+                </FormItem>
+              </Col>
+              <Col style={styles.colStyle} span={24}>
+                <FormItem
+                  label="Sourcing Purpose"
+                  name="sourcingPurpose"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please select Sourcing Purpose",
+                    },
+                  ]}
+                >
+                  <Select>
+                    <Option value="who">Wholesale</Option>
+                    <Option value="re">Retail</Option>
+                    <Option value="pro">Product Equipment</Option>
+                    <Option value="raw">Raw Materials for Production</Option>
+                    <Option value="cor">Corporate Consumption</Option>
+                    <Option value="per">Personal Use</Option>
+                    <Option value="other">Other</Option>
+                  </Select>
+                </FormItem>
+              </Col>
+              <Col style={styles.colStyle} span={24}>
+                <FormItem
                   label="Quantity"
                   name="quantity"
                   rules={[
@@ -387,7 +429,7 @@ const BuyerRequestCreateComponent = ({ next, categorySelected }) => {
               <Col style={styles.colStyle} span={24}>
                 <FormItem label="Certifications" name="certifications">
                   <Select>
-                    <Option value="IOS/TS16949">IOS/TS16949</Option>
+                    <Option value="IOS/TS16949">ISO/TS16949</Option>
                     <Option value="ISO22000">ISO22000</Option>
                     <Option value="CCC">CCC</Option>
                     <Option value="PSE">PSE</Option>

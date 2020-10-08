@@ -23,7 +23,7 @@ export const userLogin = ({ email, password }) =>
       saveToken(resp.token);
       openNotification("success", { message: "Login success" });
       if (resp.role === BUYER) {
-        Router.push("/buyer/request");
+        Router.push("/buyer/rfq");
       }
       if (resp.role === SUPPLIER) {
         Router.push("/member");
