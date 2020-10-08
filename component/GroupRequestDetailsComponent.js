@@ -2,18 +2,20 @@ import {
   Button,
   Card,
   Descriptions,
+  Drawer,
   Row,
   Space,
   Table,
+  Tag,
   Typography,
 } from "antd";
 import Modal from "antd/lib/modal/Modal";
 import React, { Fragment, useState } from "react";
-import { G_PENDING } from "../enums/groupStatus";
+import { G_NEGOTIATING } from "../enums/groupStatus";
 import ListingRequestForGroupComponent from "./ListingRequestForGroupComponent";
 import ListingSupplierByCategoryComponent from "./ListingSupplierByCategoryComponent";
+import RequestDetailsComponent from "./RequestDetailsComponent";
 import GroupStatusComponent from "./Utils/GroupStatusComponent";
-import Messenger from "./Chat/Messenger";
 const { Title } = Typography;
 const groupRequestColumns = [
   { title: "Product Name", dataIndex: "category", key: "category" },
@@ -29,112 +31,143 @@ const SUPPLIER_CONTACT = [
   { title: "Actions", dataIndex: "actions", key: "actions" },
 ];
 
-const SUPPLIER_CONTACT_DATA = [
-  {
-    name: "Supplier 1",
-    email: "thaindse62642@fpt.edu.vn",
-    phone: "0397471442",
-    actions: (
-      <Space>
-        <Button size="small">Chat</Button>
-        <Button size="small" type="primary">
-          sales closing
-        </Button>
-        <Button size="small" danger>
-          Remove
-        </Button>
-      </Space>
-    ),
-  },
-  {
-    name: "Supplier 2",
-    email: "thaind97.dev@gmail.com",
-    phone: "0397471441",
-    actions: (
-      <Space>
-        <Button size="small">Chat</Button>
-        <Button size="small" type="primary">
-          sales closing
-        </Button>
-        <Button size="small" danger>
-          Remove
-        </Button>
-      </Space>
-    ),
-  },
-  {
-    name: "Supplier 3",
-    email: "thaind97.info@gmail.com",
-    phone: "0397471440",
-    actions: (
-      <Space>
-        <Button size="small">Chat</Button>
-        <Button size="small" type="primary">
-          sales closing
-        </Button>
-        <Button size="small" danger>
-          Remove
-        </Button>
-      </Space>
-    ),
-  },
-];
-const REQUEST_LIST = [
-  {
-    key: "1",
-    price: "80$",
-    category: "Iphone 7S",
-    quantity: 20,
-    createdBy: "User 1",
-    dateCreated: "30/09/2020 02:07:26 PM",
-    actions: (
-      <Button size="small" danger>
-        Remove
-      </Button>
-    ),
-  },
-  {
-    key: "2",
-    price: "80$",
-    category: "Iphone 7S",
-    quantity: 20,
-    createdBy: "User 1",
-    dateCreated: "30/09/2020 02:07:26 PM",
-    actions: (
-      <Button size="small" danger>
-        Remove
-      </Button>
-    ),
-  },
-  {
-    key: "3",
-    price: "80$",
-    category: "Iphone 7s",
-    quantity: 20,
-    createdBy: "User 1",
-    dateCreated: "30/09/2020 02:07:26 PM",
-    actions: (
-      <Button size="small" danger>
-        Remove
-      </Button>
-    ),
-  },
-];
-
 const GroupRequestDetailsComponent = ({
   group = {
     id: 1,
-    title: "Laptop Gaming Asus",
-    category: "Laptop",
+    title: "Iphone 7S",
+    category: <Tag color="processing">Iphone</Tag>,
     dateCreated: "27/09/2020",
     dateUpdated: "28/09/2020",
-    description: "2000 Mobile",
-    reserveAuctionID: "None",
-    status: G_PENDING,
+    description: "This Group will focus about Iphone 7S 64Gb",
+    quantity: "60 Units",
+    totalPrice: "20,300,000 đ",
+    status: G_NEGOTIATING,
   },
 }) => {
   const [isOpenContact, setIsOpenContact] = useState(false);
   const [isOpenAddRequest, setIsOpenAddRequest] = useState(false);
+  const [openRequestDetail, setOpenRequestDetail] = useState(false);
+  const REQUEST_LIST = [
+    {
+      key: "1",
+      price: "7,000,000 đ",
+      category: "Iphone 7S 64Gb",
+      quantity: 20,
+      createdBy: "User 1",
+      dateCreated: "30/09/2020 02:07:26 PM",
+      actions: (
+        <Space>
+          <Button
+            type="link"
+            onClick={() => {
+              setOpenRequestDetail(true);
+            }}
+          >
+            {" "}
+            Details
+          </Button>
+        </Space>
+      ),
+    },
+    {
+      key: "2",
+      price: "6,800,000 đ",
+      category: "Iphone 7S 64Gb",
+      quantity: 20,
+      createdBy: "User 1",
+      dateCreated: "30/09/2020 02:07:26 PM",
+      actions: (
+        <Space>
+          <Button
+            type="link"
+            onClick={() => {
+              setOpenRequestDetail(true);
+            }}
+          >
+            {" "}
+            Details
+          </Button>
+        </Space>
+      ),
+    },
+    {
+      key: "3",
+      price: "6,500,000 đ",
+      category: "Iphone 7s 64Gb",
+      quantity: 20,
+      createdBy: "User 1",
+      dateCreated: "30/09/2020 02:07:26 PM",
+      actions: (
+        <Space>
+          <Button
+            type="link"
+            onClick={() => {
+              setOpenRequestDetail(true);
+            }}
+          >
+            {" "}
+            Details
+          </Button>
+        </Space>
+      ),
+    },
+  ];
+  const SUPPLIER_CONTACT_DATA = [
+    {
+      name: "Supplier 1",
+      email: "thaindse62642@fpt.edu.vn",
+      phone: "0397471442",
+      actions: (
+        <Space>
+          <Button size="small">Chat</Button>
+          <Button size="small" type="primary">
+            sales closing
+          </Button>
+          <Button
+            size="small"
+            onClick={() => {
+              setOpenRequestDetail(true);
+            }}
+            danger
+          >
+            Remove
+          </Button>
+        </Space>
+      ),
+    },
+    {
+      name: "Supplier 2",
+      email: "thaind97.dev@gmail.com",
+      phone: "0397471441",
+      actions: (
+        <Space>
+          <Button size="small">Chat</Button>
+          <Button size="small" type="primary">
+            sales closing
+          </Button>
+          <Button size="small" danger>
+            Remove
+          </Button>
+        </Space>
+      ),
+    },
+    {
+      name: "Supplier 3",
+      email: "thaind97.info@gmail.com",
+      phone: "0397471440",
+      actions: (
+        <Space>
+          <Button size="small">Chat</Button>
+          <Button size="small" type="primary">
+            sales closing
+          </Button>
+          <Button size="small" danger>
+            Remove
+          </Button>
+        </Space>
+      ),
+    },
+  ];
 
   if (!group) {
     return null;
@@ -144,12 +177,33 @@ const GroupRequestDetailsComponent = ({
     category,
     dateCreated,
     dateUpdated,
-    reserveAuctionID,
     description,
     status,
+    totalPrice,
+    quantity,
   } = group;
   return (
     <Fragment>
+      <Drawer
+        width={640}
+        title="RFQ details"
+        placement={"right"}
+        closable={true}
+        onClose={() => setOpenRequestDetail(false)}
+        visible={openRequestDetail}
+        key={"right"}
+      >
+        <RequestDetailsComponent
+          buttonActions={[
+            {
+              label: "Remove",
+              buttonProps: {
+                danger: true,
+              },
+            },
+          ]}
+        />
+      </Drawer>
       <Row justify="space-between">
         <Title level={4}>Group Name: {title}</Title>
         <Space>
@@ -174,8 +228,9 @@ const GroupRequestDetailsComponent = ({
             <Descriptions.Item label="Updated Date">
               {dateUpdated}
             </Descriptions.Item>
-            <Descriptions.Item label="Reserve Auction ID">
-              {reserveAuctionID}
+            <Descriptions.Item label="Quantity">{quantity}</Descriptions.Item>
+            <Descriptions.Item label="Total Price">
+              {totalPrice}
             </Descriptions.Item>
             <Descriptions.Item label="Status">
               <GroupStatusComponent status={status} />
@@ -208,7 +263,6 @@ const GroupRequestDetailsComponent = ({
         </Card>
         <Card
           title={<Title level={5}>Suppliers Contact</Title>}
-          bordered={false}
           style={{ width: "100%" }}
         >
           <div>
@@ -225,6 +279,7 @@ const GroupRequestDetailsComponent = ({
         onCancel={() => setIsOpenContact(false)}
         title="Find Supplier"
         visible={isOpenContact}
+        okText="Add"
       >
         <ListingSupplierByCategoryComponent category={category} />
       </Modal>
