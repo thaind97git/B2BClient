@@ -1,9 +1,10 @@
-import { isArray } from "lodash/fp";
+import { flow, get, isArray } from "lodash/fp";
 import { getToken } from "../libs/localStorage";
 import axios from "axios";
 import moment from "moment";
 import Router from "next/router";
 import { notification } from "antd";
+import brn from "brn";
 
 export const currentPath = () => !isServer && Router.route;
 
@@ -64,6 +65,12 @@ export const Years = () => {
 
   return years;
 };
+
+export const createErrorSelector = (action) =>
+  flow(
+    brn(action.errorSelector, action.errorSelector, action.dataSelector),
+    get("error")
+  );
 
 export const doDispatchAction = (dispatch) => (fetchData) => {
   let actionCreators = fetchData;

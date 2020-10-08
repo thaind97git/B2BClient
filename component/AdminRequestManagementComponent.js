@@ -1,98 +1,153 @@
-import { Button, Col, Divider, Input, Radio, Row, Select, Tag } from "antd";
-import TextArea from "antd/lib/input/TextArea";
+import { Button, Col, Divider, Radio, Row, Select, Space } from "antd";
 import Modal from "antd/lib/modal/Modal";
 import React, { useEffect, useState } from "react";
+import {
+  R_BIDDING,
+  R_CANCELED,
+  R_DONE,
+  R_GROUPED,
+  R_NEGOTIATING,
+  R_ORDERED,
+  R_PENDING,
+  R_REJECTED,
+  R_WAIT_FOR_AUCTION,
+} from "../enums/requestStatus";
 import ReactTableLayout from "../layouts/ReactTableLayout";
 import { DEFAULT_DATE_RANGE } from "../utils";
+import GroupCreateComponent from "./GroupCreateComponent";
+import RequestStatusComponent from "./Utils/RequestStatusComponent";
 const { Option, OptGroup } = Select;
 const dataSource = [
   {
     key: "1",
-    fromPrice: "60$",
-    toPrice: "80$",
-    category: <Tag color="blue">Apple</Tag>,
+    price: "80$",
+    category: "Iphone 5",
     createdBy: "User 1",
     dateCreated: "30/09/2020 02:07:26 PM",
+    dueDate: "30/09/2020 02:07:26 PM",
+    status: <RequestStatusComponent status={R_PENDING} />,
     actions: (
-      <Button size="small" danger>
-        Reject
-      </Button>
+      <Space>
+        <Button size="small" danger>
+          Reject
+        </Button>
+      </Space>
     ),
   },
   {
     key: "2",
-    fromPrice: "60$",
-    toPrice: "80$",
-    category: <Tag color="blue">Apple</Tag>,
+    price: "80$",
+    category: "Iphone 5S",
     createdBy: "User 1",
     dateCreated: "30/09/2020 02:07:26 PM",
-    actions: (
-      <Button size="small" danger>
-        Reject
-      </Button>
-    ),
+    dueDate: "30/09/2020 02:07:26 PM",
+    status: <RequestStatusComponent status={R_CANCELED} />,
+    actions: "--",
   },
   {
     key: "3",
-    fromPrice: "60$",
-    toPrice: "80$",
-    category: <Tag color="blue">Apple</Tag>,
+    price: "80$",
+    category: "Iphone 6",
     createdBy: "User 1",
     dateCreated: "30/09/2020 02:07:26 PM",
-    actions: (
-      <Button size="small" danger>
-        Reject
-      </Button>
-    ),
+    dueDate: "30/09/2020 02:07:26 PM",
+    status: <RequestStatusComponent status={R_REJECTED} />,
+    actions: "--",
   },
   {
     key: "4",
-    fromPrice: "60$",
-    toPrice: "80$",
-    category: <Tag color="blue">Apple</Tag>,
+    price: "80$",
+    category: "Iphone 6S",
     createdBy: "User 1",
     dateCreated: "30/09/2020 02:07:26 PM",
+    dueDate: "30/09/2020 02:07:26 PM",
+    status: <RequestStatusComponent status={R_DONE} />,
+    actions: "--",
+  },
+  {
+    key: "5",
+    price: "80$",
+    category: "Iphone 7",
+    createdBy: "User 1",
+    dateCreated: "30/09/2020 02:07:26 PM",
+    dueDate: "30/09/2020 02:07:26 PM",
+    status: <RequestStatusComponent status={R_BIDDING} />,
     actions: (
-      <Button size="small" danger>
-        Reject
-      </Button>
+      <Space>
+        <Button size="small">View Auction</Button>
+      </Space>
     ),
   },
   {
     key: "5",
-    fromPrice: "60$",
-    toPrice: "80$",
-    category: <Tag color="blue">Apple</Tag>,
+    price: "80$",
+    category: "Iphone 7S",
     createdBy: "User 1",
     dateCreated: "30/09/2020 02:07:26 PM",
+    dueDate: "30/09/2020 02:07:26 PM",
+    status: <RequestStatusComponent status={R_WAIT_FOR_AUCTION} />,
     actions: (
-      <Button size="small" danger>
-        Reject
-      </Button>
+      <Space>
+        <Button size="small">View Auction</Button>
+      </Space>
     ),
+  },
+  {
+    key: "5",
+    price: "80$",
+    category: "Iphone 7S Plus",
+    createdBy: "User 1",
+    dateCreated: "30/09/2020 02:07:26 PM",
+    dueDate: "30/09/2020 02:07:26 PM",
+    status: <RequestStatusComponent status={R_GROUPED} />,
+    actions: (
+      <Space>
+        <Button size="small" danger>
+          Cancel
+        </Button>
+        <Button size="small">View Group</Button>
+      </Space>
+    ),
+  },
+  {
+    key: "5",
+    price: "80$",
+    category: "Iphone 8",
+    createdBy: "User 1",
+    dateCreated: "30/09/2020 02:07:26 PM",
+    dueDate: "30/09/2020 02:07:26 PM",
+    status: <RequestStatusComponent status={R_NEGOTIATING} />,
+    actions: (
+      <Space>
+        <Button size="small" danger>
+          Cancel
+        </Button>
+        <Button size="small">View Group</Button>
+      </Space>
+    ),
+  },
+  {
+    key: "5",
+    price: "80$",
+    category: "Iphone 10",
+    createdBy: "User 1",
+    dateCreated: "30/09/2020 02:07:26 PM",
+    dueDate: "30/09/2020 02:07:26 PM",
+    status: <RequestStatusComponent status={R_ORDERED} />,
+    actions: "--",
   },
 ];
 
 const columns = [
   {
-    title: "From Price",
-    dataIndex: "fromPrice",
-    key: "fromPrice",
-  },
-  {
-    title: "To Price",
-    dataIndex: "toPrice",
-    key: "toPrice",
-  },
-  {
-    title: "Category",
+    title: "Product Name",
     dataIndex: "category",
     key: "category",
   },
   {
-    title: "Created By",
-    dataIndex: "createdBy",
-    key: "createdBy",
+    title: "Preferred Unit Price",
+    dataIndex: "price",
+    key: "price",
   },
   {
     title: "Date Created",
@@ -100,11 +155,23 @@ const columns = [
     key: "dateCreated",
   },
   {
+    title: "Due Date",
+    dataIndex: "dueDate",
+    key: "dueDate",
+  },
+  {
+    title: "Status",
+    dataIndex: "status",
+    key: "status",
+  },
+
+  {
     title: "Actions",
     dataIndex: "actions",
     key: "actions",
   },
 ];
+
 function handleChange(value) {
   console.log(`selected ${value}`);
 }
@@ -137,6 +204,7 @@ const AdminRequestManagement = () => {
   return (
     <div>
       <Modal
+        width={800}
         title="Create New Group"
         visible={openGroupModal}
         onOk={() => setOpenGroupModal(false)}
@@ -154,12 +222,7 @@ const AdminRequestManagement = () => {
           </Button>,
         ]}
       >
-        <Input placeholder="Group name" />
-        <TextArea
-          placeholder="Group description"
-          allowClear
-          onChange={onChange}
-        />
+        <GroupCreateComponent />
       </Modal>
       <Modal
         title="Listing Group"
@@ -182,31 +245,31 @@ const AdminRequestManagement = () => {
           <Row>
             <Col span={24}>
               <Radio value="A">
-                <b>Group 1</b> created inside <Tag color="blue">Apple</Tag>
+                <b>Group 1</b> created inside Iphone 6
               </Radio>
             </Col>
             <Divider />
             <Col span={24}>
               <Radio value="B">
-                <b>Group 2</b> created inside <Tag color="blue">Apple</Tag>
+                <b>Group 2</b> created inside Iphone 7
               </Radio>
             </Col>
             <Divider />
             <Col span={24}>
               <Radio value="C">
-                <b>Group 3</b> created inside <Tag color="blue">Apple</Tag>
+                <b>Group 3</b> created inside Iphone 8
               </Radio>
             </Col>
             <Divider />
             <Col span={24}>
               <Radio value="D">
-                <b>Group 4</b> created inside <Tag color="blue">Apple</Tag>
+                <b>Group 4</b> created inside Iphone 10
               </Radio>
             </Col>
             <Divider />
             <Col span={24}>
               <Radio value="E">
-                <b>Group 5</b> created inside <Tag color="blue">Apple</Tag>
+                <b>Group 5</b> created inside Iphone 12
               </Radio>
             </Col>
           </Row>

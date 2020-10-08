@@ -9,36 +9,34 @@ import {
   MenuFoldOutlined,
   ExperimentOutlined,
   OrderedListOutlined,
-  PicLeftOutlined,
-  WechatOutlined,
+  FallOutlined,
+  WechatOutlined
 } from "@ant-design/icons";
 import MemberNavComponent from "../component/MemberNavComponent";
 import { currentPath } from "../utils";
 import Link from "next/link";
-import { removeToken } from "../libs/localStorage";
-import Router from "next/router";
 
 const { Header, Content, Sider } = Layout;
 
-const SUPPLIER_MENU = [
+const ADMIN_MENU = [
   {
     key: "1",
     icon: <UserOutlined />,
     label: "Dashboard",
-    link: "/member",
+    link: "/aggregator",
     subMenu: [],
   },
   {
     key: "2",
-    icon: <PicLeftOutlined />,
-    label: "Category",
+    icon: <FallOutlined />,
+    label: "Request",
     link: undefined,
     subMenu: [
       {
         subKey: "2.1",
-        subLink: "/member/category",
+        subLink: "/aggregator/request",
         subIcon: <OrderedListOutlined />,
-        subLabel: "Categories",
+        subLabel: "Requests",
       },
     ],
   },
@@ -50,17 +48,24 @@ const SUPPLIER_MENU = [
     subMenu: [
       {
         subKey: "3.1",
-        subLink: "/member/bidding",
+        subLink: "/aggregator/bidding",
         subIcon: <OrderedListOutlined />,
-        subLabel: "Available Bidding",
+        subLabel: "Biddings",
       },
     ],
   },
   {
     key: "4",
+    icon: <UserOutlined />,
+    label: "Group",
+    link: "/aggregator/group",
+    subMenu: [],
+  },
+  {
+    key: "5",
     icon: <WechatOutlined />,
     label: "Chat",
-    link: "/member/chat",
+    link: "/aggregator/group/chat",
     subMenu: [],
   },
 ];
@@ -68,26 +73,20 @@ const SUPPLIER_MENU = [
 const PROFILE_MENU = (
   <Menu>
     <Menu.Item>
-      <Link href="/member/user-profile">
+      <Link href="/supplier/user-profile">
         <a>Profile</a>
       </Link>
     </Menu.Item>
     <Menu.Item>
       <a href="#">Company Profile</a>
     </Menu.Item>
-    <Menu.Item
-      danger
-      onClick={() => {
-        removeToken();
-        Router.push("/login");
-      }}
-    >
+    <Menu.Item danger>
       <LoginOutlined /> Sign out
     </Menu.Item>
   </Menu>
 );
 
-const MemberLayout = ({ children }) => {
+const AggregatorLayout = ({ children }) => {
   const [collapsed, setCollapsed] = useState(true);
   return (
     <div
@@ -117,7 +116,7 @@ const MemberLayout = ({ children }) => {
                 </a>
               </Link>
             </Row>
-            <MemberNavComponent path={currentPath()} menus={SUPPLIER_MENU} />
+            <MemberNavComponent path={currentPath()} menus={ADMIN_MENU} />
           </Sider>
 
           <Layout style={{ background: "#f8f8f8" }} className="site-layout">
@@ -191,4 +190,4 @@ const MemberLayout = ({ children }) => {
   );
 };
 
-export default MemberLayout;
+export default AggregatorLayout;

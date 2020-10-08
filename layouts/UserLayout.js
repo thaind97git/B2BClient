@@ -20,7 +20,7 @@ class UserLayout extends React.PureComponent {
                 </Fragment>
               </Link>
             </div>
-            <div className="desc">B2B title</div>
+            <div className="desc">B2B Slogan</div>
           </div>
           {children}
         </div>

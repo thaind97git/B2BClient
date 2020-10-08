@@ -1,0 +1,9 @@
+export const R_PENDING = 0;
+export const R_DONE = 1;
+export const R_GROUPED = 2;
+export const R_CANCELED = 3;
+export const R_REJECTED = 4;
+export const R_NEGOTIATING = 5;
+export const R_WAIT_FOR_AUCTION = 6;
+export const R_BIDDING = 7;
+export const R_ORDERED = 8;

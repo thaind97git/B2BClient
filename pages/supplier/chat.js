@@ -1,11 +1,11 @@
 import React from "react";
 import Messenger from "../../component/Chat/Messenger";
-import MemberLayout from "../../layouts/MemberLayout";
+import SupplierLayout from "../../layouts/SupplierLayout";
 const Page = () => {
   return (
-    <MemberLayout>
+    <SupplierLayout>
       <Messenger />
-    </MemberLayout>
+    </SupplierLayout>
   );
 };
 export default Page;

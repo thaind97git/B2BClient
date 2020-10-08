@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import AdminRequestCanceledComponent from "../../../component/AdminRequestCanceledComponent";
 import AdminRequestGroupedComponent from "../../../component/AdminRequestGroupedComponent";
 import AdminRequestManagementComponent from "../../../component/AdminRequestManagementComponent";
-import AdminLayout from "../../../layouts/AdminLayout";
+import AggregatorLayout from "../../../layouts/AggregatorLayout";
 import TabsLayout from "../../../layouts/TabsLayout";
 
 const Page = () => {
@@ -38,13 +38,13 @@ const Page = () => {
     },
   ];
   return (
-    <AdminLayout>
+    <AggregatorLayout>
       <TabsLayout
         tabs={REQUEST_TABS}
         defaultTab={defaultTab}
         setDefaultTab={setDefaultTab}
       />
-    </AdminLayout>
+    </AggregatorLayout>
   );
 };
 export default Page;

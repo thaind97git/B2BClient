@@ -87,7 +87,7 @@ const LoginComponent = ({ loginUser, userLoginError, resetData }) => {
         </FormItem>
 
         <a className="login-form-forgot" href="">
-          Forgot password
+          Forgot password?
         </a>
       </FormItem>
 
