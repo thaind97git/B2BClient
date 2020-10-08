@@ -19,13 +19,13 @@ import Router from "next/router";
 const { Header, Content, Sider } = Layout;
 
 const BUYER_MENU = [
-  {
-    key: "1",
-    icon: <UserOutlined />,
-    label: "Dashboard",
-    link: "/buyer",
-    subMenu: [],
-  },
+  // {
+  //   key: "1",
+  //   icon: <UserOutlined />,
+  //   label: "Dashboard",
+  //   link: "/buyer",
+  //   subMenu: [],
+  // },
   {
     key: "2",
     icon: <FallOutlined />,

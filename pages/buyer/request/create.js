@@ -62,8 +62,8 @@ const Page = ({ setCategorySelected, categorySelected }) => {
   ];
   return (
     <BuyerLayout>
-      <Row>
-        <Col sm={24} span={20}>
+      <BuyerRequestCreateComponent />
+      {/* <Col sm={24} span={20}>
           <Row justify="center">
             {!!categorySelected.length && (
               <Title level={5}>
@@ -122,8 +122,7 @@ const Page = ({ setCategorySelected, categorySelected }) => {
               )}
             </Row>
           </div>
-        </Col>
-      </Row>
+        </Col> */}
     </BuyerLayout>
   );
 };
