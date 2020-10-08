@@ -1,11 +1,11 @@
 import React from "react";
 import SupplierCategoryComponent from "../../../component/SupplierCategoryComponent";
-import MemberLayout from "../../../layouts/MemberLayout";
+import SupplierLayout from "../../../layouts/SupplierLayout";
 const Page = () => {
   return (
-    <MemberLayout>
+    <SupplierLayout>
       <SupplierCategoryComponent />
-    </MemberLayout>
+    </SupplierLayout>
   );
 };
 export default Page;

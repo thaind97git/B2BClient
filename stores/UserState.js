@@ -26,10 +26,10 @@ export const userLogin = ({ email, password }) =>
         Router.push("/buyer/rfq");
       }
       if (resp.role === SUPPLIER) {
-        Router.push("/member");
+        Router.push("/supplier");
       }
       if (resp.role === MODERATOR) {
-        Router.push("/admin");
+        Router.push("/aggregator");
       }
     }
   });

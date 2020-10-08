@@ -1,11 +1,11 @@
 import React from "react";
 import SupplierBiddingDetailsComponent from "../../../component/SupplierBiddingDetailsComponent";
-import MemberLayout from "../../../layouts/MemberLayout";
+import SupplierLayout from "../../../layouts/SupplierLayout";
 const BiddingDetailsPage = () => {
   return (
-    <MemberLayout>
+    <SupplierLayout>
       <SupplierBiddingDetailsComponent />
-    </MemberLayout>
+    </SupplierLayout>
   );
 };
 export default BiddingDetailsPage;

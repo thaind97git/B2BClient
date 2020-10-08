@@ -9,33 +9,36 @@ import {
   MenuFoldOutlined,
   ExperimentOutlined,
   OrderedListOutlined,
-  FallOutlined,
+  PicLeftOutlined,
+  WechatOutlined,
 } from "@ant-design/icons";
 import MemberNavComponent from "../component/MemberNavComponent";
 import { currentPath } from "../utils";
 import Link from "next/link";
+import { removeToken } from "../libs/localStorage";
+import Router from "next/router";
 
 const { Header, Content, Sider } = Layout;
 
-const ADMIN_MENU = [
+const SUPPLIER_MENU = [
   {
     key: "1",
     icon: <UserOutlined />,
     label: "Dashboard",
-    link: "/admin",
+    link: "/supplier",
     subMenu: [],
   },
   {
     key: "2",
-    icon: <FallOutlined />,
-    label: "Request",
+    icon: <PicLeftOutlined />,
+    label: "Category",
     link: undefined,
     subMenu: [
       {
         subKey: "2.1",
-        subLink: "/admin/request",
+        subLink: "/supplier/category",
         subIcon: <OrderedListOutlined />,
-        subLabel: "Requests",
+        subLabel: "Categories",
       },
     ],
   },
@@ -47,17 +50,17 @@ const ADMIN_MENU = [
     subMenu: [
       {
         subKey: "3.1",
-        subLink: "/admin/bidding",
+        subLink: "/supplier/bidding",
         subIcon: <OrderedListOutlined />,
-        subLabel: "Biddings",
+        subLabel: "Available Bidding",
       },
     ],
   },
   {
     key: "4",
-    icon: <UserOutlined />,
-    label: "Group",
-    link: "/admin/group",
+    icon: <WechatOutlined />,
+    label: "Chat",
+    link: "/supplier/chat",
     subMenu: [],
   },
 ];
@@ -65,20 +68,26 @@ const ADMIN_MENU = [
 const PROFILE_MENU = (
   <Menu>
     <Menu.Item>
-      <Link href="/member/user-profile">
+      <Link href="/supplier/user-profile">
         <a>Profile</a>
       </Link>
     </Menu.Item>
     <Menu.Item>
       <a href="#">Company Profile</a>
     </Menu.Item>
-    <Menu.Item danger>
+    <Menu.Item
+      danger
+      onClick={() => {
+        removeToken();
+        Router.push("/login");
+      }}
+    >
       <LoginOutlined /> Sign out
     </Menu.Item>
   </Menu>
 );
 
-const AdminLayout = ({ children }) => {
+const SupplierLayout = ({ children }) => {
   const [collapsed, setCollapsed] = useState(true);
   return (
     <div
@@ -108,7 +117,7 @@ const AdminLayout = ({ children }) => {
                 </a>
               </Link>
             </Row>
-            <MemberNavComponent path={currentPath()} menus={ADMIN_MENU} />
+            <MemberNavComponent path={currentPath()} menus={SUPPLIER_MENU} />
           </Sider>
 
           <Layout style={{ background: "#f8f8f8" }} className="site-layout">
@@ -182,4 +191,4 @@ const AdminLayout = ({ children }) => {
   );
 };
 
-export default AdminLayout;
+export default SupplierLayout;

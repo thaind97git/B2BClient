@@ -2,7 +2,6 @@ import React, { useState } from "react";
 
 import { Layout, Menu, Row, Dropdown } from "antd";
 import {
-  UserOutlined,
   DownOutlined,
   LoginOutlined,
   MenuUnfoldOutlined,
@@ -45,7 +44,7 @@ const BUYER_MENU = [
 const PROFILE_MENU = (
   <Menu>
     <Menu.Item>
-      <Link href="/member/user-profile">
+      <Link href="/supplier/user-profile">
         <a>Profile</a>
       </Link>
     </Menu.Item>
@@ -64,7 +63,7 @@ const PROFILE_MENU = (
   </Menu>
 );
 
-const MemberLayout = ({ children }) => {
+const SupplierLayout = ({ children }) => {
   const [collapsed, setCollapsed] = useState(true);
   return (
     <div
@@ -168,4 +167,4 @@ const MemberLayout = ({ children }) => {
   );
 };
 
-export default MemberLayout;
+export default SupplierLayout;
