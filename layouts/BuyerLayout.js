@@ -28,14 +28,14 @@ const BUYER_MENU = [
   {
     key: "2",
     icon: <FallOutlined />,
-    label: "Request",
+    label: "RFQ",
     link: undefined,
     subMenu: [
       {
         subKey: "2.1",
         subLink: "/buyer/rfq",
         subIcon: <OrderedListOutlined />,
-        subLabel: "Your Requests",
+        subLabel: "Your RFQ",
       },
     ],
   },
