@@ -5,8 +5,6 @@ import { compose } from "redux";
 import { Button, Space, Typography, Row, Select, Input } from "antd";
 import ReactTableLayout from "../layouts/ReactTableLayout";
 import { DEFAULT_DATE_RANGE } from "../utils";
-import Link from "next/link";
-import { createLink } from "../libs";
 import GroupStatusComponent from "./Utils/GroupStatusComponent";
 import {
   G_BIDDING,
@@ -45,10 +43,13 @@ const dataSource = [
     dateCreated: "27/09/1999",
     actions: (
       <Space>
-        <Button type="primary" size="small"
+        <Button
+          type="primary"
+          size="small"
           onClick={() => {
-            Router.push("/admin/group/details?id=1");
-          }}>
+            Router.push("/aggregator/group/details?id=1");
+          }}
+        >
           View Detail
         </Button>
       </Space>
@@ -65,10 +66,13 @@ const dataSource = [
     dateCreated: "27/09/1999",
     actions: (
       <Space>
-        <Button type="primary" size="small"
+        <Button
+          type="primary"
+          size="small"
           onClick={() => {
-            Router.push("/admin/group/details?id=1");
-          }}>
+            Router.push("/aggregator/group/details?id=1");
+          }}
+        >
           View Detail
         </Button>
       </Space>
@@ -85,10 +89,13 @@ const dataSource = [
     dateCreated: "27/09/1999",
     actions: (
       <Space>
-        <Button type="primary" size="small"
+        <Button
+          type="primary"
+          size="small"
           onClick={() => {
-            Router.push("/admin/group/details?id=1");
-          }}>
+            Router.push("/aggregator/group/details?id=1");
+          }}
+        >
           View Detail
         </Button>
       </Space>
@@ -105,10 +112,13 @@ const dataSource = [
     dateCreated: "27/09/1999",
     actions: (
       <Space>
-        <Button type="primary" size="small"
+        <Button
+          type="primary"
+          size="small"
           onClick={() => {
-            Router.push("/admin/group/details?id=1");
-          }}>
+            Router.push("/aggregator/group/details?id=1");
+          }}
+        >
           View Detail
         </Button>
       </Space>
@@ -125,10 +135,13 @@ const dataSource = [
     dateCreated: "27/09/1999",
     actions: (
       <Space>
-        <Button type="primary" size="small"
+        <Button
+          type="primary"
+          size="small"
           onClick={() => {
-            Router.push("/admin/group/details?id=1");
-          }}>
+            Router.push("/aggregator/group/details?id=1");
+          }}
+        >
           View Detail
         </Button>
       </Space>
@@ -145,10 +158,13 @@ const dataSource = [
     dateCreated: "27/09/1999",
     actions: (
       <Space>
-        <Button type="primary" size="small"
+        <Button
+          type="primary"
+          size="small"
           onClick={() => {
-            Router.push("/admin/group/details?id=1");
-          }}>
+            Router.push("/aggregator/group/details?id=1");
+          }}
+        >
           View Detail
         </Button>
       </Space>
@@ -165,10 +181,13 @@ const dataSource = [
     dateCreated: "27/09/1999",
     actions: (
       <Space>
-        <Button type="primary" size="small"
+        <Button
+          type="primary"
+          size="small"
           onClick={() => {
-            Router.push("/admin/group/details?id=1");
-          }}>
+            Router.push("/aggregator/group/details?id=1");
+          }}
+        >
           View Detail
         </Button>
       </Space>
@@ -234,7 +253,7 @@ const GroupRequestComponent = () => {
             <div>
               <Search
                 placeholder="Created By"
-                onSearch={value => console.log(value)}
+                onSearch={(value) => console.log(value)}
                 style={{ width: 200 }}
                 size="large"
               />
