@@ -10,6 +10,7 @@ import {
   ExperimentOutlined,
   OrderedListOutlined,
   FallOutlined,
+  WechatOutlined
 } from "@ant-design/icons";
 import MemberNavComponent from "../component/MemberNavComponent";
 import { currentPath } from "../utils";
@@ -58,6 +59,13 @@ const ADMIN_MENU = [
     icon: <UserOutlined />,
     label: "Group",
     link: "/aggregator/group",
+    subMenu: [],
+  },
+  {
+    key: "5",
+    icon: <WechatOutlined />,
+    label: "Chat",
+    link: "/aggregator/group/chat",
     subMenu: [],
   },
 ];

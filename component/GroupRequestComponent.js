@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { connect } from "react-redux";
+import Router from "next/router";
 import { compose } from "redux";
-import { Button, Space, Typography } from "antd";
-import { Row } from "antd";
+import { Button, Space, Typography, Row, Select, Input } from "antd";
 import ReactTableLayout from "../layouts/ReactTableLayout";
 import { DEFAULT_DATE_RANGE } from "../utils";
 import Link from "next/link";
@@ -19,6 +19,8 @@ import {
 } from "../enums/groupStatus";
 
 const { Title } = Typography;
+const { Option, OptGroup } = Select;
+const { Search } = Input;
 
 const connectToRedux = connect();
 /*createStructuredSelector({
@@ -35,22 +37,19 @@ const dataSource = [
   {
     id: "1",
     key: "1",
-    name: (
-      <Link href={createLink(["admin", "group", "details?id=1"])}>
-        Laptop Gaming Asus
-      </Link>
-    ),
+    name: "Laptop Gaming Asus",
     createdBy: "Aggregator 1",
-    product: "Iphone 12",
+    product: "Laptop Gaming Asus RTZ 12000",
+    category: "Laptop",
     status: <GroupStatusComponent status={G_PENDING} />,
     dateCreated: "27/09/1999",
     actions: (
       <Space>
-        <Button type="primary" size="small">
-          Add request
-        </Button>
-        <Button danger size="small">
-          Cancel Group
+        <Button type="primary" size="small"
+          onClick={() => {
+            Router.push("/admin/group/details?id=1");
+          }}>
+          View Detail
         </Button>
       </Space>
     ),
@@ -58,47 +57,59 @@ const dataSource = [
   {
     id: "2",
     key: "2",
-    name: (
-      <Link href={createLink(["admin", "group", "details?id=1"])}>
-        Iphone 12
-      </Link>
-    ),
+    name: "Iphone 12",
     createdBy: "Aggregator 2",
     product: "Iphone 12",
+    category: "Mobile Phone",
     status: <GroupStatusComponent status={G_BIDDING} />,
     dateCreated: "27/09/1999",
-    actions: "--",
+    actions: (
+      <Space>
+        <Button type="primary" size="small"
+          onClick={() => {
+            Router.push("/admin/group/details?id=1");
+          }}>
+          View Detail
+        </Button>
+      </Space>
+    ),
   },
   {
     id: "2",
     key: "2",
-    name: (
-      <Link href={createLink(["admin", "group", "details?id=1"])}>
-        Iphone 12
-      </Link>
-    ),
-    createdBy: "Aggregator 2",
-    product: "Iphone 12",
+    name: "Jean for men",
+    createdBy: "Aggregator 3",
+    product: "Blue Jean",
+    category: "Cloth",
     status: <GroupStatusComponent status={G_FAILED} />,
     dateCreated: "27/09/1999",
-    actions: "--",
+    actions: (
+      <Space>
+        <Button type="primary" size="small"
+          onClick={() => {
+            Router.push("/admin/group/details?id=1");
+          }}>
+          View Detail
+        </Button>
+      </Space>
+    ),
   },
   {
     id: "2",
     key: "2",
-    name: (
-      <Link href={createLink(["admin", "group", "details?id=1"])}>
-        Iphone 12
-      </Link>
-    ),
+    name: "Keyboard gaming",
     createdBy: "Aggregator 2",
-    product: "Iphone 12",
+    product: "Keyboard Razor Z2",
+    category: "Keyboard",
     status: <GroupStatusComponent status={G_DONE} />,
     dateCreated: "27/09/1999",
     actions: (
       <Space>
-        <Button type="primary" size="small">
-          Export Order
+        <Button type="primary" size="small"
+          onClick={() => {
+            Router.push("/admin/group/details?id=1");
+          }}>
+          View Detail
         </Button>
       </Space>
     ),
@@ -106,33 +117,39 @@ const dataSource = [
   {
     id: "2",
     key: "2",
-    name: (
-      <Link href={createLink(["admin", "group", "details?id=1"])}>
-        Iphone 12
-      </Link>
-    ),
-    createdBy: "Aggregator 2",
-    product: "Iphone 12",
+    name: "Gaming Mouse",
+    createdBy: "Aggregator 8",
+    product: "Razor Mouse",
+    category: "Mouse",
     status: <GroupStatusComponent status={G_ORDERED} />,
     dateCreated: "27/09/1999",
-    actions: "--",
+    actions: (
+      <Space>
+        <Button type="primary" size="small"
+          onClick={() => {
+            Router.push("/admin/group/details?id=1");
+          }}>
+          View Detail
+        </Button>
+      </Space>
+    ),
   },
   {
     id: "2",
     key: "2",
-    name: (
-      <Link href={createLink(["admin", "group", "details?id=1"])}>
-        Iphone 12
-      </Link>
-    ),
+    name: "Headphone for listen to music",
     createdBy: "Aggregator 2",
-    product: "Iphone 12",
+    product: "Headphone G18",
+    category: "HeadPhone",
     status: <GroupStatusComponent status={G_WAIT_FOR_AUCTION} />,
     dateCreated: "27/09/1999",
     actions: (
       <Space>
-        <Button danger size="small">
-          Cancel Reverse Auction
+        <Button type="primary" size="small"
+          onClick={() => {
+            Router.push("/admin/group/details?id=1");
+          }}>
+          View Detail
         </Button>
       </Space>
     ),
@@ -140,19 +157,19 @@ const dataSource = [
   {
     id: "2",
     key: "2",
-    name: (
-      <Link href={createLink(["admin", "group", "details?id=1"])}>
-        Iphone 12
-      </Link>
-    ),
-    createdBy: "Aggregator 2",
-    product: "Iphone 12",
+    name: "Watch Ben 10",
+    createdBy: "Aggregator 14",
+    product: "Watch from Ben",
+    category: "Watch",
     status: <GroupStatusComponent status={G_NEGOTIATING} />,
     dateCreated: "27/09/1999",
     actions: (
       <Space>
-        <Button type="primary" size="small">
-          Create Reverse Auction
+        <Button type="primary" size="small"
+          onClick={() => {
+            Router.push("/admin/group/details?id=1");
+          }}>
+          View Detail
         </Button>
       </Space>
     ),
@@ -166,9 +183,14 @@ const columns = [
     key: "name",
   },
   {
-    title: "Product",
+    title: "Product Name",
     dataIndex: "product",
     key: "product",
+  },
+  {
+    title: "Category",
+    dataIndex: "category",
+    key: "category",
   },
   {
     title: "Created By",
@@ -192,6 +214,10 @@ const columns = [
   },
 ];
 
+function handleChange(value) {
+  console.log(`selected ${value}`);
+}
+
 const GroupRequestComponent = () => {
   const [searchMessage, setSearchMessage] = useState("");
   const [dateRange, setDateRange] = useState(DEFAULT_DATE_RANGE);
@@ -199,32 +225,35 @@ const GroupRequestComponent = () => {
     <div>
       <Row justify="space-between" align="middle">
         <Title level={3}>Group Management</Title>
-        <Title>
-          <Button type="primary">Create new group</Button>
-        </Title>
       </Row>
       <ReactTableLayout
         searchProps={{
           searchMessage,
           setSearchMessage,
-          // exElement: (
-          //   <Fragment>
-          //     <Select
-          //       size="large"
-          //       placeholder="Filter by category"
-          //       style={{ width: 200 }}
-          //       onChange={handleChange}
-          //     >
-          //       <OptGroup label="Category 1">
-          //         <Option value="jack">Sub-1 Category 1</Option>
-          //         <Option value="lucy">Sub-2 Category 1</Option>
-          //       </OptGroup>
-          //       <OptGroup label="Category 2">
-          //         <Option value="Yiminghe">Sub-1 Category 1</Option>
-          //       </OptGroup>
-          //     </Select>
-          //   </Fragment>
-          // ),
+          exElement: (
+            <div>
+              <Search
+                placeholder="Created By"
+                onSearch={value => console.log(value)}
+                style={{ width: 200 }}
+                size="large"
+              />
+              <Select
+                size="large"
+                placeholder="Filter by category"
+                style={{ width: 200 }}
+                onChange={handleChange}
+              >
+                <OptGroup label="Category 1">
+                  <Option value="jack">Sub-1 Category 1</Option>
+                  <Option value="lucy">Sub-2 Category 1</Option>
+                </OptGroup>
+                <OptGroup label="Category 2">
+                  <Option value="Yiminghe">Sub-1 Category 1</Option>
+                </OptGroup>
+              </Select>
+            </div>
+          ),
         }}
         dateRangeProps={{
           dateRange,

@@ -15,7 +15,7 @@ const formItemLayout = {
     span: 24,
   },
 };
-const options = [
+/*const options = [
   {
     value: "zhejiang",
     label: "Category1",
@@ -48,7 +48,7 @@ const options = [
       },
     ],
   },
-];
+];*/
 const GroupCreateComponent = () => {
   const onFinish = (values) => {
     console.log("Received values of form: ", values);
@@ -100,13 +100,15 @@ const GroupCreateComponent = () => {
                   },
                 ]}
               >
-                <Cascader
+                
+                {/* <Cascader
                   size="large"
                   options={options}
                   expandTrigger="hover"
                   // displayRender={displayRender}
                   onChange={onChange}
-                />
+                /> */}
+                <Input size="large" placeholder="Enter the product name" />
               </FormItem>
             </Col>
           </Row>

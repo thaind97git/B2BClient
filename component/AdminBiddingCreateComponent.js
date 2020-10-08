@@ -88,7 +88,7 @@ const AdminBiddingCreateComponent = () => {
         title="Invite Participant"
         visible={visible}
         onOk={() => setVisible(false)}
-        onCancel={() => setVisible(true)}
+        onCancel={() => setVisible(false)}
       >
         <Checkbox.Group style={{ width: "100%" }} onChange={onChange}>
           <Row>
