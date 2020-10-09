@@ -1,17 +1,14 @@
 import React, { useState } from "react";
-import { Checkbox, Row, Col, Typography, Space } from "antd";
-const { Title } = Typography;
+import { Checkbox, Row, Col, Space, Divider } from "antd";
 const CheckboxGroup = Checkbox.Group;
 
-const ListingSupplierByCategoryComponent = ({}) => {
+const ListingSupplierByCategoryComponent = () => {
   const options = [
     {
       id: 1,
       content: (
         <Space>
-          <Title level={5} style={{ marginBottom: 0 }}>
-            Supplier 1
-          </Title>
+          <b style={{ marginBottom: 0 }}>Supplier 1</b>
 
           <div>
             (
@@ -20,6 +17,7 @@ const ListingSupplierByCategoryComponent = ({}) => {
             </span>
             )
           </div>
+          <Divider />
         </Space>
       ),
     },
@@ -27,9 +25,7 @@ const ListingSupplierByCategoryComponent = ({}) => {
       id: 2,
       content: (
         <Space>
-          <Title level={5} style={{ marginBottom: 0 }}>
-            Supplier 2
-          </Title>
+          <b style={{ marginBottom: 0 }}>Supplier 2</b>
 
           <div>
             (
@@ -38,6 +34,7 @@ const ListingSupplierByCategoryComponent = ({}) => {
             </span>
             )
           </div>
+          <Divider />
         </Space>
       ),
     },
@@ -45,9 +42,7 @@ const ListingSupplierByCategoryComponent = ({}) => {
       id: 3,
       content: (
         <Space>
-          <Title level={5} style={{ marginBottom: 0 }}>
-            Supplier 3
-          </Title>
+          <b style={{ marginBottom: 0 }}>Supplier 3</b>
 
           <div>
             (
@@ -56,6 +51,7 @@ const ListingSupplierByCategoryComponent = ({}) => {
             </span>
             )
           </div>
+          <Divider />
         </Space>
       ),
     },

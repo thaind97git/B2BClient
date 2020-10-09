@@ -324,6 +324,7 @@ const GroupRequestDetailsComponent = ({
       </Space>
       <Modal
         onCancel={() => setIsOpenContact(false)}
+        onOk={() => setIsOpenContact(false)}
         title="Find Supplier"
         visible={isOpenContact}
         okText="Add"
@@ -331,9 +332,12 @@ const GroupRequestDetailsComponent = ({
         <ListingSupplierByCategoryComponent category={category} />
       </Modal>
       <Modal
+        width={600}
         onCancel={() => setIsOpenAddRequest(false)}
+        onOk={() => setIsOpenAddRequest(false)}
         title="Add Request"
         visible={isOpenAddRequest}
+        okText="Add"
       >
         <ListingRequestForGroupComponent category={category} />
       </Modal>
