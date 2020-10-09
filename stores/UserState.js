@@ -22,11 +22,20 @@ export const userLogin = ({ email, password }) =>
     if (resp.token) {
       saveToken(resp.token);
       openNotification("success", { message: "Login success" });
+      const returnUrl = Router.query["returnUrl"];
       if (resp.role === BUYER) {
-        Router.push("/buyer/rfq");
+        if (!!returnUrl) {
+          Router.push(returnUrl);
+        } else {
+          Router.push("/buyer/rfq");
+        }
       }
       if (resp.role === SUPPLIER) {
-        Router.push("/supplier");
+        if (!!returnUrl) {
+          Router.push(returnUrl);
+        } else {
+          Router.push("/supplier");
+        }
       }
       if (resp.role === MODERATOR) {
         Router.push("/aggregator");

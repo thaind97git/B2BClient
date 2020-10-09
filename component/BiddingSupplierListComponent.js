@@ -1,11 +1,13 @@
-import { Button, Row, Tag } from "antd";
-import React from "react";
+import { Button, Col, Row, Space, Tag } from "antd";
+import React, { useState } from "react";
 import ReactTableLayout from "../layouts/ReactTableLayout";
 import {
   CheckCircleOutlined,
   CloseCircleOutlined,
   ClockCircleOutlined,
 } from "@ant-design/icons";
+import Modal from "antd/lib/modal/Modal";
+import ListingSupplierByCategoryComponent from "./ListingSupplierByCategoryComponent";
 const columns = [
   {
     title: "Supplier",
@@ -79,8 +81,22 @@ const dataSource = [
   },
 ];
 const BiddingSupplierListComponent = () => {
+  const [isOpenContact, setIsOpenContact] = useState(false);
   return (
     <Row>
+      <Modal
+        onCancel={() => setIsOpenContact(false)}
+        title="Add Supplier"
+        visible={isOpenContact}
+        okText="Add"
+      >
+        <ListingSupplierByCategoryComponent />
+      </Modal>
+      <Row justify="end" style={{ marginBottom: 32, width: "100%" }}>
+        <Button onClick={() => setIsOpenContact(true)} type="primary">
+          Add new Supplier
+        </Button>
+      </Row>
       <ReactTableLayout
         hasAction={false}
         hasPaging={false}

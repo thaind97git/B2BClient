@@ -13,6 +13,7 @@ import {
 import React, { useEffect, useState } from "react";
 import moment from "moment";
 import MarkdownEditorComponent from "./MarkdownEditorComponent";
+import { displayCurrency } from "../utils";
 const { Title } = Typography;
 const { Option } = Select;
 function handleChange(value) {
@@ -41,13 +42,13 @@ const styles = {
     padding: "0px 8px",
   },
 };
-const BiddingSettingComponent = ({ setDefaultTab, setIsDoneSetting }) => {
+const BiddingSettingComponent = ({ setIsDoneSetting }) => {
   const [brief, setBrief] = useState(null);
   const [currentPrice, setCurrentPrice] = useState(0);
   const [currentValue, setCurrentValue] = useState(0);
   const [qualificationValue, setQualificationValue] = useState(0);
   const [qualificationPrice, setQualificationPrice] = useState(0);
-  const [quantity, setQuantity] = useState(10);
+  const [quantity, setQuantity] = useState(11);
   const onFinish = (values) => {
     console.log("Received values of form: ", values);
     setIsDoneSetting(true);
@@ -57,17 +58,15 @@ const BiddingSettingComponent = ({ setDefaultTab, setIsDoneSetting }) => {
     setCurrentValue(quantity * currentPrice);
   }, [currentPrice, quantity]);
   useEffect(() => {
-    setCurrentValue(quantity * setQualificationPrice);
-  }, [setQualificationPrice, quantity]);
+    setQualificationValue(quantity * qualificationPrice);
+  }, [qualificationPrice, quantity]);
 
   useEffect(() => {
     console.log({ currentValue });
   }, [currentValue]);
-
   return (
     <div>
       <Form
-        // {...formItemLayout}
         layout="vertical"
         onFinish={onFinish}
         initialValues={{
@@ -215,7 +214,6 @@ const BiddingSettingComponent = ({ setDefaultTab, setIsDoneSetting }) => {
                 onChange={(value) => {
                   setCurrentPrice(value);
                 }}
-                prefix="đ"
               />
             </Form.Item>
           </Col>
@@ -224,16 +222,7 @@ const BiddingSettingComponent = ({ setDefaultTab, setIsDoneSetting }) => {
               label="Current Value (Not show to participants)"
               name="currentValue"
             >
-              <InputNumber
-                style={{ width: "100%" }}
-                formatter={(value) =>
-                  `đ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-                }
-                parser={(value) => value.replace(/\đ\s?|(,*)/g, "")}
-                value={currentValue}
-                disabled
-                prefix="đ"
-              />
+              <Title level={4}>{displayCurrency(currentValue)}</Title>
             </Form.Item>
           </Col>
         </Row>
@@ -263,16 +252,7 @@ const BiddingSettingComponent = ({ setDefaultTab, setIsDoneSetting }) => {
           </Col>
           <Col md={12} sm={20} style={styles.colStyle}>
             <Form.Item label="Qualification Value" name="quaValue">
-              <InputNumber
-                style={{ width: "100%" }}
-                formatter={(value) =>
-                  `đ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-                }
-                parser={(value) => value.replace(/\đ\s?|(,*)/g, "")}
-                value={qualificationValue}
-                disabled
-                prefix="đ"
-              />
+              <Title level={4}>{displayCurrency(qualificationValue)}</Title>
             </Form.Item>
           </Col>
         </Row>

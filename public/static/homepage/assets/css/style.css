@@ -5,7 +5,12 @@
 * License: https://bootstrapmade.com/license/
 */
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: "Raleway", Helvetica, Arial, sans-serif;
 }
 
@@ -38,18 +43,18 @@ h4 {
 --------------------------------------------------------------*/
 a {
   transition: 0.5s;
-  color: #199EB8;
+  color: #199eb8;
 }
 
 a:hover {
-  color: #23c2e1;
+  color: #080808;
 }
 
 /* ==================================================
   Elements
   ================================================== */
 .btn {
-  background-color: #199EB8;
+  background-color: #199eb8;
   font-family: "Roboto", Helvetica, Arial, sans-serif;
   font-weight: 800;
   color: #fff;
@@ -58,7 +63,7 @@ a:hover {
 }
 
 .btn:hover {
-  background-color: #E04F00;
+  background-color: #e04f00;
   color: #fff;
 }
 
@@ -73,7 +78,7 @@ a:hover {
 
 .btn-ghost:hover {
   background-color: #fff;
-  color: #199EB8;
+  color: #199eb8;
 }
 
 section {
@@ -101,22 +106,24 @@ a:hover {
   width: 42px;
   height: 42px;
   border-radius: 50%;
-  background: #199EB8;
+  background: #199eb8;
   color: #fff;
   text-align: center;
   font-size: 24px;
 }
 
-.scrolltop:hover, .scrolltop:active, .scrolltop:focus {
+.scrolltop:hover,
+.scrolltop:active,
+.scrolltop:focus {
   color: #fff !important;
-  opacity: .75;
+  opacity: 0.75;
 }
 
 /*--------------------------------------------------------------
 # Header
 --------------------------------------------------------------*/
 #header {
-  background: #199EB8;
+  background: #199eb8;
   height: 70px;
 }
 
@@ -280,7 +287,7 @@ a:hover {
 }
 
 .nav-menu ul li:hover {
-  background: #199EB8;
+  background: #199eb8;
   transition: 0.3s;
 }
 
@@ -378,11 +385,11 @@ a:hover {
 }
 
 #mobile-nav ul .menu-has-children i.fa-chevron-up {
-  color: #199EB8;
+  color: #199eb8;
 }
 
 #mobile-nav ul .menu-item-active {
-  color: #199EB8;
+  color: #199eb8;
 }
 
 #mobile-body-overly {
@@ -424,7 +431,7 @@ body.mobile-nav-active #mobile-nav-toggle {
 }
 
 .hero:after {
-  content: '';
+  content: "";
   z-index: 0;
   position: absolute;
   background: rgba(0, 0, 0, 0.65);
@@ -449,7 +456,7 @@ body.mobile-nav-active #mobile-nav-toggle {
 }
 
 .hero-brand:hover {
-  opacity: .75;
+  opacity: 0.75;
 }
 
 .tagline {
@@ -457,6 +464,11 @@ body.mobile-nav-active #mobile-nav-toggle {
   font-size: 26px;
   margin: 45px 0 75px 0;
   color: #fff;
+}
+
+.im-supplier:hover {
+  transition: all 0.3s;
+  color: #199eb8 !important;
 }
 
 /*--------------------------------------------------------------
@@ -473,7 +485,7 @@ body.mobile-nav-active #mobile-nav-toggle {
   font-family: "Raleway", Helvetica, Arial, sans-serif;
   font-weight: 500;
   color: #666;
-  border: 6px solid #199EB8;
+  border: 6px solid #199eb8;
   border-radius: 50%;
   padding: 55px 25px 0 25px;
   position: relative;
@@ -488,7 +500,7 @@ body.mobile-nav-active #mobile-nav-toggle {
   right: -15px;
   font-family: "Raleway", Helvetica, Arial, sans-serif;
   font-size: 18px;
-  background-color: #E04F00;
+  background-color: #e04f00;
   position: absolute;
   border-radius: 50%;
   font-weight: 700;
@@ -576,7 +588,7 @@ body.mobile-nav-active #mobile-nav-toggle {
 }
 
 .features h2 {
-  color: #199EB8;
+  color: #199eb8;
 }
 
 .feature-col {
@@ -597,7 +609,7 @@ body.mobile-nav-active #mobile-nav-toggle {
   width: 70px;
   height: 70px;
   margin-bottom: 15px;
-  background: #199EB8;
+  background: #199eb8;
   color: #fff;
   font-size: 24px;
   text-align: center;
@@ -607,7 +619,7 @@ body.mobile-nav-active #mobile-nav-toggle {
 }
 
 .feature-col h3 {
-  color: #199EB8;
+  color: #199eb8;
 }
 
 .feature-col p {
@@ -620,7 +632,7 @@ body.mobile-nav-active #mobile-nav-toggle {
   Call-to-action Styling
   ================================================== */
 .cta {
-  background-color: #199EB8;
+  background-color: #199eb8;
   padding: 25px 0;
 }
 
@@ -635,7 +647,7 @@ body.mobile-nav-active #mobile-nav-toggle {
 
 .cta p {
   margin-bottom: 0;
-  opacity: .75;
+  opacity: 0.75;
 }
 
 .cta .btn-ghost {
@@ -652,7 +664,7 @@ body.mobile-nav-active #mobile-nav-toggle {
 }
 
 .portfolio h2 {
-  color: #199EB8;
+  color: #199eb8;
   margin-bottom: 25px;
 }
 
@@ -700,7 +712,7 @@ body.mobile-nav-active #mobile-nav-toggle {
 
 .portfolio-grid .row > div .card .portfolio-over .card-text {
   color: #fff;
-  opacity: .75;
+  opacity: 0.75;
   padding: 0 45px;
 }
 
@@ -713,7 +725,7 @@ body.mobile-nav-active #mobile-nav-toggle {
   Team Styling
   ================================================== */
 .team h2 {
-  color: #199EB8;
+  color: #199eb8;
 }
 
 .team .col-sm-3 {
@@ -736,7 +748,7 @@ body.mobile-nav-active #mobile-nav-toggle {
 .team .card p {
   font-size: 11px;
   color: #fff;
-  opacity: .75;
+  opacity: 0.75;
   margin: 0;
   padding: 0 35px;
 }
@@ -752,7 +764,7 @@ body.mobile-nav-active #mobile-nav-toggle {
 }
 
 .team .card .social-nav a:hover {
-  opacity: .75;
+  opacity: 0.75;
 }
 
 .team .card:hover .team-over {
@@ -761,7 +773,7 @@ body.mobile-nav-active #mobile-nav-toggle {
 }
 
 .team .card:hover .card-title-wrap {
-  background-color: #199EB8;
+  background-color: #199eb8;
 }
 
 .team .card:hover .card-title-wrap .card-title,
@@ -817,12 +829,12 @@ body.mobile-nav-active #mobile-nav-toggle {
 
 #contact h2 {
   font-family: "Raleway", Helvetica, Arial, sans-serif;
-  color: #199EB8;
+  color: #199eb8;
 }
 
 #contact .info i {
   font-size: 32px;
-  color: #199EB8;
+  color: #199eb8;
   float: left;
 }
 
@@ -881,17 +893,19 @@ body.mobile-nav-active #mobile-nav-toggle {
   animation: animate-loading 1s linear infinite;
 }
 
-#contact .php-email-form input, #contact .php-email-form textarea {
+#contact .php-email-form input,
+#contact .php-email-form textarea {
   border-radius: 0;
   box-shadow: none;
 }
 
-#contact .php-email-form input::focus, #contact .php-email-form textarea::focus {
-  background-color: #199EB8;
+#contact .php-email-form input::focus,
+#contact .php-email-form textarea::focus {
+  background-color: #199eb8;
 }
 
 #contact .php-email-form button[type="submit"] {
-  background: #199EB8;
+  background: #199eb8;
   border: 0;
   padding: 10px 24px;
   color: #fff;
@@ -934,7 +948,7 @@ body.mobile-nav-active #mobile-nav-toggle {
 }
 
 .site-footer p {
-  opacity: .75;
+  opacity: 0.75;
   line-height: 2.0925;
 }
 
@@ -945,7 +959,7 @@ body.mobile-nav-active #mobile-nav-toggle {
 
 .site-footer .social-nav a {
   color: #fff;
-  opacity: .25;
+  opacity: 0.25;
 }
 
 .site-footer .social-nav a:hover {
@@ -974,7 +988,7 @@ body.mobile-nav-active #mobile-nav-toggle {
 }
 
 .site-footer .bottom .list-inline a:hover {
-  color: #199EB8;
+  color: #199eb8;
 }
 
 .site-footer .credits {
@@ -982,7 +996,7 @@ body.mobile-nav-active #mobile-nav-toggle {
 }
 
 .site-footer .credits a {
-  color: #199EB8;
+  color: #199eb8;
 }
 
 /* ==================================================
