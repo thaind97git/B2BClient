@@ -166,7 +166,6 @@ const QuantityInput = ({ value = {}, onChange }) => {
     </span>
   );
 };
-const currency = "Vnd";
 const BuyerRequestCreateComponent = ({ next, categorySelected }) => {
   // const p
   const [price, setPrice] = useState(0);

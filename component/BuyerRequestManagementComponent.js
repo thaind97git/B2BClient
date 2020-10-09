@@ -217,6 +217,7 @@ const BuyerRequestManagement = () => {
       </Row>
       <ReactTableLayout
         searchProps={{
+          placeholder: "Search by product name",
           searchMessage,
           setSearchMessage,
           exElement: (
@@ -245,7 +246,6 @@ const BuyerRequestManagement = () => {
         data={dataSource}
         columns={columns}
       />
-      {/* <Table dataSource={dataSource} columns={columns} /> */}
     </div>
   );
 };
