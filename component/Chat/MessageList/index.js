@@ -8,7 +8,7 @@ import moment from 'moment';
 
 const MY_USER_ID = 'apple';
 
-export default function MessageList(props) {
+export default function MessageList({props}) {
   const [messages, setMessages] = useState([])
 
   useEffect(() => {
@@ -150,7 +150,7 @@ export default function MessageList(props) {
       />
       <div className="message-list">
         <Toolbar
-          title="Conversation Title"
+          title={props.title}
           rightItems={[
             <ToolbarButton key="info" icon="ion-ios-information-circle-outline" />,
             <ToolbarButton key="video" icon="ion-ios-videocam" />,

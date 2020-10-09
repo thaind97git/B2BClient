@@ -1,10 +1,10 @@
 import React from "react";
-import Messenger from "../../component/Chat/Messenger";
+import SupplierChatComponent from "../../component/SupplierChatComponent";
 import SupplierLayout from "../../layouts/SupplierLayout";
 const Page = () => {
   return (
     <SupplierLayout>
-      <Messenger />
+      <SupplierChatComponent />
     </SupplierLayout>
   );
 };

@@ -2,7 +2,7 @@ import React from 'react';
 import ConversationList from '../ConversationList';
 import MessageList from '../MessageList';
 
-export default function Messenger(props) {
+export default function Messenger({props}) {
   return (
     <div>
       <link
@@ -35,7 +35,7 @@ export default function Messenger(props) {
         </div>
 
         <div className="scrollable content">
-          <MessageList />
+          <MessageList props={{ title: props.title }}/>
         </div>
       </div>
     </div >
