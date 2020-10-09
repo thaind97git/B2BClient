@@ -24,14 +24,14 @@ export const userLogin = ({ email, password }) =>
       openNotification("success", { message: "Login success" });
       const returnUrl = Router.query["returnUrl"];
       if (resp.role === BUYER) {
-        if (!!returnUrl) {
+        if (!!returnUrl && returnUrl === "/buyer/rfq/create") {
           Router.push(returnUrl);
         } else {
           Router.push("/buyer/rfq");
         }
       }
       if (resp.role === SUPPLIER) {
-        if (!!returnUrl) {
+        if (!!returnUrl && returnUrl === "/supplier") {
           Router.push(returnUrl);
         } else {
           Router.push("/supplier/chat");
