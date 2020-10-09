@@ -22,7 +22,6 @@ export default {
       return [...state, payload];
     }
     if (type === SET_CATEGORY_SELECTED && !!payload) {
-      console.log({ payload });
       return [...payload] || [];
     }
     return state;

@@ -21,11 +21,18 @@ import Router from "next/router";
 const { Header, Content, Sider } = Layout;
 
 const SUPPLIER_MENU = [
+  // {
+  //   key: "1",
+  //   icon: <UserOutlined />,
+  //   label: "Dashboard",
+  //   link: "/supplier",
+  //   subMenu: [],
+  // },
   {
-    key: "1",
-    icon: <UserOutlined />,
-    label: "Dashboard",
-    link: "/supplier",
+    key: "4",
+    icon: <WechatOutlined />,
+    label: "Chat",
+    link: "/supplier/chat",
     subMenu: [],
   },
   {
@@ -55,13 +62,6 @@ const SUPPLIER_MENU = [
         subLabel: "Available Bidding",
       },
     ],
-  },
-  {
-    key: "4",
-    icon: <WechatOutlined />,
-    label: "Chat",
-    link: "/supplier/chat",
-    subMenu: [],
   },
 ];
 

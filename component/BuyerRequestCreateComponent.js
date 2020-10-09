@@ -24,6 +24,8 @@ import {
   currencyParser,
   currencyValue,
 } from "../libs/currencyFormatter";
+import Router from "next/router";
+import { SET_CATEGORY_SELECTED } from "../stores/initState";
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -31,6 +33,10 @@ const FormItem = Form.Item;
 const connectToRedux = connect(
   createStructuredSelector({
     categorySelected: (state) => state.categorySelected,
+  }),
+  (dispatch) => ({
+    removeCategorySelected: () =>
+      dispatch({ type: SET_CATEGORY_SELECTED, payload: [] }),
   })
 );
 const styles = {
@@ -171,10 +177,11 @@ const QuantityInput = ({ value = {}, onChange }) => {
     </span>
   );
 };
-const BuyerRequestCreateComponent = ({ next, categorySelected }) => {
-  // const p
+const BuyerRequestCreateComponent = ({
+  removeCategorySelected,
+  categorySelected,
+}) => {
   const [price, setPrice] = useState(0);
-  const [currency, setCurrency] = useState("Vnd");
   const [openCategory, setOpenCategory] = useState(false);
   const normFile = (e) => {
     console.log("Upload event:", e);
@@ -186,7 +193,8 @@ const BuyerRequestCreateComponent = ({ next, categorySelected }) => {
 
   const onFinish = (values) => {
     console.log("Received values of form: ", values);
-    typeof next === "function" && next();
+    Router.push("/buyer/rfq");
+    removeCategorySelected();
   };
 
   const checkPrice = (rule, value) => {
@@ -197,7 +205,7 @@ const BuyerRequestCreateComponent = ({ next, categorySelected }) => {
     return Promise.reject("Price must be greater than zero!");
   };
   const checkUnit = (rule, value) => {
-    if (value.unit > 0) {
+    if (value.number > 0) {
       return Promise.resolve();
     }
 

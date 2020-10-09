@@ -10,7 +10,7 @@ import {
   ExperimentOutlined,
   OrderedListOutlined,
   FallOutlined,
-  WechatOutlined
+  WechatOutlined,
 } from "@ant-design/icons";
 import MemberNavComponent from "../component/MemberNavComponent";
 import { currentPath } from "../utils";
@@ -19,13 +19,13 @@ import Link from "next/link";
 const { Header, Content, Sider } = Layout;
 
 const ADMIN_MENU = [
-  {
-    key: "1",
-    icon: <UserOutlined />,
-    label: "Dashboard",
-    link: "/aggregator",
-    subMenu: [],
-  },
+  // {
+  //   key: "1",
+  //   icon: <UserOutlined />,
+  //   label: "Dashboard",
+  //   link: "/aggregator",
+  //   subMenu: [],
+  // },
   {
     key: "2",
     icon: <FallOutlined />,
@@ -73,7 +73,7 @@ const ADMIN_MENU = [
 const PROFILE_MENU = (
   <Menu>
     <Menu.Item>
-      <Link href="/supplier/user-profile">
+      <Link href="/aggregator/user-profile">
         <a>Profile</a>
       </Link>
     </Menu.Item>

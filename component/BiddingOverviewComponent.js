@@ -85,10 +85,10 @@ const BiddingOverviewComponent = () => {
                 </span>
               </Col>
               <Col span={24}>
-                Minimum Bid Change: <span className="info">0.5%</span>
+                Minimum Bid Change: <span className="info">10%</span>
               </Col>
               <Col span={24}>
-                Maximum Bid Change: <span className="info">50 %</span>
+                Maximum Bid Change: <span className="info">10 %</span>
               </Col>
             </Row>
           }

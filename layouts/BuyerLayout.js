@@ -44,7 +44,7 @@ const BUYER_MENU = [
 const PROFILE_MENU = (
   <Menu>
     <Menu.Item>
-      <Link href="/supplier/user-profile">
+      <Link href="/buyer/user-profile">
         <a>Profile</a>
       </Link>
     </Menu.Item>

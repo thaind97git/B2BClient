@@ -1,12 +1,16 @@
-import { Button, Select, Space, Drawer } from "antd";
+import { Button, Select, Drawer } from "antd";
 import React, { Fragment, useState } from "react";
 import ReactTableLayout from "../layouts/ReactTableLayout";
 import { DEFAULT_DATE_RANGE, displayCurrency } from "../utils";
 import RequestStatusComponent from "./Utils/RequestStatusComponent";
-import { R_CANCELED, R_REJECTED, R_FAILED } from "../enums/requestStatus";
+import {
+  R_CANCELED,
+  R_DONE,
+  R_ORDERED,
+  R_REJECTED,
+} from "../enums/requestStatus";
 import RequestDetailsComponent from "./RequestDetailsComponent";
 const { Option, OptGroup } = Select;
-
 
 const columns = [
   {
@@ -98,7 +102,7 @@ const AdminRequestCanceledComponent = () => {
       category: "Mobile Phone",
       quantity: 30,
       createdBy: "User 2",
-      status: <RequestStatusComponent status={R_CANCELED} />,
+      status: <RequestStatusComponent status={R_DONE} />,
       dateCreated: "30/09/2020 02:07:26 PM",
       actions: (
         <Button onClick={() => setOpenDetails(true)} size="small" type="link">
@@ -132,7 +136,7 @@ const AdminRequestCanceledComponent = () => {
       category: "Mobile Phone",
       quantity: 30,
       createdBy: "User 3",
-      status: <RequestStatusComponent status={R_REJECTED} />,
+      status: <RequestStatusComponent status={R_ORDERED} />,
       dateCreated: "30/09/2020 02:07:26 PM",
       actions: (
         <Button onClick={() => setOpenDetails(true)} size="small" type="link">
@@ -149,7 +153,7 @@ const AdminRequestCanceledComponent = () => {
       category: "Mobile Phone",
       quantity: 30,
       createdBy: "User 1",
-      status: <RequestStatusComponent status={R_FAILED} />,
+      status: <RequestStatusComponent status={R_REJECTED} />,
       dateCreated: "30/09/2020 02:07:26 PM",
       actions: (
         <Button onClick={() => setOpenDetails(true)} size="small" type="link">

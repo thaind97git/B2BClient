@@ -12,7 +12,7 @@ import {
   R_WAIT_FOR_AUCTION,
 } from "../enums/requestStatus";
 import ReactTableLayout from "../layouts/ReactTableLayout";
-import { DEFAULT_DATE_RANGE , displayCurrency } from "../utils";
+import { DEFAULT_DATE_RANGE, displayCurrency } from "../utils";
 import RequestStatusComponent from "./Utils/RequestStatusComponent";
 import RequestDetailsComponent from "./RequestDetailsComponent";
 const { Option, OptGroup } = Select;
@@ -42,7 +42,8 @@ const columns = [
     title: "Group",
     dataIndex: "group",
     key: "group",
-  }, {
+  },
+  {
     title: "Date Created",
     dataIndex: "dateCreated",
     key: "dateCreated",
@@ -97,7 +98,7 @@ const AdminRequestGroupedComponent = () => {
       quantity: 30,
       createdBy: "User 3",
       group: "Group 2",
-      status: <RequestStatusComponent status={R_DONE} />,
+      status: <RequestStatusComponent status={R_GROUPED} />,
       dateCreated: "30/09/2020 02:07:26 PM",
       actions: (
         <Button onClick={() => setOpenDetails(true)} size="small" type="link">
@@ -166,7 +167,7 @@ const AdminRequestGroupedComponent = () => {
       group: "Group 6",
       dateCreated: "30/09/2020 02:07:26 PM",
       dueDate: "30/09/2020 02:07:26 PM",
-      status: <RequestStatusComponent status={R_ORDERED} />,
+      status: <RequestStatusComponent status={R_NEGOTIATING} />,
       actions: (
         <Button onClick={() => setOpenDetails(true)} size="small" type="link">
           View

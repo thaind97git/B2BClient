@@ -1,10 +1,7 @@
 import { Button, Col, Divider, Radio, Row, Select, Space, Drawer } from "antd";
 import Modal from "antd/lib/modal/Modal";
 import React, { useEffect, useState } from "react";
-import {
-  R_GROUPED,
-  R_PENDING,
-} from "../enums/requestStatus";
+import { R_GROUPED, R_PENDING } from "../enums/requestStatus";
 import ReactTableLayout from "../layouts/ReactTableLayout";
 import { DEFAULT_DATE_RANGE, displayCurrency } from "../utils";
 import GroupCreateComponent from "./GroupCreateComponent";
@@ -38,11 +35,11 @@ const columns = [
     dataIndex: "dateCreated",
     key: "dateCreated",
   },
-  {
-    title: "Status",
-    dataIndex: "status",
-    key: "status",
-  },
+  // {
+  //   title: "Status",
+  //   dataIndex: "status",
+  //   key: "status",
+  // },
 
   {
     title: "Actions",
@@ -54,7 +51,6 @@ const columns = [
 function handleChange(value) {
   console.log(`selected ${value}`);
 }
-
 
 const AdminRequestManagement = () => {
   const [searchMessage, setSearchMessage] = useState("");
@@ -122,7 +118,7 @@ const AdminRequestManagement = () => {
       createdBy: "User 1",
       dateCreated: "30/09/2020 02:07:26 PM",
       dueDate: "30/09/2020 02:07:26 PM",
-      status: <RequestStatusComponent status={R_GROUPED} />,
+      status: <RequestStatusComponent status={R_PENDING} />,
       actions: (
         <Button onClick={() => setOpenDetails(true)} size="small" type="link">
           View
@@ -218,7 +214,7 @@ const AdminRequestManagement = () => {
       createdBy: "User 1",
       dateCreated: "30/09/2020 02:07:26 PM",
       dueDate: "30/09/2020 02:07:26 PM",
-      status: <RequestStatusComponent status={R_GROUPED} />,
+      status: <RequestStatusComponent status={R_PENDING} />,
       actions: (
         <Button onClick={() => setOpenDetails(true)} size="small" type="link">
           View
@@ -308,46 +304,56 @@ const AdminRequestManagement = () => {
         onOk={() => setModalVisible(false)}
         onCancel={() => setModalVisible(true)}
         footer={[
-          <Button type="primary" onClick={() => setOpenGroupModal(true)}>
-            Create new group
-          </Button>,
-          <Button key="back" onClick={() => setModalVisible(false)}>
-            Cancel
-          </Button>,
-          <Button key="submit" type="primary" onClick={() => setModalVisible(false)}>
-            Submit
-          </Button>,
+          <Row justify="space-between">
+            <Col>
+              <Button type="primary" onClick={() => setOpenGroupModal(true)}>
+                Create new group
+              </Button>
+            </Col>
+            <Col>
+              <Button key="back" onClick={() => setModalVisible(false)}>
+                Cancel
+              </Button>
+              <Button
+                key="submit"
+                type="primary"
+                onClick={() => setModalVisible(false)}
+              >
+                Submit
+              </Button>
+            </Col>
+          </Row>,
         ]}
       >
         <Radio.Group style={{ width: "100%" }} onChange={onChange}>
           <Row>
             <Col span={24}>
               <Radio value="A">
-                <b>Group 1</b> created inside Iphone 6
+                <b>Group Iphone 6s 32Gb</b> created inside Iphone
               </Radio>
             </Col>
             <Divider />
             <Col span={24}>
               <Radio value="B">
-                <b>Group 2</b> created inside Iphone 7
+                <b>Group Iphone 8 64Gb</b> created inside Iphone
               </Radio>
             </Col>
             <Divider />
             <Col span={24}>
               <Radio value="C">
-                <b>Group 3</b> created inside Iphone 8
+                <b>Group Mackbook Air 2015</b> created inside Mackbook
               </Radio>
             </Col>
             <Divider />
             <Col span={24}>
               <Radio value="D">
-                <b>Group 4</b> created inside Iphone 10
+                <b>Group Mackbook Air 2018</b> created inside Mackbook
               </Radio>
             </Col>
             <Divider />
             <Col span={24}>
               <Radio value="E">
-                <b>Group 5</b> created inside Iphone 12
+                <b>Group Mackbook Air 2018</b> created inside Mackbook
               </Radio>
             </Col>
           </Row>

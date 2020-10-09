@@ -7,4 +7,4 @@ export const R_NEGOTIATING = 5;
 export const R_WAIT_FOR_AUCTION = 6;
 export const R_BIDDING = 7;
 export const R_ORDERED = 8;
-export const R_FAILED = 9;
+// export const R_FAILED = 9;

@@ -34,11 +34,11 @@ export const userLogin = ({ email, password }) =>
         if (!!returnUrl) {
           Router.push(returnUrl);
         } else {
-          Router.push("/supplier");
+          Router.push("/supplier/chat");
         }
       }
       if (resp.role === MODERATOR) {
-        Router.push("/aggregator");
+        Router.push("/aggregator/request");
       }
     }
   });

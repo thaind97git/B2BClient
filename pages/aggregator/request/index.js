@@ -19,7 +19,7 @@ const Page = () => {
       ),
     },
     {
-      title: "Existed Inside Group",
+      title: "Processing Request",
       key: "2",
       content: (
         <div>
@@ -28,7 +28,7 @@ const Page = () => {
       ),
     },
     {
-      title: "Rejected/Canceled Request",
+      title: "Processed Request",
       key: "3",
       content: (
         <div>
