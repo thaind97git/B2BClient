@@ -16,7 +16,9 @@ import { G_NEGOTIATING } from "../enums/groupStatus";
 import ListingRequestForGroupComponent from "./ListingRequestForGroupComponent";
 import ListingSupplierByCategoryComponent from "./ListingSupplierByCategoryComponent";
 import RequestDetailsComponent from "./RequestDetailsComponent";
+import UserProfileComponent from "./UserProfileComponent";
 import GroupStatusComponent from "./Utils/GroupStatusComponent";
+
 const { Title } = Typography;
 const groupRequestColumns = [
   { title: "Product Name", dataIndex: "category", key: "category" },
@@ -245,7 +247,7 @@ const GroupRequestDetailsComponent = ({
         visible={openSupplierDetail}
         key={"right"}
       >
-        Supplier Information
+        <UserProfileComponent isDrawer={true}/>
       </Drawer>
       <Row justify="space-between">
         <Title level={4}>Group Name: {title}</Title>
