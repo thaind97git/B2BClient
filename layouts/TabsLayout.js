@@ -27,7 +27,7 @@ const TabsLayout = ({
     >
       {tabs.map((tab) => {
         return (
-          <TabPane tab={tab.title} key={tab.key}>
+          <TabPane tab={tab.title} key={tab.key} {...tab.props}>
             {tab.content}
           </TabPane>
         );

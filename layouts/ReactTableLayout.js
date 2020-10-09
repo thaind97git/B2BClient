@@ -152,7 +152,7 @@ const ReactTableLayout = ({
   }, [dateRange]);
 
   return (
-    <div>
+    <div style={{ width: "100%" }}>
       {hasAction && (
         <Row
           justify="space-between"
@@ -196,11 +196,13 @@ const ReactTableLayout = ({
         columns={columns}
         {...others}
       />
-      <Pagination
-        style={{ marginTop: 24 }}
-        total={totalCount || 200}
-        itemRender={itemRender}
-      />
+      {hasPaging && (
+        <Pagination
+          style={{ marginTop: 24 }}
+          total={totalCount || 200}
+          itemRender={itemRender}
+        />
+      )}
       {/* <MaterialTable
         {...others}
         style={Object.assign(

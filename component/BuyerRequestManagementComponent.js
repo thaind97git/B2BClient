@@ -199,7 +199,16 @@ const BuyerRequestManagement = () => {
           visible={openDetails}
           key={"right"}
         >
-          <RequestDetailsComponent />
+          <RequestDetailsComponent
+            buttonActions={[
+              {
+                label: "Cancel",
+                buttonProps: {
+                  danger: true,
+                },
+              },
+            ]}
+          />
         </Drawer>
         <Title level={4}>Your Request for Quotation</Title>
         <Button onClick={() => Router.push("/buyer/rfq/create")} type="primary">
@@ -208,6 +217,7 @@ const BuyerRequestManagement = () => {
       </Row>
       <ReactTableLayout
         searchProps={{
+          placeholder: "Search by product name",
           searchMessage,
           setSearchMessage,
           exElement: (
@@ -236,7 +246,6 @@ const BuyerRequestManagement = () => {
         data={dataSource}
         columns={columns}
       />
-      {/* <Table dataSource={dataSource} columns={columns} /> */}
     </div>
   );
 };
