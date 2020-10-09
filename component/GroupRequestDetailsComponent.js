@@ -48,6 +48,7 @@ const GroupRequestDetailsComponent = ({
   const [isOpenContact, setIsOpenContact] = useState(false);
   const [isOpenAddRequest, setIsOpenAddRequest] = useState(false);
   const [openRequestDetail, setOpenRequestDetail] = useState(false);
+  const [openSupplierDetail, setOpenSupplierDetail] = useState(false);
   const REQUEST_LIST = [
     {
       key: "1",
@@ -120,18 +121,24 @@ const GroupRequestDetailsComponent = ({
       phone: "0397471442",
       actions: (
         <Space>
-          <Button size="small">Chat</Button>
+          <Button size="small">
+            <a href="/aggregator/group/chat" target="_blank">
+              Chat
+            </a>
+          </Button>
           <Button size="small" type="primary">
-            sales closing
+            Closing sales
+          </Button>
+          <Button size="small" danger>
+            Remove
           </Button>
           <Button
-            size="small"
+            type="link"
             onClick={() => {
-              setOpenRequestDetail(true);
+              setOpenSupplierDetail(true);
             }}
-            danger
           >
-            Remove
+            Details
           </Button>
         </Space>
       ),
@@ -142,12 +149,24 @@ const GroupRequestDetailsComponent = ({
       phone: "0397471441",
       actions: (
         <Space>
-          <Button size="small">Chat</Button>
+          <Button size="small">
+            <a href="/aggregator/group/chat" target="_blank">
+              Chat
+            </a>
+          </Button>
           <Button size="small" type="primary">
-            sales closing
+            Closing sales
           </Button>
           <Button size="small" danger>
             Remove
+          </Button>
+          <Button
+            type="link"
+            onClick={() => {
+              setOpenSupplierDetail(true);
+            }}
+          >
+            Details
           </Button>
         </Space>
       ),
@@ -158,12 +177,24 @@ const GroupRequestDetailsComponent = ({
       phone: "0397471440",
       actions: (
         <Space>
-          <Button size="small">Chat</Button>
+          <Button size="small">
+            <a href="/aggregator/group/chat" target="_blank">
+              Chat
+            </a>
+          </Button>
           <Button size="small" type="primary">
-            sales closing
+            Closing sales
           </Button>
           <Button size="small" danger>
             Remove
+          </Button>
+          <Button
+            type="link"
+            onClick={() => {
+              setOpenSupplierDetail(true);
+            }}
+          >
+            Details
           </Button>
         </Space>
       ),
@@ -204,6 +235,17 @@ const GroupRequestDetailsComponent = ({
             },
           ]}
         />
+      </Drawer>
+      <Drawer
+        width={640}
+        title="Supplier details"
+        placement={"right"}
+        closable={true}
+        onClose={() => setOpenSupplierDetail(false)}
+        visible={openSupplierDetail}
+        key={"right"}
+      >
+        Supplier Information
       </Drawer>
       <Row justify="space-between">
         <Title level={4}>Group Name: {title}</Title>
