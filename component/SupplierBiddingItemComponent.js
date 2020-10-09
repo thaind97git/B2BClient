@@ -68,9 +68,11 @@ const SupplierBiddingItemComponent = ({
   return (
     <div style={styles.root}>
       <Badge.Ribbon
-        color={closed && "red"}
+        color={closed ? "red" : startTime <= Date.now() ? "blue" : "gold"}
         placement="end"
-        text={closed ? "Closed" : "Tomorrow"}
+        text={
+          closed ? "Closed" : startTime <= Date.now() ? "Happening" : "Tomorrow"
+        }
       >
         <Row className="bidding-item" align="middle">
           <Col style={styles.detailSection} md={15} sm={24}>
@@ -135,10 +137,13 @@ const SupplierBiddingItemComponent = ({
                   </Button>
                 </Space>
               )}
-              {!closed && !isInvitation && (
+              {!closed && !isInvitation && startTime <= Date.now() && (
                 <Space>
                   <Button
                     style={styles.buttonAction}
+                    onClick={() => {
+                      Router.push(`/supplier/bidding/details?id=${id}`);
+                    }}
                     type="primary"
                     size="small"
                   >

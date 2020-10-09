@@ -13,6 +13,7 @@ import {
   Table,
 } from "antd";
 import { ArrowUpOutlined, CaretRightOutlined } from "@ant-design/icons";
+import { displayCurrency } from "../utils";
 const { Panel } = Collapse;
 const Rank = ({ rank }) => {
   let color;
@@ -43,13 +44,13 @@ const columns = [
     title: "Bid Per UOM",
     dataIndex: "bid",
     key: "bid",
-    render: (text, record) => `$ ${record.bid}.00`,
+    render: (text, record) => ` ${record.bid}`,
   },
   {
     title: "Total Lot",
     dataIndex: "total",
     key: "total",
-    render: (text, record) => `$ ${record.total}.00`,
+    render: (text, record) => `${record.total}`,
   },
   {
     title: "Rank",
@@ -61,48 +62,56 @@ const columns = [
 const data = [
   {
     no: 1,
-    bid: 55,
-    total: 800,
+    bid: displayCurrency(800000),
+    total: displayCurrency(16000000),
     rank: 1,
   },
   {
     no: 2,
-    bid: 53,
-    total: 800,
+    bid: displayCurrency(780000),
+    total: displayCurrency(15600000),
     rank: 5,
   },
   {
     no: 3,
-    bid: 51,
-    total: 800,
+    bid: displayCurrency(750000),
+    total: displayCurrency(15000000),
     rank: 2,
   },
   {
     no: 4,
-    bid: 48,
-    total: 800,
+    bid: displayCurrency(740000),
+    total: displayCurrency(14800000),
     rank: 3,
   },
   {
     no: 5,
-    bid: 47,
-    total: 800,
+    bid: displayCurrency(735000),
+    total: displayCurrency(14700000),
     rank: 3,
   },
   {
     no: 6,
-    bid: 45,
-    total: 800,
+    bid: displayCurrency(730000),
+    total: displayCurrency(14600000),
     rank: 4,
+  },
+  {
+    no: 6,
+    bid: displayCurrency(610000),
+    total: displayCurrency(12200000),
+    rank: 1,
   },
 ];
 
 const unit = 20;
 const BiddingAuctionComponent = () => {
   const [isPlaceBid, setIsPlaceBid] = useState(false);
-  const [currentBid, setCurrentBid] = useState(85);
+  const [currentBid, setCurrentBid] = useState(750000);
   const [bidTemp, setBidTemp] = useState(0);
   const [totalLot, setTotalLot] = useState(unit * currentBid);
+  const minimumChange = 600000;
+  const maximumChange = 830000;
   return (
     <div>
       <Collapse
@@ -128,7 +137,7 @@ const BiddingAuctionComponent = () => {
       <Row justify="center">
         <Card bordered={false}>
           <Statistic
-            title="Your Rank"
+            title="Rank Notification"
             value={1}
             precision={0}
             valueStyle={{ color: "#3f8600" }}
@@ -147,27 +156,34 @@ const BiddingAuctionComponent = () => {
               20 x Each
             </Descriptions.Item>
             <Descriptions.Item label="BID RANGE" span={3}>
-              {isPlaceBid ? "$ 45.00 - $ 89.55" : "-"}
+              {isPlaceBid
+                ? `${displayCurrency(minimumChange)} - ${displayCurrency(
+                    maximumChange
+                  )}`
+                : "-"}
             </Descriptions.Item>
             <Descriptions.Item label="YOUR BID PER UOM" span={3}>
               {isPlaceBid ? (
                 <InputNumber
+                  style={{ minWidth: 200 }}
+                  min={minimumChange}
+                  max={maximumChange}
                   formatter={(value) =>
-                    `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                    `đ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
                   }
-                  parser={(value) => value.replace(/\$\s?|(,*)/g, "")}
+                  parser={(value) => value.replace(/\đ\s?|(,*)/g, "")}
                   onChange={(value) => {
                     setBidTemp(value);
                     setTotalLot(value * unit);
                   }}
-                  prefix="$"
+                  prefix="đ"
                 />
               ) : (
-                `$ ${currentBid}.00`
+                `${displayCurrency(currentBid)}`
               )}
             </Descriptions.Item>
             <Descriptions.Item label="TOTAL LOT VALUE PLACED" span={3}>
-              {`$ ${totalLot}.00`}
+              {`${displayCurrency(totalLot)}`}
             </Descriptions.Item>
             <Descriptions.Item label="YOUR RANK" span={3}>
               <Badge count={1} style={{ backgroundColor: "#52c41a" }} />

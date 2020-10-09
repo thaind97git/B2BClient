@@ -1,7 +1,9 @@
 import { Button, Row, Table, Tabs } from "antd";
+import Link from "next/link";
 import Router from "next/router";
 import React from "react";
 import { B_ACTIVE, B_CLOSED, B_DONE, B_FEATURE } from "../enums/biddingStatus";
+import { createLink } from "../libs";
 import BiddingStatusComponent from "./Utils/BiddingStatusComponent";
 const { TabPane } = Tabs;
 function callback(key) {
@@ -58,6 +60,11 @@ const columns = [
     title: "Name",
     dataIndex: "name",
     key: "name",
+    render: (text) => (
+      <Link href={createLink(["aggregator", "bidding", `details?id=${1}`])}>
+        {text}
+      </Link>
+    ),
   },
   {
     title: "Duration",

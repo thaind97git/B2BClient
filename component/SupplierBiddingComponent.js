@@ -17,7 +17,7 @@ const BIDDING_INVITE = [
   {
     id: 1,
     title: "Apple Macbook Air 13 inches",
-    category: "Digital Programing",
+    category: "Mackbook",
     startTime: getFeatureDate(1),
     owner: "John Smith",
     duration: 200,
@@ -25,8 +25,8 @@ const BIDDING_INVITE = [
   },
   {
     id: 2,
-    title: "Apple Macbook Air 13 inches",
-    category: "Digital",
+    title: "Jean for men",
+    category: "Cloth",
     startTime: getFeatureDate(1),
     owner: "John Smith",
     duration: 500,
@@ -34,17 +34,17 @@ const BIDDING_INVITE = [
   },
   {
     id: 3,
-    title: "Apple Macbook Air 13 inches",
-    category: "Apple",
-    startTime: getFeatureDate(1),
+    title: "Iphone 12 Plus",
+    category: "Iphone",
+    startTime: Date.now(),
     owner: "John Smith",
     duration: 400,
     currency: "USD",
   },
   {
     id: 4,
-    title: "Apple Macbook Air 13 inches",
-    category: "Digital Programing",
+    title: "Apple Macbook Air 15 inches",
+    category: "Mackbook",
     startTime: getFeatureDate(1),
     owner: "John Smith",
     duration: 100,
@@ -76,7 +76,7 @@ const SupplierBiddingComponent = () => {
         tab={
           <span>
             <ClusterOutlined />
-            Active events
+            Accepted events
           </span>
         }
         key="2"
