@@ -54,7 +54,7 @@ const BiddingOverviewComponent = () => {
                 Event type: <span className="info">Online Auction</span>
               </Col>
               <Col span={24}>
-                Currency: <span className="info">USD</span>
+                Currency: <span className="info">VNĐ</span>
               </Col>
             </Row>
           }

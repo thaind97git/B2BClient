@@ -44,13 +44,13 @@ const dataSource = [
     actions: (
       <Space>
         <Button
-          type="primary"
+          type="link"
           size="small"
           onClick={() => {
             Router.push("/aggregator/group/details?id=1");
           }}
         >
-          View Detail
+          View
         </Button>
       </Space>
     ),
@@ -67,13 +67,13 @@ const dataSource = [
     actions: (
       <Space>
         <Button
-          type="primary"
+          type="link"
           size="small"
           onClick={() => {
             Router.push("/aggregator/group/details?id=1");
           }}
         >
-          View Detail
+          View
         </Button>
       </Space>
     ),
@@ -90,13 +90,13 @@ const dataSource = [
     actions: (
       <Space>
         <Button
-          type="primary"
+          type="link"
           size="small"
           onClick={() => {
             Router.push("/aggregator/group/details?id=1");
           }}
         >
-          View Detail
+          View
         </Button>
       </Space>
     ),
@@ -113,13 +113,13 @@ const dataSource = [
     actions: (
       <Space>
         <Button
-          type="primary"
+          type="link"
           size="small"
           onClick={() => {
             Router.push("/aggregator/group/details?id=1");
           }}
         >
-          View Detail
+          View
         </Button>
       </Space>
     ),
@@ -136,13 +136,13 @@ const dataSource = [
     actions: (
       <Space>
         <Button
-          type="primary"
+          type="link"
           size="small"
           onClick={() => {
             Router.push("/aggregator/group/details?id=1");
           }}
         >
-          View Detail
+          View
         </Button>
       </Space>
     ),
@@ -159,13 +159,13 @@ const dataSource = [
     actions: (
       <Space>
         <Button
-          type="primary"
+          type="link"
           size="small"
           onClick={() => {
             Router.push("/aggregator/group/details?id=1");
           }}
         >
-          View Detail
+          View
         </Button>
       </Space>
     ),
@@ -182,13 +182,13 @@ const dataSource = [
     actions: (
       <Space>
         <Button
-          type="primary"
+          type="link"
           size="small"
           onClick={() => {
             Router.push("/aggregator/group/details?id=1");
           }}
         >
-          View Detail
+          View
         </Button>
       </Space>
     ),
@@ -247,16 +247,11 @@ const GroupRequestComponent = () => {
       </Row>
       <ReactTableLayout
         searchProps={{
+          placeholder: "Group Name or Created By",
           searchMessage,
           setSearchMessage,
           exElement: (
-            <div>
-              <Search
-                placeholder="Created By"
-                onSearch={(value) => console.log(value)}
-                style={{ width: 200 }}
-                size="large"
-              />
+            <Space>
               <Select
                 size="large"
                 placeholder="Filter by category"
@@ -271,7 +266,7 @@ const GroupRequestComponent = () => {
                   <Option value="Yiminghe">Sub-1 Category 1</Option>
                 </OptGroup>
               </Select>
-            </div>
+            </Space>
           ),
         }}
         dateRangeProps={{

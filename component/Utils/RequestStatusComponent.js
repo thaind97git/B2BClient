@@ -10,6 +10,7 @@ import {
   R_WAIT_FOR_AUCTION,
   R_BIDDING,
   R_ORDERED,
+  R_FAILED,
 } from "../../enums/requestStatus";
 
 const RequestStatusComponent = ({ status }) => {
@@ -33,6 +34,8 @@ const RequestStatusComponent = ({ status }) => {
         return "cyan";
       case R_ORDERED:
         return "#87d068";
+      case R_FAILED:
+        return "error";
       default:
         break;
     }
@@ -57,6 +60,8 @@ const RequestStatusComponent = ({ status }) => {
         return "BIDDING";
       case R_ORDERED:
         return "ORDERED";
+      case R_FAILED:
+        return "FAILED";
       default:
         break;
     }

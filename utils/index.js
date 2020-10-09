@@ -131,13 +131,13 @@ export const openNotification = (
   });
 };
 
-export const displayCurrency = (amount, prefix, splitChar = ",") =>
+export const displayCurrency = (amount, prefix = "đ", splitChar = ".") =>
   amount
-    ? `${prefix} ${amount}`.replace(/\B(?=(\d{3})+(?!\d))/g, splitChar)
-    : `${prefix} 0`;
+    ? `${amount} ${prefix}`.replace(/\B(?=(\d{3})+(?!\d))/g, splitChar)
+    : `0 ${prefix}`;
 
 export const parseCurrency = (amount, prefix, splitChar = ",") => {
   const splitCharRegex = new RegExp(splitChar + " ", "g");
   const amountTmp = amount.replace(splitCharRegex, "");
-  return amountTmp.replace(/\$\s?|(,*)/g, "");
+  return amountTmp.replace(/\đ\s?|(,*)/g, "");
 };
