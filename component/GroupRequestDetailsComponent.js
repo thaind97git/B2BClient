@@ -10,6 +10,7 @@ import {
   Typography,
 } from "antd";
 import Modal from "antd/lib/modal/Modal";
+import Router from "next/router";
 import React, { Fragment, useState } from "react";
 import { G_NEGOTIATING } from "../enums/groupStatus";
 import ListingRequestForGroupComponent from "./ListingRequestForGroupComponent";
@@ -207,7 +208,11 @@ const GroupRequestDetailsComponent = ({
       <Row justify="space-between">
         <Title level={4}>Group Name: {title}</Title>
         <Space>
-          <Button danger type="primary">
+          <Button
+            danger
+            type="primary"
+            onClick={() => Router.push("/aggregator/bidding/create")}
+          >
             Create Reverse Auction
           </Button>
           <Button type="primary" onClick={() => setIsOpenContact(true)}>

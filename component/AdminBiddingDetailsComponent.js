@@ -5,6 +5,7 @@ import TabsLayout from "../layouts/TabsLayout";
 import BiddingSupplierListComponent from "./BiddingSupplierListComponent";
 import BiddingStatusComponent from "./Utils/BiddingStatusComponent";
 import BiddingOverviewComponent from "./BiddingOverviewComponent";
+import BiddingResultListComponent from "./BiddingResultListComponent";
 const { Title } = Typography;
 const AdminBiddingDetailsComponent = ({ bidding }) => {
   const [defaultTab, setDefaultTab] = useState("0");
@@ -27,7 +28,7 @@ const AdminBiddingDetailsComponent = ({ bidding }) => {
     {
       title: "Auction",
       key: "2",
-      content: <BiddingSupplierListComponent />,
+      content: <BiddingResultListComponent />,
     },
   ];
   return (
