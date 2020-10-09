@@ -1,10 +1,10 @@
 import UserProfileComponent from "../../component/UserProfileComponent";
-import SupplierLayout from "../../layouts/SupplierLayout";
+import AggregatorLayout from "../../layouts/AggregatorLayout";
 
 export default function UserProfilePage() {
   return (
-    <SupplierLayout>
+    <AggregatorLayout>
       <UserProfileComponent />
-    </SupplierLayout>
+    </AggregatorLayout>
   );
 }

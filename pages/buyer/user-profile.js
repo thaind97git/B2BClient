@@ -1,10 +1,10 @@
 import UserProfileComponent from "../../component/UserProfileComponent";
-import SupplierLayout from "../../layouts/SupplierLayout";
+import BuyerLayout from "../../layouts/BuyerLayout";
 
 export default function UserProfilePage() {
   return (
-    <SupplierLayout>
+    <BuyerLayout>
       <UserProfileComponent />
-    </SupplierLayout>
+    </BuyerLayout>
   );
 }
