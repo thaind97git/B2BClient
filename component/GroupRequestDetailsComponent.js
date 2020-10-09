@@ -43,7 +43,7 @@ const GroupRequestDetailsComponent = ({
     dateUpdated: "28/09/2020",
     description: "This Group will focus about Iphone 7S 64Gb",
     quantity: "60 Units",
-    totalPrice: "20,300,000 đ",
+    priceInUnit: "6,700,000 đ",
     status: G_NEGOTIATING,
   },
 }) => {
@@ -123,14 +123,12 @@ const GroupRequestDetailsComponent = ({
       phone: "0397471442",
       actions: (
         <Space>
-          <Button size="small">
+          <Button size="small" type="dashed">
             <a href="/aggregator/group/chat" target="_blank">
               Chat
             </a>
           </Button>
-          <Button size="small" type="primary">
-            Closing sales
-          </Button>
+          <Button size="small">Closing sales</Button>
           <Button size="small" danger>
             Remove
           </Button>
@@ -151,14 +149,12 @@ const GroupRequestDetailsComponent = ({
       phone: "0397471441",
       actions: (
         <Space>
-          <Button size="small">
+          <Button size="small" type="dashed">
             <a href="/aggregator/group/chat" target="_blank">
               Chat
             </a>
           </Button>
-          <Button size="small" type="primary">
-            Closing sales
-          </Button>
+          <Button size="small">Closing sales</Button>
           <Button size="small" danger>
             Remove
           </Button>
@@ -179,14 +175,12 @@ const GroupRequestDetailsComponent = ({
       phone: "0397471440",
       actions: (
         <Space>
-          <Button size="small">
+          <Button size="small" type="dashed">
             <a href="/aggregator/group/chat" target="_blank">
               Chat
             </a>
           </Button>
-          <Button size="small" type="primary">
-            Closing sales
-          </Button>
+          <Button size="small">Closing sales</Button>
           <Button size="small" danger>
             Remove
           </Button>
@@ -213,7 +207,7 @@ const GroupRequestDetailsComponent = ({
     dateUpdated,
     description,
     status,
-    totalPrice,
+    priceInUnit,
     quantity,
   } = group;
   return (
@@ -247,7 +241,7 @@ const GroupRequestDetailsComponent = ({
         visible={openSupplierDetail}
         key={"right"}
       >
-        <UserProfileComponent isDrawer={true}/>
+        <UserProfileComponent isDrawer={true} />
       </Drawer>
       <Row justify="space-between">
         <Title level={4}>Group Name: {title}</Title>
@@ -278,8 +272,8 @@ const GroupRequestDetailsComponent = ({
               {dateUpdated}
             </Descriptions.Item>
             <Descriptions.Item label="Quantity">{quantity}</Descriptions.Item>
-            <Descriptions.Item label="Total Price">
-              {totalPrice}
+            <Descriptions.Item label="Average price in unit">
+              {priceInUnit}
             </Descriptions.Item>
             <Descriptions.Item label="Status">
               <GroupStatusComponent status={status} />

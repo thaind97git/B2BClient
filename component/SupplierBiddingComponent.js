@@ -51,6 +51,44 @@ const BIDDING_INVITE = [
     currency: "USD",
   },
 ];
+const BIDDING_INVITE2 = [
+  {
+    id: 1,
+    title: "Apple Macbook Air 13 inches",
+    category: "Mackbook",
+    startTime: getFeatureDate(1),
+    owner: "John Smith",
+    duration: 200,
+    currency: "VND",
+  },
+  {
+    id: 2,
+    title: "Jean for men",
+    category: "Cloth",
+    startTime: getFeatureDate(1),
+    owner: "John Smith",
+    duration: 500,
+    currency: "VND",
+  },
+  {
+    id: 3,
+    title: "Iphone 12 Plus",
+    category: "Iphone",
+    startTime: getFeatureDate(1),
+    owner: "John Smith",
+    duration: 400,
+    currency: "USD",
+  },
+  {
+    id: 4,
+    title: "Apple Macbook Air 15 inches",
+    category: "Mackbook",
+    startTime: getFeatureDate(1),
+    owner: "John Smith",
+    duration: 100,
+    currency: "USD",
+  },
+];
 
 const SupplierBiddingComponent = () => {
   return (
@@ -64,7 +102,7 @@ const SupplierBiddingComponent = () => {
         }
         key="1"
       >
-        {BIDDING_INVITE.map((bidding, index) => (
+        {BIDDING_INVITE2.map((bidding, index) => (
           <SupplierBiddingItemComponent
             bidding={bidding}
             key={index}

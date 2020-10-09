@@ -18,7 +18,7 @@ const AdminBiddingDetailsComponent = ({ bidding }) => {
     {
       title: "Overview",
       key: "0",
-      content: <BiddingOverviewComponent />,
+      content: <BiddingOverviewComponent isSupplier={false} />,
     },
     {
       title: "Suppliers",

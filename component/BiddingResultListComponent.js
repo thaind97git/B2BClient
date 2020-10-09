@@ -1,4 +1,4 @@
-import { Collapse, Row, Table, Typography, List } from "antd";
+import { Collapse, Row, Table, Typography, List, Button } from "antd";
 import React from "react";
 import { CaretRightOutlined } from "@ant-design/icons";
 import { displayCurrency } from "../utils";
@@ -106,6 +106,11 @@ const BiddingResultListComponent = () => {
         columns={columns}
         dataSource={dataSrc}
       />
+      <Row justify="start" style={{ marginTop: 32 }}>
+        <Button disabled type="primary">
+          Closing Sales
+        </Button>
+      </Row>
     </Row>
   );
 };

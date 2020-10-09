@@ -47,7 +47,7 @@ const styles = {
     padding: "0px 8px",
   },
 };
-const BiddingSettingComponent = ({ setIsDoneSetting }) => {
+const BiddingSettingComponent = ({ setIsDoneSetting, setDefaultTab }) => {
   const [brief, setBrief] = useState(null);
   const [currentPrice, setCurrentPrice] = useState(0);
   const [currentValue, setCurrentValue] = useState(0);
@@ -262,21 +262,23 @@ const BiddingSettingComponent = ({ setIsDoneSetting }) => {
             <Form.Item
               label="Brief"
               name="brief"
-              rules={[
-                // {
-                //   required: true,
-                //   message: "Please enter the brief",
-                // },
-                ({ getFieldValue }) => ({
-                  validator(rule, value) {
-                    console.log({ value });
-                    if (value) {
-                      return Promise.resolve();
-                    }
-                    return Promise.reject("Please enter the brief");
-                  },
-                }),
-              ]}
+              rules={
+                [
+                  // {
+                  //   required: true,
+                  //   message: "Please enter the brief",
+                  // },
+                  // ({ getFieldValue }) => ({
+                  //   validator(rule, value) {
+                  //     console.log({ value });
+                  //     if (value) {
+                  //       return Promise.resolve();
+                  //     }
+                  //     return Promise.reject("Please enter the brief");
+                  //   },
+                  // }),
+                ]
+              }
             >
               <MarkdownEditorComponent value={brief} setValue={setBrief} />
             </Form.Item>
@@ -388,7 +390,7 @@ const BiddingSettingComponent = ({ setIsDoneSetting }) => {
           <Row style={{ padding: 24 }} justify="end">
             <Button
               htmlType="submit"
-              // onClick={() => setDefaultTab("2")}
+              onClick={() => setDefaultTab("2")}
               size="large"
               type="primary"
             >

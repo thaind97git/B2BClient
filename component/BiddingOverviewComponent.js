@@ -1,7 +1,7 @@
-import React from "react";
+import React, { Fragment } from "react";
 import { Card, Col, Row } from "antd";
 const { Meta } = Card;
-const BiddingOverviewComponent = () => {
+const BiddingOverviewComponent = ({ isSupplier = true }) => {
   return (
     <div>
       <Card bordered={false}>
@@ -51,7 +51,7 @@ const BiddingOverviewComponent = () => {
                 <span className="info">Apple Macbook Air 13 inches</span>
               </Col>
               <Col span={24}>
-                Event type: <span className="info">Online Auction</span>
+                Event type: <span className="info">Online Reverse Auction</span>
               </Col>
               <Col span={24}>
                 Currency: <span className="info">VNĐ</span>
@@ -60,6 +60,32 @@ const BiddingOverviewComponent = () => {
           }
         />
       </Card>
+
+      <Card bordered={false}>
+        <Meta
+          title="Product Details"
+          description={
+            <Row>
+              <Col span={24}>
+                Product Name:{" "}
+                <span className="info">Macbook Air 13 inches</span>
+              </Col>
+              <Col span={24}>
+                Quantity of UoM's: <span className="info">60 Units</span>
+              </Col>
+              {!isSupplier && (
+                <Col span={24}>
+                  Current Price: <span className="info">800.000 đ</span>
+                </Col>
+              )}
+              <Col span={24}>
+                Qualification Price: <span className="info">750.000 đ</span>
+              </Col>
+            </Row>
+          }
+        />
+      </Card>
+
       <Card bordered={false}>
         <Meta
           title="Auction Rules"
@@ -84,12 +110,16 @@ const BiddingOverviewComponent = () => {
                   2 minutes which applies to All bidders
                 </span>
               </Col>
-              <Col span={24}>
-                Minimum Bid Change: <span className="info">10%</span>
-              </Col>
-              <Col span={24}>
-                Maximum Bid Change: <span className="info">10 %</span>
-              </Col>
+              {!isSupplier && (
+                <Fragment>
+                  <Col span={24}>
+                    Minimum Bid Change: <span className="info">10%</span>
+                  </Col>
+                  <Col span={24}>
+                    Maximum Bid Change: <span className="info">10 %</span>
+                  </Col>
+                </Fragment>
+              )}
             </Row>
           }
         />

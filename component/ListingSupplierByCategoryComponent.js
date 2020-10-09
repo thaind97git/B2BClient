@@ -17,6 +17,7 @@ const ListingSupplierByCategoryComponent = () => {
             </span>
             )
           </div>
+
           <Divider />
         </Space>
       ),
@@ -95,7 +96,7 @@ const ListingSupplierByCategoryComponent = () => {
         <Row>
           {options.map((item, i) => (
             <Col index={i} span={24}>
-              <Checkbox value={item.id}>{item.content}</Checkbox>
+              <Checkbox value={item.id}>{item.content}</Checkbox> <a>Details</a>
             </Col>
           ))}
         </Row>
