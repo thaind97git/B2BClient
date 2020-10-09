@@ -82,7 +82,7 @@ const PriceInput = ({ value = {}, onChange, price, setPrice }) => {
         onChange={onNumberChange}
         style={{ width: "78%" }}
         formatter={(value) =>
-          `đ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+          `${value} đ`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
         }
         parser={(value) => value.replace(/\đ\s?|(,*)/g, "")}
       />

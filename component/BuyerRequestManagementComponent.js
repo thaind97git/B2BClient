@@ -1,7 +1,7 @@
 import { Button, Drawer, Row, Select, Typography } from "antd";
 import React, { useState } from "react";
 import ReactTableLayout from "../layouts/ReactTableLayout";
-import { DEFAULT_DATE_RANGE } from "../utils";
+import { DEFAULT_DATE_RANGE , displayCurrency } from "../utils";
 import Router from "next/router";
 import RequestStatusComponent from "./Utils/RequestStatusComponent";
 import {
@@ -62,7 +62,7 @@ const BuyerRequestManagement = () => {
   const dataSource = [
     {
       key: "1",
-      price: "80$",
+      price: displayCurrency(300000),
       category: "Iphone 5",
       quantity: 20,
       createdBy: "User 1",
@@ -76,7 +76,7 @@ const BuyerRequestManagement = () => {
     },
     {
       key: "2",
-      price: "80$",
+      price: displayCurrency(300000),
       category: "Iphone 5S",
       quantity: 20,
       createdBy: "User 1",
@@ -90,7 +90,7 @@ const BuyerRequestManagement = () => {
     },
     {
       key: "3",
-      price: "80$",
+      price: displayCurrency(300000),
       category: "Iphone 6",
       quantity: 20,
       createdBy: "User 1",
@@ -104,7 +104,7 @@ const BuyerRequestManagement = () => {
     },
     {
       key: "4",
-      price: "80$",
+      price: displayCurrency(300000),
       category: "Iphone 6S",
       quantity: 20,
       createdBy: "User 1",
@@ -118,7 +118,7 @@ const BuyerRequestManagement = () => {
     },
     {
       key: "5",
-      price: "80$",
+      price: displayCurrency(300000),
       category: "Iphone 7",
       quantity: 20,
       createdBy: "User 1",
@@ -132,7 +132,7 @@ const BuyerRequestManagement = () => {
     },
     {
       key: "5",
-      price: "80$",
+      price: displayCurrency(300000),
       category: "Iphone 7S",
       quantity: 20,
       createdBy: "User 1",
@@ -146,7 +146,7 @@ const BuyerRequestManagement = () => {
     },
     {
       key: "5",
-      price: "80$",
+      price: displayCurrency(300000),
       category: "Iphone 7S Plus",
       quantity: 20,
       createdBy: "User 1",
@@ -160,7 +160,7 @@ const BuyerRequestManagement = () => {
     },
     {
       key: "5",
-      price: "80$",
+      price: displayCurrency(300000),
       category: "Iphone 8",
       quantity: 20,
       createdBy: "User 1",
@@ -174,7 +174,7 @@ const BuyerRequestManagement = () => {
     },
     {
       key: "5",
-      price: "80$",
+      price: displayCurrency(300000),
       category: "Iphone 10",
       quantity: 20,
       createdBy: "User 1",

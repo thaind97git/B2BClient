@@ -12,7 +12,7 @@ import {
   R_WAIT_FOR_AUCTION,
 } from "../enums/requestStatus";
 import ReactTableLayout from "../layouts/ReactTableLayout";
-import { DEFAULT_DATE_RANGE } from "../utils";
+import { DEFAULT_DATE_RANGE , displayCurrency } from "../utils";
 import RequestStatusComponent from "./Utils/RequestStatusComponent";
 import RequestDetailsComponent from "./RequestDetailsComponent";
 const { Option, OptGroup } = Select;
@@ -73,7 +73,7 @@ const AdminRequestGroupedComponent = () => {
       key: "4",
       fromPrice: "60$",
       toPrice: "80$",
-      price: "80$",
+      price: displayCurrency(300000),
       name: "Iphone 5",
       category: "Mobile Phone",
       quantity: 30,
@@ -91,7 +91,7 @@ const AdminRequestGroupedComponent = () => {
       key: "5",
       fromPrice: "60$",
       toPrice: "80$",
-      price: "80$",
+      price: displayCurrency(300000),
       name: "Iphone 5",
       category: "Mobile Phone",
       quantity: 30,
@@ -107,7 +107,7 @@ const AdminRequestGroupedComponent = () => {
     },
     {
       key: "6",
-      price: "80$",
+      price: displayCurrency(300000),
       name: "Iphone 5",
       category: "Mobile Phone",
       quantity: 30,
@@ -124,7 +124,7 @@ const AdminRequestGroupedComponent = () => {
     },
     {
       key: "7",
-      price: "80$",
+      price: displayCurrency(300000),
       name: "Iphone 5",
       category: "Mobile Phone",
       quantity: 30,
@@ -141,7 +141,7 @@ const AdminRequestGroupedComponent = () => {
     },
     {
       key: "8",
-      price: "80$",
+      price: displayCurrency(300000),
       name: "Iphone 5",
       category: "Mobile Phone",
       quantity: 30,
@@ -158,7 +158,7 @@ const AdminRequestGroupedComponent = () => {
     },
     {
       key: "9",
-      price: "80$",
+      price: displayCurrency(300000),
       name: "Iphone 5",
       category: "Mobile Phone",
       quantity: 30,
@@ -178,6 +178,7 @@ const AdminRequestGroupedComponent = () => {
     <div>
       <ReactTableLayout
         searchProps={{
+          placeholder: "Search by product name",
           searchMessage,
           setSearchMessage,
           exElement: (

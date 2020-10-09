@@ -169,7 +169,7 @@ const BiddingAuctionComponent = () => {
                   min={minimumChange}
                   max={maximumChange}
                   formatter={(value) =>
-                    `đ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                    `${value} đ`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
                   }
                   parser={(value) => value.replace(/\đ\s?|(,*)/g, "")}
                   onChange={(value) => {

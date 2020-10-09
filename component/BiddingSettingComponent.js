@@ -75,7 +75,7 @@ const BiddingSettingComponent = ({ setDefaultTab, setIsDoneSetting }) => {
           minimumDuration: "10",
           minimumBid: 0.5,
           maximumBid: 10,
-          currency: "vnd",
+          currency: "VNĐ",
           units: "units",
           quantity: quantity,
         }}
@@ -144,7 +144,7 @@ const BiddingSettingComponent = ({ setDefaultTab, setIsDoneSetting }) => {
               ]}
             >
               <Select>
-                <Option value="vnd">Vnd</Option>
+                <Option value="vnd">VNĐ</Option>
               </Select>
             </Form.Item>
           </Col>

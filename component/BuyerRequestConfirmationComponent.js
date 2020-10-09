@@ -1,5 +1,6 @@
 import { Badge, Descriptions } from "antd";
 import React from "react";
+import { displayCurrency } from "../utils";
 
 const REQUEST = {
   category: "Clothes/Shirt/Men",
@@ -37,7 +38,7 @@ const BuyerRequestConfirmationComponent = ({ request = REQUEST }) => {
           {dueDate}
         </Descriptions.Item>
         <Descriptions.Item label="Preferred Unit Price" span={2}>
-          $ {preUnitPrice}
+          {displayCurrency(preUnitPrice)}
         </Descriptions.Item>
         <Descriptions.Item label="Delivery Address" span={3}>
           {deliveryAddress}

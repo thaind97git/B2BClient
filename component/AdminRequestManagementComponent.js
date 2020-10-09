@@ -6,7 +6,7 @@ import {
   R_PENDING,
 } from "../enums/requestStatus";
 import ReactTableLayout from "../layouts/ReactTableLayout";
-import { DEFAULT_DATE_RANGE } from "../utils";
+import { DEFAULT_DATE_RANGE, displayCurrency } from "../utils";
 import GroupCreateComponent from "./GroupCreateComponent";
 import RequestStatusComponent from "./Utils/RequestStatusComponent";
 import RequestDetailsComponent from "./RequestDetailsComponent";
@@ -67,7 +67,7 @@ const AdminRequestManagement = () => {
   const dataSource = [
     {
       key: "1",
-      price: "80$",
+      price: displayCurrency(300000),
       name: "Iphone 5",
       category: "Mobile Phone",
       quantity: 30,
@@ -83,7 +83,7 @@ const AdminRequestManagement = () => {
     },
     {
       key: "2",
-      price: "300$",
+      price: displayCurrency(300000),
       name: "Laptop Gaming For Go Pro",
       category: "Laptop",
       quantity: 30,
@@ -99,7 +99,7 @@ const AdminRequestManagement = () => {
     },
     {
       key: "3",
-      price: "1000$",
+      price: displayCurrency(300000),
       name: "Gaming Gear Razor",
       category: "Electronic Device",
       quantity: 30,
@@ -115,7 +115,7 @@ const AdminRequestManagement = () => {
     },
     {
       key: "4",
-      price: "300$",
+      price: displayCurrency(300000),
       name: "Leather",
       category: "Cloth",
       quantity: 30,
@@ -131,7 +131,7 @@ const AdminRequestManagement = () => {
     },
     /*{
       key: "2",
-      price: "80$",
+      price: displayCurrency(300000),
       name: "Iphone 5",
       category: "Mobile Phone",
       quantity: 30,
@@ -147,7 +147,7 @@ const AdminRequestManagement = () => {
     },
     {
       key: "3",
-      price: "80$",
+      price: displayCurrency(300000),
       name: "Iphone 5",
       category: "Mobile Phone",
       quantity: 30,
@@ -163,7 +163,7 @@ const AdminRequestManagement = () => {
     },
     {
       key: "4",
-      price: "80$",
+      price: displayCurrency(300000),
       name: "Iphone 5",
       category: "Mobile Phone",
       quantity: 30,
@@ -179,7 +179,7 @@ const AdminRequestManagement = () => {
     },
     {
       key: "5",
-      price: "80$",
+      price: displayCurrency(300000),
       name: "Iphone 5",
       category: "Mobile Phone",
       quantity: 30,
@@ -195,7 +195,7 @@ const AdminRequestManagement = () => {
     },
     {
       key: "5",
-      price: "80$",
+      price: displayCurrency(300000),
       name: "Iphone 5",
       category: "Mobile Phone",
       quantity: 30,
@@ -211,7 +211,7 @@ const AdminRequestManagement = () => {
     },*/
     {
       key: "5",
-      price: "2000$",
+      price: displayCurrency(300000),
       name: "Samsung Galaxy S300",
       category: "Mobile Phone",
       quantity: 30,
@@ -227,7 +227,7 @@ const AdminRequestManagement = () => {
     },
     /*{
       key: "5",
-      price: "80$",
+      price: displayCurrency(300000),
       name: "Iphone 5",
       category: "Mobile Phone",
       quantity: 30,
@@ -243,7 +243,7 @@ const AdminRequestManagement = () => {
     },
     {
       key: "5",
-      price: "80$",
+      price: displayCurrency(300000),
       name: "Iphone 5",
       category: "Mobile Phone",
       quantity: 30,
@@ -368,7 +368,7 @@ const AdminRequestManagement = () => {
           ...rowSelection,
         }}
         searchProps={{
-          placeholder:"Search by product name",
+          placeholder: "Search by product name",
           searchMessage,
           setSearchMessage,
           exElement: (
@@ -396,16 +396,16 @@ const AdminRequestManagement = () => {
         columns={columns}
       />
       <Drawer
-          width={640}
-          title="RFQ details"
-          placement={"right"}
-          closable={true}
-          onClose={() => setOpenDetails(false)}
-          visible={openDetails}
-          key={"right"}
-        >
-          <RequestDetailsComponent />
-        </Drawer>
+        width={640}
+        title="RFQ details"
+        placement={"right"}
+        closable={true}
+        onClose={() => setOpenDetails(false)}
+        visible={openDetails}
+        key={"right"}
+      >
+        <RequestDetailsComponent />
+      </Drawer>
       {/* <Table dataSource={dataSource} columns={columns} /> */}
     </div>
   );

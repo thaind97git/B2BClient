@@ -2,6 +2,7 @@ import { Button, Col, Divider, Row, Space, Typography, Upload } from "antd";
 import React from "react";
 import { R_PENDING } from "../enums/requestStatus";
 import RequestStatusComponent from "./Utils/RequestStatusComponent";
+import {displayCurrency} from "../utils";
 const { Title } = Typography;
 const DescriptionItem = ({ title, content }) => (
   <Col span={24}>
@@ -23,7 +24,7 @@ const requestDefault = {
   quantity: "20",
   unit: "Units",
   tradeTerms: "FOB",
-  preUnitPrice: "500,000 Vnd",
+  preUnitPrice: 500000,
   details: "I really want to buy this product",
   attachments: [
     {
@@ -109,7 +110,7 @@ const RequestDetailsComponent = ({
       <DescriptionItem title="Sourcing Purpose" content={sourcingPurpose} />
       <DescriptionItem title="Quantity" content={`${quantity} ${unit}`} />
       <DescriptionItem title="Trade Term" content={tradeTerms} />
-      <DescriptionItem title="Preferred Unit Price" content={preUnitPrice} />
+      <DescriptionItem title="Preferred Unit Price" content={displayCurrency(preUnitPrice)} />
       <DescriptionItem title="Details" content={details} />
       <DescriptionItem title="Attachments" content={<AttachmentsDisplay />} />
       <Divider />
