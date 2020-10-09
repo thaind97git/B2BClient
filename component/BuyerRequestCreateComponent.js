@@ -19,6 +19,11 @@ import BuyerRequestCategoryComponent from "./BuyerRequestCategoryComponent";
 import { createStructuredSelector } from "reselect";
 import { connect } from "react-redux";
 import { getCategorySelected } from "../libs";
+import {
+  currencyFormatter,
+  currencyParser,
+  currencyValue,
+} from "../libs/currencyFormatter";
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -51,6 +56,7 @@ const PriceInput = ({ value = {}, onChange, price, setPrice }) => {
   };
 
   const onNumberChange = (value) => {
+    console.log({ value });
     const newNumber = parseInt(value || 0, 10);
     if (Number.isNaN(price)) {
       return;
@@ -59,6 +65,7 @@ const PriceInput = ({ value = {}, onChange, price, setPrice }) => {
     // if (!("price" in value)) {
     setPrice(newNumber);
     // }
+    console.log({ value });
 
     triggerChange({
       price: newNumber,
@@ -78,13 +85,11 @@ const PriceInput = ({ value = {}, onChange, price, setPrice }) => {
   return (
     <span>
       <InputNumber
-        value={value.price || price}
+        // value={currencyValue}
         onChange={onNumberChange}
         style={{ width: "78%" }}
-        formatter={(value) =>
-          `đ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-        }
-        parser={(value) => value.replace(/\đ\s?|(,*)/g, "")}
+        formatter={currencyFormatter(currencyValue)}
+        parser={currencyParser}
       />
 
       <Select
@@ -263,12 +268,12 @@ const BuyerRequestCreateComponent = ({ next, categorySelected }) => {
                 <FormItem
                   label="Category"
                   name="category"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Please select Category",
-                    },
-                  ]}
+                  // rules={[
+                  //   {
+                  //     required: true,
+                  //     message: "Please select Category",
+                  //   },
+                  // ]}
                 >
                   {!!categorySelected.length && (
                     <div>
@@ -342,7 +347,7 @@ const BuyerRequestCreateComponent = ({ next, categorySelected }) => {
             <Row align="middle">
               <Col span={24}>
                 <Row style={{ padding: "0px 12px 0px 4px" }} justify="end">
-                  <Space>{displayCurrency(price, currency)} or Lower</Space>
+                  <Space>{displayCurrency(price)} or Lower</Space>
                 </Row>
               </Col>
               <Col style={styles.colStyle} span={24}>

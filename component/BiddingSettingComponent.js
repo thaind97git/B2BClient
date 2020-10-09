@@ -14,6 +14,11 @@ import React, { useEffect, useState } from "react";
 import moment from "moment";
 import MarkdownEditorComponent from "./MarkdownEditorComponent";
 import { displayCurrency } from "../utils";
+import {
+  currencyFormatter,
+  currencyParser,
+  currencyValue,
+} from "../libs/currencyFormatter";
 const { Title } = Typography;
 const { Option } = Select;
 function handleChange(value) {
@@ -206,10 +211,8 @@ const BiddingSettingComponent = ({ setIsDoneSetting }) => {
             >
               <InputNumber
                 style={{ width: "100%" }}
-                formatter={(value) =>
-                  `đ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-                }
-                parser={(value) => value.replace(/\đ\s?|(,*)/g, "")}
+                formatter={currencyFormatter(currencyValue)}
+                parser={currencyParser}
                 value={currentPrice}
                 onChange={(value) => {
                   setCurrentPrice(value);
@@ -240,10 +243,8 @@ const BiddingSettingComponent = ({ setIsDoneSetting }) => {
             >
               <InputNumber
                 style={{ width: "100%" }}
-                formatter={(value) =>
-                  `đ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-                }
-                parser={(value) => value.replace(/\đ\s?|(,*)/g, "")}
+                formatter={currencyFormatter(currencyValue)}
+                parser={currencyParser}
                 value={qualificationPrice}
                 onChange={(value) => setQualificationPrice(value)}
                 prefix="đ"
