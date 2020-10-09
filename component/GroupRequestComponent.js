@@ -44,13 +44,13 @@ const dataSource = [
     actions: (
       <Space>
         <Button
-          type="primary"
+          type="link"
           size="small"
           onClick={() => {
             Router.push("/aggregator/group/details?id=1");
           }}
         >
-          View Detail
+          View
         </Button>
       </Space>
     ),
@@ -67,13 +67,13 @@ const dataSource = [
     actions: (
       <Space>
         <Button
-          type="primary"
+          type="link"
           size="small"
           onClick={() => {
             Router.push("/aggregator/group/details?id=1");
           }}
         >
-          View Detail
+          View
         </Button>
       </Space>
     ),
@@ -90,13 +90,13 @@ const dataSource = [
     actions: (
       <Space>
         <Button
-          type="primary"
+          type="link"
           size="small"
           onClick={() => {
             Router.push("/aggregator/group/details?id=1");
           }}
         >
-          View Detail
+          View
         </Button>
       </Space>
     ),
@@ -113,13 +113,13 @@ const dataSource = [
     actions: (
       <Space>
         <Button
-          type="primary"
+          type="link"
           size="small"
           onClick={() => {
             Router.push("/aggregator/group/details?id=1");
           }}
         >
-          View Detail
+          View
         </Button>
       </Space>
     ),
@@ -136,13 +136,13 @@ const dataSource = [
     actions: (
       <Space>
         <Button
-          type="primary"
+          type="link"
           size="small"
           onClick={() => {
             Router.push("/aggregator/group/details?id=1");
           }}
         >
-          View Detail
+          View
         </Button>
       </Space>
     ),
@@ -159,13 +159,13 @@ const dataSource = [
     actions: (
       <Space>
         <Button
-          type="primary"
+          type="link"
           size="small"
           onClick={() => {
             Router.push("/aggregator/group/details?id=1");
           }}
         >
-          View Detail
+          View
         </Button>
       </Space>
     ),
@@ -182,13 +182,13 @@ const dataSource = [
     actions: (
       <Space>
         <Button
-          type="primary"
+          type="link"
           size="small"
           onClick={() => {
             Router.push("/aggregator/group/details?id=1");
           }}
         >
-          View Detail
+          View
         </Button>
       </Space>
     ),
