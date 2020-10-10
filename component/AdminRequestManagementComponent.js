@@ -1,7 +1,7 @@
-import { Button, Col, Divider, Radio, Row, Select, Space, Drawer } from "antd";
+import { Button, Col, Divider, Radio, Row, Select, Drawer } from "antd";
 import Modal from "antd/lib/modal/Modal";
 import React, { useEffect, useState } from "react";
-import { R_GROUPED, R_PENDING } from "../enums/requestStatus";
+import { R_PENDING } from "../enums/requestStatus";
 import ReactTableLayout from "../layouts/ReactTableLayout";
 import { DEFAULT_DATE_RANGE, displayCurrency } from "../utils";
 import GroupCreateComponent from "./GroupCreateComponent";
@@ -410,7 +410,7 @@ const AdminRequestManagement = () => {
         visible={openDetails}
         key={"right"}
       >
-        <RequestDetailsComponent />
+        <RequestDetailsComponent isSupplier={false} />
       </Drawer>
       {/* <Table dataSource={dataSource} columns={columns} /> */}
     </div>

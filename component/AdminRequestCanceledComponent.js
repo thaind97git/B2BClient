@@ -205,7 +205,7 @@ const AdminRequestCanceledComponent = () => {
         visible={openDetails}
         key={"right"}
       >
-        <RequestDetailsComponent />
+        <RequestDetailsComponent isSupplier={false} />
       </Drawer>
     </div>
   );

@@ -1,14 +1,9 @@
-import { Button, Select, Space, Drawer } from "antd";
+import { Button, Select, Drawer } from "antd";
 import React, { Fragment, useState } from "react";
 import {
   R_BIDDING,
-  R_CANCELED,
-  R_DONE,
   R_GROUPED,
   R_NEGOTIATING,
-  R_ORDERED,
-  R_PENDING,
-  R_REJECTED,
   R_WAIT_FOR_AUCTION,
 } from "../enums/requestStatus";
 import ReactTableLayout from "../layouts/ReactTableLayout";
@@ -230,7 +225,7 @@ const AdminRequestGroupedComponent = () => {
         visible={openDetails}
         key={"right"}
       >
-        <RequestDetailsComponent />
+        <RequestDetailsComponent isSupplier={false} />
       </Drawer>
     </div>
   );

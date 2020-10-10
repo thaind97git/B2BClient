@@ -128,7 +128,9 @@ const GroupRequestDetailsComponent = ({
               Chat
             </a>
           </Button>
-          <Button size="small">Closing sales</Button>
+          <Button size="small" style={{ color: "green" }}>
+            Closing sales
+          </Button>
           <Button size="small" danger>
             Remove
           </Button>
@@ -154,7 +156,9 @@ const GroupRequestDetailsComponent = ({
               Chat
             </a>
           </Button>
-          <Button size="small">Closing sales</Button>
+          <Button size="small" style={{ color: "green" }}>
+            Closing sales{" "}
+          </Button>
           <Button size="small" danger>
             Remove
           </Button>
@@ -180,7 +184,9 @@ const GroupRequestDetailsComponent = ({
               Chat
             </a>
           </Button>
-          <Button size="small">Closing sales</Button>
+          <Button size="small" style={{ color: "green" }}>
+            Closing sales
+          </Button>
           <Button size="small" danger>
             Remove
           </Button>

@@ -88,7 +88,7 @@ const SupplierCategoryComponent = () => {
       <Modal
         okText="Submit"
         width={1000}
-        title="Request new product"
+        title="Request new category"
         visible={openRequestProduct}
         onOk={() => setOpenRequestProduct(false)}
         // onCancel={this.handleCancel}
@@ -106,7 +106,7 @@ const SupplierCategoryComponent = () => {
                 onClick={() => setOpenRequestProduct(true)}
                 type="primary"
               >
-                Request new product
+                Request new category
               </Button>
             </div>
           </Row>

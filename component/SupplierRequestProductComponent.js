@@ -93,25 +93,25 @@ const SupplierRequestProductComponent = () => {
         >
           <Row justify="center">
             <Title style={styles.titleStyle} level={2}>
-              Tell Us about your product
+              Tell Us about your category
             </Title>
           </Row>
           <Row align="middle">
             <Col style={styles.colStyle} span={24}>
               <FormItem
-                label="Category"
+                label="Parent Category"
                 name="category"
                 rules={[
                   {
                     required: true,
-                    message: "Please select the category",
+                    message: "Please select the parent category",
                   },
                 ]}
               >
                 <Cascader
+                  changeOnSelect
                   size="large"
                   options={options}
-                  expandTrigger="hover"
                   // displayRender={displayRender}
                   onChange={onChange}
                 />
@@ -119,16 +119,16 @@ const SupplierRequestProductComponent = () => {
             </Col>
             <Col style={styles.colStyle} span={24}>
               <FormItem
-                label="Product Name"
+                label="Category Name"
                 name="productName"
                 rules={[
                   {
                     required: true,
-                    message: "Please enter the product title",
+                    message: "Please enter the category name",
                   },
                 ]}
               >
-                <Input size="large" placeholder="Enter the product title" />
+                <Input size="large" placeholder="Enter the category name" />
               </FormItem>
             </Col>
             <Col style={styles.colStyle} span={24}>

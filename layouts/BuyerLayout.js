@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-import { Layout, Menu, Row, Dropdown } from "antd";
+import { Layout, Menu, Row, Dropdown, Badge, Space, Divider } from "antd";
 import {
   DownOutlined,
   LoginOutlined,
@@ -8,6 +8,7 @@ import {
   MenuFoldOutlined,
   OrderedListOutlined,
   FallOutlined,
+  BellOutlined,
 } from "@ant-design/icons";
 import MemberNavComponent from "../component/MemberNavComponent";
 import { currentPath } from "../utils";
@@ -62,9 +63,22 @@ const PROFILE_MENU = (
     </Menu.Item>
   </Menu>
 );
-
+const menu = (
+  <Menu>
+    <Menu.Item key="0">
+      <a href="#">Message 01</a>
+    </Menu.Item>
+    <Menu.Divider />
+    <Menu.Item key="1">
+      <a href="#">Message 02</a>
+    </Menu.Item>
+    <Menu.Divider />
+    <Menu.Item key="3">Message 03</Menu.Item>
+  </Menu>
+);
 const SupplierLayout = ({ children }) => {
   const [collapsed, setCollapsed] = useState(true);
+  const [openMessage, setOpenMessage] = useState(false);
   return (
     <div
       style={{
@@ -112,7 +126,18 @@ const SupplierLayout = ({ children }) => {
                     onClick={() => setCollapsed((prev) => !prev)}
                   />
                 )}
-                <div style={{ marginRight: 24 }}>
+                <Space style={{ marginRight: 24 }}>
+                  <Dropdown
+                    overlay={menu}
+                    onVisibleChange={setOpenMessage}
+                    visible={openMessage}
+                    trigger={["click"]}
+                  >
+                    <Badge style={{ cursor: "pointer" }} count={3}>
+                      <BellOutlined />
+                    </Badge>
+                  </Dropdown>
+                  <Divider type="vertical" />
                   <Dropdown overlay={PROFILE_MENU}>
                     <a
                       className="ant-dropdown-link"
@@ -121,7 +146,7 @@ const SupplierLayout = ({ children }) => {
                       My Account <DownOutlined />
                     </a>
                   </Dropdown>
-                </div>
+                </Space>
               </Row>
             </Header>
             <Content
