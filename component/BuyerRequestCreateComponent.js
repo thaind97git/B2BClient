@@ -19,11 +19,6 @@ import BuyerRequestCategoryComponent from "./BuyerRequestCategoryComponent";
 import { createStructuredSelector } from "reselect";
 import { connect } from "react-redux";
 import { getCategorySelected } from "../libs";
-import {
-  currencyFormatter,
-  currencyParser,
-  currencyValue,
-} from "../libs/currencyFormatter";
 import Router from "next/router";
 import { SET_CATEGORY_SELECTED } from "../stores/initState";
 import {
@@ -133,11 +128,10 @@ const PriceInput = ({
   return (
     <span>
       <InputNumber
-        // value={currencyValue}
         onChange={onNumberChange}
         style={{ width: "50%" }}
-        formatter={currencyFormatter(currencyValue)}
-        parser={currencyParser}
+        formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+        parser={(value) => value.replace(/,*/g, "")}
       />
 
       <Select
@@ -194,6 +188,7 @@ const QuantityInput = ({ value = {}, onChange, unitData = [] }) => {
 
     triggerChange({
       unit: newUnit,
+      number: value.number || 1,
     });
   };
 
@@ -538,7 +533,18 @@ const BuyerRequestCreateComponent = ({
             <Row align="middle">
               <Col style={styles.colStyle} span={24}>
                 <FormItem label="Certifications" name="certifications">
-                  <Select style={{ width: "50%" }}>
+                  <Select
+                    showSearch
+                    mode="multiple"
+                    placeholder="Select Certification"
+                    optionFilterProp="children"
+                    filterOption={(input, option) =>
+                      option.children
+                        .toLowerCase()
+                        .indexOf(input.toLowerCase()) >= 0
+                    }
+                    style={{ width: "50%" }}
+                  >
                     {!!supCertificationData &&
                       supCertificationData.map((type) => (
                         <Option value={type.id} index={type.id}>

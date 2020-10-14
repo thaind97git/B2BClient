@@ -8,8 +8,9 @@ import {
   Table,
   Tag,
   Typography,
+  Modal,
 } from "antd";
-import Modal from "antd/lib/modal/Modal";
+import { CloseCircleOutlined } from "@ant-design/icons";
 import Router from "next/router";
 import React, { Fragment, useState } from "react";
 import { G_NEGOTIATING } from "../enums/groupStatus";
@@ -31,7 +32,9 @@ const SUPPLIER_CONTACT = [
   { title: "Name", dataIndex: "name", key: "name" },
   { title: "Email", dataIndex: "email", key: "email" },
   { title: "Phone", dataIndex: "phone", key: "phone" },
+  { title: "Is Ignore", dataIndex: "isIgnore", key: "isIgnore" },
   { title: "Actions", dataIndex: "actions", key: "actions" },
+  { title: "", dataIndex: "remove", key: "remove" },
 ];
 
 const GroupRequestDetailsComponent = ({
@@ -121,6 +124,12 @@ const GroupRequestDetailsComponent = ({
       name: "Supplier 1",
       email: "thaindse62642@fpt.edu.vn",
       phone: "0397471442",
+      isIgnore: (
+        <Space style={{ color: "red" }}>
+          <CloseCircleOutlined />
+          Ignored
+        </Space>
+      ),
       actions: (
         <Space>
           <Button size="small" type="dashed">
@@ -131,9 +140,7 @@ const GroupRequestDetailsComponent = ({
           <Button size="small" style={{ color: "green" }}>
             Closing sales
           </Button>
-          <Button size="small" danger>
-            Remove
-          </Button>
+
           <Button
             type="link"
             onClick={() => {
@@ -144,11 +151,22 @@ const GroupRequestDetailsComponent = ({
           </Button>
         </Space>
       ),
+      remove: (
+        <Button size="small" danger>
+          Remove
+        </Button>
+      ),
     },
     {
       name: "Supplier 2",
       email: "thaind97.dev@gmail.com",
       phone: "0397471441",
+      isIgnore: (
+        <Space style={{ color: "red" }}>
+          <CloseCircleOutlined />
+          Ignored
+        </Space>
+      ),
       actions: (
         <Space>
           <Button size="small" type="dashed">
@@ -159,8 +177,36 @@ const GroupRequestDetailsComponent = ({
           <Button size="small" style={{ color: "green" }}>
             Closing sales{" "}
           </Button>
-          <Button size="small" danger>
-            Remove
+          <Button
+            type="link"
+            onClick={() => {
+              setOpenSupplierDetail(true);
+            }}
+          >
+            Details
+          </Button>
+        </Space>
+      ),
+      remove: (
+        <Button size="small" danger>
+          Remove
+        </Button>
+      ),
+    },
+    {
+      name: "Supplier 3",
+      email: "thaind97.info@gmail.com",
+      phone: "0397471440",
+      isIgnore: <span style={{ color: "green" }}>Negotiating</span>,
+      actions: (
+        <Space>
+          <Button size="small" type="dashed">
+            <a href="/aggregator/group/chat" target="_blank">
+              Chat
+            </a>
+          </Button>
+          <Button size="small" style={{ color: "green" }}>
+            Closing sales
           </Button>
           <Button
             type="link"
@@ -172,33 +218,10 @@ const GroupRequestDetailsComponent = ({
           </Button>
         </Space>
       ),
-    },
-    {
-      name: "Supplier 3",
-      email: "thaind97.info@gmail.com",
-      phone: "0397471440",
-      actions: (
-        <Space>
-          <Button size="small" type="dashed">
-            <a href="/aggregator/group/chat" target="_blank">
-              Chat
-            </a>
-          </Button>
-          <Button size="small" style={{ color: "green" }}>
-            Closing sales
-          </Button>
-          <Button size="small" danger>
-            Remove
-          </Button>
-          <Button
-            type="link"
-            onClick={() => {
-              setOpenSupplierDetail(true);
-            }}
-          >
-            Details
-          </Button>
-        </Space>
+      remove: (
+        <Button size="small" danger>
+          Remove
+        </Button>
       ),
     },
   ];
