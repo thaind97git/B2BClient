@@ -125,7 +125,7 @@ const SupplierBiddingItemComponent = ({
                 <Space>
                   <Button
                     onClick={() => {
-                      Router.push(`/supplier/bidding/details?id=${id}`);
+                      // Router.push(`/supplier/bidding/details?id=${id}`);
                     }}
                     type="primary"
                     size="small"
