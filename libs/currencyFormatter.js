@@ -7,12 +7,10 @@ const currencyOptions = currencyList.data.map((c) => ({
 export const currencyValue = currencyOptions[0].value;
 
 export const currencyFormatter = (selectedCurrOpt) => (value) => {
-  console.log({ value2: value });
   const formatted = new Intl.NumberFormat(locale, {
     style: "currency",
     currency: selectedCurrOpt.split("::")[1],
   }).format(value);
-  console.log({ formatted });
   return formatted;
 };
 

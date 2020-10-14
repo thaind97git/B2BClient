@@ -1,6 +1,10 @@
-import React from "react";
+import Router from "next/router";
+import React, { useEffect } from "react";
 import SupplierLayout from "../../layouts/SupplierLayout";
 const DashboardPage = () => {
-  return <SupplierLayout>Dashboard member</SupplierLayout>;
+  useEffect(() => {
+    Router.push("/supplier/chat");
+  }, []);
+  return null; //<SupplierLayout>Dashboard member</SupplierLayout>;
 };
 export default DashboardPage;

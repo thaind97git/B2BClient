@@ -101,7 +101,7 @@ export const doFunctionWithEnter = (event, func) =>
   func();
 
 export const parseBoolean = (val) =>
-  !val || val === "false" || val === "null" || val === "undefined"
+  !val || val === "false" || val === "null" || val === "undefined" || val === "0"
     ? false
     : true;
 

@@ -1,9 +1,10 @@
-import React from "react";
-import { Tabs } from "antd";
+import React, { Fragment } from "react";
+import { Row, Select, Space, Tabs } from "antd";
 import { ApartmentOutlined, ClusterOutlined } from "@ant-design/icons";
 import SupplierBiddingItemComponent from "./SupplierBiddingItemComponent";
 
 const { TabPane } = Tabs;
+const { Option } = Select;
 
 const getFeatureDate = (numberDate = 0) => {
   const timeInOneDay = 24 * 60 * 60 * 1000;
@@ -92,51 +93,83 @@ const BIDDING_INVITE2 = [
 
 const SupplierBiddingComponent = () => {
   return (
-    <Tabs defaultActiveKey="1">
-      <TabPane
-        tab={
-          <span>
-            <ApartmentOutlined />
-            Event invitations
-          </span>
-        }
-        key="1"
-      >
-        {BIDDING_INVITE2.map((bidding, index) => (
-          <SupplierBiddingItemComponent
-            bidding={bidding}
-            key={index}
-            isInvitation={true}
-          />
-        ))}
-      </TabPane>
-      <TabPane
-        tab={
-          <span>
-            <ClusterOutlined />
-            Accepted events
-          </span>
-        }
-        key="2"
-      >
-        {BIDDING_INVITE.map((bidding, index) => (
-          <SupplierBiddingItemComponent bidding={bidding} key={index} />
-        ))}
-      </TabPane>
-      <TabPane
-        tab={
-          <span>
-            <ClusterOutlined />
-            Closed events
-          </span>
-        }
-        key="3"
-      >
-        {BIDDING_INVITE.map((bidding, index) => (
-          <SupplierBiddingItemComponent closed key={index} bidding={bidding} />
-        ))}
-      </TabPane>
-    </Tabs>
+    <Fragment>
+      <Row justify="end">
+        <Space>
+          <Select
+            placeholder="Filter by category"
+            style={{
+              width: "200px",
+              margin: "0 4px",
+            }}
+          >
+            <Option value="c1">Category 1</Option>
+            <Option value="c2">Category 2</Option>
+            <Option value="c3">Category 3</Option>
+            <Option value="c4">Category 4</Option>
+          </Select>
+          <Select
+            placeholder="Filter by time"
+            style={{
+              width: "200px",
+              margin: "0 4px",
+            }}
+          >
+            <Option value="today">Today</Option>
+            <Option value="new">Newest</Option>
+          </Select>
+        </Space>
+      </Row>
+      <Tabs defaultActiveKey="1">
+        <TabPane
+          tab={
+            <span>
+              <ApartmentOutlined />
+              Event invitations
+            </span>
+          }
+          key="1"
+        >
+          {BIDDING_INVITE2.map((bidding, index) => (
+            <SupplierBiddingItemComponent
+              bidding={bidding}
+              key={index}
+              isInvitation={true}
+            />
+          ))}
+        </TabPane>
+        <TabPane
+          tab={
+            <span>
+              <ClusterOutlined />
+              Accepted events
+            </span>
+          }
+          key="2"
+        >
+          {BIDDING_INVITE.map((bidding, index) => (
+            <SupplierBiddingItemComponent bidding={bidding} key={index} />
+          ))}
+        </TabPane>
+        <TabPane
+          tab={
+            <span>
+              <ClusterOutlined />
+              Closed events
+            </span>
+          }
+          key="3"
+        >
+          {BIDDING_INVITE.map((bidding, index) => (
+            <SupplierBiddingItemComponent
+              closed
+              key={index}
+              bidding={bidding}
+            />
+          ))}
+        </TabPane>
+      </Tabs>
+    </Fragment>
   );
 };
 
