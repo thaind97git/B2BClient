@@ -36,9 +36,9 @@ const columns = [
     key: "quantity",
   },
   {
-    title: "Date Created",
-    dataIndex: "dateCreated",
-    key: "dateCreated",
+    title: "Due Date",
+    dataIndex: "dueDate",
+    key: "dueDate",
   },
   {
     title: "Status",
@@ -103,6 +103,7 @@ const REQUEST_DETAIL_LIST = [
     unit: "Units",
     tradeTerms: "FOB",
     preUnitPrice: 500000,
+    dueDate: "30/10/2020 02:04:00 PM",
     details: "I really want to buy this product",
     attachments: [
       {
@@ -128,6 +129,7 @@ const REQUEST_DETAIL_LIST = [
     unit: "Units",
     tradeTerms: "FOB",
     preUnitPrice: 500000,
+    dueDate: "30/10/2020 02:04:00 PM",
     details: "I really want to buy this product",
     attachments: [
       {
@@ -153,6 +155,7 @@ const REQUEST_DETAIL_LIST = [
     unit: "Units",
     tradeTerms: "FOB",
     preUnitPrice: 500000,
+    dueDate: "30/10/2020 02:04:00 PM",
     details: "I really want to buy this product",
     attachments: [
       {
@@ -178,6 +181,7 @@ const REQUEST_DETAIL_LIST = [
     unit: "Units",
     tradeTerms: "FOB",
     preUnitPrice: 500000,
+    dueDate: "30/10/2020 02:04:00 PM",
     details: "I really want to buy this product",
     attachments: [
       {
@@ -203,6 +207,7 @@ const REQUEST_DETAIL_LIST = [
     unit: "Units",
     tradeTerms: "FOB",
     preUnitPrice: 500000,
+    dueDate: "30/10/2020 02:04:00 PM",
     details: "I really want to buy this product",
     attachments: [
       {
@@ -228,6 +233,7 @@ const REQUEST_DETAIL_LIST = [
     unit: "Units",
     tradeTerms: "FOB",
     preUnitPrice: 500000,
+    dueDate: "30/10/2020 02:04:00 PM",
     details: "I really want to buy this product",
     attachments: [
       {
@@ -253,6 +259,7 @@ const REQUEST_DETAIL_LIST = [
     unit: "Units",
     tradeTerms: "FOB",
     preUnitPrice: 500000,
+    dueDate: "30/10/2020 02:04:00 PM",
     details: "I really want to buy this product",
     attachments: [
       {
@@ -278,6 +285,7 @@ const REQUEST_DETAIL_LIST = [
     unit: "Units",
     tradeTerms: "FOB",
     preUnitPrice: 500000,
+    dueDate: "30/10/2020 02:04:00 PM",
     details: "I really want to buy this product",
     attachments: [
       {
@@ -303,6 +311,7 @@ const REQUEST_DETAIL_LIST = [
     unit: "Units",
     tradeTerms: "FOB",
     preUnitPrice: 500000,
+    dueDate: "30/10/2020 02:04:00 PM",
     details: "I really want to buy this product",
     attachments: [
       {
@@ -333,7 +342,7 @@ const BuyerRequestManagement = () => {
       category: "Iphone 5",
       quantity: 20,
       createdBy: "User 1",
-      dateCreated: "30/09/2020 02:07:26 PM",
+      dueDate: "30/09/2020 02:07:26 PM",
       status: <RequestStatusComponent status={R_PENDING} />,
       actions: (
         <Button
@@ -357,7 +366,7 @@ const BuyerRequestManagement = () => {
       category: "Iphone 5S",
       quantity: 20,
       createdBy: "User 1",
-      dateCreated: "30/09/2020 02:07:26 PM",
+      dueDate: "30/09/2020 02:07:26 PM",
       status: <RequestStatusComponent status={R_CANCELED} />,
       actions: (
         <Button
@@ -381,7 +390,7 @@ const BuyerRequestManagement = () => {
       category: "Iphone 6",
       quantity: 20,
       createdBy: "User 1",
-      dateCreated: "30/09/2020 02:07:26 PM",
+      dueDate: "30/09/2020 02:07:26 PM",
       status: <RequestStatusComponent status={R_REJECTED} />,
       actions: (
         <Button
@@ -405,7 +414,7 @@ const BuyerRequestManagement = () => {
       category: "Iphone 6S",
       quantity: 20,
       createdBy: "User 1",
-      dateCreated: "30/09/2020 02:07:26 PM",
+      dueDate: "30/09/2020 02:07:26 PM",
       status: <RequestStatusComponent status={R_DONE} />,
       actions: (
         <Button
@@ -429,7 +438,7 @@ const BuyerRequestManagement = () => {
       category: "Iphone 7",
       quantity: 20,
       createdBy: "User 1",
-      dateCreated: "30/09/2020 02:07:26 PM",
+      dueDate: "30/09/2020 02:07:26 PM",
       status: <RequestStatusComponent status={R_BIDDING} />,
       actions: (
         <Button
@@ -453,7 +462,7 @@ const BuyerRequestManagement = () => {
       category: "Iphone 7S",
       quantity: 20,
       createdBy: "User 1",
-      dateCreated: "30/09/2020 02:07:26 PM",
+      dueDate: "30/09/2020 02:07:26 PM",
       status: <RequestStatusComponent status={R_WAIT_FOR_AUCTION} />,
       actions: (
         <Button
@@ -477,7 +486,7 @@ const BuyerRequestManagement = () => {
       category: "Iphone 7S Plus",
       quantity: 20,
       createdBy: "User 1",
-      dateCreated: "30/09/2020 02:07:26 PM",
+      dueDate: "30/09/2020 02:07:26 PM",
       status: <RequestStatusComponent status={R_GROUPED} />,
       actions: (
         <Button
@@ -501,7 +510,7 @@ const BuyerRequestManagement = () => {
       category: "Iphone 8",
       quantity: 20,
       createdBy: "User 1",
-      dateCreated: "30/09/2020 02:07:26 PM",
+      dueDate: "30/09/2020 02:07:26 PM",
       status: <RequestStatusComponent status={R_NEGOTIATING} />,
       actions: (
         <Button
@@ -525,7 +534,7 @@ const BuyerRequestManagement = () => {
       category: "Iphone 10",
       quantity: 20,
       createdBy: "User 1",
-      dateCreated: "30/09/2020 02:07:26 PM",
+      dueDate: "30/09/2020 02:07:26 PM",
       status: <RequestStatusComponent status={R_ORDERED} />,
       actions: (
         <Button
@@ -564,8 +573,10 @@ const BuyerRequestManagement = () => {
           />
         </Drawer>
         <Title level={4}>Your Request for Quotation</Title>
-        <Button onClick={() => Router.push("/buyer/rfq/create")} type="primary">
-          Create new request
+        <Button onClick={() => {}} type="primary">
+          <a href="/#product" target="_blank">
+            Submit Other RFQ
+          </a>
         </Button>
       </Row>
       <ReactTableLayout

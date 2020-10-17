@@ -25,6 +25,7 @@ const requestDefault = {
   unit: "Units",
   tradeTerms: "FOB",
   preUnitPrice: 500000,
+  dueDate: "30/10/2020 02:05:00 PM",
   details: "I really want to buy this product",
   attachments: [
     {
@@ -55,6 +56,7 @@ const RequestDetailsComponent = ({
     unit,
     tradeTerms,
     preUnitPrice,
+    dueDate,
     details,
     attachments,
     certifi,
@@ -115,6 +117,7 @@ const RequestDetailsComponent = ({
         title="Preferred Unit Price"
         content={displayCurrency(preUnitPrice)}
       />
+      <DescriptionItem title="Due Date" content={dueDate} />
       <DescriptionItem title="Details" content={details} />
       <DescriptionItem title="Attachments" content={<AttachmentsDisplay />} />
       <Divider />

@@ -10,10 +10,9 @@ import {
   Space,
   Card,
   Select,
-  Upload,
+  DatePicker,
 } from "antd";
 import { displayCurrency } from "../utils";
-import { InboxOutlined } from "@ant-design/icons";
 import Modal from "antd/lib/modal/Modal";
 import BuyerRequestCategoryComponent from "./BuyerRequestCategoryComponent";
 import { createStructuredSelector } from "reselect";
@@ -39,6 +38,7 @@ import {
   getUnitOfMeasure,
   GetUnitOfMeasureData,
 } from "../stores/SupportRequestState";
+import moment from "moment";
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -105,23 +105,10 @@ const PriceInput = ({
       return;
     }
 
-    // if (!("price" in value)) {
     setPrice(newNumber);
-    // }
-    console.log({ value });
 
     triggerChange({
       price: newNumber,
-    });
-  };
-
-  const onCurrencyChange = (newCurrency) => {
-    if (!("currency" in value)) {
-      setCurrency(newCurrency);
-    }
-
-    triggerChange({
-      currency: newCurrency,
     });
   };
 
@@ -133,23 +120,14 @@ const PriceInput = ({
         formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
         parser={(value) => value.replace(/,*/g, "")}
       />
-
-      <Select
-        value={value.currency || currency}
+      <Input
+        value="Vnd"
+        disabled
         style={{
           width: "48%",
           margin: "0 4px",
         }}
-        onChange={onCurrencyChange}
-      >
-        {!!currencyData &&
-          currencyData.map((type) => (
-            <Option value={type.id} index={type.id}>
-              {type.description}
-            </Option>
-          ))}
-        {/* <Option value="vnd">VND</Option> */}
-      </Select>
+      />
     </span>
   );
 };
@@ -201,7 +179,15 @@ const QuantityInput = ({ value = {}, onChange, unitData = [] }) => {
         min={1}
         placeholder="Enter the product quantity"
       />
-      <Select
+      <Input
+        value="Unit"
+        disabled
+        style={{
+          width: "48%",
+          margin: "0 4px",
+        }}
+      />
+      {/* <Select
         showSearch
         value={value.unit || unit}
         style={{
@@ -217,22 +203,20 @@ const QuantityInput = ({ value = {}, onChange, unitData = [] }) => {
       >
         {!!unitData &&
           unitData.map((type) => (
-            <Option value={type.id} index={type.id}>
+            <Option value={type.id} index={type.id} key={type.id}>
               {type.description}
             </Option>
           ))}
-        {/* <Option value="pieces">Pieces</Option>
-        <Option value="bags">Bags</Option>
-        <Option value="boxes">Boxes</Option>
-        <Option value="cartons">Cartons</Option>
-        <Option value="feet">Feet</Option>
-        <Option value="units">Units</Option>
-        <Option value="kilograms">Kilograms</Option>
-        <Option value="Miles">Miles</Option> */}
-      </Select>
+      </Select> */}
     </span>
   );
 };
+
+function disabledDate(current) {
+  // Can not select days before today and today
+  return current && current < moment().endOf("day");
+}
+
 const BuyerRequestCreateComponent = ({
   removeCategorySelected,
   categorySelected,
@@ -275,13 +259,6 @@ const BuyerRequestCreateComponent = ({
     getPaymentTerm,
     getSupCertification,
   ]);
-  const normFile = (e) => {
-    console.log("Upload event:", e);
-    if (Array.isArray(e)) {
-      return e;
-    }
-    return e && e.fileList;
-  };
 
   const onFinish = (values) => {
     console.log("Received values of form: ", values);
@@ -334,6 +311,10 @@ const BuyerRequestCreateComponent = ({
           autoComplete="new-password"
           className="register-form"
           onFinish={onFinish}
+          initialValues={{
+            productName: "Iphone 8 Plus 64Gb",
+            unit: "Unit",
+          }}
         >
           <Row justify="center">
             <Title style={styles.titleStyle} level={2}>
@@ -351,20 +332,11 @@ const BuyerRequestCreateComponent = ({
           >
             <Row align="middle">
               <Col style={styles.colStyle} span={24}>
-                <FormItem
-                  label="Product Name"
-                  name="productName"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Please enter the product title",
-                    },
-                  ]}
-                >
-                  <Input placeholder="Enter the product title" />
+                <FormItem label="Product Name" name="productName">
+                  <Input disabled />
                 </FormItem>
               </Col>
-              <Col style={styles.colStyle} span={24}>
+              {/* <Col style={styles.colStyle} span={24}>
                 <FormItem label="Category" name="category">
                   {!!categorySelected.length && (
                     <div>
@@ -378,11 +350,11 @@ const BuyerRequestCreateComponent = ({
                     Select Category
                   </Button>
                 </FormItem>
-              </Col>
+              </Col> */}
               <Col style={styles.colStyle} span={24}>
                 <FormItem
                   label="Sourcing Type"
-                  name="sourcingType"
+                  name="sourcingTypeId"
                   rules={[
                     {
                       required: true,
@@ -393,7 +365,7 @@ const BuyerRequestCreateComponent = ({
                   <Select style={{ width: "50%" }}>
                     {!!sourcingTypeData &&
                       sourcingTypeData.map((type) => (
-                        <Option value={type.id} index={type.id}>
+                        <Option value={type.id} index={type.id} key={type.id}>
                           {type.description}
                         </Option>
                       ))}
@@ -403,7 +375,7 @@ const BuyerRequestCreateComponent = ({
               <Col style={styles.colStyle} span={24}>
                 <FormItem
                   label="Sourcing Purpose"
-                  name="sourcingPurpose"
+                  name="sourcingPurposeId"
                   rules={[
                     {
                       required: true,
@@ -414,7 +386,7 @@ const BuyerRequestCreateComponent = ({
                   <Select style={{ width: "50%" }}>
                     {!!sourcingPurposeData &&
                       sourcingPurposeData.map((type) => (
-                        <Option value={type.id} index={type.id}>
+                        <Option value={type.id} index={type.id} key={type.id}>
                           {type.description}
                         </Option>
                       ))}
@@ -423,7 +395,11 @@ const BuyerRequestCreateComponent = ({
               </Col>
               <Col style={styles.colStyle} span={24}>
                 <FormItem
-                  label="Quantity"
+                  label={
+                    <span>
+                      <span style={{ color: "red" }}>*</span> Quantity
+                    </span>
+                  }
                   name="quantity"
                   rules={[
                     {
@@ -443,8 +419,13 @@ const BuyerRequestCreateComponent = ({
               </Col>
               <Col style={styles.colStyle} span={24}>
                 <FormItem
-                  name="price"
-                  label="Preferred Unit Price:"
+                  name="preferredUnitPrice"
+                  label={
+                    <span>
+                      <span style={{ color: "red" }}>*</span> Preferred Unit
+                      Price:
+                    </span>
+                  }
                   rules={[
                     {
                       validator: checkPrice,
@@ -461,7 +442,7 @@ const BuyerRequestCreateComponent = ({
               <Col style={styles.colStyle} span={24}>
                 <FormItem
                   label="Trade term"
-                  name="tradeTerm"
+                  name="tradeTermId"
                   rules={[
                     {
                       required: true,
@@ -472,18 +453,31 @@ const BuyerRequestCreateComponent = ({
                   <Select style={{ width: "50%" }}>
                     {!!tradeTermData &&
                       tradeTermData.map((type) => (
-                        <Option value={type.id} index={type.id}>
+                        <Option value={type.id} index={type.id} key={type.id}>
                           {type.description}
                         </Option>
                       ))}
-                    {/* <Option value="fob">FOB</Option>
-                    <Option value="exw">EXW</Option>
-                    <Option value="fas">FAS</Option>
-                    <Option value="fca">FCA</Option>
-                    <Option value="cfr">CFR</Option>
-                    <Option value="cpt">CPT</Option>
-                    <Option value="cif">CIF</Option> */}
                   </Select>
+                </FormItem>
+              </Col>
+              <Col style={styles.colStyle} span={24}>
+                <FormItem
+                  label="Due date"
+                  name="dueDate"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please select due date",
+                    },
+                  ]}
+                >
+                  <DatePicker
+                    placeholder="Select due date"
+                    style={{ width: "50%" }}
+                    format="YYYY-MM-DD HH:mm:ss"
+                    disabledDate={disabledDate}
+                    showTime={{ defaultValue: moment("00:00:00", "HH:mm:ss") }}
+                  />
                 </FormItem>
               </Col>
               <Col style={styles.colStyle} span={24}>
@@ -499,25 +493,6 @@ const BuyerRequestCreateComponent = ({
                 >
                   <Input.TextArea autoSize={{ minRows: 3 }} />
                 </FormItem>
-              </Col>
-              <Col style={styles.colStyle} span={24}>
-                <Form.Item label="Attachments">
-                  <Form.Item
-                    name="attachments"
-                    valuePropName="fileList"
-                    getValueFromEvent={normFile}
-                    noStyle
-                  >
-                    <Upload.Dragger name="files" action="/upload.do">
-                      <p className="ant-upload-drag-icon">
-                        <InboxOutlined />
-                      </p>
-                      <p className="ant-upload-text">
-                        Click or drag file to this area to upload
-                      </p>
-                    </Upload.Dragger>
-                  </Form.Item>
-                </Form.Item>
               </Col>
             </Row>
           </Card>
@@ -547,17 +522,10 @@ const BuyerRequestCreateComponent = ({
                   >
                     {!!supCertificationData &&
                       supCertificationData.map((type) => (
-                        <Option value={type.id} index={type.id}>
+                        <Option value={type.id} index={type.id} key={type.id}>
                           {type.description}
                         </Option>
                       ))}
-                    {/* <Option value="IOS/TS16949">ISO/TS16949</Option>
-                    <Option value="ISO22000">ISO22000</Option>
-                    <Option value="CCC">CCC</Option>
-                    <Option value="PSE">PSE</Option>
-                    <Option value="MSDS">MSDS</Option>
-                    <Option value="FCCF">FCCF</Option>
-                    <Option value="GMP">GMP</Option> */}
                   </Select>
                 </FormItem>
               </Col>
@@ -583,11 +551,11 @@ const BuyerRequestCreateComponent = ({
           >
             <Row align="middle">
               <Col style={styles.colStyle} span={24}>
-                <FormItem label="Shipping Method" name="shipping">
+                <FormItem label="Shipping Method" name="shippingMethodId">
                   <Select style={{ width: "50%" }}>
                     {!!shippingMethodData &&
                       shippingMethodData.map((type) => (
-                        <Option value={type.id} index={type.id}>
+                        <Option value={type.id} index={type.id} key={type.id}>
                           {type.description}
                         </Option>
                       ))}
@@ -674,7 +642,7 @@ const BuyerRequestCreateComponent = ({
               <Col style={styles.colStyle} span={24}>
                 <FormItem
                   label="Payment Term"
-                  name="payment term"
+                  name="paymentTermId"
                   rules={[
                     {
                       required: true,
@@ -685,7 +653,7 @@ const BuyerRequestCreateComponent = ({
                   <Select style={{ width: "50%" }}>
                     {!!paymentTermData &&
                       paymentTermData.map((type) => (
-                        <Option value={type.id} index={type.id}>
+                        <Option value={type.id} index={type.id} key={type.id}>
                           {type.description}
                         </Option>
                       ))}
