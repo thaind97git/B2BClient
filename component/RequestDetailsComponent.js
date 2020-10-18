@@ -1,9 +1,25 @@
-import { Button, Col, Divider, Row, Space, Typography, Upload } from "antd";
-import React, { Fragment } from "react";
+import { Button, Col, Divider, Empty, Row, Space, Typography } from "antd";
+import React, { Fragment, useEffect } from "react";
 import { R_PENDING } from "../enums/requestStatus";
 import RequestStatusComponent from "./Utils/RequestStatusComponent";
 import { displayCurrency } from "../utils";
+import { connect } from "react-redux";
+import { createStructuredSelector } from "reselect";
+import {
+  getRequestDetails,
+  GetRequestDetailsDataSelector,
+} from "../stores/RequestState";
 const { Title } = Typography;
+
+const connectToRedux = connect(
+  createStructuredSelector({
+    requestDetailsData: GetRequestDetailsDataSelector,
+  }),
+  (dispatch) => ({
+    getRequestDetails: (id) => dispatch(getRequestDetails(id)),
+  })
+);
+
 const DescriptionItem = ({ title, content }) => (
   <Col span={24}>
     <Row className="site-description-item-profile-wrapper">
@@ -46,6 +62,9 @@ const RequestDetailsComponent = ({
   request = requestDefault,
   buttonActions = [],
   isSupplier = true,
+  requestDetailsData,
+  getRequestDetails,
+  requestId,
 }) => {
   const {
     productName,
@@ -58,31 +77,22 @@ const RequestDetailsComponent = ({
     preUnitPrice,
     dueDate,
     details,
-    attachments,
     certifi,
     shippingMethod,
     destination,
     leadTime,
     status,
   } = request || {};
-  const AttachmentsDisplay = () => {
-    return (
-      <Upload
-        showUploadList={{
-          showPreviewIcon: false,
-          showRemoveIcon: false,
-        }}
-        action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-        listType="picture-card"
-        fileList={attachments}
-        // onChange={onChange}
-        // onPreview={onPreview}
-      >
-        {/* {fileList.length < 5 && '+ Upload'} */}
-      </Upload>
-    );
-  };
   const leadTimeDisplay = `Ship in ${leadTime} day(s) after supplier receives the initial payment`;
+  useEffect(() => {
+    if (requestId) {
+      getRequestDetails(requestId);
+    }
+  }, [requestId, getRequestDetails]);
+  console.log({ requestDetailsData });
+  if (!requestId) {
+    return <Empty description="Can not find any request !" />;
+  }
   return (
     <Row style={{ width: "100%" }}>
       <Col style={{ padding: "12px 0px" }} span={24}>
@@ -119,7 +129,6 @@ const RequestDetailsComponent = ({
       />
       <DescriptionItem title="Due Date" content={dueDate} />
       <DescriptionItem title="Details" content={details} />
-      <DescriptionItem title="Attachments" content={<AttachmentsDisplay />} />
       <Divider />
       <Col span={24}>
         <Title level={5}>Supplier Capability</Title>
@@ -182,4 +191,4 @@ const RequestDetailsComponent = ({
   );
 };
 
-export default RequestDetailsComponent;
+export default connectToRedux(RequestDetailsComponent);

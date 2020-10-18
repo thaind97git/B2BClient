@@ -1,8 +1,7 @@
 import { Button, Drawer, Row, Select, Typography } from "antd";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ReactTableLayout from "../layouts/ReactTableLayout";
 import { DEFAULT_DATE_RANGE, displayCurrency } from "../utils";
-import Router from "next/router";
 import RequestStatusComponent from "./Utils/RequestStatusComponent";
 import {
   R_BIDDING,
@@ -16,8 +15,34 @@ import {
   R_WAIT_FOR_AUCTION,
 } from "../enums/requestStatus";
 import RequestDetailsComponent from "./RequestDetailsComponent";
+import { connect } from "react-redux";
+import { createStructuredSelector } from "reselect";
+import {
+  getRequestPaging,
+  GetRequestPagingData,
+  GetRequestPagingError,
+} from "../stores/RequestState";
 const { Option } = Select;
 const { Title } = Typography;
+
+const connectToRedux = connect(
+  createStructuredSelector({
+    requestPagingData: GetRequestPagingData,
+    requestPagingError: GetRequestPagingError,
+  }),
+  (dispatch) => ({
+    getRequest: (pageIndex, pageSize, searchMessage, dateRange, status) =>
+      dispatch(
+        getRequestPaging({
+          pageSize,
+          pageIndex,
+          fromDate: dateRange.fromDate,
+          toDate: dateRange.toDate,
+          productTitle: searchMessage,
+        })
+      ),
+  })
+);
 
 const columns = [
   {
@@ -52,9 +77,6 @@ const columns = [
     key: "actions",
   },
 ];
-function handleChange(value) {
-  console.log(`selected ${value}`);
-}
 
 const getButtonActionsByStatus = (status) => {
   let result = [];
@@ -329,12 +351,50 @@ const REQUEST_DETAIL_LIST = [
     status: R_WAIT_FOR_AUCTION,
   },
 ];
-const BuyerRequestManagement = () => {
+
+const BuyerRequestManagement = ({
+  getRequest,
+  requestPagingData,
+  requestPagingError,
+}) => {
   const [searchMessage, setSearchMessage] = useState("");
   const [dateRange, setDateRange] = useState(DEFAULT_DATE_RANGE);
   const [openDetails, setOpenDetails] = useState(false);
   const [currentRequestSelected, setCurrentRequestSelected] = useState({});
+  const [status, setStatus] = useState(null);
+  const [loading, setLoading] = useState(true);
 
+  useEffect(() => {
+    if (requestPagingError || requestPagingData) {
+      setLoading(false);
+    }
+  }, [requestPagingError, requestPagingData]);
+  function handleChange(value) {
+    console.log(`selected ${value}`);
+    setStatus(value);
+  }
+  const getRequestTable = (requestData = []) => {
+    return requestData.map((request = {}) => ({
+      key: request.id,
+      price: displayCurrency(+request.preferredUnitPrice),
+      category: "aaa",
+      quantity: +request.quantity || 0,
+      dueDate: new Date(request.dueDate),
+      status: <RequestStatusComponent status={request.status} />,
+      actions: (
+        <Button
+          onClick={() => {
+            setCurrentRequestSelected(request);
+            setOpenDetails(true);
+          }}
+          size="small"
+          type="link"
+        >
+          View
+        </Button>
+      ),
+    }));
+  };
   const dataSource = [
     {
       key: "1",
@@ -553,6 +613,13 @@ const BuyerRequestManagement = () => {
       ),
     },
   ];
+
+  let requestData = [],
+    totalCount = 0;
+  if (!!requestPagingData) {
+    requestData = requestPagingData;
+    totalCount = requestPagingData.length;
+  }
   return (
     <div>
       <Row justify="space-between">
@@ -566,7 +633,7 @@ const BuyerRequestManagement = () => {
           key={"right"}
         >
           <RequestDetailsComponent
-            request={currentRequestSelected}
+            requestId={currentRequestSelected.id}
             buttonActions={getButtonActionsByStatus(
               currentRequestSelected.status
             )}
@@ -574,12 +641,14 @@ const BuyerRequestManagement = () => {
         </Drawer>
         <Title level={4}>Your Request for Quotation</Title>
         <Button onClick={() => {}} type="primary">
-          <a href="/#product" target="_blank">
+          <a href="/" target="_blank">
             Submit Other RFQ
           </a>
         </Button>
       </Row>
       <ReactTableLayout
+        loading={loading}
+        dispatchAction={getRequest}
         searchProps={{
           placeholder: "Search by product name",
           searchMessage,
@@ -591,27 +660,28 @@ const BuyerRequestManagement = () => {
               style={{ width: 200 }}
               onChange={handleChange}
             >
-              <Option value="pending">Pending</Option>
-              <Option value="done">Done</Option>
-              <Option value="rejected">Rejected</Option>
-              <Option value="canceled">Canceled</Option>
-              <Option value="ordered">Ordered</Option>
-              <Option value="bidding">Bidding</Option>
-              <Option value="wait">Wait for Auction</Option>
-              <Option value="group">Grouping</Option>
-              <Option value="nego">Negotiating</Option>
+              <Option value={R_PENDING}>Pending</Option>
+              <Option value={R_DONE}>Done</Option>
+              <Option value={R_REJECTED}>Rejected</Option>
+              <Option value={R_CANCELED}>Canceled</Option>
+              <Option value={R_ORDERED}>Ordered</Option>
+              <Option value={R_BIDDING}>Bidding</Option>
+              <Option value={R_WAIT_FOR_AUCTION}>Wait for Auction</Option>
+              <Option value={R_GROUPED}>Grouping</Option>
+              <Option value={R_NEGOTIATING}>Negotiating</Option>
             </Select>
           ),
+          exCondition: [status],
         }}
         dateRangeProps={{
           dateRange,
           setDateRange,
         }}
-        data={dataSource}
+        data={getRequestTable(requestData || [])}
         columns={columns}
       />
     </div>
   );
 };
 
-export default BuyerRequestManagement;
+export default connectToRedux(BuyerRequestManagement);

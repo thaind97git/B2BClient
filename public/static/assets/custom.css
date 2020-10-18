@@ -15,11 +15,11 @@ ul {
 }
 
 .ant-input-group {
-  border: 1px solid #0a6dd9;
+  border: 1px solid #199eb8;
   overflow: hidden;
 }
 
-#header .ant-input-group-addon .ant-input-search-button {
+.ant-input-group-addon .ant-input-search-button {
   right: -3px;
 }
 

@@ -12,6 +12,9 @@ const GET_TRADE_TERM = "GetTradeTermsAPI";
 const GET_SHIPPING_METHOD = "GetShippingMethodAPI";
 const GET_PAYMENT_TERM = "GetPaymentTermAPI";
 const GET_SUP_CERTIFICATION = "GetSubCertificationAPI";
+const GET_PROVINCE = "GETProvinceAPI";
+const GET_WARD = "GetWardAPI";
+const GET_DISTRICT = "GetDistrictAPI";
 
 // Get Sourcing Type
 const GetSourcingTypeAPI = makeFetchAction(
@@ -144,3 +147,49 @@ export const GetSupplierCertificationError =
 export const GetSupplierCertificationResetter = getResetter(
   GetSupplierCertificationAPI
 );
+
+// Get Province
+const GetProvinceAPI = makeFetchAction(
+  GET_PROVINCE,
+  nfetch({
+    endpoint: "/api/SubPack/Province",
+    method: "GET",
+  })
+);
+
+export const getProvince = () =>
+  respondToSuccess(GetProvinceAPI.actionCreator());
+
+export const GetProvinceData = GetProvinceAPI.dataSelector;
+export const GetProvinceError = GetProvinceAPI.errorSelector;
+export const GetProvinceResetter = getResetter(GetProvinceAPI);
+
+// Get Ward
+const GetWardAPI = makeFetchAction(GET_WARD, (provinceId) =>
+  nfetch({
+    endpoint: `/api/SubPack/WardAndDistric/${provinceId}`,
+    method: "GET",
+  })()
+);
+
+export const getWard = (provinceId) =>
+  respondToSuccess(GetWardAPI.actionCreator(provinceId));
+
+export const GetWardData = GetWardAPI.dataSelector;
+export const GetWardError = GetWardAPI.errorSelector;
+export const GetWardResetter = getResetter(GetWardAPI);
+
+// Get District
+const GetDistrictAPI = makeFetchAction(GET_DISTRICT, (wardId) =>
+  nfetch({
+    endpoint: `/api/SubPack/WardAndDistric/${wardId}`,
+    method: "GET",
+  })()
+);
+
+export const getDistrict = (wardId) =>
+  respondToSuccess(GetDistrictAPI.actionCreator(wardId));
+
+export const GetDistrictData = GetDistrictAPI.dataSelector;
+export const GetDistrictError = GetDistrictAPI.errorSelector;
+export const GetDistrictResetter = getResetter(GetDistrictAPI);

@@ -468,7 +468,7 @@ body.mobile-nav-active #mobile-nav-toggle {
 
 .im-supplier:hover {
   transition: all 0.3s;
-  color: #199eb8 !important;
+  /* color: #199eb8 !important; */
 }
 
 /*--------------------------------------------------------------
@@ -484,7 +484,7 @@ body.mobile-nav-active #mobile-nav-toggle {
   height: 160px;
   font-family: "Raleway", Helvetica, Arial, sans-serif;
   font-weight: 500;
-  color: #666;
+  color: #fff;
   border: 6px solid #199eb8;
   border-radius: 50%;
   padding: 55px 25px 0 25px;

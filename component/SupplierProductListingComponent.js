@@ -1,0 +1,141 @@
+import { Button, Row, Select, Typography } from "antd";
+import React, { useState } from "react";
+import ReactTableLayout from "../layouts/ReactTableLayout";
+import { DEFAULT_DATE_RANGE } from "../utils";
+const { Option } = Select;
+const { Title } = Typography;
+const LIST_PRODUCT = [
+  {
+    title: "Smartphone iPhone 8 Plus 64GB ",
+    description: `<ul>
+    <li >4.7-inch Retina HD display with True Tone</li>
+    <li >IP67 water and dust resistant (maximum depth of 1 meter up to 30 minutes)</li>
+    <li >12MP camera with OIS and 4K video</li>
+    <li >7MP FaceTime HD camera with Retina Flash</li>
+    <li >Touch ID for secure authentication and Apple Pay</li>
+    <li >A11 Bionic with Neural Engine</li>
+    <li >Wireless charging — works with Qi chargers</li>
+    <li >iOS 12 with Screen Time, Group FaceTime, and even faster performance</li>
+    <ul>`,
+    unit: "Units",
+    image:
+      "https://salt.tikicdn.com/cache/280x280/ts/product/40/e4/3e/827ec438bb9f66f61896f5b7cea6aef7.jpg",
+  },
+  {
+    title: "Qiaodan basketball shoes low wear wear shock absorbing sneakers",
+    description: `<ul>
+    <li >Insole: textile.</li>
+    <li >Material: Leather, synthetic and/or textile upper adds a midfoot strap for a secure fit.</li>
+    <li >Sole: Synthetic</li>
+    <li >Closure: Lace-Up</li>
+    <ul>`,
+    unit: "Units",
+    image:
+      "https://salt.tikicdn.com/cache/280x280/ts/product/78/af/fa/13279b32b80b8f6c02191effa89ecfed.jpg",
+  },
+  {
+    title: "Sally Hansen Xtreme Wear Daycream",
+    description: `<ul>
+    <li >Xtreme Colour + Shine!</li>
+    <li >Fun, trendy shades to match your mood.</li>
+    <li >Sally Hansen Hard as Nails Xtreme Wear offers extreme strength and shine. Now with a new look &amp; feel! Match your manicure to your mood with fun, trendy shades. Collect them all and change your nail color as often as you like. Available in the hottest, most wanted shades. Long-lasting color is chip-resistant, fade-resistant and waterproof</li>
+    <ul>`,
+    unit: "Units",
+    image:
+      "https://salt.tikicdn.com/cache/280x280/ts/product/7e/8c/3b/63ff95d026b2cfe9725f6d66059e2a5d.jpg",
+  },
+  {
+    title: "SMART WATCH T500 SERI 5",
+    description: `<ul>
+    <li >GPS</li>
+    <li >Retina display</li>
+    <li >Swimproof</li>
+    <li >Optical heart sensor</li>
+    <li >Store music, podcasts and audiobooks</li>
+    <li >Elevation</li>
+    <ul>`,
+    unit: "Units",
+    image:
+      "https://salt.tikicdn.com/cache/280x280/ts/product/a3/4e/64/66b2694dd563e3c5e9e48a8f7216045c.jpg",
+  },
+  {
+    title: "Apple Watch Sport Band (44mm) - Cyprus Green - Regular",
+    description: `<ul>
+    <li >Made from a custom high-performance fluoroelastomer, the Sport Band is durable and strong, yet surprisingly soft.</li>
+    <li >The smooth, dense material drapes elegantly across your wrist and feels comfortable next to your skin.</li>
+    <li >An innovative pin-and-tuck closure ensures a clean fit.</li>
+    <ul>`,
+    unit: "Units",
+    image:
+      "https://salt.tikicdn.com/cache/280x280/ts/product/9f/1f/1b/10e76ca677c4d8d080bb4be1e8491119.jpg",
+  },
+];
+const SupplierProductListingComponent = () => {
+  const [searchMessage, setSearchMessage] = useState("");
+  const [dateRange, setDateRange] = useState(DEFAULT_DATE_RANGE);
+  const columns = [
+    {
+      title: "Product Name",
+      dataIndex: "productName",
+      key: "productName",
+    },
+    {
+      title: "Date Register",
+      dataIndex: "dateCreated",
+      key: "dateCreated",
+    },
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+    },
+
+    {
+      title: "Details",
+      dataIndex: "details",
+      key: "details",
+    },
+  ];
+
+  const DATA = LIST_PRODUCT.map((product) => {
+    return {
+      productName: product.title,
+      dateCreated: "30/10/2020 2:02:00 PM",
+      status: "Active",
+      details: <Button>Views</Button>,
+    };
+  });
+
+  return (
+    <Row>
+      <Title level={4}>Product Company Management</Title>
+      <ReactTableLayout
+        searchProps={{
+          placeholder: "Search by product name",
+          searchMessage,
+          setSearchMessage,
+          exElement: (
+            <Select
+              size="large"
+              placeholder="Filter by category"
+              style={{ width: 200 }}
+              // onChange={handleChange}
+            >
+              <Option value="pending">Category 1</Option>
+              <Option value="done">Category 2</Option>
+              <Option value="rejected">Category 3</Option>
+            </Select>
+          ),
+        }}
+        dateRangeProps={{
+          dateRange,
+          setDateRange,
+        }}
+        data={DATA}
+        columns={columns}
+      />
+    </Row>
+  );
+};
+
+export default SupplierProductListingComponent;
