@@ -1,9 +1,36 @@
-import { Button, Col, Divider, Row, Space, Typography, Upload } from "antd";
-import React, { Fragment } from "react";
-import { R_PENDING } from "../enums/requestStatus";
+import { Button, Col, Divider, Empty, Row, Space, Typography } from "antd";
+import React, { Fragment, useEffect } from "react";
+import {
+  R_BIDDING,
+  R_CANCELED,
+  R_DONE,
+  R_GROUPED,
+  R_NEGOTIATING,
+  R_ORDERED,
+  R_PENDING,
+  R_REJECTED,
+  R_WAIT_FOR_AUCTION,
+} from "../enums/requestStatus";
 import RequestStatusComponent from "./Utils/RequestStatusComponent";
-import { displayCurrency } from "../utils";
+import { DATE_TIME_FORMAT, displayCurrency } from "../utils";
+import { connect } from "react-redux";
+import { createStructuredSelector } from "reselect";
+import {
+  getRequestDetails,
+  GetRequestDetailsDataSelector,
+} from "../stores/RequestState";
+import Moment from "react-moment";
 const { Title } = Typography;
+
+const connectToRedux = connect(
+  createStructuredSelector({
+    requestDetailsData: GetRequestDetailsDataSelector,
+  }),
+  (dispatch) => ({
+    getRequestDetails: (id) => dispatch(getRequestDetails(id)),
+  })
+);
+
 const DescriptionItem = ({ title, content }) => (
   <Col span={24}>
     <Row className="site-description-item-profile-wrapper">
@@ -16,110 +43,131 @@ const DescriptionItem = ({ title, content }) => (
     </Row>
   </Col>
 );
-const requestDefault = {
-  productName: "Iphone 6s",
-  category: "Iphone",
-  sourcingType: "Non-customized Product",
-  sourcingPurpose: "Retail",
-  quantity: "20",
-  unit: "Units",
-  tradeTerms: "FOB",
-  preUnitPrice: 500000,
-  dueDate: "30/10/2020 02:05:00 PM",
-  details: "I really want to buy this product",
-  attachments: [
-    {
-      uid: "-1",
-      name: "image.png",
-      status: "done",
-      url:
-        "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png",
-    },
-  ],
-  certifi: "ISO/TS16949",
-  shippingMethod: "Express",
-  destination: "Nguyễn Thị Minh Khai - Phường 2 - Q.1 - TP.HCM",
-  leadTime: 4,
-  status: R_PENDING,
+
+const getButtonActionsByStatus = (status) => {
+  let result = [];
+  switch (status) {
+    case R_PENDING:
+      result = [
+        { label: "Edit" },
+        { label: "Cancel", buttonProps: { danger: true } },
+      ];
+      break;
+    case R_WAIT_FOR_AUCTION:
+      result = [];
+      break;
+    case R_REJECTED:
+      result = [];
+      break;
+    case R_ORDERED:
+      result = [];
+      break;
+    case R_NEGOTIATING:
+      result = [];
+      break;
+    case R_GROUPED:
+      result = [];
+      break;
+    case R_DONE:
+      result = [];
+      break;
+    case R_CANCELED:
+      result = [];
+      break;
+    case R_BIDDING:
+      result = [];
+      break;
+
+    default:
+      break;
+  }
+  return result;
 };
+
 const RequestDetailsComponent = ({
-  request = requestDefault,
   buttonActions = [],
   isSupplier = true,
+  requestDetailsData,
+  getRequestDetails,
+  requestId,
 }) => {
+  useEffect(() => {
+    if (requestId) {
+      getRequestDetails(requestId);
+    }
+  }, [requestId, getRequestDetails]);
+  if (!requestId) {
+    return <Empty description="Can not find any request !" />;
+  }
   const {
-    productName,
-    category,
-    sourcingType,
-    sourcingPurpose,
+    product = {},
+    currency = {},
+    shippingMethod = {},
+    sourcingType = {},
+    sourcingPurpose = {},
     quantity,
-    unit,
-    tradeTerms,
-    preUnitPrice,
+    unit = "",
+    tradeTerm = {},
+    preferredUnitPrice,
     dueDate,
-    details,
-    attachments,
+    description,
     certifi,
-    shippingMethod,
-    destination,
     leadTime,
-    status,
-  } = request || {};
-  const AttachmentsDisplay = () => {
-    return (
-      <Upload
-        showUploadList={{
-          showPreviewIcon: false,
-          showRemoveIcon: false,
-        }}
-        action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-        listType="picture-card"
-        fileList={attachments}
-        // onChange={onChange}
-        // onPreview={onPreview}
-      >
-        {/* {fileList.length < 5 && '+ Upload'} */}
-      </Upload>
-    );
-  };
+    requestStatus = {},
+    paymentTerm = {},
+    district = {},
+    ward = {},
+    province = {},
+    address,
+  } = requestDetailsData || {};
   const leadTimeDisplay = `Ship in ${leadTime} day(s) after supplier receives the initial payment`;
   return (
     <Row style={{ width: "100%" }}>
       <Col style={{ padding: "12px 0px" }} span={24}>
-        Status: <RequestStatusComponent status={status} />
+        Status: <RequestStatusComponent status={requestStatus.id} />
       </Col>
       <Col style={{ padding: "12px 0px" }} span={24}>
         <Space>
-          {buttonActions.map((button, index) => (
-            <Button
-              key={index}
-              onClick={() => {
-                typeof button.actions === "function" && button.action();
-              }}
-              size="small"
-              {...button.buttonProps}
-            >
-              {button.label}
-            </Button>
-          ))}
+          {(getButtonActionsByStatus(requestStatus.id) || []).map(
+            (button, index) => (
+              <Button
+                key={index}
+                onClick={() => {
+                  typeof button.actions === "function" && button.action();
+                }}
+                size="small"
+                {...button.buttonProps}
+              >
+                {button.label}
+              </Button>
+            )
+          )}
         </Space>
       </Col>
       <Col span={24}>
         <Title level={5}>Product Basic Information</Title>
       </Col>
-      <DescriptionItem title="Product Name" content={productName} />
-      <DescriptionItem title="Category" content={category} />
-      <DescriptionItem title="Sourcing Type" content={sourcingType} />
-      <DescriptionItem title="Sourcing Purpose" content={sourcingPurpose} />
+      <DescriptionItem title="Product Name" content={product.description} />
+      {/* <DescriptionItem title="Category" content={category} /> */}
+      <DescriptionItem
+        title="Sourcing Type"
+        content={sourcingType.description}
+      />
+      <DescriptionItem
+        title="Sourcing Purpose"
+        content={sourcingPurpose.description}
+      />
       <DescriptionItem title="Quantity" content={`${quantity} ${unit}`} />
-      <DescriptionItem title="Trade Term" content={tradeTerms} />
+      <DescriptionItem title="Trade Term" content={tradeTerm.description} />
       <DescriptionItem
         title="Preferred Unit Price"
-        content={displayCurrency(preUnitPrice)}
+        content={displayCurrency(preferredUnitPrice)}
       />
-      <DescriptionItem title="Due Date" content={dueDate} />
-      <DescriptionItem title="Details" content={details} />
-      <DescriptionItem title="Attachments" content={<AttachmentsDisplay />} />
+      <DescriptionItem
+        title="Due Date"
+        content={<Moment format={DATE_TIME_FORMAT}>{dueDate}</Moment>}
+      />
+      <DescriptionItem title="Descriptions" content={description} />
       <Divider />
       <Col span={24}>
         <Title level={5}>Supplier Capability</Title>
@@ -129,8 +177,16 @@ const RequestDetailsComponent = ({
       <Col span={24}>
         <Title level={5}>Shipping Capability</Title>
       </Col>
-      <DescriptionItem title="Shipping Method" content={shippingMethod} />
-      <DescriptionItem title="Destination" content={destination} />
+      <DescriptionItem
+        title="Shipping Method"
+        content={shippingMethod.description}
+      />
+      <DescriptionItem
+        title="Destination"
+        content={`${address} - ${(district || {}).description} - ${
+          (ward || {}).description
+        } - ${(province || {}).description}`}
+      />
       <DescriptionItem title="Lead Time" content={leadTimeDisplay} />
       {!isSupplier && (
         <Fragment>
@@ -182,4 +238,4 @@ const RequestDetailsComponent = ({
   );
 };
 
-export default RequestDetailsComponent;
+export default connectToRedux(RequestDetailsComponent);

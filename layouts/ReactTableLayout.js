@@ -116,6 +116,7 @@ const ReactTableLayout = ({
   const [pageIndex, setPageIndex] = useState(page);
   const [isFetchPaging, setIsFetchPaging] = useState(true);
   const [visible, setVisible] = useState(false);
+  const [conditions, setConditions] = useState(exCondition);
 
   // useEffect(() => {
   //   if (hasPaging && !hasAction && isFetchPaging) {
@@ -124,28 +125,34 @@ const ReactTableLayout = ({
   //   }
   // }, [hasAction, hasPaging, dispatchAction, isFetchPaging]);
 
-  // useEffect(() => {
-  //   if (hasAction && hasPaging) {
-  //     doDispatchAction(
-  //       dispatchAction(
-  //         pageIndex,
-  //         pageSizeTable,
-  //         searchMessage,
-  //         dateRange,
-  //         exCondition
-  //       )
-  //     );
-  //   }
-  // }, [
-  //   pageSizeTable,
-  //   pageIndex,
-  //   dateRange,
-  //   searchMessage,
-  //   dispatchAction,
-  //   exCondition,
-  //   hasAction,
-  //   hasPaging,
-  // ]);
+  useEffect(() => {
+    console.log(exCondition);
+  }, [exCondition]);
+
+  useEffect(() => {
+    if (hasAction && hasPaging) {
+      doDispatchAction(
+        dispatchAction(
+          pageIndex,
+          pageSizeTable,
+          searchMessage,
+          dateRange
+          // exCondition
+        )
+      );
+      // setIsFetchPaging(false);
+    }
+  }, [
+    pageSizeTable,
+    pageIndex,
+    dateRange,
+    searchMessage,
+    dispatchAction,
+    // exCondition,
+    hasAction,
+    hasPaging,
+    // isFetchPaging,
+  ]);
 
   useEffect(() => {
     console.log({ dateRange });

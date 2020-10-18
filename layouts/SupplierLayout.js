@@ -11,6 +11,7 @@ import {
   PicLeftOutlined,
   WechatOutlined,
   BellOutlined,
+  ShoppingCartOutlined,
 } from "@ant-design/icons";
 import MemberNavComponent from "../component/MemberNavComponent";
 import { currentPath } from "../utils";
@@ -38,30 +39,29 @@ const SUPPLIER_MENU = [
   {
     key: "2",
     icon: <PicLeftOutlined />,
-    label: "Category",
+    label: "Product",
     link: undefined,
     subMenu: [
       {
         subKey: "2.1",
-        subLink: "/supplier/category",
+        subLink: "/supplier/product/register",
+        subIcon: <ShoppingCartOutlined />,
+        subLabel: "Product Register",
+      },
+      {
+        subKey: "2.2",
+        subLink: "/supplier/product/listing",
         subIcon: <OrderedListOutlined />,
-        subLabel: "Categories",
+        subLabel: "Product Listing",
       },
     ],
   },
   {
     key: "3",
     icon: <ExperimentOutlined />,
-    label: "Bidding",
-    link: undefined,
-    subMenu: [
-      {
-        subKey: "3.1",
-        subLink: "/supplier/bidding",
-        subIcon: <OrderedListOutlined />,
-        subLabel: "Available Bidding",
-      },
-    ],
+    label: "Available Bidding",
+    link: "/supplier/bidding",
+    subMenu: [],
   },
 ];
 

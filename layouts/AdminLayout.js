@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 import { Layout, Menu, Row, Dropdown } from "antd";
 import {
-  UserOutlined,
+  CreditCardOutlined,
   DownOutlined,
   LoginOutlined,
   MenuUnfoldOutlined,
@@ -20,46 +20,10 @@ const { Header, Content, Sider } = Layout;
 
 const ADMIN_MENU = [
   {
-    key: "2",
-    icon: <FallOutlined />,
-    label: "Request",
-    link: undefined,
-    subMenu: [
-      {
-        subKey: "2.1",
-        subLink: "/admin/request",
-        subIcon: <OrderedListOutlined />,
-        subLabel: "Requests",
-      },
-    ],
-  },
-  {
-    key: "3",
-    icon: <ExperimentOutlined />,
-    label: "Bidding",
-    link: undefined,
-    subMenu: [
-      {
-        subKey: "3.1",
-        subLink: "/admin/bidding",
-        subIcon: <OrderedListOutlined />,
-        subLabel: "Biddings",
-      },
-    ],
-  },
-  {
-    key: "4",
-    icon: <UserOutlined />,
-    label: "Group",
-    link: "/admin/group",
-    subMenu: [],
-  },
-  {
-    key: "5",
-    icon: <WechatOutlined />,
-    label: "Chat",
-    link: "/admin/group/chat",
-    subMenu: [],
+    key: "1",
+    icon: <CreditCardOutlined />,
+    label: "Product",
+    link: "/admin/product",
   },
 ];
 
@@ -79,7 +43,7 @@ const PROFILE_MENU = (
   </Menu>
 );
 
-const AggregatorLayout = ({ children }) => {
+const AdminLayout = ({ children }) => {
   const [collapsed, setCollapsed] = useState(true);
   return (
     <div
@@ -189,4 +153,4 @@ const AggregatorLayout = ({ children }) => {
   );
 };
 
-export default AggregatorLayout;
+export default AdminLayout;

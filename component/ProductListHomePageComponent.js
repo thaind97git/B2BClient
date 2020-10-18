@@ -8,7 +8,9 @@ import {
   Tree,
   Typography,
   Divider,
-  Tooltip,
+  Skeleton,
+  Empty,
+  Popover,
 } from "antd";
 import Search from "antd/lib/input/Search";
 import Router from "next/router";
@@ -18,127 +20,120 @@ import {
   getCategories,
   GetCategoriesDataSelector,
 } from "../stores/CategoryState";
+import {
+  getProductByCategory,
+  GetProductByCategoryData,
+} from "../stores/ProductState";
+import { get } from "lodash/fp";
 const { Meta } = Card;
 const { Title } = Typography;
 
 const connectToRedux = connect(
   createStructuredSelector({
     categoryData: GetCategoriesDataSelector,
+    getProductByCategoryData: GetProductByCategoryData,
   }),
   (dispatch) => ({
     getCategories: () => dispatch(getCategories()),
+    getProductByCategory: (
+      id = "13bad386-dcce-46eb-b4e2-09bbc32cd2e7",
+      pageSize,
+      pageIndex
+    ) => dispatch(getProductByCategory(id, pageSize, pageIndex)),
   })
 );
 
-const PRODUCT_DATA = [
-  {
-    productName: "Iphone 8 Plus 64Gb",
-    unit: "Units",
-    description: "This is the description",
-    image:
-      "https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png",
-  },
-  {
-    productName: "Iphone 8 Plus 64Gb",
-    unit: "Units",
-    description: "This is the description",
-    image:
-      "https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png",
-  },
-  {
-    productName: "Iphone 8 Plus 64Gb",
-    unit: "Units",
-    description: "This is the description",
-    image:
-      "https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png",
-  },
-  {
-    productName: "Iphone 8 Plus 64Gb",
-    unit: "Units",
-    description: "This is the description",
-    image:
-      "https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png",
-  },
-  {
-    productName: "Iphone 8 Plus 64Gb",
-    unit: "Units",
-    description: "This is the description",
-    image:
-      "https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png",
-  },
-  {
-    productName: "Iphone 8 Plus 64Gb",
-    unit: "Units",
-    description: "This is the description",
-    image:
-      "https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png",
-  },
-  {
-    productName: "Iphone 8 Plus 64Gb",
-    unit: "Units",
-    description: "This is the description",
-    image:
-      "https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png",
-  },
-];
+const displayProductTitle = (value) =>
+  value.length >= 36 ? value.slice(0, 60) + "..." : value;
+
 const ProductCard = ({ product }) => {
   return (
-    <Card
-      size="small"
-      hoverable
-      bordered={false}
-      style={{ margin: 3 }}
-      cover={<img style={{ padding: 8 }} alt="example" src={product.image} />}
+    <Popover
+      id="popover-product-card"
+      placement="rightTop"
+      content={
+        <div
+          dangerouslySetInnerHTML={{
+            __html: product.description,
+          }}
+        />
+      }
+      title={product.productName}
     >
-      <Meta
-        title={
-          <Tooltip title={product.productName}>{product.productName}</Tooltip>
+      <Card
+        id="product-card"
+        size="small"
+        hoverable
+        bordered={false}
+        style={{ margin: 3, height: "auto" }}
+        cover={
+          <img
+            style={{
+              padding: 8,
+              maxHeight: 280,
+              maxWidth: 280,
+              margin: "auto",
+            }}
+            alt="example"
+            src={product.image || "/static/images/default_product_img.png"}
+          />
         }
-        description={
-          <Tooltip title={product.description}>{product.description}</Tooltip>
-        }
-      />
-      <Divider />
-      <Row justify="space-around">
-        <span>Unit: {product.unit}</span>
-        <a target="_blank" href="/buyer/rfq/create?productId=1">
+      >
+        <Meta title={displayProductTitle(product.productName)} />
+
+        <Divider />
+        <Row justify="space-around">
+          <span>Unit: {product.unit}</span>
           <Button
             onClick={() => {
-              Router.push(``);
+              Router.push(`/buyer/rfq/create?productId=${product.id}`);
             }}
             size="small"
             type="primary"
           >
             Submit RFQ
           </Button>
-        </a>
-      </Row>
-    </Card>
+        </Row>
+      </Card>
+    </Popover>
   );
 };
-function onChange(pageNumber) {
-  console.log("Page: ", pageNumber);
-}
 let tree = [];
-const allCateTree = {
-  title: "All Category",
-  key: "all",
-};
+const pageSize = 12;
 const ProductListHomePageComponent = ({
-  productList = PRODUCT_DATA,
   getCategories,
   categoryData,
+  getProductByCategory,
+  getProductByCategoryData,
 }) => {
-  const [currentCategorySelected, setCurrentCategorySelected] = useState({
-    name: allCateTree.title,
-    id: allCateTree.key,
-  });
+  const [currentCategorySelected, setCurrentCategorySelected] = useState({});
+  const [pageIndex, setPageIndex] = useState(0);
   const onSelect = (selectedKeys, info) => {
     setCurrentCategorySelected({
       name: info.node.title,
       id: info.node.key,
     });
   };
+
+  useEffect(() => {
+    if (!!categoryData) {
+      const firstCate = get("[0]")(categoryData);
+      setCurrentCategorySelected({
+        name: firstCate.description,
+        id: firstCate.id,
+      });
+    }
+  }, [categoryData]);
+
+  useEffect(() => {
+    if ((currentCategorySelected || {}).id !== "all") {
+      getProductByCategory(
+        (currentCategorySelected || {}).id,
+        pageSize,
+        pageIndex
+      );
+    }
+  }, [currentCategorySelected, getProductByCategory, pageIndex]);
 
   useEffect(() => {
     getCategories();
@@ -157,14 +152,29 @@ const ProductListHomePageComponent = ({
       return resultTmp;
     };
     tree = mapData(categoryData);
-    tree.unshift(allCateTree);
+    // tree.unshift(allCateTree);
+  }
+  const onChange = (pageNumber) => {
+    setPageIndex(pageNumber);
+  };
+  let productData = [],
+    totalPage = 0;
+  if (!!getProductByCategoryData) {
+    productData = getProductByCategoryData.data;
+    totalPage = getProductByCategoryData.total;
   }
   return (
     <div>
       <Row>
         <Col
           span={5}
-          style={{ background: "white", boxShadow: "0 0 20px rgba(0,0,0,.1)" }}
+          style={{
+            background: "white",
+            boxShadow: "0 0 20px rgba(0,0,0,.1)",
+            height: 1339,
+            overflow: "hidden",
+            overflowY: "scroll",
+          }}
         >
           <Row>
             <Title level={4} style={{ padding: "16px 0px 8px 16px" }}>
@@ -172,13 +182,17 @@ const ProductListHomePageComponent = ({
             </Title>
           </Row>
           <Row>
-            <Tree
-              style={{ height: "100%" }}
-              defaultCheckedKeys={"all"}
-              defaultSelectedKeys={["all"]}
-              onSelect={onSelect}
-              treeData={tree}
-            />
+            {tree.length === 0 ? (
+              <Skeleton active />
+            ) : (
+              <Tree
+                style={{ height: "100%" }}
+                defaultCheckedKeys={get("[0].id")(categoryData)}
+                defaultSelectedKeys={[get("[0].id")(categoryData)]}
+                onSelect={onSelect}
+                treeData={tree}
+              />
+            )}
           </Row>
         </Col>
         <Col span={19}>
@@ -186,11 +200,13 @@ const ProductListHomePageComponent = ({
             <Col span={24}>
               <Row justify="space-between" align="middle">
                 <Col span={16} style={{ paddingLeft: 24 }}>
-                  Products in {currentCategorySelected.name}
+                  Products in {(currentCategorySelected || {}).name}
                 </Col>
                 <Col span={8}>
                   <Search
-                    placeholder={`Search in ${currentCategorySelected.name}`}
+                    placeholder={`Search in ${
+                      (currentCategorySelected || {}).name
+                    }`}
                   />
                 </Col>
               </Row>
@@ -198,22 +214,54 @@ const ProductListHomePageComponent = ({
             <Col span={24}>
               <Divider style={{ marginBottom: 8, marginTop: 8 }} />
             </Col>
-            {productList.map((product, index) => (
-              <Col span={6} sm={12} md={6} key={index}>
-                <ProductCard product={product} />
+            {productData && productData.length > 0 ? (
+              productData.map((product, index) => (
+                <Col span={6} sm={12} md={6} key={index}>
+                  <ProductCard product={product} />
+                </Col>
+              ))
+            ) : (
+              <Col span={24}>
+                <Row justify="center">
+                  <Empty />
+                </Row>
               </Col>
-            ))}
+            )}
           </Row>
         </Col>
       </Row>
       <Row style={{ marginTop: 16 }} justify="end">
         <Pagination
+          showSizeChanger={false}
           showQuickJumper
-          defaultCurrent={2}
-          total={500}
+          // defaultCurrent={2}
+          total={totalPage}
           onChange={onChange}
         />
       </Row>
+      <style jsx global>
+        {`
+          #popover-product-card {
+            width: 360px;
+          }
+          #popover-product-card ul {
+            padding-left: 8px;
+            margin-bottom: 0px;
+          }
+          #popover-product-card ul li {
+            list-style: outside;
+          }
+          #product-card ul {
+            padding-left: 0px;
+            margin-bottom: 0px;
+          }
+
+          #product-card .ant-card-meta-title {
+            -webkit-line-clamp: 2;
+            white-space: unset;
+          }
+        `}
+      </style>
     </div>
   );
 };

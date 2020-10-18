@@ -1,55 +1,77 @@
-import { Dropdown, Menu } from "antd";
-import React, { useState } from "react";
-import { DownOutlined } from "@ant-design/icons";
-const { SubMenu, Item } = Menu;
-const AllCategoryComponent = () => {
-  const [visible, setVisible] = useState(false);
-  const menu = (
-    <Menu>
-      <Item key="1">Bags & Shoes </Item>
-      <SubMenu title="Health,Beauty & Body">
-        <Item>Lip Care</Item>
-        <Item>Products for Men</Item>
-        <Item>Feminine Hygiene & Sexual Assistance</Item>
-        <Item>Teeth care</Item>
-        <Item>Makeup Accessories</Item>
-      </SubMenu>
-      <SubMenu title="Health,Beauty & Body">
-        <Item>Lip Care</Item>
-        <Item>Products for Men</Item>
-        <Item>Feminine Hygiene & Sexual Assistance</Item>
-        <Item>Teeth care</Item>
-        <Item>Makeup Accessories</Item>
-      </SubMenu>
-      <SubMenu title="Health,Beauty & Body">
-        <Item>Lip Care</Item>
-        <Item>Products for Men</Item>
-        <Item>Feminine Hygiene & Sexual Assistance</Item>
-        <Item>Teeth care</Item>
-        <Item>Makeup Accessories</Item>
-      </SubMenu>
-      <SubMenu title="Health,Beauty & Body">
-        <Item>Lip Care</Item>
-        <Item>Products for Men</Item>
-        <Item>Feminine Hygiene & Sexual Assistance</Item>
-        <Item>Teeth care</Item>
-        <Item>Makeup Accessories</Item>
-      </SubMenu>
-    </Menu>
-  );
+import { Cascader } from "antd";
+import React, { Fragment, useEffect } from "react";
+import { connect } from "react-redux";
+import { createStructuredSelector } from "reselect";
+import {
+  getCategories,
+  GetCategoriesDataSelector,
+} from "../stores/CategoryState";
+const connectToRedux = connect(
+  createStructuredSelector({
+    allCategoryData: GetCategoriesDataSelector,
+  }),
+  (dispatch) => ({
+    getAllCategory: () => dispatch(getCategories()),
+  })
+);
+let optionCate = [];
+const allCateOption = {
+  label: "All Category",
+  value: "all",
+};
+const AllCategoryComponent = ({
+  allCategoryData,
+  getAllCategory,
+  onGetValue,
+  onGetLabel,
+}) => {
+  useEffect(() => {
+    getAllCategory();
+  }, [getAllCategory]);
+
+  if (!!allCategoryData) {
+    const mapData = (categoryData) => {
+      const resultTmp = categoryData.map((category) => {
+        let obj = {};
+        obj.label = category.description;
+        obj.value = `${category.id},${category.description}`;
+        if (!category.isItem) {
+          obj.children = mapData(category.subCategories);
+        }
+        return obj;
+      });
+      return resultTmp;
+    };
+    optionCate = mapData(allCategoryData);
+    optionCate.unshift(allCateOption);
+  }
+
+  function onChange(value = []) {
+    const currentLabelSelected = value.map((item) => item.split(",")[1]);
+    const currentValueSelected = value.map((item) => item.split(",")[0]);
+    typeof onGetLabel === "function" &&
+      onGetLabel(currentLabelSelected.join(" >> "));
+    typeof onGetValue === "function" && onGetValue(currentValueSelected);
+  }
   return (
-    <Dropdown
-      overlay={menu}
-      onVisibleChange={(flag) => {
-        setVisible(flag);
-      }}
-      visible={visible}
-    >
-      <a className="ant-dropdown-link" onClick={(e) => e.preventDefault()}>
-        All Categories <DownOutlined />
-      </a>
-    </Dropdown>
+    <Fragment>
+      <Cascader
+        placeholder="Select category"
+        style={{ width: "224px", margin: "-5px -14px", height: 40 }}
+        options={optionCate}
+        onChange={onChange}
+        changeOnSelect
+        defaultValue={["all"]}
+      />
+      <style jsx global>
+        {`
+          #search-product .ant-input.ant-cascader-input {
+            height: 44px;
+          }
+        `}
+      </style>
+    </Fragment>
   );
 };
 
-export default AllCategoryComponent;
+export default connectToRedux(AllCategoryComponent);

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import {
   Form,
   Input,
@@ -11,34 +11,62 @@ import {
   Card,
   Select,
   DatePicker,
+  Empty,
+  Skeleton,
 } from "antd";
+import { LeftOutlined } from "@ant-design/icons";
 import { displayCurrency } from "../utils";
-import Modal from "antd/lib/modal/Modal";
-import BuyerRequestCategoryComponent from "./BuyerRequestCategoryComponent";
 import { createStructuredSelector } from "reselect";
 import { connect } from "react-redux";
-import { getCategorySelected } from "../libs";
-import Router from "next/router";
+import Router, { useRouter } from "next/router";
 import { SET_CATEGORY_SELECTED } from "../stores/initState";
 import {
   getCurrency,
   GetCurrencyData,
+  GetCurrencyResetter,
+  getDistrict,
+  GetDistrictData,
+  GetDistrictResetter,
   getPaymentTerm,
   GetPaymentTermData,
+  GetPaymentTermResetter,
+  getProvince,
+  GetProvinceData,
+  GetProvinceResetter,
   getShippingMethod,
   GetShippingMethodData,
+  GetShippingMethodResetter,
   getSourcingPurpose,
   GetSourcingPurposeData,
+  GetSourcingPurposeResetter,
   getSourcingType,
   GetSourcingTypeData,
+  GetSourcingTypeResetter,
   getSupplierCertification,
   GetSupplierCertificationData,
+  GetSupplierCertificationResetter,
   getTradeTerms,
   GetTradeTermsData,
+  GetTradeTermsResetter,
   getUnitOfMeasure,
   GetUnitOfMeasureData,
+  GetUnitOfMeasureResetter,
+  getWard,
+  GetWardData,
+  GetWardResetter,
 } from "../stores/SupportRequestState";
 import moment from "moment";
+import {
+  getProductDetails,
+  GetProductDetailsData,
+  GetProductDetailsError,
+  GetProductDetailsResetter,
+} from "../stores/ProductState";
+import {
+  createRequest,
+  CreateRequestData,
+  CreateRequestResetter,
+} from "../stores/RequestState";
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -54,6 +82,12 @@ const connectToRedux = connect(
     shippingMethodData: GetShippingMethodData,
     paymentTermData: GetPaymentTermData,
     supCertificationData: GetSupplierCertificationData,
+    productDetailsData: GetProductDetailsData,
+    productDetailsError: GetProductDetailsError,
+    provinceData: GetProvinceData,
+    wardData: GetWardData,
+    districtData: GetDistrictData,
+    createRequestData: CreateRequestData,
   }),
   (dispatch) => ({
     removeCategorySelected: () =>
@@ -66,6 +100,26 @@ const connectToRedux = connect(
     getShippingMethod: () => dispatch(getShippingMethod()),
     getPaymentTerm: () => dispatch(getPaymentTerm()),
     getSupCertification: () => dispatch(getSupplierCertification()),
+    getProductDetails: (id) => dispatch(getProductDetails(id)),
+    getProvince: () => dispatch(getProvince()),
+    getWard: (provinceId) => dispatch(getWard(provinceId)),
+    getDistrict: (wardId) => dispatch(getDistrict(wardId)),
+    createRequest: (object) => dispatch(createRequest(object)),
+    resetData: () => {
+      dispatch(GetSourcingTypeResetter);
+      dispatch(GetSourcingPurposeResetter);
+      dispatch(GetUnitOfMeasureResetter);
+      dispatch(GetCurrencyResetter);
+      dispatch(GetTradeTermsResetter);
+      dispatch(GetShippingMethodResetter);
+      dispatch(GetPaymentTermResetter);
+      dispatch(GetSupplierCertificationResetter);
+      dispatch(GetProductDetailsResetter);
+      dispatch(GetProvinceResetter);
+      dispatch(GetWardResetter);
+      dispatch(GetDistrictResetter);
+      dispatch(CreateRequestResetter);
+    },
   })
 );
 const styles = {
@@ -116,12 +170,13 @@ const PriceInput = ({
     <span>
       <InputNumber
         onChange={onNumberChange}
+        min={0}
         style={{ width: "50%" }}
         formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
         parser={(value) => value.replace(/,*/g, "")}
       />
       <Input
-        value="Vnd"
+        value="VND"
         disabled
         style={{
           width: "48%",
@@ -132,15 +187,21 @@ const PriceInput = ({
   );
 };
 
-const QuantityInput = ({ value = {}, onChange, unitData = [] }) => {
-  const [number, setNumber] = useState(0);
-  const [unit, setUnit] = useState(((unitData && unitData[0]) || {}).id);
+const QuantityInput = ({
+  value = {
+    number: 1,
+  },
+  onChange,
+  unitData = [],
+  unitId,
+}) => {
+  const number = 1;
+  const unitSelected = (unitData || []).find((unit) => unit.id === unitId);
 
   const triggerChange = (changedValue) => {
     if (onChange) {
       onChange({
         number,
-        unit,
         ...value,
         ...changedValue,
       });
@@ -148,7 +209,7 @@ const QuantityInput = ({ value = {}, onChange, unitData = [] }) => {
   };
 
   const onNumberChange = (value) => {
-    const newNumber = parseInt(value || 0, 10);
+    const newNumber = parseInt(value || 1, 10);
 
     if (Number.isNaN(number)) {
       return;
@@ -156,17 +217,6 @@ const QuantityInput = ({ value = {}, onChange, unitData = [] }) => {
 
     triggerChange({
       number: newNumber,
-    });
-  };
-
-  const onUnitChange = (newUnit) => {
-    if (!("unit" in value)) {
-      setUnit(newUnit);
-    }
-
-    triggerChange({
-      unit: newUnit,
-      number: value.number || 1,
     });
   };
 
@@ -180,34 +230,13 @@ const QuantityInput = ({ value = {}, onChange, unitData = [] }) => {
         placeholder="Enter the product quantity"
       />
       <Input
-        value="Unit"
+        value={(unitSelected || {}).description}
         disabled
         style={{
           width: "48%",
           margin: "0 4px",
         }}
       />
-      {/* <Select
-        showSearch
-        value={value.unit || unit}
-        style={{
-          width: "48%",
-          margin: "0 4px",
-        }}
-        onChange={onUnitChange}
-        placeholder="Select a unit"
-        optionFilterProp="children"
-        filterOption={(input, option) =>
-          option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-        }
-      >
-        {!!unitData &&
-          unitData.map((type) => (
-            <Option value={type.id} index={type.id} key={type.id}>
-              {type.description}
-            </Option>
-          ))}
-      </Select> */}
     </span>
   );
 };
@@ -218,8 +247,6 @@ function disabledDate(current) {
 }
 
 const BuyerRequestCreateComponent = ({
-  removeCategorySelected,
-  categorySelected,
   getSourcingType,
   getSourcingPurpose,
   getUnit,
@@ -236,9 +263,23 @@ const BuyerRequestCreateComponent = ({
   shippingMethodData,
   paymentTermData,
   supCertificationData,
+  getProductDetails,
+  productDetailsData,
+  productDetailsError,
+  getProvince,
+  getWard,
+  getDistrict,
+  provinceData,
+  wardData,
+  districtData,
+  createRequest,
+  createRequestData,
+  resetData,
 }) => {
   const [price, setPrice] = useState(0);
-  const [openCategory, setOpenCategory] = useState(false);
+  const router = useRouter();
+  const [loadingRFQ, setLoadingRFQ] = useState(false);
+  const productId = router.query.productId;
 
   useEffect(() => {
     getSourcingType();
@@ -249,6 +290,7 @@ const BuyerRequestCreateComponent = ({
     getShippingMethod();
     getPaymentTerm();
     getSupCertification();
+    getProvince();
   }, [
     getSourcingType,
     getSourcingPurpose,
@@ -258,12 +300,39 @@ const BuyerRequestCreateComponent = ({
     getShippingMethod,
     getPaymentTerm,
     getSupCertification,
+    getProvince,
   ]);
 
+  useEffect(() => {
+    if (!!productId) {
+      getProductDetails(productId);
+      setLoadingRFQ(true);
+    }
+  }, [getProductDetails, productId]);
+
+  useEffect(() => {
+    if (productDetailsData || productDetailsError) {
+      setLoadingRFQ(false);
+    }
+  }, [productDetailsError, productDetailsData]);
+
+  useEffect(() => {
+    if (!!createRequestData) {
+      Router.push("buyer/rfq");
+    }
+    return () => {
+      resetData();
+    };
+  }, [createRequestData, resetData]);
+
   const onFinish = (values) => {
+    values.productId = productId + "";
+    values.preferredUnitPrice = values.preferredUnitPrice.price + "";
+    values.quantity = values.quantity.number + "";
+    values.dueDate = moment.utc(new Date(values.dueDate)).format();
+    values.currencyId = (currencyData || [])[0].id;
     console.log("Received values of form: ", values);
-    Router.push("/buyer/rfq");
-    removeCategorySelected();
+    createRequest(values);
   };
 
   const checkPrice = (rule, value) => {
@@ -278,404 +347,461 @@ const BuyerRequestCreateComponent = ({
       return Promise.resolve();
     }
 
-    return Promise.reject("Price must be greater than zero!");
+    return Promise.reject("Quantity must be greater than zero!");
   };
+  if (loadingRFQ) {
+    return <Skeleton active />;
+  }
+
+  if (!productId || !productDetailsData || productDetailsError) {
+    return (
+      <Fragment>
+        <Empty description="Can not find any product! Please choose specify product before submit RFQ" />
+        <div style={{ textAlign: "center", paddingTop: 32 }}>
+          <Button onClick={() => Router.push("/")} type="primary">
+            <LeftOutlined /> Back to product list
+          </Button>
+        </div>
+      </Fragment>
+    );
+  }
 
   return (
-    <Row align="middle" justify="center">
-      <Modal
-        title="Choose Category"
-        centered
-        visible={openCategory}
-        onOk={() => setOpenCategory(false)}
-        onCancel={() => setOpenCategory(false)}
-        width={1000}
-      >
-        <BuyerRequestCategoryComponent
-          doneFunc={() => setOpenCategory(false)}
-        />
-        <Row>
-          {!!categorySelected.length && (
-            <Title level={4}>
-              Category selected:
-              {getCategorySelected(
-                categorySelected.map((cate) => cate.description)
-              ).substring(3)}
-            </Title>
-          )}
-        </Row>
-      </Modal>
-      <Col sm={20} md={18}>
-        <Form
-          {...formItemLayout}
-          autoComplete="new-password"
-          className="register-form"
-          onFinish={onFinish}
-          initialValues={{
-            productName: "Iphone 8 Plus 64Gb",
-            unit: "Unit",
-          }}
-        >
-          <Row justify="center">
-            <Title style={styles.titleStyle} level={2}>
-              Tell Us what you need
-            </Title>
-          </Row>
-          <Card
-            bordered={false}
-            title={<b>Product Basic Information</b>}
-            style={{
-              width: "100%",
-              boxShadow: "2px 2px 14px 0 rgba(0,0,0,.1)",
-              marginTop: 16,
-            }}
-          >
-            <Row align="middle">
-              <Col style={styles.colStyle} span={24}>
-                <FormItem label="Product Name" name="productName">
-                  <Input disabled />
-                </FormItem>
-              </Col>
-              {/* <Col style={styles.colStyle} span={24}>
-                <FormItem label="Category" name="category">
-                  {!!categorySelected.length && (
-                    <div>
-                      Category selected:
-                      {getCategorySelected(
-                        categorySelected.map((cate) => cate.description)
-                      ).substring(3)}
-                    </div>
-                  )}
-                  <Button onClick={() => setOpenCategory(true)}>
-                    Select Category
-                  </Button>
-                </FormItem>
-              </Col> */}
-              <Col style={styles.colStyle} span={24}>
-                <FormItem
-                  label="Sourcing Type"
-                  name="sourcingTypeId"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Please select Sourcing Type",
-                    },
-                  ]}
-                >
-                  <Select style={{ width: "50%" }}>
-                    {!!sourcingTypeData &&
-                      sourcingTypeData.map((type) => (
-                        <Option value={type.id} index={type.id} key={type.id}>
-                          {type.description}
-                        </Option>
-                      ))}
-                  </Select>
-                </FormItem>
-              </Col>
-              <Col style={styles.colStyle} span={24}>
-                <FormItem
-                  label="Sourcing Purpose"
-                  name="sourcingPurposeId"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Please select Sourcing Purpose",
-                    },
-                  ]}
-                >
-                  <Select style={{ width: "50%" }}>
-                    {!!sourcingPurposeData &&
-                      sourcingPurposeData.map((type) => (
-                        <Option value={type.id} index={type.id} key={type.id}>
-                          {type.description}
-                        </Option>
-                      ))}
-                  </Select>
-                </FormItem>
-              </Col>
-              <Col style={styles.colStyle} span={24}>
-                <FormItem
-                  label={
-                    <span>
-                      <span style={{ color: "red" }}>*</span> Quantity
-                    </span>
-                  }
-                  name="quantity"
-                  rules={[
-                    {
-                      validator: checkUnit,
-                    },
-                  ]}
-                >
-                  <QuantityInput unitData={unitData} />
-                </FormItem>
-              </Col>
-            </Row>
-            <Row align="middle">
-              <Col span={20}>
-                <Row style={{ padding: "0px 12px 0px 4px" }} justify="end">
-                  <Space>{displayCurrency(price)} or Lower</Space>
-                </Row>
-              </Col>
-              <Col style={styles.colStyle} span={24}>
-                <FormItem
-                  name="preferredUnitPrice"
-                  label={
-                    <span>
-                      <span style={{ color: "red" }}>*</span> Preferred Unit
-                      Price:
-                    </span>
-                  }
-                  rules={[
-                    {
-                      validator: checkPrice,
-                    },
-                  ]}
-                >
-                  <PriceInput
-                    price={price}
-                    setPrice={setPrice}
-                    currencyData={currencyData}
-                  />
-                </FormItem>
-              </Col>
-              <Col style={styles.colStyle} span={24}>
-                <FormItem
-                  label="Trade term"
-                  name="tradeTermId"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Please select trade term",
-                    },
-                  ]}
-                >
-                  <Select style={{ width: "50%" }}>
-                    {!!tradeTermData &&
-                      tradeTermData.map((type) => (
-                        <Option value={type.id} index={type.id} key={type.id}>
-                          {type.description}
-                        </Option>
-                      ))}
-                  </Select>
-                </FormItem>
-              </Col>
-              <Col style={styles.colStyle} span={24}>
-                <FormItem
-                  label="Due date"
-                  name="dueDate"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Please select due date",
-                    },
-                  ]}
-                >
-                  <DatePicker
-                    placeholder="Select due date"
-                    style={{ width: "50%" }}
-                    format="YYYY-MM-DD HH:mm:ss"
-                    disabledDate={disabledDate}
-                    showTime={{ defaultValue: moment("00:00:00", "HH:mm:ss") }}
-                  />
-                </FormItem>
-              </Col>
-              <Col style={styles.colStyle} span={24}>
-                <FormItem
-                  label="Details"
-                  name="description"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Please enter the details",
-                    },
-                  ]}
-                >
-                  <Input.TextArea autoSize={{ minRows: 3 }} />
-                </FormItem>
-              </Col>
-            </Row>
-          </Card>
-          <Card
-            bordered={false}
-            title={<b>Supplier Capability</b>}
-            style={{
-              width: "100%",
-              boxShadow: "2px 2px 14px 0 rgba(0,0,0,.1)",
-              marginTop: 32,
-            }}
-          >
-            <Row align="middle">
-              <Col style={styles.colStyle} span={24}>
-                <FormItem label="Certifications" name="certifications">
-                  <Select
-                    showSearch
-                    mode="multiple"
-                    placeholder="Select Certification"
-                    optionFilterProp="children"
-                    filterOption={(input, option) =>
-                      option.children
-                        .toLowerCase()
-                        .indexOf(input.toLowerCase()) >= 0
-                    }
-                    style={{ width: "50%" }}
-                  >
-                    {!!supCertificationData &&
-                      supCertificationData.map((type) => (
-                        <Option value={type.id} index={type.id} key={type.id}>
-                          {type.description}
-                        </Option>
-                      ))}
-                  </Select>
-                </FormItem>
-              </Col>
-              <Col style={styles.colStyle} span={24}>
-                <FormItem label="Other Requirements" name="otherRe">
-                  <Input.TextArea
-                    autoSize={{ minRows: 4 }}
-                    placeholder="To receive fast and accurate quotations from suitable suppliers, please present your supplier requirements as specifically as possible. "
-                  />
-                </FormItem>
-              </Col>
-            </Row>
-          </Card>
-          <Card
-            bordered={false}
-            title={<b>Shipping and Payment</b>}
-            style={{
-              width: "100%",
-              boxShadow: "2px 2px 14px 0 rgba(0,0,0,.1)",
-              marginTop: 32,
-              marginBottom: 32,
-            }}
-          >
-            <Row align="middle">
-              <Col style={styles.colStyle} span={24}>
-                <FormItem label="Shipping Method" name="shippingMethodId">
-                  <Select style={{ width: "50%" }}>
-                    {!!shippingMethodData &&
-                      shippingMethodData.map((type) => (
-                        <Option value={type.id} index={type.id} key={type.id}>
-                          {type.description}
-                        </Option>
-                      ))}
-                  </Select>
-                </FormItem>
-              </Col>
-              <Col style={styles.colStyle} span={24}>
-                <FormItem
-                  label="Province"
-                  name="province"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Please select province",
-                    },
-                  ]}
-                >
-                  <Select style={{ width: "50%" }}>
-                    <Option value="TP.HCM">TP.HCM</Option>
-                    <Option value="hanoi">Ha Noi</Option>
-                  </Select>
-                </FormItem>
-              </Col>
-              <Col style={styles.colStyle} span={24}>
-                <FormItem
-                  label="District"
-                  name="district"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Please select district",
-                    },
-                  ]}
-                >
-                  <Select style={{ width: "50%" }}>
-                    <Option value="1">Q.1</Option>
-                    <Option value="2">Q.2</Option>
-                    <Option value="3">Q.3</Option>
-                    <Option value="4">Q.4</Option>
-                    <Option value="5">Q.5</Option>
-                    <Option value="6">Q.6</Option>
-                  </Select>
-                </FormItem>
-              </Col>
-              <Col style={styles.colStyle} span={24}>
-                <FormItem
-                  label="Ward"
-                  name="ward"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Please select ward",
-                    },
-                  ]}
-                >
-                  <Select style={{ width: "50%" }}>
-                    <Option value="TP.HCM">Phường 1</Option>
-                    <Option value="hanoi">Phường 2</Option>
-                  </Select>
-                </FormItem>
-              </Col>
-              <Col style={styles.colStyle} span={24}>
-                <FormItem
-                  label="Address"
-                  name="address"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Please enter the address",
-                    },
-                  ]}
-                >
-                  <Input placeholder="Enter the address shipping" />
-                </FormItem>
-              </Col>
-              <Col style={styles.colStyle} span={24}>
-                <FormItem label="Lead Time" name="leadTime">
-                  Ship in <span>&nbsp;</span>
-                  <InputNumber min={0} style={{ width: 100 }} />
-                  <span>&nbsp;</span>
-                  day(s) after supplier receives the initial payment
-                </FormItem>
-              </Col>
-              <Col style={styles.colStyle} span={24}>
-                <FormItem
-                  label="Payment Term"
-                  name="paymentTermId"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Please select payment term",
-                    },
-                  ]}
-                >
-                  <Select style={{ width: "50%" }}>
-                    {!!paymentTermData &&
-                      paymentTermData.map((type) => (
-                        <Option value={type.id} index={type.id} key={type.id}>
-                          {type.description}
-                        </Option>
-                      ))}
-                  </Select>
-                </FormItem>
-              </Col>
-            </Row>
-          </Card>
-          <Row justify="center" align="middle">
-            <Col span={6}>
-              <Button
-                onClick={() => {}}
-                block
-                className="submit"
-                type="primary"
-                htmlType="submit"
+    <Row>
+      <Row justify="space-between">
+        <Button onClick={() => Router.push("/")} type="primary">
+          <LeftOutlined /> Back to product list
+        </Button>
+      </Row>
+      <Col span={24}>
+        <Row align="middle" justify="center">
+          <Col sm={20} md={18}>
+            <Form
+              {...formItemLayout}
+              autoComplete="new-password"
+              className="register-form"
+              onFinish={onFinish}
+              initialValues={{
+                productName: productDetailsData.productName,
+                unit: "Unit",
+              }}
+            >
+              <Row justify="center">
+                <Title style={styles.titleStyle} level={2}>
+                  Tell Us what you need
+                </Title>
+              </Row>
+              <Card
+                bordered={false}
+                title={<b>Product Basic Information</b>}
+                style={{
+                  width: "100%",
+                  boxShadow: "2px 2px 14px 0 rgba(0,0,0,.1)",
+                  marginTop: 16,
+                }}
               >
-                Submit
-              </Button>
-            </Col>
-          </Row>
-        </Form>
+                <Row align="middle">
+                  <Col style={styles.colStyle} span={24}>
+                    <FormItem label="Product Name" name="productName">
+                      <Input disabled />
+                    </FormItem>
+                  </Col>
+                  <Col style={styles.colStyle} span={24}>
+                    <FormItem
+                      label="Sourcing Type"
+                      name="sourcingTypeId"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please select Sourcing Type",
+                        },
+                      ]}
+                    >
+                      <Select style={{ width: "50%" }}>
+                        {!!sourcingTypeData &&
+                          sourcingTypeData.map((type) => (
+                            <Option
+                              value={type.id}
+                              index={type.id}
+                              key={type.id}
+                            >
+                              {type.description}
+                            </Option>
+                          ))}
+                      </Select>
+                    </FormItem>
+                  </Col>
+                  <Col style={styles.colStyle} span={24}>
+                    <FormItem
+                      label="Sourcing Purpose"
+                      name="sourcingPurposeId"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please select Sourcing Purpose",
+                        },
+                      ]}
+                    >
+                      <Select style={{ width: "50%" }}>
+                        {!!sourcingPurposeData &&
+                          sourcingPurposeData.map((type) => (
+                            <Option
+                              value={type.id}
+                              index={type.id}
+                              key={type.id}
+                            >
+                              {type.description}
+                            </Option>
+                          ))}
+                      </Select>
+                    </FormItem>
+                  </Col>
+                  <Col style={styles.colStyle} span={24}>
+                    <FormItem
+                      label={
+                        <span>
+                          <span style={{ color: "red" }}>*</span> Quantity
+                        </span>
+                      }
+                      name="quantity"
+                      rules={[
+                        {
+                          validator: checkUnit,
+                        },
+                      ]}
+                    >
+                      <QuantityInput
+                        unitData={unitData}
+                        unitId={(productDetailsData || {}).unitOfMeasureId}
+                      />
+                    </FormItem>
+                  </Col>
+                </Row>
+                <Row align="middle">
+                  <Col span={20}>
+                    <Row style={{ padding: "0px 12px 0px 4px" }} justify="end">
+                      <Space>{displayCurrency(price)} or Lower</Space>
+                    </Row>
+                  </Col>
+                  <Col style={styles.colStyle} span={24}>
+                    <FormItem
+                      name="preferredUnitPrice"
+                      label={
+                        <span>
+                          <span style={{ color: "red" }}>*</span> Preferred Unit
+                          Price:
+                        </span>
+                      }
+                      rules={[
+                        {
+                          validator: checkPrice,
+                        },
+                      ]}
+                    >
+                      <PriceInput
+                        price={price}
+                        setPrice={setPrice}
+                        currencyData={currencyData}
+                      />
+                    </FormItem>
+                  </Col>
+                  <Col style={styles.colStyle} span={24}>
+                    <FormItem
+                      label="Trade term"
+                      name="tradeTermId"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please select trade term",
+                        },
+                      ]}
+                    >
+                      <Select style={{ width: "50%" }}>
+                        {!!tradeTermData &&
+                          tradeTermData.map((type) => (
+                            <Option
+                              value={type.id}
+                              index={type.id}
+                              key={type.id}
+                            >
+                              {type.description}
+                            </Option>
+                          ))}
+                      </Select>
+                    </FormItem>
+                  </Col>
+                  <Col style={styles.colStyle} span={24}>
+                    <FormItem
+                      label="Due date"
+                      name="dueDate"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please select due date",
+                        },
+                      ]}
+                    >
+                      <DatePicker
+                        placeholder="Select due date"
+                        style={{ width: "50%" }}
+                        format="YYYY-MM-DD HH:mm:ss"
+                        disabledDate={disabledDate}
+                        showTime={{
+                          defaultValue: moment("00:00:00", "HH:mm:ss"),
+                        }}
+                      />
+                    </FormItem>
+                  </Col>
+                  <Col style={styles.colStyle} span={24}>
+                    <FormItem
+                      label="Details"
+                      name="description"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please enter the details",
+                        },
+                      ]}
+                    >
+                      <Input.TextArea autoSize={{ minRows: 3 }} />
+                    </FormItem>
+                  </Col>
+                </Row>
+              </Card>
+              <Card
+                bordered={false}
+                title={<b>Supplier Capability</b>}
+                style={{
+                  width: "100%",
+                  boxShadow: "2px 2px 14px 0 rgba(0,0,0,.1)",
+                  marginTop: 32,
+                }}
+              >
+                <Row align="middle">
+                  <Col style={styles.colStyle} span={24}>
+                    <FormItem label="Certifications" name="certifications">
+                      <Select
+                        showSearch
+                        mode="multiple"
+                        placeholder="Select Certification"
+                        optionFilterProp="children"
+                        filterOption={(input, option) =>
+                          option.children
+                            .toLowerCase()
+                            .indexOf(input.toLowerCase()) >= 0
+                        }
+                        style={{ width: "50%" }}
+                      >
+                        {!!supCertificationData &&
+                          supCertificationData.map((type) => (
+                            <Option
+                              value={type.id}
+                              index={type.id}
+                              key={type.id}
+                            >
+                              {type.description}
+                            </Option>
+                          ))}
+                      </Select>
+                    </FormItem>
+                  </Col>
+                  <Col style={styles.colStyle} span={24}>
+                    <FormItem label="Other Requirements" name="otherRe">
+                      <Input.TextArea
+                        autoSize={{ minRows: 4 }}
+                        placeholder="To receive fast and accurate quotations from suitable suppliers, please present your supplier requirements as specifically as possible. "
+                      />
+                    </FormItem>
+                  </Col>
+                </Row>
+              </Card>
+              <Card
+                bordered={false}
+                title={<b>Shipping and Payment</b>}
+                style={{
+                  width: "100%",
+                  boxShadow: "2px 2px 14px 0 rgba(0,0,0,.1)",
+                  marginTop: 32,
+                  marginBottom: 32,
+                }}
+              >
+                <Row align="middle">
+                  <Col style={styles.colStyle} span={24}>
+                    <FormItem
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please select shipping method",
+                        },
+                      ]}
+                      label="Shipping Method"
+                      name="shippingMethodId"
+                    >
+                      <Select style={{ width: "50%" }}>
+                        {!!shippingMethodData &&
+                          shippingMethodData.map((type) => (
+                            <Option
+                              value={type.id}
+                              index={type.id}
+                              key={type.id}
+                            >
+                              {type.description}
+                            </Option>
+                          ))}
+                      </Select>
+                    </FormItem>
+                  </Col>
+                  <Col style={styles.colStyle} span={24}>
+                    <FormItem
+                      label="Province"
+                      name="provinceId"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please select province",
+                        },
+                      ]}
+                    >
+                      <Select
+                        onChange={(value) => {
+                          getWard(value);
+                        }}
+                        showSearch
+                        filterOption={(input, option) =>
+                          option.children
+                            .toLowerCase()
+                            .indexOf(input.toLowerCase()) >= 0
+                        }
+                        style={{ width: "50%" }}
+                      >
+                        {!!provinceData &&
+                          provinceData.map((province) => (
+                            <Option key={province.id} value={province.id}>
+                              {province.description}
+                            </Option>
+                          ))}
+                      </Select>
+                    </FormItem>
+                  </Col>
+
+                  <Col style={styles.colStyle} span={24}>
+                    <FormItem
+                      label="Ward"
+                      name="wardId"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please select ward",
+                        },
+                      ]}
+                    >
+                      <Select
+                        onChange={(value) => {
+                          getDistrict(value);
+                        }}
+                        showSearch
+                        filterOption={(input, option) =>
+                          option.children
+                            .toLowerCase()
+                            .indexOf(input.toLowerCase()) >= 0
+                        }
+                        style={{ width: "50%" }}
+                      >
+                        {!!wardData &&
+                          wardData.map((ward) => (
+                            <Option key={ward.id} value={ward.id}>
+                              {ward.description}
+                            </Option>
+                          ))}
+                      </Select>
+                    </FormItem>
+                  </Col>
+                  <Col style={styles.colStyle} span={24}>
+                    <FormItem
+                      label="District"
+                      name="districtId"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please select district",
+                        },
+                      ]}
+                    >
+                      <Select style={{ width: "50%" }}>
+                        {!!districtData &&
+                          districtData.map((district) => (
+                            <Option key={district.id} value={district.id}>
+                              {district.description}
+                            </Option>
+                          ))}
+                      </Select>
+                    </FormItem>
+                  </Col>
+                  <Col style={styles.colStyle} span={24}>
+                    <FormItem
+                      label="Address"
+                      name="address"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please enter the address",
+                        },
+                      ]}
+                    >
+                      <Input placeholder="Enter the address shipping" />
+                    </FormItem>
+                  </Col>
+                  <Col style={styles.colStyle} span={24}>
+                    <FormItem label="Lead Time" name="leadTime">
+                      Ship in <span>&nbsp;</span>
+                      <InputNumber min={0} style={{ width: 100 }} />
+                      <span>&nbsp;</span>
+                      day(s) after supplier receives the initial payment
+                    </FormItem>
+                  </Col>
+                  <Col style={styles.colStyle} span={24}>
+                    <FormItem
+                      label="Payment Term"
+                      name="paymentTermId"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please select payment term",
+                        },
+                      ]}
+                    >
+                      <Select style={{ width: "50%" }}>
+                        {!!paymentTermData &&
+                          paymentTermData.map((type) => (
+                            <Option
+                              value={type.id}
+                              index={type.id}
+                              key={type.id}
+                            >
+                              {type.description}
+                            </Option>
+                          ))}
+                      </Select>
+                    </FormItem>
+                  </Col>
+                </Row>
+              </Card>
+              <Row justify="center" align="middle">
+                <Col span={6}>
+                  <Button
+                    onClick={() => {}}
+                    block
+                    className="submit"
+                    type="primary"
+                    htmlType="submit"
+                  >
+                    Submit
+                  </Button>
+                </Col>
+              </Row>
+            </Form>
+          </Col>
+        </Row>
       </Col>
     </Row>
   );
