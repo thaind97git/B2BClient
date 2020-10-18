@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Form,
   Input,
@@ -10,15 +10,35 @@ import {
   Space,
   Card,
   Select,
-  Upload,
+  DatePicker,
 } from "antd";
 import { displayCurrency } from "../utils";
-import { InboxOutlined } from "@ant-design/icons";
 import Modal from "antd/lib/modal/Modal";
 import BuyerRequestCategoryComponent from "./BuyerRequestCategoryComponent";
 import { createStructuredSelector } from "reselect";
 import { connect } from "react-redux";
 import { getCategorySelected } from "../libs";
+import Router from "next/router";
+import { SET_CATEGORY_SELECTED } from "../stores/initState";
+import {
+  getCurrency,
+  GetCurrencyData,
+  getPaymentTerm,
+  GetPaymentTermData,
+  getShippingMethod,
+  GetShippingMethodData,
+  getSourcingPurpose,
+  GetSourcingPurposeData,
+  getSourcingType,
+  GetSourcingTypeData,
+  getSupplierCertification,
+  GetSupplierCertificationData,
+  getTradeTerms,
+  GetTradeTermsData,
+  getUnitOfMeasure,
+  GetUnitOfMeasureData,
+} from "../stores/SupportRequestState";
+import moment from "moment";
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -26,6 +46,26 @@ const FormItem = Form.Item;
 const connectToRedux = connect(
   createStructuredSelector({
     categorySelected: (state) => state.categorySelected,
+    sourcingTypeData: GetSourcingTypeData,
+    sourcingPurposeData: GetSourcingPurposeData,
+    unitData: GetUnitOfMeasureData,
+    currencyData: GetCurrencyData,
+    tradeTermData: GetTradeTermsData,
+    shippingMethodData: GetShippingMethodData,
+    paymentTermData: GetPaymentTermData,
+    supCertificationData: GetSupplierCertificationData,
+  }),
+  (dispatch) => ({
+    removeCategorySelected: () =>
+      dispatch({ type: SET_CATEGORY_SELECTED, payload: [] }),
+    getSourcingType: () => dispatch(getSourcingType()),
+    getSourcingPurpose: () => dispatch(getSourcingPurpose()),
+    getUnit: () => dispatch(getUnitOfMeasure()),
+    getCurrency: () => dispatch(getCurrency()),
+    getTradeTerm: () => dispatch(getTradeTerms()),
+    getShippingMethod: () => dispatch(getShippingMethod()),
+    getPaymentTerm: () => dispatch(getPaymentTerm()),
+    getSupCertification: () => dispatch(getSupplierCertification()),
   })
 );
 const styles = {
@@ -34,10 +74,18 @@ const styles = {
 };
 const formItemLayout = {
   labelCol: { span: 4 },
-  wrapperCol: { span: 20 },
+  wrapperCol: { span: 16 },
 };
-const PriceInput = ({ value = {}, onChange, price, setPrice }) => {
-  const [currency, setCurrency] = useState("vnd");
+const PriceInput = ({
+  value = {},
+  onChange,
+  price,
+  setPrice,
+  currencyData = [],
+}) => {
+  const [currency, setCurrency] = useState(
+    ((currencyData && currencyData[0]) || {}).id
+  );
 
   const triggerChange = (changedValue) => {
     if (onChange) {
@@ -51,58 +99,42 @@ const PriceInput = ({ value = {}, onChange, price, setPrice }) => {
   };
 
   const onNumberChange = (value) => {
+    console.log({ value });
     const newNumber = parseInt(value || 0, 10);
     if (Number.isNaN(price)) {
       return;
     }
 
-    // if (!("price" in value)) {
     setPrice(newNumber);
-    // }
 
     triggerChange({
       price: newNumber,
     });
   };
 
-  const onCurrencyChange = (newCurrency) => {
-    if (!("currency" in value)) {
-      setCurrency(newCurrency);
-    }
-
-    triggerChange({
-      currency: newCurrency,
-    });
-  };
-
   return (
     <span>
       <InputNumber
-        value={value.price || price}
         onChange={onNumberChange}
-        style={{ width: "78%" }}
-        formatter={(value) =>
-          `đ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-        }
-        parser={(value) => value.replace(/\đ\s?|(,*)/g, "")}
+        style={{ width: "50%" }}
+        formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+        parser={(value) => value.replace(/,*/g, "")}
       />
-
-      <Select
-        value={value.currency || currency}
+      <Input
+        value="Vnd"
+        disabled
         style={{
-          width: "20%",
+          width: "48%",
           margin: "0 4px",
         }}
-        onChange={onCurrencyChange}
-      >
-        <Option value="vnd">VND</Option>
-      </Select>
+      />
     </span>
   );
 };
-const QuantityInput = ({ value = {}, onChange }) => {
+
+const QuantityInput = ({ value = {}, onChange, unitData = [] }) => {
   const [number, setNumber] = useState(0);
-  const [unit, setUnit] = useState("pieces");
+  const [unit, setUnit] = useState(((unitData && unitData[0]) || {}).id);
 
   const triggerChange = (changedValue) => {
     if (onChange) {
@@ -134,6 +166,7 @@ const QuantityInput = ({ value = {}, onChange }) => {
 
     triggerChange({
       unit: newUnit,
+      number: value.number || 1,
     });
   };
 
@@ -142,46 +175,95 @@ const QuantityInput = ({ value = {}, onChange }) => {
       <InputNumber
         value={value.number || number}
         onChange={onNumberChange}
-        style={{ width: "78%" }}
+        style={{ width: "50%" }}
         min={1}
         placeholder="Enter the product quantity"
       />
-      <Select
+      <Input
+        value="Unit"
+        disabled
+        style={{
+          width: "48%",
+          margin: "0 4px",
+        }}
+      />
+      {/* <Select
+        showSearch
         value={value.unit || unit}
         style={{
-          width: "20%",
+          width: "48%",
           margin: "0 4px",
         }}
         onChange={onUnitChange}
+        placeholder="Select a unit"
+        optionFilterProp="children"
+        filterOption={(input, option) =>
+          option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+        }
       >
-        <Option value="pieces">Pieces</Option>
-        <Option value="bags">Bags</Option>
-        <Option value="boxes">Boxes</Option>
-        <Option value="cartons">Cartons</Option>
-        <Option value="feet">Feet</Option>
-        <Option value="units">Units</Option>
-        <Option value="kilograms">Kilograms</Option>
-        <Option value="Miles">Miles</Option>
-      </Select>
+        {!!unitData &&
+          unitData.map((type) => (
+            <Option value={type.id} index={type.id} key={type.id}>
+              {type.description}
+            </Option>
+          ))}
+      </Select> */}
     </span>
   );
 };
-const BuyerRequestCreateComponent = ({ next, categorySelected }) => {
-  // const p
+
+function disabledDate(current) {
+  // Can not select days before today and today
+  return current && current < moment().endOf("day");
+}
+
+const BuyerRequestCreateComponent = ({
+  removeCategorySelected,
+  categorySelected,
+  getSourcingType,
+  getSourcingPurpose,
+  getUnit,
+  getCurrency,
+  getTradeTerm,
+  getShippingMethod,
+  getPaymentTerm,
+  getSupCertification,
+  sourcingTypeData,
+  sourcingPurposeData,
+  unitData,
+  currencyData,
+  tradeTermData,
+  shippingMethodData,
+  paymentTermData,
+  supCertificationData,
+}) => {
   const [price, setPrice] = useState(0);
-  const [currency, setCurrency] = useState("Vnd");
   const [openCategory, setOpenCategory] = useState(false);
-  const normFile = (e) => {
-    console.log("Upload event:", e);
-    if (Array.isArray(e)) {
-      return e;
-    }
-    return e && e.fileList;
-  };
+
+  useEffect(() => {
+    getSourcingType();
+    getSourcingPurpose();
+    getUnit();
+    getCurrency();
+    getTradeTerm();
+    getShippingMethod();
+    getPaymentTerm();
+    getSupCertification();
+  }, [
+    getSourcingType,
+    getSourcingPurpose,
+    getUnit,
+    getCurrency,
+    getTradeTerm,
+    getShippingMethod,
+    getPaymentTerm,
+    getSupCertification,
+  ]);
 
   const onFinish = (values) => {
     console.log("Received values of form: ", values);
-    typeof next === "function" && next();
+    Router.push("/buyer/rfq");
+    removeCategorySelected();
   };
 
   const checkPrice = (rule, value) => {
@@ -192,7 +274,7 @@ const BuyerRequestCreateComponent = ({ next, categorySelected }) => {
     return Promise.reject("Price must be greater than zero!");
   };
   const checkUnit = (rule, value) => {
-    if (value.unit > 0) {
+    if (value.number > 0) {
       return Promise.resolve();
     }
 
@@ -229,6 +311,10 @@ const BuyerRequestCreateComponent = ({ next, categorySelected }) => {
           autoComplete="new-password"
           className="register-form"
           onFinish={onFinish}
+          initialValues={{
+            productName: "Iphone 8 Plus 64Gb",
+            unit: "Unit",
+          }}
         >
           <Row justify="center">
             <Title style={styles.titleStyle} level={2}>
@@ -246,30 +332,12 @@ const BuyerRequestCreateComponent = ({ next, categorySelected }) => {
           >
             <Row align="middle">
               <Col style={styles.colStyle} span={24}>
-                <FormItem
-                  label="Product Name"
-                  name="productName"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Please enter the product title",
-                    },
-                  ]}
-                >
-                  <Input placeholder="Enter the product title" />
+                <FormItem label="Product Name" name="productName">
+                  <Input disabled />
                 </FormItem>
               </Col>
-              <Col style={styles.colStyle} span={24}>
-                <FormItem
-                  label="Category"
-                  name="category"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Please select Category",
-                    },
-                  ]}
-                >
+              {/* <Col style={styles.colStyle} span={24}>
+                <FormItem label="Category" name="category">
                   {!!categorySelected.length && (
                     <div>
                       Category selected:
@@ -282,11 +350,11 @@ const BuyerRequestCreateComponent = ({ next, categorySelected }) => {
                     Select Category
                   </Button>
                 </FormItem>
-              </Col>
+              </Col> */}
               <Col style={styles.colStyle} span={24}>
                 <FormItem
                   label="Sourcing Type"
-                  name="sourcingType"
+                  name="sourcingTypeId"
                   rules={[
                     {
                       required: true,
@@ -294,19 +362,20 @@ const BuyerRequestCreateComponent = ({ next, categorySelected }) => {
                     },
                   ]}
                 >
-                  <Select>
-                    <Option value="cus">Customized Product</Option>
-                    <Option value="non-cus">Non-customized Product</Option>
-                    <Option value="to">Total Solution</Option>
-                    <Option value="bu">Business Service</Option>
-                    <Option value="other">Other</Option>
+                  <Select style={{ width: "50%" }}>
+                    {!!sourcingTypeData &&
+                      sourcingTypeData.map((type) => (
+                        <Option value={type.id} index={type.id} key={type.id}>
+                          {type.description}
+                        </Option>
+                      ))}
                   </Select>
                 </FormItem>
               </Col>
               <Col style={styles.colStyle} span={24}>
                 <FormItem
                   label="Sourcing Purpose"
-                  name="sourcingPurpose"
+                  name="sourcingPurposeId"
                   rules={[
                     {
                       required: true,
@@ -314,20 +383,23 @@ const BuyerRequestCreateComponent = ({ next, categorySelected }) => {
                     },
                   ]}
                 >
-                  <Select>
-                    <Option value="who">Wholesale</Option>
-                    <Option value="re">Retail</Option>
-                    <Option value="pro">Product Equipment</Option>
-                    <Option value="raw">Raw Materials for Production</Option>
-                    <Option value="cor">Corporate Consumption</Option>
-                    <Option value="per">Personal Use</Option>
-                    <Option value="other">Other</Option>
+                  <Select style={{ width: "50%" }}>
+                    {!!sourcingPurposeData &&
+                      sourcingPurposeData.map((type) => (
+                        <Option value={type.id} index={type.id} key={type.id}>
+                          {type.description}
+                        </Option>
+                      ))}
                   </Select>
                 </FormItem>
               </Col>
               <Col style={styles.colStyle} span={24}>
                 <FormItem
-                  label="Quantity"
+                  label={
+                    <span>
+                      <span style={{ color: "red" }}>*</span> Quantity
+                    </span>
+                  }
                   name="quantity"
                   rules={[
                     {
@@ -335,33 +407,42 @@ const BuyerRequestCreateComponent = ({ next, categorySelected }) => {
                     },
                   ]}
                 >
-                  <QuantityInput />
+                  <QuantityInput unitData={unitData} />
                 </FormItem>
               </Col>
             </Row>
             <Row align="middle">
-              <Col span={24}>
+              <Col span={20}>
                 <Row style={{ padding: "0px 12px 0px 4px" }} justify="end">
-                  <Space>{displayCurrency(price, currency)} or Lower</Space>
+                  <Space>{displayCurrency(price)} or Lower</Space>
                 </Row>
               </Col>
               <Col style={styles.colStyle} span={24}>
                 <FormItem
-                  name="price"
-                  label="Preferred Unit Price:"
+                  name="preferredUnitPrice"
+                  label={
+                    <span>
+                      <span style={{ color: "red" }}>*</span> Preferred Unit
+                      Price:
+                    </span>
+                  }
                   rules={[
                     {
                       validator: checkPrice,
                     },
                   ]}
                 >
-                  <PriceInput price={price} setPrice={setPrice} />
+                  <PriceInput
+                    price={price}
+                    setPrice={setPrice}
+                    currencyData={currencyData}
+                  />
                 </FormItem>
               </Col>
               <Col style={styles.colStyle} span={24}>
                 <FormItem
                   label="Trade term"
-                  name="tradeTerm"
+                  name="tradeTermId"
                   rules={[
                     {
                       required: true,
@@ -369,15 +450,34 @@ const BuyerRequestCreateComponent = ({ next, categorySelected }) => {
                     },
                   ]}
                 >
-                  <Select>
-                    <Option value="fob">FOB</Option>
-                    <Option value="exw">EXW</Option>
-                    <Option value="fas">FAS</Option>
-                    <Option value="fca">FCA</Option>
-                    <Option value="cfr">CFR</Option>
-                    <Option value="cpt">CPT</Option>
-                    <Option value="cif">CIF</Option>
+                  <Select style={{ width: "50%" }}>
+                    {!!tradeTermData &&
+                      tradeTermData.map((type) => (
+                        <Option value={type.id} index={type.id} key={type.id}>
+                          {type.description}
+                        </Option>
+                      ))}
                   </Select>
+                </FormItem>
+              </Col>
+              <Col style={styles.colStyle} span={24}>
+                <FormItem
+                  label="Due date"
+                  name="dueDate"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please select due date",
+                    },
+                  ]}
+                >
+                  <DatePicker
+                    placeholder="Select due date"
+                    style={{ width: "50%" }}
+                    format="YYYY-MM-DD HH:mm:ss"
+                    disabledDate={disabledDate}
+                    showTime={{ defaultValue: moment("00:00:00", "HH:mm:ss") }}
+                  />
                 </FormItem>
               </Col>
               <Col style={styles.colStyle} span={24}>
@@ -391,27 +491,8 @@ const BuyerRequestCreateComponent = ({ next, categorySelected }) => {
                     },
                   ]}
                 >
-                  <Input.TextArea autoSize={{ minRows: 2 }} />
+                  <Input.TextArea autoSize={{ minRows: 3 }} />
                 </FormItem>
-              </Col>
-              <Col style={styles.colStyle} span={24}>
-                <Form.Item label="Attachments">
-                  <Form.Item
-                    name="attachments"
-                    valuePropName="fileList"
-                    getValueFromEvent={normFile}
-                    noStyle
-                  >
-                    <Upload.Dragger name="files" action="/upload.do">
-                      <p className="ant-upload-drag-icon">
-                        <InboxOutlined />
-                      </p>
-                      <p className="ant-upload-text">
-                        Click or drag file to this area to upload
-                      </p>
-                    </Upload.Dragger>
-                  </Form.Item>
-                </Form.Item>
               </Col>
             </Row>
           </Card>
@@ -427,14 +508,24 @@ const BuyerRequestCreateComponent = ({ next, categorySelected }) => {
             <Row align="middle">
               <Col style={styles.colStyle} span={24}>
                 <FormItem label="Certifications" name="certifications">
-                  <Select>
-                    <Option value="IOS/TS16949">ISO/TS16949</Option>
-                    <Option value="ISO22000">ISO22000</Option>
-                    <Option value="CCC">CCC</Option>
-                    <Option value="PSE">PSE</Option>
-                    <Option value="MSDS">MSDS</Option>
-                    <Option value="FCCF">FCCF</Option>
-                    <Option value="GMP">GMP</Option>
+                  <Select
+                    showSearch
+                    mode="multiple"
+                    placeholder="Select Certification"
+                    optionFilterProp="children"
+                    filterOption={(input, option) =>
+                      option.children
+                        .toLowerCase()
+                        .indexOf(input.toLowerCase()) >= 0
+                    }
+                    style={{ width: "50%" }}
+                  >
+                    {!!supCertificationData &&
+                      supCertificationData.map((type) => (
+                        <Option value={type.id} index={type.id} key={type.id}>
+                          {type.description}
+                        </Option>
+                      ))}
                   </Select>
                 </FormItem>
               </Col>
@@ -460,12 +551,14 @@ const BuyerRequestCreateComponent = ({ next, categorySelected }) => {
           >
             <Row align="middle">
               <Col style={styles.colStyle} span={24}>
-                <FormItem label="Shipping Method" name="shipping">
-                  <Select>
-                    <Option value="see">Sea freight</Option>
-                    <Option value="air">Air freight</Option>
-                    <Option value="express">Express</Option>
-                    <Option value="land">Land freight</Option>
+                <FormItem label="Shipping Method" name="shippingMethodId">
+                  <Select style={{ width: "50%" }}>
+                    {!!shippingMethodData &&
+                      shippingMethodData.map((type) => (
+                        <Option value={type.id} index={type.id} key={type.id}>
+                          {type.description}
+                        </Option>
+                      ))}
                   </Select>
                 </FormItem>
               </Col>
@@ -480,7 +573,7 @@ const BuyerRequestCreateComponent = ({ next, categorySelected }) => {
                     },
                   ]}
                 >
-                  <Select>
+                  <Select style={{ width: "50%" }}>
                     <Option value="TP.HCM">TP.HCM</Option>
                     <Option value="hanoi">Ha Noi</Option>
                   </Select>
@@ -497,7 +590,7 @@ const BuyerRequestCreateComponent = ({ next, categorySelected }) => {
                     },
                   ]}
                 >
-                  <Select>
+                  <Select style={{ width: "50%" }}>
                     <Option value="1">Q.1</Option>
                     <Option value="2">Q.2</Option>
                     <Option value="3">Q.3</Option>
@@ -518,7 +611,7 @@ const BuyerRequestCreateComponent = ({ next, categorySelected }) => {
                     },
                   ]}
                 >
-                  <Select>
+                  <Select style={{ width: "50%" }}>
                     <Option value="TP.HCM">Phường 1</Option>
                     <Option value="hanoi">Phường 2</Option>
                   </Select>
@@ -549,7 +642,7 @@ const BuyerRequestCreateComponent = ({ next, categorySelected }) => {
               <Col style={styles.colStyle} span={24}>
                 <FormItem
                   label="Payment Term"
-                  name="payment term"
+                  name="paymentTermId"
                   rules={[
                     {
                       required: true,
@@ -557,12 +650,13 @@ const BuyerRequestCreateComponent = ({ next, categorySelected }) => {
                     },
                   ]}
                 >
-                  <Select>
-                    <Option value="tt">T/T</Option>
-                    <Option value="lc">L/C</Option>
-                    <Option value="dp">D/P</Option>
-                    <Option value="union">Western Union</Option>
-                    <Option value="money">Money Gram</Option>
+                  <Select style={{ width: "50%" }}>
+                    {!!paymentTermData &&
+                      paymentTermData.map((type) => (
+                        <Option value={type.id} index={type.id} key={type.id}>
+                          {type.description}
+                        </Option>
+                      ))}
                   </Select>
                 </FormItem>
               </Col>

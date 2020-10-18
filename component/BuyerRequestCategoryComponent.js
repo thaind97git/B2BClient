@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useState } from "react";
-import { Row, List, Space } from "antd";
+import { Row, List, Space, Input } from "antd";
 import { RightOutlined, LeftOutlined } from "@ant-design/icons";
 import clsx from "clsx";
 import { connect } from "react-redux";
@@ -109,6 +109,10 @@ const BuyerRequestCategoryComponent = ({
   return (
     <Fragment>
       <Row style={{ width: "100%", margin: "24px 16px" }}>
+        <Input.Search
+          style={{ width: "100%", marginBottom: 12 }}
+          placeholder="Search by category name"
+        />
         <List
           style={{ width: "100%" }}
           header={

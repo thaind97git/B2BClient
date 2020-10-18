@@ -4,7 +4,7 @@ import BuyerLayout from "../../../layouts/BuyerLayout";
 
 const Page = () => {
   return (
-    <BuyerLayout>
+    <BuyerLayout isVertical={false}>
       <BuyerRequestCreateComponent />
     </BuyerLayout>
   );

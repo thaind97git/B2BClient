@@ -4,7 +4,7 @@ import SupplierLayout from "../../layouts/SupplierLayout";
 export default function UserProfilePage() {
   return (
     <SupplierLayout>
-      <UserProfileComponent />
+      <UserProfileComponent isDrawer={false} />
     </SupplierLayout>
   );
 }

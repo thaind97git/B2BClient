@@ -1,7 +1,8 @@
 import { Button, Col, Divider, Row, Space, Typography, Upload } from "antd";
-import React from "react";
+import React, { Fragment } from "react";
 import { R_PENDING } from "../enums/requestStatus";
 import RequestStatusComponent from "./Utils/RequestStatusComponent";
+import { displayCurrency } from "../utils";
 const { Title } = Typography;
 const DescriptionItem = ({ title, content }) => (
   <Col span={24}>
@@ -23,7 +24,8 @@ const requestDefault = {
   quantity: "20",
   unit: "Units",
   tradeTerms: "FOB",
-  preUnitPrice: "500,000 Vnd",
+  preUnitPrice: 500000,
+  dueDate: "30/10/2020 02:05:00 PM",
   details: "I really want to buy this product",
   attachments: [
     {
@@ -43,6 +45,7 @@ const requestDefault = {
 const RequestDetailsComponent = ({
   request = requestDefault,
   buttonActions = [],
+  isSupplier = true,
 }) => {
   const {
     productName,
@@ -53,6 +56,7 @@ const RequestDetailsComponent = ({
     unit,
     tradeTerms,
     preUnitPrice,
+    dueDate,
     details,
     attachments,
     certifi,
@@ -109,7 +113,11 @@ const RequestDetailsComponent = ({
       <DescriptionItem title="Sourcing Purpose" content={sourcingPurpose} />
       <DescriptionItem title="Quantity" content={`${quantity} ${unit}`} />
       <DescriptionItem title="Trade Term" content={tradeTerms} />
-      <DescriptionItem title="Preferred Unit Price" content={preUnitPrice} />
+      <DescriptionItem
+        title="Preferred Unit Price"
+        content={displayCurrency(preUnitPrice)}
+      />
+      <DescriptionItem title="Due Date" content={dueDate} />
       <DescriptionItem title="Details" content={details} />
       <DescriptionItem title="Attachments" content={<AttachmentsDisplay />} />
       <Divider />
@@ -124,6 +132,17 @@ const RequestDetailsComponent = ({
       <DescriptionItem title="Shipping Method" content={shippingMethod} />
       <DescriptionItem title="Destination" content={destination} />
       <DescriptionItem title="Lead Time" content={leadTimeDisplay} />
+      {!isSupplier && (
+        <Fragment>
+          <Divider />
+          <Col span={24}>
+            <Title level={5}>RFQ Owner</Title>
+          </Col>
+          <DescriptionItem title="Created by" content="User 1" />
+          <DescriptionItem title="Email" content="user1@gmail.com" />
+          <DescriptionItem title="Phone" content="0123456789" />
+        </Fragment>
+      )}
 
       <style jsx global>{`
         .site-description-item-profile-wrapper {

@@ -44,7 +44,17 @@ export default class MyDocument extends Document {
         <body className="">
           <Main {...rootProps} />
           <NextScript />
-          {/* <script src="/static/customs/sc-common.js" /> */}
+          <script src="/static/homepage/assets/vendor/jquery/jquery.min.js" />
+          <script src="/static/homepage/assets/vendor/jquery-sticky/jquery.sticky.js" />
+          <script src="/static/homepage/assets/vendor/superfish/superfish.min.js" />
+          <script src="/static/homepage/assets/vendor/hoverIntent/hoverIntent.js" />
+          <script src="/static/homepage/assets/vendor/bootstrap/js/bootstrap.bundle.min.js" />
+          <script src="/static/homepage/assets/vendor/jquery.easing/jquery.easing.min.js" />
+          <script src="/static/homepage/assets/vendor/php-email-form/validate.js" />
+          <script src="/static/homepage/assets/vendor/tether/js/tether.min.js" />
+          <script src="/static/homepage/assets/vendor/lockfixed/jquery.lockfixed.min.js" />
+          <script src="/static/homepage/assets/vendor/waypoints/jquery.waypoints.min.js" />
+          <script src="/static/homepage/assets/js/main.js" />
         </body>
       </Html>
     );

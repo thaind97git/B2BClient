@@ -14,6 +14,11 @@ import {
 } from "antd";
 import { ArrowUpOutlined, CaretRightOutlined } from "@ant-design/icons";
 import { displayCurrency } from "../utils";
+import {
+  currencyFormatter,
+  currencyParser,
+  currencyValue,
+} from "../libs/currencyFormatter";
 const { Panel } = Collapse;
 const Rank = ({ rank }) => {
   let color;
@@ -31,7 +36,6 @@ const Rank = ({ rank }) => {
       color = "black";
       break;
   }
-  console.log({ color });
   return <Badge count={rank} style={{ backgroundColor: color }} />;
 };
 const columns = [
@@ -168,10 +172,8 @@ const BiddingAuctionComponent = () => {
                   style={{ minWidth: 200 }}
                   min={minimumChange}
                   max={maximumChange}
-                  formatter={(value) =>
-                    `đ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-                  }
-                  parser={(value) => value.replace(/\đ\s?|(,*)/g, "")}
+                  formatter={currencyFormatter(currencyValue)}
+                  parser={currencyParser}
                   onChange={(value) => {
                     setBidTemp(value);
                     setTotalLot(value * unit);

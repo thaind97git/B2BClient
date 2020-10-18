@@ -8,15 +8,18 @@ import {
   Table,
   Tag,
   Typography,
+  Modal,
 } from "antd";
-import Modal from "antd/lib/modal/Modal";
+import { CloseCircleOutlined } from "@ant-design/icons";
 import Router from "next/router";
 import React, { Fragment, useState } from "react";
 import { G_NEGOTIATING } from "../enums/groupStatus";
 import ListingRequestForGroupComponent from "./ListingRequestForGroupComponent";
 import ListingSupplierByCategoryComponent from "./ListingSupplierByCategoryComponent";
 import RequestDetailsComponent from "./RequestDetailsComponent";
+import UserProfileComponent from "./UserProfileComponent";
 import GroupStatusComponent from "./Utils/GroupStatusComponent";
+
 const { Title } = Typography;
 const groupRequestColumns = [
   { title: "Product Name", dataIndex: "category", key: "category" },
@@ -29,7 +32,9 @@ const SUPPLIER_CONTACT = [
   { title: "Name", dataIndex: "name", key: "name" },
   { title: "Email", dataIndex: "email", key: "email" },
   { title: "Phone", dataIndex: "phone", key: "phone" },
+  { title: "Is Ignore", dataIndex: "isIgnore", key: "isIgnore" },
   { title: "Actions", dataIndex: "actions", key: "actions" },
+  { title: "", dataIndex: "remove", key: "remove" },
 ];
 
 const GroupRequestDetailsComponent = ({
@@ -41,13 +46,14 @@ const GroupRequestDetailsComponent = ({
     dateUpdated: "28/09/2020",
     description: "This Group will focus about Iphone 7S 64Gb",
     quantity: "60 Units",
-    totalPrice: "20,300,000 đ",
+    priceInUnit: "6,700,000 đ",
     status: G_NEGOTIATING,
   },
 }) => {
   const [isOpenContact, setIsOpenContact] = useState(false);
   const [isOpenAddRequest, setIsOpenAddRequest] = useState(false);
   const [openRequestDetail, setOpenRequestDetail] = useState(false);
+  const [openSupplierDetail, setOpenSupplierDetail] = useState(false);
   const REQUEST_LIST = [
     {
       key: "1",
@@ -118,54 +124,104 @@ const GroupRequestDetailsComponent = ({
       name: "Supplier 1",
       email: "thaindse62642@fpt.edu.vn",
       phone: "0397471442",
+      isIgnore: (
+        <Space style={{ color: "red" }}>
+          <CloseCircleOutlined />
+          Ignored
+        </Space>
+      ),
       actions: (
         <Space>
-          <Button size="small">Chat</Button>
-          <Button size="small" type="primary">
-            sales closing
+          <Button size="small" type="dashed">
+            <a href="/aggregator/group/chat" target="_blank">
+              Chat
+            </a>
           </Button>
+          <Button size="small" style={{ color: "green" }}>
+            Closing sales
+          </Button>
+
           <Button
-            size="small"
+            type="link"
             onClick={() => {
-              setOpenRequestDetail(true);
+              setOpenSupplierDetail(true);
             }}
-            danger
           >
-            Remove
+            Details
           </Button>
         </Space>
+      ),
+      remove: (
+        <Button size="small" danger>
+          Remove
+        </Button>
       ),
     },
     {
       name: "Supplier 2",
       email: "thaind97.dev@gmail.com",
       phone: "0397471441",
+      isIgnore: (
+        <Space style={{ color: "red" }}>
+          <CloseCircleOutlined />
+          Ignored
+        </Space>
+      ),
       actions: (
         <Space>
-          <Button size="small">Chat</Button>
-          <Button size="small" type="primary">
-            sales closing
+          <Button size="small" type="dashed">
+            <a href="/aggregator/group/chat" target="_blank">
+              Chat
+            </a>
           </Button>
-          <Button size="small" danger>
-            Remove
+          <Button size="small" style={{ color: "green" }}>
+            Closing sales{" "}
+          </Button>
+          <Button
+            type="link"
+            onClick={() => {
+              setOpenSupplierDetail(true);
+            }}
+          >
+            Details
           </Button>
         </Space>
+      ),
+      remove: (
+        <Button size="small" danger>
+          Remove
+        </Button>
       ),
     },
     {
       name: "Supplier 3",
       email: "thaind97.info@gmail.com",
       phone: "0397471440",
+      isIgnore: <span style={{ color: "green" }}>Negotiating</span>,
       actions: (
         <Space>
-          <Button size="small">Chat</Button>
-          <Button size="small" type="primary">
-            sales closing
+          <Button size="small" type="dashed">
+            <a href="/aggregator/group/chat" target="_blank">
+              Chat
+            </a>
           </Button>
-          <Button size="small" danger>
-            Remove
+          <Button size="small" style={{ color: "green" }}>
+            Closing sales
+          </Button>
+          <Button
+            type="link"
+            onClick={() => {
+              setOpenSupplierDetail(true);
+            }}
+          >
+            Details
           </Button>
         </Space>
+      ),
+      remove: (
+        <Button size="small" danger>
+          Remove
+        </Button>
       ),
     },
   ];
@@ -180,7 +236,7 @@ const GroupRequestDetailsComponent = ({
     dateUpdated,
     description,
     status,
-    totalPrice,
+    priceInUnit,
     quantity,
   } = group;
   return (
@@ -204,6 +260,17 @@ const GroupRequestDetailsComponent = ({
             },
           ]}
         />
+      </Drawer>
+      <Drawer
+        width={640}
+        title="Supplier details"
+        placement={"right"}
+        closable={true}
+        onClose={() => setOpenSupplierDetail(false)}
+        visible={openSupplierDetail}
+        key={"right"}
+      >
+        <UserProfileComponent isDrawer={true} />
       </Drawer>
       <Row justify="space-between">
         <Title level={4}>Group Name: {title}</Title>
@@ -234,8 +301,8 @@ const GroupRequestDetailsComponent = ({
               {dateUpdated}
             </Descriptions.Item>
             <Descriptions.Item label="Quantity">{quantity}</Descriptions.Item>
-            <Descriptions.Item label="Total Price">
-              {totalPrice}
+            <Descriptions.Item label="Average price in unit">
+              {priceInUnit}
             </Descriptions.Item>
             <Descriptions.Item label="Status">
               <GroupStatusComponent status={status} />
@@ -282,6 +349,7 @@ const GroupRequestDetailsComponent = ({
       </Space>
       <Modal
         onCancel={() => setIsOpenContact(false)}
+        onOk={() => setIsOpenContact(false)}
         title="Find Supplier"
         visible={isOpenContact}
         okText="Add"
@@ -289,9 +357,12 @@ const GroupRequestDetailsComponent = ({
         <ListingSupplierByCategoryComponent category={category} />
       </Modal>
       <Modal
+        width={600}
         onCancel={() => setIsOpenAddRequest(false)}
+        onOk={() => setIsOpenAddRequest(false)}
         title="Add Request"
         visible={isOpenAddRequest}
+        okText="Add"
       >
         <ListingRequestForGroupComponent category={category} />
       </Modal>

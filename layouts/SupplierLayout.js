@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 
-import { Layout, Menu, Row, Dropdown } from "antd";
+import { Layout, Menu, Row, Dropdown, Divider, Badge, Space } from "antd";
 import {
-  UserOutlined,
   DownOutlined,
   LoginOutlined,
   MenuUnfoldOutlined,
@@ -11,6 +10,7 @@ import {
   OrderedListOutlined,
   PicLeftOutlined,
   WechatOutlined,
+  BellOutlined,
 } from "@ant-design/icons";
 import MemberNavComponent from "../component/MemberNavComponent";
 import { currentPath } from "../utils";
@@ -21,11 +21,18 @@ import Router from "next/router";
 const { Header, Content, Sider } = Layout;
 
 const SUPPLIER_MENU = [
+  // {
+  //   key: "1",
+  //   icon: <UserOutlined />,
+  //   label: "Dashboard",
+  //   link: "/supplier",
+  //   subMenu: [],
+  // },
   {
-    key: "1",
-    icon: <UserOutlined />,
-    label: "Dashboard",
-    link: "/supplier",
+    key: "4",
+    icon: <WechatOutlined />,
+    label: "Chat",
+    link: "/supplier/chat",
     subMenu: [],
   },
   {
@@ -56,13 +63,6 @@ const SUPPLIER_MENU = [
       },
     ],
   },
-  {
-    key: "4",
-    icon: <WechatOutlined />,
-    label: "Chat",
-    link: "/supplier/chat",
-    subMenu: [],
-  },
 ];
 
 const PROFILE_MENU = (
@@ -86,9 +86,22 @@ const PROFILE_MENU = (
     </Menu.Item>
   </Menu>
 );
-
+const menu = (
+  <Menu>
+    <Menu.Item key="0">
+      <a href="#">Message 01</a>
+    </Menu.Item>
+    <Menu.Divider />
+    <Menu.Item key="1">
+      <a href="#">Message 02</a>
+    </Menu.Item>
+    <Menu.Divider />
+    <Menu.Item key="3">Message 03</Menu.Item>
+  </Menu>
+);
 const SupplierLayout = ({ children }) => {
   const [collapsed, setCollapsed] = useState(true);
+  const [openMessage, setOpenMessage] = useState(false);
   return (
     <div
       style={{
@@ -107,13 +120,19 @@ const SupplierLayout = ({ children }) => {
           >
             <Row style={{ minHeight: 64 }} justify="center" align="middle">
               <Link href="/">
-                <a>
-                  <img
+                <a
+                  style={{
+                    fontSize: 13,
+                    transform: `scale(${collapsed ? 1 : 1.5})`,
+                  }}
+                >
+                  B2B Market
+                  {/* <img
                     alt="B2BMarket"
                     src="/static/images/logo.png"
                     height={collapsed ? 16 : 32}
                     style={{ margin: "16px 0px" }}
-                  />
+                  /> */}
                 </a>
               </Link>
             </Row>
@@ -136,7 +155,18 @@ const SupplierLayout = ({ children }) => {
                     onClick={() => setCollapsed((prev) => !prev)}
                   />
                 )}
-                <div style={{ marginRight: 24 }}>
+                <Space style={{ marginRight: 24 }}>
+                  <Dropdown
+                    overlay={menu}
+                    onVisibleChange={setOpenMessage}
+                    visible={openMessage}
+                    trigger={["click"]}
+                  >
+                    <Badge style={{ cursor: "pointer" }} count={3}>
+                      <BellOutlined />
+                    </Badge>
+                  </Dropdown>
+                  <Divider type="vertical" />
                   <Dropdown overlay={PROFILE_MENU}>
                     <a
                       className="ant-dropdown-link"
@@ -145,7 +175,7 @@ const SupplierLayout = ({ children }) => {
                       My Account <DownOutlined />
                     </a>
                   </Dropdown>
-                </div>
+                </Space>
               </Row>
             </Header>
             <Content

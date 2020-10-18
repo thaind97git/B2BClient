@@ -1,146 +1,22 @@
-import { Button, Col, Divider, Radio, Row, Select, Space } from "antd";
+import { Button, Col, Divider, Radio, Row, Select, Drawer } from "antd";
 import Modal from "antd/lib/modal/Modal";
 import React, { useEffect, useState } from "react";
-import {
-  R_BIDDING,
-  R_CANCELED,
-  R_DONE,
-  R_GROUPED,
-  R_NEGOTIATING,
-  R_ORDERED,
-  R_PENDING,
-  R_REJECTED,
-  R_WAIT_FOR_AUCTION,
-} from "../enums/requestStatus";
+import { R_PENDING } from "../enums/requestStatus";
 import ReactTableLayout from "../layouts/ReactTableLayout";
-import { DEFAULT_DATE_RANGE } from "../utils";
+import { DEFAULT_DATE_RANGE, displayCurrency } from "../utils";
 import GroupCreateComponent from "./GroupCreateComponent";
 import RequestStatusComponent from "./Utils/RequestStatusComponent";
+import RequestDetailsComponent from "./RequestDetailsComponent";
 const { Option, OptGroup } = Select;
-const dataSource = [
-  {
-    key: "1",
-    price: "80$",
-    category: "Iphone 5",
-    createdBy: "User 1",
-    dateCreated: "30/09/2020 02:07:26 PM",
-    dueDate: "30/09/2020 02:07:26 PM",
-    status: <RequestStatusComponent status={R_PENDING} />,
-    actions: (
-      <Space>
-        <Button size="small" danger>
-          Reject
-        </Button>
-      </Space>
-    ),
-  },
-  {
-    key: "2",
-    price: "80$",
-    category: "Iphone 5S",
-    createdBy: "User 1",
-    dateCreated: "30/09/2020 02:07:26 PM",
-    dueDate: "30/09/2020 02:07:26 PM",
-    status: <RequestStatusComponent status={R_CANCELED} />,
-    actions: "--",
-  },
-  {
-    key: "3",
-    price: "80$",
-    category: "Iphone 6",
-    createdBy: "User 1",
-    dateCreated: "30/09/2020 02:07:26 PM",
-    dueDate: "30/09/2020 02:07:26 PM",
-    status: <RequestStatusComponent status={R_REJECTED} />,
-    actions: "--",
-  },
-  {
-    key: "4",
-    price: "80$",
-    category: "Iphone 6S",
-    createdBy: "User 1",
-    dateCreated: "30/09/2020 02:07:26 PM",
-    dueDate: "30/09/2020 02:07:26 PM",
-    status: <RequestStatusComponent status={R_DONE} />,
-    actions: "--",
-  },
-  {
-    key: "5",
-    price: "80$",
-    category: "Iphone 7",
-    createdBy: "User 1",
-    dateCreated: "30/09/2020 02:07:26 PM",
-    dueDate: "30/09/2020 02:07:26 PM",
-    status: <RequestStatusComponent status={R_BIDDING} />,
-    actions: (
-      <Space>
-        <Button size="small">View Auction</Button>
-      </Space>
-    ),
-  },
-  {
-    key: "5",
-    price: "80$",
-    category: "Iphone 7S",
-    createdBy: "User 1",
-    dateCreated: "30/09/2020 02:07:26 PM",
-    dueDate: "30/09/2020 02:07:26 PM",
-    status: <RequestStatusComponent status={R_WAIT_FOR_AUCTION} />,
-    actions: (
-      <Space>
-        <Button size="small">View Auction</Button>
-      </Space>
-    ),
-  },
-  {
-    key: "5",
-    price: "80$",
-    category: "Iphone 7S Plus",
-    createdBy: "User 1",
-    dateCreated: "30/09/2020 02:07:26 PM",
-    dueDate: "30/09/2020 02:07:26 PM",
-    status: <RequestStatusComponent status={R_GROUPED} />,
-    actions: (
-      <Space>
-        <Button size="small" danger>
-          Cancel
-        </Button>
-        <Button size="small">View Group</Button>
-      </Space>
-    ),
-  },
-  {
-    key: "5",
-    price: "80$",
-    category: "Iphone 8",
-    createdBy: "User 1",
-    dateCreated: "30/09/2020 02:07:26 PM",
-    dueDate: "30/09/2020 02:07:26 PM",
-    status: <RequestStatusComponent status={R_NEGOTIATING} />,
-    actions: (
-      <Space>
-        <Button size="small" danger>
-          Cancel
-        </Button>
-        <Button size="small">View Group</Button>
-      </Space>
-    ),
-  },
-  {
-    key: "5",
-    price: "80$",
-    category: "Iphone 10",
-    createdBy: "User 1",
-    dateCreated: "30/09/2020 02:07:26 PM",
-    dueDate: "30/09/2020 02:07:26 PM",
-    status: <RequestStatusComponent status={R_ORDERED} />,
-    actions: "--",
-  },
-];
 
 const columns = [
   {
     title: "Product Name",
+    dataIndex: "name",
+    key: "name",
+  },
+  {
+    title: "Category",
     dataIndex: "category",
     key: "category",
   },
@@ -150,15 +26,20 @@ const columns = [
     key: "price",
   },
   {
+    title: "Quantity",
+    dataIndex: "quantity",
+    key: "quantity",
+  },
+  {
     title: "Date Created",
     dataIndex: "dateCreated",
     key: "dateCreated",
   },
-  {
-    title: "Status",
-    dataIndex: "status",
-    key: "status",
-  },
+  // {
+  //   title: "Status",
+  //   dataIndex: "status",
+  //   key: "status",
+  // },
 
   {
     title: "Actions",
@@ -170,12 +51,210 @@ const columns = [
 function handleChange(value) {
   console.log(`selected ${value}`);
 }
+
 const AdminRequestManagement = () => {
   const [searchMessage, setSearchMessage] = useState("");
   const [dateRange, setDateRange] = useState(DEFAULT_DATE_RANGE);
   const [recordSelected, setRecordSelected] = useState([]);
-  const [visible, setVisible] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
   const [openGroupModal, setOpenGroupModal] = useState(false);
+  const [openDetails, setOpenDetails] = useState(false);
+
+  const dataSource = [
+    {
+      key: "1",
+      price: displayCurrency(300000),
+      name: "Iphone 5",
+      category: "Mobile Phone",
+      quantity: 30,
+      createdBy: "User 1",
+      dateCreated: "30/09/2020 02:07:26 PM",
+      dueDate: "30/09/2020 02:07:26 PM",
+      status: <RequestStatusComponent status={R_PENDING} />,
+      actions: (
+        <Button onClick={() => setOpenDetails(true)} size="small" type="link">
+          View
+        </Button>
+      ),
+    },
+    {
+      key: "2",
+      price: displayCurrency(300000),
+      name: "Laptop Gaming For Go Pro",
+      category: "Laptop",
+      quantity: 30,
+      createdBy: "User 1",
+      dateCreated: "30/09/2020 02:07:26 PM",
+      dueDate: "30/09/2020 02:07:26 PM",
+      status: <RequestStatusComponent status={R_PENDING} />,
+      actions: (
+        <Button onClick={() => setOpenDetails(true)} size="small" type="link">
+          View
+        </Button>
+      ),
+    },
+    {
+      key: "3",
+      price: displayCurrency(300000),
+      name: "Gaming Gear Razor",
+      category: "Electronic Device",
+      quantity: 30,
+      createdBy: "User 1",
+      dateCreated: "30/09/2020 02:07:26 PM",
+      dueDate: "30/09/2020 02:07:26 PM",
+      status: <RequestStatusComponent status={R_PENDING} />,
+      actions: (
+        <Button onClick={() => setOpenDetails(true)} size="small" type="link">
+          View
+        </Button>
+      ),
+    },
+    {
+      key: "4",
+      price: displayCurrency(300000),
+      name: "Leather",
+      category: "Cloth",
+      quantity: 30,
+      createdBy: "User 1",
+      dateCreated: "30/09/2020 02:07:26 PM",
+      dueDate: "30/09/2020 02:07:26 PM",
+      status: <RequestStatusComponent status={R_PENDING} />,
+      actions: (
+        <Button onClick={() => setOpenDetails(true)} size="small" type="link">
+          View
+        </Button>
+      ),
+    },
+    /*{
+      key: "2",
+      price: displayCurrency(300000),
+      name: "Iphone 5",
+      category: "Mobile Phone",
+      quantity: 30,
+      createdBy: "User 1",
+      dateCreated: "30/09/2020 02:07:26 PM",
+      dueDate: "30/09/2020 02:07:26 PM",
+      status: <RequestStatusComponent status={R_CANCELED} />,
+      actions: (
+        <Button onClick={() => setOpenDetails(true)} size="small" type="link">
+          View
+        </Button>
+      ),
+    },
+    {
+      key: "3",
+      price: displayCurrency(300000),
+      name: "Iphone 5",
+      category: "Mobile Phone",
+      quantity: 30,
+      createdBy: "User 1",
+      dateCreated: "30/09/2020 02:07:26 PM",
+      dueDate: "30/09/2020 02:07:26 PM",
+      status: <RequestStatusComponent status={R_REJECTED} />,
+      actions: (
+        <Button onClick={() => setOpenDetails(true)} size="small" type="link">
+          View
+        </Button>
+      ),
+    },
+    {
+      key: "4",
+      price: displayCurrency(300000),
+      name: "Iphone 5",
+      category: "Mobile Phone",
+      quantity: 30,
+      createdBy: "User 1",
+      dateCreated: "30/09/2020 02:07:26 PM",
+      dueDate: "30/09/2020 02:07:26 PM",
+      status: <RequestStatusComponent status={R_DONE} />,
+      actions: (
+        <Button onClick={() => setOpenDetails(true)} size="small" type="link">
+          View
+        </Button>
+      ),
+    },
+    {
+      key: "5",
+      price: displayCurrency(300000),
+      name: "Iphone 5",
+      category: "Mobile Phone",
+      quantity: 30,
+      createdBy: "User 1",
+      dateCreated: "30/09/2020 02:07:26 PM",
+      dueDate: "30/09/2020 02:07:26 PM",
+      status: <RequestStatusComponent status={R_BIDDING} />,
+      actions: (
+        <Button onClick={() => setOpenDetails(true)} size="small" type="link">
+          View
+        </Button>
+      ),
+    },
+    {
+      key: "5",
+      price: displayCurrency(300000),
+      name: "Iphone 5",
+      category: "Mobile Phone",
+      quantity: 30,
+      createdBy: "User 1",
+      dateCreated: "30/09/2020 02:07:26 PM",
+      dueDate: "30/09/2020 02:07:26 PM",
+      status: <RequestStatusComponent status={R_WAIT_FOR_AUCTION} />,
+      actions: (
+        <Button onClick={() => setOpenDetails(true)} size="small" type="link">
+          View
+        </Button>
+      ),
+    },*/
+    {
+      key: "5",
+      price: displayCurrency(300000),
+      name: "Samsung Galaxy S300",
+      category: "Mobile Phone",
+      quantity: 30,
+      createdBy: "User 1",
+      dateCreated: "30/09/2020 02:07:26 PM",
+      dueDate: "30/09/2020 02:07:26 PM",
+      status: <RequestStatusComponent status={R_PENDING} />,
+      actions: (
+        <Button onClick={() => setOpenDetails(true)} size="small" type="link">
+          View
+        </Button>
+      ),
+    },
+    /*{
+      key: "5",
+      price: displayCurrency(300000),
+      name: "Iphone 5",
+      category: "Mobile Phone",
+      quantity: 30,
+      createdBy: "User 1",
+      dateCreated: "30/09/2020 02:07:26 PM",
+      dueDate: "30/09/2020 02:07:26 PM",
+      status: <RequestStatusComponent status={R_NEGOTIATING} />,
+      actions: (
+        <Button onClick={() => setOpenDetails(true)} size="small" type="link">
+          View
+        </Button>
+      ),
+    },
+    {
+      key: "5",
+      price: displayCurrency(300000),
+      name: "Iphone 5",
+      category: "Mobile Phone",
+      quantity: 30,
+      createdBy: "User 1",
+      dateCreated: "30/09/2020 02:07:26 PM",
+      dueDate: "30/09/2020 02:07:26 PM",
+      status: <RequestStatusComponent status={R_ORDERED} />,
+      actions: (
+        <Button onClick={() => setOpenDetails(true)} size="small" type="link">
+          View
+        </Button>
+      ),
+    },*/
+  ];
+
   const rowSelection = {
     onChange: (selectedRowKeys, selectedRows) => {
       console.log(
@@ -221,50 +300,60 @@ const AdminRequestManagement = () => {
       </Modal>
       <Modal
         title="Listing Group"
-        visible={visible}
-        onOk={() => setVisible(false)}
-        onCancel={() => setVisible(true)}
+        visible={modalVisible}
+        onOk={() => setModalVisible(false)}
+        onCancel={() => setModalVisible(true)}
         footer={[
-          <Button type="primary" onClick={() => setOpenGroupModal(true)}>
-            Create new group
-          </Button>,
-          <Button key="back" onClick={() => setVisible(false)}>
-            Cancel
-          </Button>,
-          <Button key="submit" type="primary" onClick={() => setVisible(false)}>
-            Submit
-          </Button>,
+          <Row justify="space-between">
+            <Col>
+              <Button type="primary" onClick={() => setOpenGroupModal(true)}>
+                Create new group
+              </Button>
+            </Col>
+            <Col>
+              <Button key="back" onClick={() => setModalVisible(false)}>
+                Cancel
+              </Button>
+              <Button
+                key="submit"
+                type="primary"
+                onClick={() => setModalVisible(false)}
+              >
+                Submit
+              </Button>
+            </Col>
+          </Row>,
         ]}
       >
         <Radio.Group style={{ width: "100%" }} onChange={onChange}>
           <Row>
             <Col span={24}>
               <Radio value="A">
-                <b>Group 1</b> created inside Iphone 6
+                <b>Group Iphone 6s 32Gb</b> created inside Iphone
               </Radio>
             </Col>
             <Divider />
             <Col span={24}>
               <Radio value="B">
-                <b>Group 2</b> created inside Iphone 7
+                <b>Group Iphone 8 64Gb</b> created inside Iphone
               </Radio>
             </Col>
             <Divider />
             <Col span={24}>
               <Radio value="C">
-                <b>Group 3</b> created inside Iphone 8
+                <b>Group Mackbook Air 2015</b> created inside Mackbook
               </Radio>
             </Col>
             <Divider />
             <Col span={24}>
               <Radio value="D">
-                <b>Group 4</b> created inside Iphone 10
+                <b>Group Mackbook Air 2018</b> created inside Mackbook
               </Radio>
             </Col>
             <Divider />
             <Col span={24}>
               <Radio value="E">
-                <b>Group 5</b> created inside Iphone 12
+                <b>Group Mackbook Air 2018</b> created inside Mackbook
               </Radio>
             </Col>
           </Row>
@@ -272,7 +361,7 @@ const AdminRequestManagement = () => {
       </Modal>
       <Row justify="end">
         <Button
-          onClick={() => setVisible(true)}
+          onClick={() => setModalVisible(true)}
           type="primary"
           disabled={recordSelected.length > 0 ? false : true}
         >
@@ -285,6 +374,7 @@ const AdminRequestManagement = () => {
           ...rowSelection,
         }}
         searchProps={{
+          placeholder: "Search by product name",
           searchMessage,
           setSearchMessage,
           exElement: (
@@ -311,6 +401,17 @@ const AdminRequestManagement = () => {
         data={dataSource}
         columns={columns}
       />
+      <Drawer
+        width={640}
+        title="RFQ details"
+        placement={"right"}
+        closable={true}
+        onClose={() => setOpenDetails(false)}
+        visible={openDetails}
+        key={"right"}
+      >
+        <RequestDetailsComponent isSupplier={false} />
+      </Drawer>
       {/* <Table dataSource={dataSource} columns={columns} /> */}
     </div>
   );

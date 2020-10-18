@@ -122,14 +122,14 @@
   });
 
   // Counting numbers
-  $('[data-toggle="counter-up"]').counterUp({
-    delay: 10,
-    time: 1000,
-  });
+  // $('[data-toggle="counter-up"]').counterUp({
+  //   delay: 10,
+  //   time: 1000,
+  // });
 
   // Tooltip & popovers
-  $('[data-toggle="tooltip"]').tooltip();
-  $('[data-toggle="popover"]').popover();
+  // $('[data-toggle="tooltip"]').tooltip();
+  // $('[data-toggle="popover"]').popover();
   // Background image via data tag
   $("[data-block-bg-img]").each(function () {
     // @todo - invoke backstretch plugin if multiple images
@@ -158,7 +158,7 @@
   });
 
   // Initiate venobox (lightbox feature used in portofilo)
-  $(document).ready(function () {
-    $(".venobox").venobox();
-  });
+  // $(document).ready(function () {
+  //   $(".venobox").venobox();
+  // });
 })(jQuery);

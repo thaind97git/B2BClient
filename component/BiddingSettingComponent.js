@@ -14,6 +14,11 @@ import React, { useEffect, useState } from "react";
 import moment from "moment";
 import MarkdownEditorComponent from "./MarkdownEditorComponent";
 import { displayCurrency } from "../utils";
+import {
+  currencyFormatter,
+  currencyParser,
+  currencyValue,
+} from "../libs/currencyFormatter";
 const { Title } = Typography;
 const { Option } = Select;
 function handleChange(value) {
@@ -42,7 +47,7 @@ const styles = {
     padding: "0px 8px",
   },
 };
-const BiddingSettingComponent = ({ setIsDoneSetting }) => {
+const BiddingSettingComponent = ({ setIsDoneSetting, setDefaultTab }) => {
   const [brief, setBrief] = useState(null);
   const [currentPrice, setCurrentPrice] = useState(0);
   const [currentValue, setCurrentValue] = useState(0);
@@ -74,7 +79,7 @@ const BiddingSettingComponent = ({ setIsDoneSetting }) => {
           minimumDuration: "10",
           minimumBid: 0.5,
           maximumBid: 10,
-          currency: "vnd",
+          currency: "VNĐ",
           units: "units",
           quantity: quantity,
         }}
@@ -143,7 +148,7 @@ const BiddingSettingComponent = ({ setIsDoneSetting }) => {
               ]}
             >
               <Select>
-                <Option value="vnd">Vnd</Option>
+                <Option value="vnd">VNĐ</Option>
               </Select>
             </Form.Item>
           </Col>
@@ -206,10 +211,8 @@ const BiddingSettingComponent = ({ setIsDoneSetting }) => {
             >
               <InputNumber
                 style={{ width: "100%" }}
-                formatter={(value) =>
-                  `đ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-                }
-                parser={(value) => value.replace(/\đ\s?|(,*)/g, "")}
+                formatter={currencyFormatter(currencyValue)}
+                parser={currencyParser}
                 value={currentPrice}
                 onChange={(value) => {
                   setCurrentPrice(value);
@@ -240,10 +243,8 @@ const BiddingSettingComponent = ({ setIsDoneSetting }) => {
             >
               <InputNumber
                 style={{ width: "100%" }}
-                formatter={(value) =>
-                  `đ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-                }
-                parser={(value) => value.replace(/\đ\s?|(,*)/g, "")}
+                formatter={currencyFormatter(currencyValue)}
+                parser={currencyParser}
                 value={qualificationPrice}
                 onChange={(value) => setQualificationPrice(value)}
                 prefix="đ"
@@ -261,21 +262,23 @@ const BiddingSettingComponent = ({ setIsDoneSetting }) => {
             <Form.Item
               label="Brief"
               name="brief"
-              rules={[
-                // {
-                //   required: true,
-                //   message: "Please enter the brief",
-                // },
-                ({ getFieldValue }) => ({
-                  validator(rule, value) {
-                    console.log({ value });
-                    if (value) {
-                      return Promise.resolve();
-                    }
-                    return Promise.reject("Please enter the brief");
-                  },
-                }),
-              ]}
+              rules={
+                [
+                  // {
+                  //   required: true,
+                  //   message: "Please enter the brief",
+                  // },
+                  // ({ getFieldValue }) => ({
+                  //   validator(rule, value) {
+                  //     console.log({ value });
+                  //     if (value) {
+                  //       return Promise.resolve();
+                  //     }
+                  //     return Promise.reject("Please enter the brief");
+                  //   },
+                  // }),
+                ]
+              }
             >
               <MarkdownEditorComponent value={brief} setValue={setBrief} />
             </Form.Item>
@@ -387,7 +390,7 @@ const BiddingSettingComponent = ({ setIsDoneSetting }) => {
           <Row style={{ padding: 24 }} justify="end">
             <Button
               htmlType="submit"
-              // onClick={() => setDefaultTab("2")}
+              onClick={() => setDefaultTab("2")}
               size="large"
               type="primary"
             >

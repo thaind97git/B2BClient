@@ -15,7 +15,7 @@ import {
   userRegisterErrorSelector,
   userRegisterResetter,
 } from "../stores/UserState";
-import { openNotification } from "../utils";
+import { openNotification, parseBoolean } from "../utils";
 const { Title } = Typography;
 const FormItem = Form.Item;
 const styles = {
@@ -49,7 +49,7 @@ const RegisterComponent = ({ userRegisterError, registerUser, resetData }) => {
   }, [resetData]);
 
   const onFinish = (values) => {
-    values.isBuyer = !!values.isBuyer;
+    values.isBuyer = parseBoolean(values.isBuyer);
     registerUser(values);
   };
 

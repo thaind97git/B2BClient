@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { Button, Col, Row, Space, Transfer, Tree } from "antd";
+import { Button, Col, Row, Space, Transfer, Tree, Typography } from "antd";
 import Modal from "antd/lib/modal/Modal";
 import SupplierRequestProductComponent from "./SupplierRequestProductComponent";
-
+const { Title } = Typography;
 // Customize Table Transfer
 const isChecked = (selectedKeys, eventKey) =>
   selectedKeys.indexOf(eventKey) !== -1;
@@ -79,7 +79,7 @@ const treeData = [
 ];
 const SupplierCategoryComponent = () => {
   const [targetKeys, setTargetKeys] = useState([]);
-  const [openRequestProduct, setOpenRequestProduct] = useState(true);
+  const [openRequestProduct, setOpenRequestProduct] = useState(false);
   const onChange = (keys) => {
     setTargetKeys(keys);
   };
@@ -88,7 +88,7 @@ const SupplierCategoryComponent = () => {
       <Modal
         okText="Submit"
         width={1000}
-        title="Request new product"
+        title="Request new category"
         visible={openRequestProduct}
         onOk={() => setOpenRequestProduct(false)}
         // onCancel={this.handleCancel}
@@ -97,13 +97,16 @@ const SupplierCategoryComponent = () => {
       </Modal>
       <Row>
         <Col span={24}>
-          <Row style={{ marginBottom: 32 }} justify="end">
+          <Row style={{ marginBottom: 32 }} justify="space-between">
+            <div>
+              <Title level={4}>Category Management</Title>
+            </div>
             <div>
               <Button
                 onClick={() => setOpenRequestProduct(true)}
                 type="primary"
               >
-                Request new product
+                Request new category
               </Button>
             </div>
           </Row>

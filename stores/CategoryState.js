@@ -22,9 +22,9 @@ export const GET_SERVICE_BY_ID = "GET_SERVICE_BY_ID";
 const GET_SERVICE_BY_CATEGORY_ID = "GET_SERVICE_BY_CATEGORY_ID";
 
 //Get category
-const GetCategoriesAPI = makeFetchAction(GET_CATEGORY, ({}) =>
+const GetCategoriesAPI = makeFetchAction(GET_CATEGORY, () =>
   nfetch({
-    endpoint: `/categories`,
+    endpoint: `/api/Category`,
     method: "GET",
   })()
 );

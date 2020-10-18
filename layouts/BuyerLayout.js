@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-import { Layout, Menu, Row, Dropdown } from "antd";
+import { Layout, Menu, Row, Dropdown, Badge, Space, Divider } from "antd";
 import {
   DownOutlined,
   LoginOutlined,
@@ -8,6 +8,7 @@ import {
   MenuFoldOutlined,
   OrderedListOutlined,
   FallOutlined,
+  BellOutlined,
 } from "@ant-design/icons";
 import MemberNavComponent from "../component/MemberNavComponent";
 import { currentPath } from "../utils";
@@ -28,23 +29,16 @@ const BUYER_MENU = [
   {
     key: "2",
     icon: <FallOutlined />,
-    label: "RFQ",
-    link: undefined,
-    subMenu: [
-      {
-        subKey: "2.1",
-        subLink: "/buyer/rfq",
-        subIcon: <OrderedListOutlined />,
-        subLabel: "Your RFQ",
-      },
-    ],
+    label: "Your RFQ",
+    link: "/buyer/rfq",
+    subMenu: [],
   },
 ];
 
 const PROFILE_MENU = (
   <Menu>
     <Menu.Item>
-      <Link href="/supplier/user-profile">
+      <Link href="/buyer/user-profile">
         <a>Profile</a>
       </Link>
     </Menu.Item>
@@ -62,9 +56,22 @@ const PROFILE_MENU = (
     </Menu.Item>
   </Menu>
 );
-
-const SupplierLayout = ({ children }) => {
+const menu = (
+  <Menu>
+    <Menu.Item key="0">
+      <a href="#">Message 01</a>
+    </Menu.Item>
+    <Menu.Divider />
+    <Menu.Item key="1">
+      <a href="#">Message 02</a>
+    </Menu.Item>
+    <Menu.Divider />
+    <Menu.Item key="3">Message 03</Menu.Item>
+  </Menu>
+);
+const SupplierLayout = ({ children, isVertical = true }) => {
   const [collapsed, setCollapsed] = useState(true);
+  const [openMessage, setOpenMessage] = useState(false);
   return (
     <div
       style={{
@@ -75,44 +82,67 @@ const SupplierLayout = ({ children }) => {
     >
       <div className="">
         <Layout>
-          <Sider
-            style={{ minHeight: "100vh" }}
-            trigger={null}
-            collapsible
-            collapsed={collapsed}
-          >
-            <Row style={{ minHeight: 64 }} justify="center" align="middle">
-              <Link href="/">
-                <a>
-                  <img
+          {isVertical && (
+            <Sider
+              style={{ minHeight: "100vh" }}
+              trigger={null}
+              collapsible
+              collapsed={collapsed}
+            >
+              <Row style={{ minHeight: 64 }} justify="center" align="middle">
+                <Link href="/">
+                  <a
+                    style={{
+                      fontSize: 13,
+                      transform: `scale(${collapsed ? 1 : 1.5})`,
+                    }}
+                  >
+                    B2B Market
+                    {/* <img
                     alt="B2BMarket"
                     src="/static/images/logo.png"
                     height={collapsed ? 16 : 32}
                     style={{ margin: "16px 0px" }}
-                  />
-                </a>
-              </Link>
-            </Row>
-            <MemberNavComponent path={currentPath()} menus={BUYER_MENU} />
-          </Sider>
+                  /> */}
+                  </a>
+                </Link>
+              </Row>
+              <MemberNavComponent path={currentPath()} menus={BUYER_MENU} />
+            </Sider>
+          )}
 
           <Layout style={{ background: "#f8f8f8" }} className="site-layout">
             <Header className="site-layout-background" style={{ padding: 0 }}>
               <Row justify="space-between" align="middle">
-                {collapsed ? (
-                  <MenuUnfoldOutlined
-                    style={{ marginLeft: 24 }}
-                    className="trigger"
-                    onClick={() => setCollapsed((prev) => !prev)}
-                  />
+                {isVertical ? (
+                  collapsed ? (
+                    <MenuUnfoldOutlined
+                      style={{ marginLeft: 24 }}
+                      className="trigger"
+                      onClick={() => setCollapsed((prev) => !prev)}
+                    />
+                  ) : (
+                    <MenuFoldOutlined
+                      style={{ marginLeft: 24 }}
+                      className="trigger"
+                      onClick={() => setCollapsed((prev) => !prev)}
+                    />
+                  )
                 ) : (
-                  <MenuFoldOutlined
-                    style={{ marginLeft: 24 }}
-                    className="trigger"
-                    onClick={() => setCollapsed((prev) => !prev)}
-                  />
+                  <div></div>
                 )}
-                <div style={{ marginRight: 24 }}>
+                <Space style={{ marginRight: 24 }}>
+                  <Dropdown
+                    overlay={menu}
+                    onVisibleChange={setOpenMessage}
+                    visible={openMessage}
+                    trigger={["click"]}
+                  >
+                    <Badge style={{ cursor: "pointer" }} count={3}>
+                      <BellOutlined />
+                    </Badge>
+                  </Dropdown>
+                  <Divider type="vertical" />
                   <Dropdown overlay={PROFILE_MENU}>
                     <a
                       className="ant-dropdown-link"
@@ -121,7 +151,7 @@ const SupplierLayout = ({ children }) => {
                       My Account <DownOutlined />
                     </a>
                   </Dropdown>
-                </div>
+                </Space>
               </Row>
             </Header>
             <Content

@@ -101,7 +101,11 @@ export const doFunctionWithEnter = (event, func) =>
   func();
 
 export const parseBoolean = (val) =>
-  !val || val === "false" || val === "null" || val === "undefined"
+  !val ||
+  val === "false" ||
+  val === "null" ||
+  val === "undefined" ||
+  val === "0"
     ? false
     : true;
 
@@ -133,11 +137,13 @@ export const openNotification = (
 
 export const displayCurrency = (amount, prefix = "đ", splitChar = ".") =>
   amount
-    ? `${prefix} ${amount}`.replace(/\B(?=(\d{3})+(?!\d))/g, splitChar)
-    : `${prefix} 0`;
+    ? `${amount} ${prefix}`.replace(/\B(?=(\d{3})+(?!\d))/g, splitChar)
+    : `0 ${prefix}`;
 
-export const parseCurrency = (amount, prefix, splitChar = ",") => {
-  const splitCharRegex = new RegExp(splitChar + " ", "g");
-  const amountTmp = amount.replace(splitCharRegex, "");
-  return amountTmp.replace(/\đ\s?|(,*)/g, "");
+export const parseCurrencyInput = (amount) => {
+  return amount.replace(/,*/g, "");
+};
+
+export const formatCurrencyInput = (amount) => {
+  return amount.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 };

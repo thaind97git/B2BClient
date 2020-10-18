@@ -19,13 +19,6 @@ import Link from "next/link";
 const { Header, Content, Sider } = Layout;
 
 const ADMIN_MENU = [
-  // {
-  //   key: "1",
-  //   icon: <UserOutlined />,
-  //   label: "Dashboard",
-  //   link: "/aggregator",
-  //   subMenu: [],
-  // },
   {
     key: "2",
     icon: <FallOutlined />,
@@ -34,7 +27,7 @@ const ADMIN_MENU = [
     subMenu: [
       {
         subKey: "2.1",
-        subLink: "/aggregator/request",
+        subLink: "/admin/request",
         subIcon: <OrderedListOutlined />,
         subLabel: "Requests",
       },
@@ -48,7 +41,7 @@ const ADMIN_MENU = [
     subMenu: [
       {
         subKey: "3.1",
-        subLink: "/aggregator/bidding",
+        subLink: "/admin/bidding",
         subIcon: <OrderedListOutlined />,
         subLabel: "Biddings",
       },
@@ -58,14 +51,14 @@ const ADMIN_MENU = [
     key: "4",
     icon: <UserOutlined />,
     label: "Group",
-    link: "/aggregator/group",
+    link: "/admin/group",
     subMenu: [],
   },
   {
     key: "5",
     icon: <WechatOutlined />,
     label: "Chat",
-    link: "/aggregator/group/chat",
+    link: "/admin/group/chat",
     subMenu: [],
   },
 ];
@@ -73,7 +66,7 @@ const ADMIN_MENU = [
 const PROFILE_MENU = (
   <Menu>
     <Menu.Item>
-      <Link href="/aggregator/user-profile">
+      <Link href="/admin/user-profile">
         <a>Profile</a>
       </Link>
     </Menu.Item>

@@ -1,19 +1,72 @@
 import React, { useState } from "react";
-import { Checkbox, Row, Col } from "antd";
+import { Checkbox, Row, Col, Space, Divider, Tag } from "antd";
 
 const CheckboxGroup = Checkbox.Group;
 
-const ListingRequestForGroupComponent = ({ category }) => {
+const ListingRequestForGroupComponent = () => {
   const options = [
-    category + " request 1",
-    category + " request 2",
-    category + " request 3",
+    {
+      id: 1,
+      content: (
+        <Space>
+          <b style={{ marginBottom: 0 }}>
+            Iphone 7s 64Gb - 20 Units x 7.500.000 đ
+          </b>
+
+          <div>
+            (
+            <span>
+              Posted inside <Tag color="processing">Iphone</Tag>
+            </span>
+            )
+          </div>
+          <Divider />
+        </Space>
+      ),
+    },
+    {
+      id: 2,
+      content: (
+        <Space>
+          <b style={{ marginBottom: 0 }}>
+            Iphone 7s 32Gb - 50 Units x 6.500.000 đ
+          </b>
+
+          <div>
+            (
+            <span>
+              Posted inside <Tag color="processing">Iphone</Tag>
+            </span>
+            )
+          </div>
+          <Divider />
+        </Space>
+      ),
+    },
+    {
+      id: 3,
+      content: (
+        <Space>
+          <b style={{ marginBottom: 0 }}>
+            Iphone 6s 64Gb - 30 Units x 6.000.000 đ
+          </b>
+
+          <div>
+            (
+            <span>
+              <i>
+                Posted inside <Tag color="processing">Iphone</Tag>
+              </i>
+            </span>
+            )
+          </div>
+          <Divider />
+        </Space>
+      ),
+    },
   ];
 
-  const [
-    option = { checkedList, indeterminate, checkAll },
-    setCheckList,
-  ] = useState({
+  const [option, setCheckList] = useState({
     checkedList: [],
     indeterminate: false,
     checkAll: false,
@@ -43,15 +96,15 @@ const ListingRequestForGroupComponent = ({ category }) => {
           onChange={onCheckAllChange}
           checked={option.checkAll}
         >
-          Check all
+          Choose all Request
         </Checkbox>
       </div>
       <br />
       <CheckboxGroup value={option.checkedList} onChange={onChange}>
         <Row>
           {options.map((item, i) => (
-            <Col span={24}>
-              <Checkbox value={item}>{item}</Checkbox>
+            <Col index={i} span={24}>
+              <Checkbox value={item.id}>{item.content}</Checkbox>
             </Col>
           ))}
         </Row>
