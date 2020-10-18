@@ -79,7 +79,7 @@ const PROFILE_MENU = (
   </Menu>
 );
 
-const AggregatorLayout = ({ children }) => {
+const AdminLayout = ({ children }) => {
   const [collapsed, setCollapsed] = useState(true);
   return (
     <div
@@ -189,4 +189,4 @@ const AggregatorLayout = ({ children }) => {
   );
 };
 
-export default AggregatorLayout;
+export default AdminLayout;

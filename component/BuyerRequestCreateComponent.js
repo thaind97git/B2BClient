@@ -178,7 +178,7 @@ const PriceInput = ({
         value="VND"
         disabled
         style={{
-          width: "48%",
+          width: "50%",
           margin: "0 4px",
         }}
       />
@@ -346,7 +346,7 @@ const BuyerRequestCreateComponent = ({
       return Promise.resolve();
     }
 
-    return Promise.reject("Price must be greater than zero!");
+    return Promise.reject("Quantity must be greater than zero!");
   };
   if (loadingRFQ) {
     return <Skeleton active />;
