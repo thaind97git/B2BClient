@@ -170,6 +170,7 @@ const PriceInput = ({
     <span>
       <InputNumber
         onChange={onNumberChange}
+        min={0}
         style={{ width: "50%" }}
         formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
         parser={(value) => value.replace(/,*/g, "")}
@@ -178,7 +179,7 @@ const PriceInput = ({
         value="VND"
         disabled
         style={{
-          width: "50%",
+          width: "48%",
           margin: "0 4px",
         }}
       />
@@ -316,7 +317,7 @@ const BuyerRequestCreateComponent = ({
   }, [productDetailsError, productDetailsData]);
 
   useEffect(() => {
-    if (createRequestData) {
+    if (!!createRequestData) {
       Router.push("buyer/rfq");
     }
     return () => {

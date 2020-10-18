@@ -2,7 +2,7 @@ import { makeFetchAction } from "redux-api-call";
 import { respondToSuccess } from "../middlewares/api-reaction";
 import nfetch from "../libs/nfetch";
 import { saveToken } from "../libs/localStorage";
-import { BUYER, MODERATOR, SUPPLIER } from "../enums/accountRoles";
+import { ADMIN, BUYER, MODERATOR, SUPPLIER } from "../enums/accountRoles";
 import { getResetter } from "../libs";
 import Router from "next/router";
 import { openNotification } from "../utils";
@@ -36,6 +36,9 @@ export const userLogin = ({ email, password }) =>
         } else {
           Router.push("/supplier/chat");
         }
+      }
+      if (resp.role === ADMIN) {
+        Router.push("/admin/product");
       }
       if (resp.role === MODERATOR) {
         Router.push("/aggregator/request");

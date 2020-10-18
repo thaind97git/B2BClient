@@ -2,9 +2,21 @@ import React, { useState } from "react";
 import dynamic from "next/dynamic";
 const BraftEditor = dynamic(() => import("braft-editor"), { ssr: false });
 
-const MarkdownEditorComponent = ({ value, setValue }) => {
+const MarkdownEditorComponent = ({ setText, value = {}, onChange }) => {
   const [editorState, setEditorState] = useState(value);
-
+  const triggerChange = (changedValue) => {
+    if (onChange) {
+      onChange({
+        ...value,
+        ...changedValue,
+      });
+    }
+  };
+  const onEditorChange = (value) => {
+    triggerChange({
+      value: value === "<p></p>" ? null : value,
+    });
+  };
   return (
     <div style={{ border: "1px solid #eceaea" }} className="my-component">
       <link
@@ -16,8 +28,9 @@ const MarkdownEditorComponent = ({ value, setValue }) => {
         language="en"
         value={editorState}
         onChange={(editorState) => {
+          onEditorChange(editorState.toHTML());
           setEditorState(editorState);
-          setValue(editorState.toHTML());
+          typeof setText === "function" && setText(editorState.toHTML());
         }}
       />
     </div>

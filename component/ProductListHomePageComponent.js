@@ -8,9 +8,9 @@ import {
   Tree,
   Typography,
   Divider,
-  Tooltip,
   Skeleton,
   Empty,
+  Popover,
 } from "antd";
 import Search from "antd/lib/input/Search";
 import Router from "next/router";
@@ -43,151 +43,62 @@ const connectToRedux = connect(
   })
 );
 
-const PRODUCT_DATA = [
-  {
-    productName: "Smartphone iPhone 8 Plus 64GB",
-    unit: "Units",
-    description: "This is the description",
-    image:
-      "https://salt.tikicdn.com/cache/280x280/ts/product/40/e4/3e/827ec438bb9f66f61896f5b7cea6aef7.jpg",
-  },
-  {
-    productName: "Smartphone iPhone 8 Plus 64GB",
-    unit: "Units",
-    description: "This is the description",
-    image:
-      "https://salt.tikicdn.com/cache/280x280/ts/product/40/e4/3e/827ec438bb9f66f61896f5b7cea6aef7.jpg",
-  },
-  {
-    productName: "Smartphone iPhone 8 Plus 64GB",
-    unit: "Units",
-    description: "This is the description",
-    image:
-      "https://salt.tikicdn.com/cache/280x280/ts/product/40/e4/3e/827ec438bb9f66f61896f5b7cea6aef7.jpg",
-  },
-  {
-    productName: "Smartphone iPhone 8 Plus 64GB",
-    unit: "Units",
-    description: "This is the description",
-    image:
-      "https://salt.tikicdn.com/cache/280x280/ts/product/40/e4/3e/827ec438bb9f66f61896f5b7cea6aef7.jpg",
-  },
-  {
-    productName: "Smartphone iPhone 8 Plus 64GB",
-    unit: "Units",
-    description: "This is the description",
-    image:
-      "https://salt.tikicdn.com/cache/280x280/ts/product/40/e4/3e/827ec438bb9f66f61896f5b7cea6aef7.jpg",
-  },
-  {
-    productName: "Smartphone iPhone 8 Plus 64GB",
-    unit: "Units",
-    description: "This is the description",
-    image:
-      "https://salt.tikicdn.com/cache/280x280/ts/product/40/e4/3e/827ec438bb9f66f61896f5b7cea6aef7.jpg",
-  },
-  {
-    productName: "Smartphone iPhone 8 Plus 64GB",
-    unit: "Units",
-    description: "This is the description",
-    image:
-      "https://salt.tikicdn.com/cache/280x280/ts/product/40/e4/3e/827ec438bb9f66f61896f5b7cea6aef7.jpg",
-  },
-  {
-    productName: "Smartphone iPhone 8 Plus 64GB",
-    unit: "Units",
-    description: "This is the description",
-    image:
-      "https://salt.tikicdn.com/cache/280x280/ts/product/40/e4/3e/827ec438bb9f66f61896f5b7cea6aef7.jpg",
-  },
-  {
-    productName: "Smartphone iPhone 8 Plus 64GB",
-    unit: "Units",
-    description: "This is the description",
-    image:
-      "https://salt.tikicdn.com/cache/280x280/ts/product/40/e4/3e/827ec438bb9f66f61896f5b7cea6aef7.jpg",
-  },
-  {
-    productName: "Smartphone iPhone 8 Plus 64GB",
-    unit: "Units",
-    description: "This is the description",
-    image:
-      "https://salt.tikicdn.com/cache/280x280/ts/product/40/e4/3e/827ec438bb9f66f61896f5b7cea6aef7.jpg",
-  },
-  {
-    productName: "Smartphone iPhone 8 Plus 64GB",
-    unit: "Units",
-    description: "This is the description",
-    image:
-      "https://salt.tikicdn.com/cache/280x280/ts/product/40/e4/3e/827ec438bb9f66f61896f5b7cea6aef7.jpg",
-  },
-  {
-    productName: "Smartphone iPhone 8 Plus 64GB",
-    unit: "Units",
-    description: "This is the description",
-    image:
-      "https://salt.tikicdn.com/cache/280x280/ts/product/40/e4/3e/827ec438bb9f66f61896f5b7cea6aef7.jpg",
-  },
-];
+const displayProductTitle = (value) =>
+  value.length >= 36 ? value.slice(0, 60) + "..." : value;
+
 const ProductCard = ({ product }) => {
   return (
-    <Card
-      id="product-card"
-      size="small"
-      hoverable
-      bordered={false}
-      style={{ margin: 3, height: 424 }}
-      cover={
-        <img
-          style={{ padding: 8, maxHeight: 280, maxWidth: 280, margin: "auto" }}
-          alt="example"
-          src={product.image || "/static/images/default_product_img.png"}
+    <Popover
+      id="popover-product-card"
+      placement="rightTop"
+      content={
+        <div
+          dangerouslySetInnerHTML={{
+            __html: product.description,
+          }}
         />
       }
+      title={product.productName}
     >
-      <Meta
-        title={
-          <Tooltip title={product.productName}>{product.productName}</Tooltip>
+      <Card
+        id="product-card"
+        size="small"
+        hoverable
+        bordered={false}
+        style={{ margin: 3, height: "auto" }}
+        cover={
+          <img
+            style={{
+              padding: 8,
+              maxHeight: 280,
+              maxWidth: 280,
+              margin: "auto",
+            }}
+            alt="example"
+            src={product.image || "/static/images/default_product_img.png"}
+          />
         }
-        description={
-          <Tooltip
-            title={
-              <div
-                dangerouslySetInnerHTML={{
-                  __html: product.description,
-                }}
-              />
-            }
+      >
+        <Meta title={displayProductTitle(product.productName)} />
+
+        <Divider />
+        <Row justify="space-around">
+          <span>Unit: {product.unit}</span>
+          <Button
+            onClick={() => {
+              Router.push(`/buyer/rfq/create?productId=${product.id}`);
+            }}
+            size="small"
+            type="primary"
           >
-            <div
-              dangerouslySetInnerHTML={{
-                __html: product.description.slice(0, 35) + "...",
-              }}
-            />
-          </Tooltip>
-        }
-      />
-      <Divider />
-      <Row justify="space-around">
-        <span>Unit: {product.unit}</span>
-        <Button
-          onClick={() => {
-            Router.push(`/buyer/rfq/create?productId=${product.id}`);
-          }}
-          size="small"
-          type="primary"
-        >
-          Submit RFQ
-        </Button>
-      </Row>
-    </Card>
+            Submit RFQ
+          </Button>
+        </Row>
+      </Card>
+    </Popover>
   );
 };
 let tree = [];
-const allCateTree = {
-  title: "All Category",
-  key: "all",
-};
 const pageSize = 12;
 const ProductListHomePageComponent = ({
   getCategories,
@@ -330,9 +241,24 @@ const ProductListHomePageComponent = ({
       </Row>
       <style jsx global>
         {`
+          #popover-product-card {
+            width: 360px;
+          }
+          #popover-product-card ul {
+            padding-left: 8px;
+            margin-bottom: 0px;
+          }
+          #popover-product-card ul li {
+            list-style: outside;
+          }
           #product-card ul {
             padding-left: 0px;
             margin-bottom: 0px;
+          }
+
+          #product-card .ant-card-meta-title {
+            -webkit-line-clamp: 2;
+            white-space: unset;
           }
         `}
       </style>
