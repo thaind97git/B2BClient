@@ -67,13 +67,13 @@ const ProductCard = ({ product }) => {
         size="small"
         hoverable
         bordered={false}
-        style={{ margin: 3, height: "auto" }}
+        style={{ margin: 3, height: 419 }}
         cover={
           <img
             style={{
               padding: 8,
-              maxHeight: 280,
-              maxWidth: 280,
+              height: 280,
+              width: 280,
               margin: "auto",
             }}
             alt="example"
