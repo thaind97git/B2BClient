@@ -110,6 +110,7 @@ const SupplierProductListingComponent = () => {
     <Row>
       <Title level={4}>Product Company Management</Title>
       <ReactTableLayout
+        dispatchAction={() => {}}
         searchProps={{
           placeholder: "Search by product name",
           searchMessage,
