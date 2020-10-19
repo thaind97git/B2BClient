@@ -55,8 +55,14 @@ const BuyerProductDetailsComponent = ({
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    document.body.removeChild(document.getElementById("mobile-nav"));
-    document.body.removeChild(document.getElementById("mobile-nav-toggle"));
+    const mobileNav = document.getElementById("mobile-nav");
+    if (mobileNav) {
+      document.body.removeChild(mobileNav);
+    }
+    const mobileNavToggle = document.getElementById("mobile-nav-toggle");
+    if (mobileNavToggle) {
+      document.body.removeChild(mobileNavToggle);
+    }
   }, []);
 
   useEffect(() => {
