@@ -384,7 +384,7 @@ const BuyerRequestCreateComponent = ({
     return <Skeleton active />;
   }
   console.log({ requestDetailsData });
-  if (!isUpdate && (!productId || !productDetailsData || productDetailsError)) {
+  if (!isUpdate && (!productDetailsData || productDetailsError)) {
     return (
       <Fragment>
         <Empty description="Can not find any product! Please choose specify product before submit RFQ" />
@@ -395,12 +395,12 @@ const BuyerRequestCreateComponent = ({
         </div>
       </Fragment>
     );
-  } else if (!requestId || requestDetailsError || !requestDetailsData) {
+  } else if (isUpdate && (requestDetailsError || !requestDetailsData)) {
     return (
       <Fragment>
         <Empty description="Can not find any request !" />
         <div style={{ textAlign: "center", paddingTop: 32 }}>
-          <Button onClick={() => Router.push("/")} type="primary">
+          <Button onClick={() => Router.push("/buyer/rfq")} type="primary">
             <LeftOutlined /> Back to RFQ list
           </Button>
         </div>
