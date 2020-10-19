@@ -8,7 +8,7 @@ import {
   Typography,
   Card,
   Select,
-  Upload,
+  Upload
 } from "antd";
 import Modal from "antd/lib/modal/Modal";
 import BuyerRequestCategoryComponent from "./BuyerRequestCategoryComponent";
@@ -49,6 +49,14 @@ const formItemLayout = {
   labelCol: { span: 4 },
   wrapperCol: { span: 16 },
 };
+function getBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+  });
+}
 
 const AdminProductCreateComponent = ({
   removeCategorySelected,
@@ -59,6 +67,11 @@ const AdminProductCreateComponent = ({
 }) => {
   const [openCategory, setOpenCategory] = useState(false);
   const [fileList, setFileList] = useState([]);
+  const [preview, setPreview] = useState({
+    previewVisible: false,
+    previewImage: '',
+    previewTitle: ''
+  });
 
   useEffect(() => {
     getUnit();
@@ -91,19 +104,33 @@ const AdminProductCreateComponent = ({
     setFileList(newFileList);
   };
 
-  const onPreview = async (file) => {
-    let src = file.url;
-    if (!src) {
-      src = await new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file.originFileObj);
-        reader.onload = () => resolve(reader.result);
-      });
+  // const onPreview = async (file) => {
+  //   let src = file.url;
+  //   if (!src) {
+  //     src = await new Promise((resolve) => {
+  //       const reader = new FileReader();
+  //       reader.readAsDataURL(file.originFileObj);
+  //       reader.onload = () => resolve(reader.result);
+  //     });
+  //   }
+  //   const image = new Image();
+  //   image.src = src;
+  //   const imgWindow = window.open(src);
+  //   imgWindow.document.write(image.outerHTML);
+  // };
+  const onCancel = () => setPreview({ previewVisible: false });
+
+  const onPreview = async file => {
+    if (!file.url && !file.preview) {
+      file.preview = await getBase64(file.originFileObj);
     }
-    const image = new Image();
-    image.src = src;
-    const imgWindow = window.open(src);
-    imgWindow.document.write(image.outerHTML);
+    console.log(file.url);
+        console.log(file);
+    setPreview({
+      previewImage: file.url || file.preview,
+      previewVisible: true,
+      previewTitle: file.name || file.url.substring(file.url.lastIndexOf('/') + 1),
+    });
   };
 
   return (
@@ -256,6 +283,14 @@ const AdminProductCreateComponent = ({
                       onPreview={onPreview}
                     >
                       {fileList.length < 5 && "+ Upload"}
+                      <Modal
+                        visible={preview.previewVisible}
+                        title={preview.previewTitle}
+                        footer={null}
+                        onCancel={onCancel}
+                      >
+                        <img alt="example" style={{ width: '100%' }} src={preview.previewImage} />
+                      </Modal>
                     </Upload>
                   </ImgCrop>
                 </FormItem>
@@ -265,7 +300,7 @@ const AdminProductCreateComponent = ({
           <Row justify="center" align="middle">
             <Col span={6}>
               <Button
-                onClick={() => {}}
+                onClick={() => { }}
                 block
                 className="submit"
                 type="primary"
