@@ -79,7 +79,7 @@ const ProductCard = ({ product }) => {
           />
         }
       >
-        <Meta title={displayProductTitle(product.productName)} />
+        <Meta title={displayProductTitle(product.productName)}/>
 
         <Divider />
         <Row justify="space-around">
@@ -185,14 +185,14 @@ const ProductListHomePageComponent = ({
             {tree.length === 0 ? (
               <Skeleton active />
             ) : (
-              <Tree
-                style={{ height: "100%" }}
-                defaultCheckedKeys={get("[0].id")(categoryData)}
-                defaultSelectedKeys={[get("[0].id")(categoryData)]}
-                onSelect={onSelect}
-                treeData={tree}
-              />
-            )}
+                <Tree
+                  style={{ height: "100%" }}
+                  defaultCheckedKeys={get("[0].id")(categoryData)}
+                  defaultSelectedKeys={[get("[0].id")(categoryData)]}
+                  onSelect={onSelect}
+                  treeData={tree}
+                />
+              )}
           </Row>
         </Col>
         <Col span={19}>
@@ -204,9 +204,8 @@ const ProductListHomePageComponent = ({
                 </Col>
                 <Col span={8}>
                   <Search
-                    placeholder={`Search in ${
-                      (currentCategorySelected || {}).name
-                    }`}
+                    placeholder={`Search in ${(currentCategorySelected || {}).name
+                      }`}
                   />
                 </Col>
               </Row>
@@ -221,12 +220,12 @@ const ProductListHomePageComponent = ({
                 </Col>
               ))
             ) : (
-              <Col span={24}>
-                <Row justify="center">
-                  <Empty />
-                </Row>
-              </Col>
-            )}
+                <Col span={24}>
+                  <Row justify="center">
+                    <Empty />
+                  </Row>
+                </Col>
+              )}
           </Row>
         </Col>
       </Row>

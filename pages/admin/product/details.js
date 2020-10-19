@@ -4,7 +4,7 @@ import AdminLayout from "../../../layouts/AdminLayout";
 const DetailsPage = () => {
   return (
     <AdminLayout>
-      <AdminProductDetailsComponent />
+      product detail admin
     </AdminLayout>
   );
 };
