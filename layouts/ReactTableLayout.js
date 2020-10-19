@@ -1,46 +1,12 @@
-import React, { forwardRef, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { doDispatchAction } from "../utils";
-import cx from "classnames";
 import SearchTableComponent from "../component/SearchTableComponent";
 
 import DateRangePickerComponent from "../component/DateRangePickerComponent";
-import { Button, Dropdown, Menu, Pagination, Row, Space, Table } from "antd";
-import { DownOutlined } from "@ant-design/icons";
+import { Pagination, Row, Space, Table } from "antd";
 
 const PAGE_SIZE_DEFAULT = 10,
   PAGE_DEFAULT = 0;
-
-// const useStyles = makeStyles((theme) => ({
-//   searchSection: {
-//     paddingTop: theme.spacing(1),
-//     background: "white",
-//   },
-//   dateRangeMobile: {
-//     [theme.breakpoints.down("xs")]: {
-//       marginTop: theme.spacing(2),
-//       marginBottom: theme.spacing(2),
-//     },
-//   },
-//   dateRange: {
-//     padding: `0px ${theme.spacing(1)}px`,
-//     display: "flex",
-//     alignItems: "center",
-//     justifyContent: "center",
-//   },
-//   searchMobile: {
-//     [theme.breakpoints.down("xs")]: {
-//       display: "flex",
-//       alignItems: "center",
-//       justifyContent: "center",
-//     },
-//   },
-//   dividerMobile: {
-//     display: "block",
-//     [theme.breakpoints.up("sm")]: {
-//       display: "none",
-//     },
-//   },
-// }));
 
 function itemRender(current, type, originalElement) {
   if (type === "prev") {
@@ -51,40 +17,6 @@ function itemRender(current, type, originalElement) {
   }
   return originalElement;
 }
-const { SubMenu, Item } = Menu;
-const menu = (
-  <Menu>
-    <Item key="1">Bags & Shoes </Item>
-    <SubMenu title="Category 1">
-      <Item>Lip Care</Item>
-      <Item>Products for Men</Item>
-      <Item>Feminine Hygiene & Sexual Assistance</Item>
-      <Item>Teeth care</Item>
-      <Item>Makeup Accessories</Item>
-    </SubMenu>
-    <SubMenu title="Category 2">
-      <Item>Lip Care</Item>
-      <Item>Products for Men</Item>
-      <Item>Feminine Hygiene & Sexual Assistance</Item>
-      <Item>Teeth care</Item>
-      <Item>Makeup Accessories</Item>
-    </SubMenu>
-    <SubMenu title="Category 3">
-      <Item>Lip Care</Item>
-      <Item>Products for Men</Item>
-      <Item>Feminine Hygiene & Sexual Assistance</Item>
-      <Item>Teeth care</Item>
-      <Item>Makeup Accessories</Item>
-    </SubMenu>
-    <SubMenu title="Category 4">
-      <Item>Lip Care</Item>
-      <Item>Products for Men</Item>
-      <Item>Feminine Hygiene & Sexual Assistance</Item>
-      <Item>Teeth care</Item>
-      <Item>Makeup Accessories</Item>
-    </SubMenu>
-  </Menu>
-);
 const ReactTableLayout = ({
   data = [],
   columns = [],
@@ -107,9 +39,10 @@ const ReactTableLayout = ({
     searchMessage,
     setSearchMessage,
     placeholder,
-    exCondition,
+    exCondition = [],
     exElement,
   } = searchProps;
+  const otherCondition = exCondition.join(",");
   const { dateRange, setDateRange } = dateRangeProps;
   // const classes = useStyles();
   const [pageSizeTable, setPageSizeTable] = useState(pageSize);
@@ -126,18 +59,14 @@ const ReactTableLayout = ({
   // }, [hasAction, hasPaging, dispatchAction, isFetchPaging]);
 
   useEffect(() => {
-    console.log(exCondition);
-  }, [exCondition]);
-
-  useEffect(() => {
     if (hasAction && hasPaging) {
       doDispatchAction(
         dispatchAction(
           pageIndex,
           pageSizeTable,
           searchMessage,
-          dateRange
-          // exCondition
+          dateRange,
+          otherCondition
         )
       );
       // setIsFetchPaging(false);
@@ -148,7 +77,7 @@ const ReactTableLayout = ({
     dateRange,
     searchMessage,
     dispatchAction,
-    // exCondition,
+    otherCondition,
     hasAction,
     hasPaging,
     // isFetchPaging,

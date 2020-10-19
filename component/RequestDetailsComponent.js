@@ -1,16 +1,6 @@
 import { Button, Col, Divider, Empty, Row, Space, Typography } from "antd";
 import React, { Fragment, useEffect } from "react";
-import {
-  R_BIDDING,
-  R_CANCELED,
-  R_DONE,
-  R_GROUPED,
-  R_NEGOTIATING,
-  R_ORDERED,
-  R_PENDING,
-  R_REJECTED,
-  R_WAIT_FOR_AUCTION,
-} from "../enums/requestStatus";
+import { R_PENDING } from "../enums/requestStatus";
 import RequestStatusComponent from "./Utils/RequestStatusComponent";
 import { DATE_TIME_FORMAT, displayCurrency } from "../utils";
 import { connect } from "react-redux";
@@ -20,6 +10,7 @@ import {
   GetRequestDetailsDataSelector,
 } from "../stores/RequestState";
 import Moment from "react-moment";
+import Router from "next/router";
 const { Title } = Typography;
 
 const connectToRedux = connect(
@@ -44,48 +35,7 @@ const DescriptionItem = ({ title, content }) => (
   </Col>
 );
 
-const getButtonActionsByStatus = (status) => {
-  let result = [];
-  switch (status) {
-    case R_PENDING:
-      result = [
-        { label: "Edit" },
-        { label: "Cancel", buttonProps: { danger: true } },
-      ];
-      break;
-    case R_WAIT_FOR_AUCTION:
-      result = [];
-      break;
-    case R_REJECTED:
-      result = [];
-      break;
-    case R_ORDERED:
-      result = [];
-      break;
-    case R_NEGOTIATING:
-      result = [];
-      break;
-    case R_GROUPED:
-      result = [];
-      break;
-    case R_DONE:
-      result = [];
-      break;
-    case R_CANCELED:
-      result = [];
-      break;
-    case R_BIDDING:
-      result = [];
-      break;
-
-    default:
-      break;
-  }
-  return result;
-};
-
 const RequestDetailsComponent = ({
-  buttonActions = [],
   isSupplier = true,
   requestDetailsData,
   getRequestDetails,
@@ -120,6 +70,33 @@ const RequestDetailsComponent = ({
     province = {},
     address,
   } = requestDetailsData || {};
+  const getButtonActionsByStatus = (status) => {
+    let result = [];
+    switch (status) {
+      case R_PENDING:
+        result = [
+          {
+            label: "Edit",
+            action: () =>
+              Router.push(
+                `/buyer/rfq/update?id=${(requestDetailsData || {}).id}`
+              ),
+          },
+          {
+            label: "Cancel",
+            buttonProps: {
+              danger: true,
+            },
+          },
+        ];
+        break;
+      default:
+        result = [];
+        break;
+    }
+    return result;
+  };
+
   const leadTimeDisplay = `Ship in ${leadTime} day(s) after supplier receives the initial payment`;
   return (
     <Row style={{ width: "100%" }}>
@@ -133,7 +110,7 @@ const RequestDetailsComponent = ({
               <Button
                 key={index}
                 onClick={() => {
-                  typeof button.actions === "function" && button.action();
+                  typeof button.action === "function" && button.action();
                 }}
                 size="small"
                 {...button.buttonProps}
@@ -188,6 +165,7 @@ const RequestDetailsComponent = ({
         } - ${(province || {}).description}`}
       />
       <DescriptionItem title="Lead Time" content={leadTimeDisplay} />
+      <DescriptionItem title="Payment Term" content={paymentTerm.description} />
       {!isSupplier && (
         <Fragment>
           <Divider />

@@ -55,6 +55,11 @@ const BuyerProductDetailsComponent = ({
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    document.body.removeChild(document.getElementById("mobile-nav"));
+    document.body.removeChild(document.getElementById("mobile-nav-toggle"));
+  }, []);
+
+  useEffect(() => {
     getProduct(id);
   }, [id, getProduct]);
   useEffect(() => {

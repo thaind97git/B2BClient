@@ -34,9 +34,11 @@ const GetRequestPagingAPI = makeFetchAction(
   GET_REQUEST_PAGING,
   ({ status, productTitle, fromDate, toDate, pageIndex, pageSize }) => {
     return nfetch({
-      endpoint: `/api/Request/Filter?${status ? "status=" + status + "&" : ""}${
-        productTitle && "productTitle=" + productTitle + "&"
-      }${fromDate ? "fromDate=" + fromDate + "&" : ""}${
+      endpoint: `/api/Request/Filter?${
+        status ? "statusId=" + status + "&" : ""
+      }${productTitle && "productTitle=" + productTitle + "&"}${
+        fromDate ? "fromDate=" + fromDate + "&" : ""
+      }${
         toDate ? "toDate=" + toDate + "&" : ""
       }pageIndex=${pageIndex}&pageSize=${pageSize}&dateDescending=true`,
       method: "GET",

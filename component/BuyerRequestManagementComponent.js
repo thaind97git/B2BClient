@@ -36,7 +36,13 @@ const connectToRedux = connect(
     requestPagingError: GetRequestPagingError,
   }),
   (dispatch) => ({
-    getRequest: (pageIndex, pageSize, searchMessage, dateRange, status) =>
+    getRequest: (
+      pageIndex,
+      pageSize,
+      searchMessage,
+      dateRange,
+      exCondition
+    ) => {
       dispatch(
         getRequestPaging({
           pageSize,
@@ -44,8 +50,10 @@ const connectToRedux = connect(
           fromDate: dateRange.fromDate,
           toDate: dateRange.toDate,
           productTitle: searchMessage,
+          status: exCondition.split(",")[0],
         })
-      ),
+      );
+    },
   })
 );
 
@@ -83,46 +91,6 @@ const columns = [
   },
 ];
 
-const getButtonActionsByStatus = (status) => {
-  let result = [];
-  switch (status) {
-    case R_PENDING:
-      result = [
-        { label: "Cancel", buttonProps: { danger: true } },
-        { label: "Edit" },
-      ];
-      break;
-    case R_WAIT_FOR_AUCTION:
-      result = [];
-      break;
-    case R_REJECTED:
-      result = [];
-      break;
-    case R_ORDERED:
-      result = [];
-      break;
-    case R_NEGOTIATING:
-      result = [];
-      break;
-    case R_GROUPED:
-      result = [];
-      break;
-    case R_DONE:
-      result = [];
-      break;
-    case R_CANCELED:
-      result = [];
-      break;
-    case R_BIDDING:
-      result = [];
-      break;
-
-    default:
-      break;
-  }
-  return result;
-};
-
 const BuyerRequestManagement = ({
   getRequest,
   requestPagingData,
@@ -144,36 +112,37 @@ const BuyerRequestManagement = ({
     setStatus(value);
   }
   const getRequestTable = (requestData = []) => {
-    return (
-      requestData &&
-      requestData.map((request = {}) => ({
-        key: request.id,
-        price: displayCurrency(+request.preferredUnitPrice),
-        category: request.product.description,
-        quantity: +request.quantity || 0,
-        dueDate: (
-          <Moment format={DATE_TIME_FORMAT}>{new Date(request.dueDate)}</Moment>
-        ),
-        status: <RequestStatusComponent status={request.requestStatus.id} />,
-        actions: (
-          <Button
-            onClick={() => {
-              setCurrentRequestSelected(request);
-              setOpenDetails(true);
-            }}
-            size="small"
-            type="link"
-          >
-            View
-          </Button>
-        ),
-      }))
-    );
+    return requestData
+      ? requestData.map((request = {}) => ({
+          key: request.id,
+          price: displayCurrency(+request.preferredUnitPrice),
+          category: request.product.description,
+          quantity: +request.quantity || 0,
+          dueDate: (
+            <Moment format={DATE_TIME_FORMAT}>
+              {new Date(request.dueDate)}
+            </Moment>
+          ),
+          status: <RequestStatusComponent status={request.requestStatus.id} />,
+          actions: (
+            <Button
+              onClick={() => {
+                setCurrentRequestSelected(request);
+                setOpenDetails(true);
+              }}
+              size="small"
+              type="link"
+            >
+              View
+            </Button>
+          ),
+        }))
+      : [];
   };
 
   let requestData = [],
     totalCount = 0;
-  if (!!requestPagingData) {
+  if (!!requestPagingData && !requestPagingError) {
     requestData = requestPagingData.data;
     totalCount = requestPagingData.total;
   }

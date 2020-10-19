@@ -3,11 +3,43 @@ import Modal from "antd/lib/modal/Modal";
 import React, { useEffect, useState } from "react";
 import { R_PENDING } from "../enums/requestStatus";
 import ReactTableLayout from "../layouts/ReactTableLayout";
-import { DEFAULT_DATE_RANGE, displayCurrency } from "../utils";
+import {
+  DATE_TIME_FORMAT,
+  DEFAULT_DATE_RANGE,
+  displayCurrency,
+} from "../utils";
 import GroupCreateComponent from "./GroupCreateComponent";
 import RequestStatusComponent from "./Utils/RequestStatusComponent";
 import RequestDetailsComponent from "./RequestDetailsComponent";
+import { connect } from "react-redux";
+import { createStructuredSelector } from "reselect";
+import {
+  getRequestPaging,
+  GetRequestPagingData,
+  GetRequestPagingError,
+} from "../stores/RequestState";
+import Moment from "react-moment";
 const { Option, OptGroup } = Select;
+
+const connectToRedux = connect(
+  createStructuredSelector({
+    requestPagingData: GetRequestPagingData,
+    requestPagingError: GetRequestPagingError,
+  }),
+  (dispatch) => ({
+    getRequest: (pageIndex, pageSize, searchMessage, dateRange, status) =>
+      dispatch(
+        getRequestPaging({
+          pageSize,
+          pageIndex,
+          fromDate: dateRange.fromDate,
+          toDate: dateRange.toDate,
+          productTitle: searchMessage,
+          status,
+        })
+      ),
+  })
+);
 
 const columns = [
   {
@@ -52,13 +84,58 @@ function handleChange(value) {
   console.log(`selected ${value}`);
 }
 
-const AdminRequestManagement = () => {
+const AdminRequestManagement = ({
+  requestPagingData,
+  requestPagingError,
+  getRequest,
+}) => {
   const [searchMessage, setSearchMessage] = useState("");
   const [dateRange, setDateRange] = useState(DEFAULT_DATE_RANGE);
   const [recordSelected, setRecordSelected] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [openGroupModal, setOpenGroupModal] = useState(false);
   const [openDetails, setOpenDetails] = useState(false);
+  const [currentRequestSelected, setCurrentRequestSelected] = useState({});
+
+  const [status, setStatus] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (requestPagingError || requestPagingData) {
+      setLoading(false);
+    }
+  }, [requestPagingError, requestPagingData]);
+  function handleChange(value) {
+    setStatus(value);
+  }
+  const getRequestTable = (requestData = []) => {
+    return (
+      requestData &&
+      requestData.length > 0 &&
+      requestData.map((request = {}) => ({
+        key: request.id,
+        price: displayCurrency(+request.preferredUnitPrice),
+        category: request.product.description,
+        quantity: +request.quantity || 0,
+        dueDate: (
+          <Moment format={DATE_TIME_FORMAT}>{new Date(request.dueDate)}</Moment>
+        ),
+        status: <RequestStatusComponent status={request.requestStatus.id} />,
+        actions: (
+          <Button
+            onClick={() => {
+              setCurrentRequestSelected(request);
+              setOpenDetails(true);
+            }}
+            size="small"
+            type="link"
+          >
+            View
+          </Button>
+        ),
+      }))
+    );
+  };
 
   const dataSource = [
     {
@@ -125,86 +202,6 @@ const AdminRequestManagement = () => {
         </Button>
       ),
     },
-    /*{
-      key: "2",
-      price: displayCurrency(300000),
-      name: "Iphone 5",
-      category: "Mobile Phone",
-      quantity: 30,
-      createdBy: "User 1",
-      dateCreated: "30/09/2020 02:07:26 PM",
-      dueDate: "30/09/2020 02:07:26 PM",
-      status: <RequestStatusComponent status={R_CANCELED} />,
-      actions: (
-        <Button onClick={() => setOpenDetails(true)} size="small" type="link">
-          View
-        </Button>
-      ),
-    },
-    {
-      key: "3",
-      price: displayCurrency(300000),
-      name: "Iphone 5",
-      category: "Mobile Phone",
-      quantity: 30,
-      createdBy: "User 1",
-      dateCreated: "30/09/2020 02:07:26 PM",
-      dueDate: "30/09/2020 02:07:26 PM",
-      status: <RequestStatusComponent status={R_REJECTED} />,
-      actions: (
-        <Button onClick={() => setOpenDetails(true)} size="small" type="link">
-          View
-        </Button>
-      ),
-    },
-    {
-      key: "4",
-      price: displayCurrency(300000),
-      name: "Iphone 5",
-      category: "Mobile Phone",
-      quantity: 30,
-      createdBy: "User 1",
-      dateCreated: "30/09/2020 02:07:26 PM",
-      dueDate: "30/09/2020 02:07:26 PM",
-      status: <RequestStatusComponent status={R_DONE} />,
-      actions: (
-        <Button onClick={() => setOpenDetails(true)} size="small" type="link">
-          View
-        </Button>
-      ),
-    },
-    {
-      key: "5",
-      price: displayCurrency(300000),
-      name: "Iphone 5",
-      category: "Mobile Phone",
-      quantity: 30,
-      createdBy: "User 1",
-      dateCreated: "30/09/2020 02:07:26 PM",
-      dueDate: "30/09/2020 02:07:26 PM",
-      status: <RequestStatusComponent status={R_BIDDING} />,
-      actions: (
-        <Button onClick={() => setOpenDetails(true)} size="small" type="link">
-          View
-        </Button>
-      ),
-    },
-    {
-      key: "5",
-      price: displayCurrency(300000),
-      name: "Iphone 5",
-      category: "Mobile Phone",
-      quantity: 30,
-      createdBy: "User 1",
-      dateCreated: "30/09/2020 02:07:26 PM",
-      dueDate: "30/09/2020 02:07:26 PM",
-      status: <RequestStatusComponent status={R_WAIT_FOR_AUCTION} />,
-      actions: (
-        <Button onClick={() => setOpenDetails(true)} size="small" type="link">
-          View
-        </Button>
-      ),
-    },*/
     {
       key: "5",
       price: displayCurrency(300000),
@@ -221,38 +218,6 @@ const AdminRequestManagement = () => {
         </Button>
       ),
     },
-    /*{
-      key: "5",
-      price: displayCurrency(300000),
-      name: "Iphone 5",
-      category: "Mobile Phone",
-      quantity: 30,
-      createdBy: "User 1",
-      dateCreated: "30/09/2020 02:07:26 PM",
-      dueDate: "30/09/2020 02:07:26 PM",
-      status: <RequestStatusComponent status={R_NEGOTIATING} />,
-      actions: (
-        <Button onClick={() => setOpenDetails(true)} size="small" type="link">
-          View
-        </Button>
-      ),
-    },
-    {
-      key: "5",
-      price: displayCurrency(300000),
-      name: "Iphone 5",
-      category: "Mobile Phone",
-      quantity: 30,
-      createdBy: "User 1",
-      dateCreated: "30/09/2020 02:07:26 PM",
-      dueDate: "30/09/2020 02:07:26 PM",
-      status: <RequestStatusComponent status={R_ORDERED} />,
-      actions: (
-        <Button onClick={() => setOpenDetails(true)} size="small" type="link">
-          View
-        </Button>
-      ),
-    },*/
   ];
 
   const rowSelection = {
@@ -275,6 +240,13 @@ const AdminRequestManagement = () => {
   useEffect(() => {
     console.log(recordSelected);
   }, [recordSelected]);
+
+  let requestData = [],
+    totalCount = 0;
+  if (requestPagingData) {
+    requestData = requestPagingData.data;
+    totalCount = requestPagingData.total;
+  }
   return (
     <div>
       <Modal
@@ -369,6 +341,7 @@ const AdminRequestManagement = () => {
         </Button>
       </Row>
       <ReactTableLayout
+        dispatchAction={getRequest}
         rowSelection={{
           type: "checkbox",
           ...rowSelection,
@@ -398,8 +371,9 @@ const AdminRequestManagement = () => {
           dateRange,
           setDateRange,
         }}
-        data={dataSource}
+        data={getRequestTable(requestData || [])}
         columns={columns}
+        totalCount={totalCount}
       />
       <Drawer
         width={640}
@@ -417,4 +391,4 @@ const AdminRequestManagement = () => {
   );
 };
 
-export default AdminRequestManagement;
+export default connectToRedux(AdminRequestManagement);

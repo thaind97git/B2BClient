@@ -123,6 +123,8 @@ const ProductListHomePageComponent = ({
   const [currentCategorySelected, setCurrentCategorySelected] = useState({});
   const [pageIndex, setPageIndex] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [searchValue, setSearchValue] = useState("");
+
   const onSelect = (selectedKeys, info) => {
     setCurrentCategorySelected({
       name: info.node.title,
@@ -141,7 +143,10 @@ const ProductListHomePageComponent = ({
   }, [categoryData]);
 
   useEffect(() => {
-    if ((currentCategorySelected || {}).id !== "all") {
+    if (
+      (currentCategorySelected || {}).id &&
+      (currentCategorySelected || {}).id !== "all"
+    ) {
       getProductByCategory(
         (currentCategorySelected || {}).id,
         pageSize,
@@ -174,7 +179,6 @@ const ProductListHomePageComponent = ({
       return resultTmp;
     };
     tree = mapData(categoryData);
-    // tree.unshift(allCateTree);
   }
   const onChange = (pageNumber) => {
     setPageIndex(pageNumber);
@@ -227,6 +231,16 @@ const ProductListHomePageComponent = ({
                 </Col>
                 <Col span={8}>
                   <Search
+                    value={searchValue || ""}
+                    onChange={(event) => setSearchValue(event.target.value)}
+                    // onSearch={(value) =>
+                    //   getProductByCategory(
+                    //     (currentCategorySelected || {}).id,
+                    //     pageSize,
+                    //     pageIndex,
+                    //     value
+                    //   )
+                    // }
                     placeholder={`Search in ${
                       (currentCategorySelected || {}).name
                     }`}
