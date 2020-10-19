@@ -44,7 +44,7 @@ export default class MyDocument extends Document {
         <body className="">
           <Main {...rootProps} />
           <NextScript />
-          <script src="/static/homepage/assets/vendor/jquery/jquery.min.js" />
+          {/* <script src="/static/homepage/assets/vendor/jquery/jquery.min.js" />
           <script src="/static/homepage/assets/vendor/jquery-sticky/jquery.sticky.js" />
           <script src="/static/homepage/assets/vendor/superfish/superfish.min.js" />
           <script src="/static/homepage/assets/vendor/hoverIntent/hoverIntent.js" />
@@ -54,7 +54,7 @@ export default class MyDocument extends Document {
           <script src="/static/homepage/assets/vendor/tether/js/tether.min.js" />
           <script src="/static/homepage/assets/vendor/lockfixed/jquery.lockfixed.min.js" />
           <script src="/static/homepage/assets/vendor/waypoints/jquery.waypoints.min.js" />
-          <script src="/static/homepage/assets/js/main.js" />
+          <script src="/static/homepage/assets/js/main.js" /> */}
         </body>
       </Html>
     );
