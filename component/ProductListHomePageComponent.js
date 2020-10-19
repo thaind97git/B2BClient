@@ -43,24 +43,26 @@ const connectToRedux = connect(
   })
 );
 
-const displayProductTitle = (value) =>
-  value.length >= 36 ? value.slice(0, 60) + "..." : value;
-
 const ProductCard = ({ product }) => {
   return (
     <Popover
       id="popover-product-card"
       placement="rightTop"
       content={
-        <div
-          dangerouslySetInnerHTML={{
-            __html: product.description,
-          }}
-        />
+        <i>
+          <div
+            dangerouslySetInnerHTML={{
+              __html: product.description,
+            }}
+          />
+        </i>
       }
       title={product.productName}
     >
       <Card
+        onClick={() => {
+          Router.push(`product?id=${product.id}`);
+        }}
         id="product-card"
         size="small"
         hoverable
@@ -75,15 +77,21 @@ const ProductCard = ({ product }) => {
               margin: "auto",
             }}
             alt="example"
-            src={product.image || "/static/images/default_product_img.png"}
+            src={
+              !!product.images && product.images.length > 0
+                ? process.env.API_SERVER_URL +
+                  "/api/Product/ProductImage/" +
+                  product.images[0]
+                : "/static/images/default_product_img.png"
+            }
           />
         }
       >
-        <Meta title={displayProductTitle(product.productName)} />
+        <Meta title={product.productName} />
 
         <Divider />
         <Row justify="space-around">
-          <span>Unit: {product.unit}</span>
+          <span>Unit: {product.unitOfMeasure.description}</span>
           <Button
             onClick={() => {
               Router.push(`/buyer/rfq/create?productId=${product.id}`);
