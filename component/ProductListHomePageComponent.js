@@ -86,6 +86,15 @@ const ProductCard = ({ product }) => {
           <span>Unit: {product.unit}</span>
           <Button
             onClick={() => {
+              Router.push(`/buyer/product-details?productId=${product.id}`);
+            }}
+            size="small"
+            type="default"
+          >
+            View Detail RFQ
+          </Button>
+          <Button
+            onClick={() => {
               Router.push(`/buyer/rfq/create?productId=${product.id}`);
             }}
             size="small"
