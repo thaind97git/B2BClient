@@ -1,15 +1,9 @@
 import { Button, Select, Drawer, Row, Typography } from "antd";
+import Link from "next/link";
 import React, { Fragment, useState } from "react";
 import ReactTableLayout from "../layouts/ReactTableLayout";
 import { DEFAULT_DATE_RANGE, displayCurrency } from "../utils";
-import RequestStatusComponent from "./Utils/RequestStatusComponent";
-import RequestDetailsComponent from "./RequestDetailsComponent";
-import {
-  R_CANCELED,
-  R_DONE,
-  R_ORDERED,
-  R_REJECTED,
-} from "../enums/requestStatus";
+import { createLink } from "../libs";
 const { Option, OptGroup } = Select;
 const { Title } = Typography;
 
@@ -56,9 +50,9 @@ const AdminProductManagementComponent = () => {
       unit: "units",
       dateCreated: "30/09/2020 02:07:26 PM",
       actions: (
-        <Button onClick={() => setOpenDetails(true)} size="small" type="link">
+        <Link href={createLink(["admin", "product", `details?id=${1}`])}>
           View
-        </Button>
+        </Link>
       ),
     },
     {
@@ -68,9 +62,9 @@ const AdminProductManagementComponent = () => {
       unit: "units",
       dateCreated: "30/09/2020 02:07:26 PM",
       actions: (
-        <Button onClick={() => setOpenDetails(true)} size="small" type="link">
+        <Link href={createLink(["admin", "product", `details?id=${1}`])}>
           View
-        </Button>
+        </Link>
       ),
     },
     {
@@ -80,9 +74,9 @@ const AdminProductManagementComponent = () => {
       unit: "units",
       dateCreated: "30/09/2020 02:07:26 PM",
       actions: (
-        <Button onClick={() => setOpenDetails(true)} size="small" type="link">
+        <Link href={createLink(["admin", "product", `details?id=${1}`])}>
           View
-        </Button>
+        </Link>
       ),
     },
     {
@@ -92,9 +86,9 @@ const AdminProductManagementComponent = () => {
       unit: "units",
       dateCreated: "30/09/2020 02:07:26 PM",
       actions: (
-        <Button onClick={() => setOpenDetails(true)} size="small" type="link">
+        <Link href={createLink(["admin", "product", `details?id=${1}`])}>
           View
-        </Button>
+        </Link>
       ),
     },
     {
@@ -104,9 +98,9 @@ const AdminProductManagementComponent = () => {
       unit: "units",
       dateCreated: "30/09/2020 02:07:26 PM",
       actions: (
-        <Button onClick={() => setOpenDetails(true)} size="small" type="link">
+        <Link href={createLink(["admin", "product", `details?id=${1}`])}>
           View
-        </Button>
+        </Link>
       ),
     },
     {
@@ -116,9 +110,9 @@ const AdminProductManagementComponent = () => {
       unit: "units",
       dateCreated: "30/09/2020 02:07:26 PM",
       actions: (
-        <Button onClick={() => setOpenDetails(true)} size="small" type="link">
+        <Link href={createLink(["admin", "product", `details?id=${1}`])}>
           View
-        </Button>
+        </Link>
       ),
     },
   ];
@@ -126,14 +120,14 @@ const AdminProductManagementComponent = () => {
     <div>
       <Row justify="space-between">
         <Title level={4}>Product List</Title>
-        <Button onClick={() => {}} type="primary">
+        <Button onClick={() => { }} type="primary">
           <a href="/admin/product/create" target="_blank">
             Create new product
           </a>
         </Button>
       </Row>
       <ReactTableLayout
-        dispatchAction={() => {}}
+        dispatchAction={() => { }}
         searchProps={{
           placeholder: "Search by product name",
           searchMessage,
@@ -165,17 +159,6 @@ const AdminProductManagementComponent = () => {
         columns={columns}
       />
       {/* <Table dataSource={dataSource} columns={columns} /> */}
-      <Drawer
-        width={640}
-        title="RFQ details"
-        placement={"right"}
-        closable={true}
-        onClose={() => setOpenDetails(false)}
-        visible={openDetails}
-        key={"right"}
-      >
-        <RequestDetailsComponent isSupplier={false} />
-      </Drawer>
     </div>
   );
 };
