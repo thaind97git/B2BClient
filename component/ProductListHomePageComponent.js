@@ -11,6 +11,7 @@ import {
   Skeleton,
   Empty,
   Popover,
+  Spin,
 } from "antd";
 import Search from "antd/lib/input/Search";
 import Router from "next/router";
@@ -23,6 +24,7 @@ import {
 import {
   getProductByCategory,
   GetProductByCategoryData,
+  GetProductByCategoryError,
 } from "../stores/ProductState";
 import { get } from "lodash/fp";
 const { Meta } = Card;
@@ -32,6 +34,7 @@ const connectToRedux = connect(
   createStructuredSelector({
     categoryData: GetCategoriesDataSelector,
     getProductByCategoryData: GetProductByCategoryData,
+    getProductByCategoryError: GetProductByCategoryError,
   }),
   (dispatch) => ({
     getCategories: () => dispatch(getCategories()),
@@ -60,9 +63,6 @@ const ProductCard = ({ product }) => {
       title={product.productName}
     >
       <Card
-        onClick={() => {
-          Router.push(`product?id=${product.id}`);
-        }}
         id="product-card"
         size="small"
         hoverable
@@ -72,8 +72,8 @@ const ProductCard = ({ product }) => {
           <img
             style={{
               padding: 8,
-              height: 280,
-              width: 280,
+              maxHeight: 280,
+              maxWidth: 280,
               margin: "auto",
             }}
             alt="example"
@@ -87,20 +87,16 @@ const ProductCard = ({ product }) => {
           />
         }
       >
-        <Meta title={product.productName} />
+        <Meta
+          onClick={() => {
+            Router.push(`/product-details?id=${product.id}`);
+          }}
+          title={product.productName}
+        />
 
         <Divider />
         <Row justify="space-around">
           <span>Unit: {product.unitOfMeasure.description}</span>
-          <Button
-            onClick={() => {
-              Router.push(`/buyer/product-details?productId=${product.id}`);
-            }}
-            size="small"
-            type="default"
-          >
-            View Detail RFQ
-          </Button>
           <Button
             onClick={() => {
               Router.push(`/buyer/rfq/create?productId=${product.id}`);
@@ -122,9 +118,11 @@ const ProductListHomePageComponent = ({
   categoryData,
   getProductByCategory,
   getProductByCategoryData,
+  getProductByCategoryError,
 }) => {
   const [currentCategorySelected, setCurrentCategorySelected] = useState({});
   const [pageIndex, setPageIndex] = useState(0);
+  const [loading, setLoading] = useState(true);
   const onSelect = (selectedKeys, info) => {
     setCurrentCategorySelected({
       name: info.node.title,
@@ -149,12 +147,19 @@ const ProductListHomePageComponent = ({
         pageSize,
         pageIndex
       );
+      setLoading(true);
     }
   }, [currentCategorySelected, getProductByCategory, pageIndex]);
 
   useEffect(() => {
     getCategories();
   }, [getCategories]);
+
+  useEffect(() => {
+    if (getProductByCategoryError || getProductByCategoryData) {
+      setLoading(false);
+    }
+  }, [getProductByCategoryData, getProductByCategoryError]);
   if (!!categoryData) {
     const mapData = (categoryData) => {
       const resultTmp = categoryData.map((category) => {
@@ -188,7 +193,8 @@ const ProductListHomePageComponent = ({
           style={{
             background: "white",
             boxShadow: "0 0 20px rgba(0,0,0,.1)",
-            height: 1339,
+            minHeight: 600,
+            maxHeight: 1339,
             overflow: "hidden",
             overflowY: "scroll",
           }}
@@ -231,7 +237,15 @@ const ProductListHomePageComponent = ({
             <Col span={24}>
               <Divider style={{ marginBottom: 8, marginTop: 8 }} />
             </Col>
-            {productData && productData.length > 0 ? (
+            {loading ? (
+              <Row
+                justify="center"
+                align="middle"
+                style={{ height: 400, margin: "auto" }}
+              >
+                <Spin />
+              </Row>
+            ) : productData && productData.length > 0 ? (
               productData.map((product, index) => (
                 <Col span={6} sm={12} md={6} key={index}>
                   <ProductCard product={product} />
@@ -276,6 +290,21 @@ const ProductListHomePageComponent = ({
           #product-card .ant-card-meta-title {
             -webkit-line-clamp: 2;
             white-space: unset;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+          }
+          #product-card.ant-card-hoverable {
+            cursor: default;
+          }
+          #product-card .ant-card-meta-title:hover {
+            cursor: pointer;
+            text-decoration: underline;
+          }
+          #product-card .ant-card-meta {
+            height: 50px;
+          }
+          #product-card .ant-card-cover {
+            height: 280px;
           }
         `}
       </style>

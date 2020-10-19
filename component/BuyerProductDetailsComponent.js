@@ -1,100 +1,189 @@
-import { Card, Col, Divider, Row, Typography, Button } from "antd";
-import React from "react";
-import ImageGallery from 'react-image-gallery';
+import {
+  Col,
+  Divider,
+  Row,
+  Typography,
+  Button,
+  Empty,
+  Tag,
+  Skeleton,
+} from "antd";
+import Router, { useRouter } from "next/router";
+import React, { useEffect, useState } from "react";
+import ImageGallery from "react-image-gallery";
+import { connect } from "react-redux";
+import { createStructuredSelector } from "reselect";
+import {
+  getProductDetails,
+  GetProductDetailsData,
+  GetProductDetailsError,
+} from "../stores/ProductState";
+import { get } from "lodash/fp";
 
 const { Title } = Typography;
-const product = {
-    name: "Iphone 9",
-    unit: "Unit",
-    category: "Mobile",
-    details: (<div>Mã Quốc Tế: LL/ZA/ZP/Mới 100%, chưa active<br />Thiết kế: Nguyên khối<br />Màn hình OLED: 6.5 inch Super Retina (2688 x 1242), 458ppi, 3D Touch, TrueTone Dolby Vision HDR 10<br />Camera Trước/Sau: 7MP/ 2 camera 12MP<br />CPU: A12 Bionic 64-bit 7nm<br />Bộ Nhớ: 64GB<br />RAM: 4GB<br />SIM: 1 Nano SIM<br />Đạt chuẩn chống nước bụi IP68, Face ID</div>)
-}
-const images = [
-    {
-        original: '/static/images/iphone1.jpg',
-        thumbnail: '/static/images/iphone1.jpg',
-    },
-    {
-        original: '/static/images/iphone2.jpg',
-        thumbnail: '/static/images/iphone2.jpg',
-    },
-    {
-        original: '/static/images/iphone3.jpg',
-        thumbnail: '/static/images/iphone3.jpg',
-    },
-    {
-        original: '/static/images/iphone4.jpg',
-        thumbnail: '/static/images/iphone4.jpg',
-    },
-    {
-        original: '/static/images/iphone5.jpg',
-        thumbnail: '/static/images/iphone5.jpg',
-    },
-    {
-        original: '/static/images/iphone6.jpg',
-        thumbnail: '/static/images/iphone6.jpg',
-    }
-];
 
-const DescriptionItem = ({ title, content }) => (
-    <Col span={24}>
-        <Row className="site-description-item-profile-wrapper">
-            <Col span={5}>
-                <p className="site-description-item-profile-p-label">{title}:</p>
-            </Col>
-            <Col span={19}>
-                <b>{content}</b>
-            </Col>
-        </Row>
-    </Col>
+const connectToRedux = connect(
+  createStructuredSelector({
+    productDetailData: GetProductDetailsData,
+    productDetailError: GetProductDetailsError,
+  }),
+  (dispatch) => ({
+    getProduct: (id) => dispatch(getProductDetails(id)),
+  })
 );
 
-const BuyerProductDetailsComponent = ({ props }) => {
+const DescriptionItem = ({ title, content }) => (
+  <Col span={24}>
+    <Row className="site-description-item-profile-wrapper">
+      <Col span={5}>
+        <p className="site-description-item-profile-p-label">{title}:</p>
+      </Col>
+      <Col span={19}>
+        <b>{content}</b>
+      </Col>
+    </Row>
+  </Col>
+);
+
+const BuyerProductDetailsComponent = ({
+  getProduct,
+  productDetailData,
+  productDetailError,
+}) => {
+  const router = useRouter();
+  const id = router.query.id;
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    getProduct(id);
+  }, [id, getProduct]);
+  useEffect(() => {
+    if (productDetailError || productDetailData) {
+      setLoading(false);
+    }
+  }, [productDetailData, productDetailError]);
+
+  if (loading) {
     return (
-        <div>
-            <link
-                rel="stylesheet"
-                type="text/css"
-                href="/static/assets/image-gallery.css"
+      <Row>
+        <Col span={16}>
+          <Skeleton active />
+        </Col>
+      </Row>
+    );
+  }
+
+  if (!productDetailData) {
+    return (
+      <Empty
+        style={{ padding: "180px 0px" }}
+        description="Can not find any product !"
+      />
+    );
+  }
+  return (
+    <Row id="buyer-product-details" justify="center">
+      <link
+        rel="stylesheet"
+        type="text/css"
+        href="/static/assets/image-gallery.css"
+      />
+      <Col span={16}>
+        <Row
+          style={{ paddingBottom: 24 }}
+          justify="space-between"
+          align="middle"
+        >
+          <Button
+            onClick={() => {
+              Router.push("/");
+            }}
+            type="link"
+          >
+            {" "}
+            {"< Back to product list"}
+          </Button>
+        </Row>
+        <Row>
+          <Col span={9}>
+            <ImageGallery
+              items={
+                productDetailData.images
+                  ? productDetailData.images.map((image) => ({
+                      original: `${process.env.API_SERVER_URL}/api/Product/ProductImage/${image}`,
+                      thumbnail: `${process.env.API_SERVER_URL}/api/Product/ProductImage/${image}`,
+                    }))
+                  : [
+                      {
+                        original: `/static/images/default_product_img.jpg`,
+                        thumbnail: `/static/images/default_product_img.jpg`,
+                      },
+                    ]
+              }
+              showPlayButton={false}
+              autoPlay={false}
             />
+          </Col>
+          <Col span={1} align="middle">
+            <Divider type="vertical" style={{ height: "78vh" }} />
+          </Col>
+          <Col span={14}>
             <Row justify="space-between" align="middle">
-                <Title level={3}>Product Detail</Title>
+              <Title level={4}>{(productDetailData || {}).productName}</Title>
             </Row>
+            {get("category.description")(productDetailData) && (
+              <DescriptionItem
+                title="Category"
+                content={
+                  <Tag color="processing">
+                    {(productDetailData || {}).category.description}
+                  </Tag>
+                }
+              />
+            )}
+            <DescriptionItem
+              title="Unit"
+              content={get("unitOfMeasure.description")(productDetailData)}
+            />
+            <Divider />
+            <i>
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: (productDetailData || {}).description,
+                }}
+              />
+            </i>
             <Row>
-                <Col span={6}>
-                    <ImageGallery items={images} showPlayButton={false} autoPlay={false} />
-                </Col>
-                <Col span={1} align="middle">
-                    <Divider type="vertical" style={{ height: "78vh" }} />
-                </Col>
-                <Col span={14}>
-                    <Row justify="space-between" align="middle">
-                        <Title level={4}>Iphone 8x</Title>
-                    </Row>
-                    <DescriptionItem
-                        title="Product Category"
-                        content={product.category}
-                    />
-                    <DescriptionItem
-                        title="Product Unit"
-                        content={product.unit}
-                    />
-                    <Divider />
-                    <b>{product.details}</b>
-                </Col>
-                <Col span={3}>
-                    <Card>
-                        <Button
-                            onClick={() => {
-                            }}
-                            size="small"
-                            type="primary"
-                            style={{ width: "100%" }}>
-                            Submit RFQ
-                        </Button>
-                    </Card>
-                </Col>
+              <Col style={{ margin: "60px 0px" }} span={6}>
+                <Button
+                  onClick={() => {
+                    Router.push(
+                      `/buyer/rfq/create?productId=${productDetailData.id}`
+                    );
+                  }}
+                  size="middle"
+                  type="primary"
+                  style={{ width: "100%" }}
+                >
+                  Submit RFQ
+                </Button>
+              </Col>
             </Row>
-        </div>);
-}
-export default BuyerProductDetailsComponent ;
+          </Col>
+        </Row>
+      </Col>
+      <style jsx global>
+        {`
+          #buyer-product-details {
+            background: #fff;
+            padding: 60px 0px;
+          }
+          #buyer-product-details ul li {
+            list-style: inside;
+          }
+        `}
+      </style>
+    </Row>
+  );
+};
+export default connectToRedux(BuyerProductDetailsComponent);

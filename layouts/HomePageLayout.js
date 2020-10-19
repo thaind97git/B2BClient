@@ -47,15 +47,21 @@ const HomePageLayout = ({
               <li>
                 <a href="#product">Products</a>
               </li>
-              <li>
-                <a href="#about">About Us</a>
-              </li>
-              <li>
-                <a href="#features">Features</a>
-              </li>
-              <li>
-                <a href="#team">Team</a>
-              </li>
+              {isAbout && (
+                <li>
+                  <a href="#about">About Us</a>
+                </li>
+              )}
+              {isFeature && (
+                <li>
+                  <a href="#features">Features</a>
+                </li>
+              )}
+              {isCta && (
+                <li>
+                  <a href="#team">Team</a>
+                </li>
+              )}
               <li>
                 <a href="#contact">Contact Us</a>
               </li>

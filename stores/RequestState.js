@@ -5,7 +5,6 @@ import {
 } from "../middlewares/api-reaction";
 import nfetch from "../libs/nfetch";
 import { getResetter } from "../libs";
-import Router from "next/router";
 import { openNotification } from "../utils";
 
 const CREATE_REQUEST = "CreateRequestAPI";
