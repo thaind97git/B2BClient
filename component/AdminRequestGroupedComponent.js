@@ -173,6 +173,7 @@ const AdminRequestGroupedComponent = () => {
   return (
     <div>
       <ReactTableLayout
+      dispatchAction={() => { }}
         searchProps={{
           placeholder: "Search by product name",
           searchMessage,

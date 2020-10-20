@@ -246,6 +246,7 @@ const GroupRequestComponent = () => {
         <Title level={3}>Group Management</Title>
       </Row>
       <ReactTableLayout
+      dispatchAction={() => { }}
         searchProps={{
           placeholder: "Group Name or Created By",
           searchMessage,
