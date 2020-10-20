@@ -10,7 +10,7 @@ import {
   Typography,
 } from "antd";
 import React, { Fragment, useEffect, useState } from "react";
-import { R_PENDING } from "../enums/requestStatus";
+import { R_CANCELED, R_PENDING } from "../enums/requestStatus";
 import RequestStatusComponent from "./Utils/RequestStatusComponent";
 import { DATE_TIME_FORMAT, displayCurrency, openNotification } from "../utils";
 import { connect } from "react-redux";
@@ -163,6 +163,11 @@ const RequestDetailsComponent = ({
       <Col style={{ padding: "12px 0px" }} span={24}>
         Status: <RequestStatusComponent status={requestStatus.id} />
       </Col>
+      {requestStatus.id === R_CANCELED && (
+        <Col style={{ padding: "12px 0px" }} span={24}>
+          Cancel reason: {requestStatus.cancelReason || "N/A"}
+        </Col>
+      )}
       <Col style={{ padding: "12px 0px" }} span={24}>
         <Space>
           {(getButtonActionsByStatus(requestStatus.id) || []).map(
@@ -194,7 +199,10 @@ const RequestDetailsComponent = ({
         title="Sourcing Purpose"
         content={sourcingPurpose.description}
       />
-      <DescriptionItem title="Quantity" content={`${quantity} ${unit}`} />
+      <DescriptionItem
+        title="Quantity"
+        content={`${quantity} ${product.unitType}`}
+      />
       <DescriptionItem title="Trade Term" content={tradeTerm.description} />
       <DescriptionItem
         title="Preferred Unit Price"
