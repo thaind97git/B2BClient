@@ -59,15 +59,16 @@ const ReactTableLayout = ({
 
   useEffect(() => {
     if (hasAction && hasPaging) {
-      doDispatchAction(
-        dispatchAction(
-          pageIndex,
-          pageSizeTable,
-          searchMessage,
-          dateRange,
-          otherCondition
-        )
-      );
+      typeof dispatchAction === "function" &&
+        doDispatchAction(
+          dispatchAction(
+            pageIndex,
+            pageSizeTable,
+            searchMessage,
+            dateRange,
+            otherCondition
+          )
+        );
     }
   }, [
     pageSizeTable,
