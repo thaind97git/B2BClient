@@ -165,6 +165,7 @@ const AdminRequestCanceledComponent = () => {
   return (
     <div>
       <ReactTableLayout
+      dispatchAction={() => { }}
         searchProps={{
           placeholder: "Search by product name",
           searchMessage,
