@@ -1,15 +1,13 @@
 import { makeFetchAction } from "redux-api-call";
-import {
-  respondToFailure,
-  respondToSuccess,
-} from "../middlewares/api-reaction";
+import { respondToSuccess } from "../middlewares/api-reaction";
 import nfetch from "../libs/nfetch";
 import { getResetter } from "../libs";
-import { openNotification } from "../utils";
+import Router from "next/router";
 
 const CREATE_REQUEST = "CreateRequestAPI";
 const GET_REQUEST_PAGING = "GetRequestPagingAPI";
 const GET_REQUEST_DETAILS = "GetRequestDetailsAPI";
+const CANCEL_REQUEST = "CancelRequestAPI";
 
 // Create new Request
 const CreateRequestAPI = makeFetchAction(CREATE_REQUEST, (object) =>
@@ -19,11 +17,11 @@ const CreateRequestAPI = makeFetchAction(CREATE_REQUEST, (object) =>
 );
 
 export const createRequest = (object) =>
-  respondToFailure(CreateRequestAPI.actionCreator(object), (resp) => {
-    // if (resp) {
-    //   Router.push("buyer/rfq");
-    // }
-    openNotification("error", { message: "Create new request fail" });
+  respondToSuccess(CreateRequestAPI.actionCreator(object), (resp) => {
+    if (resp) {
+      console.log("xxxx");
+      Router.push("/buyer/rfq");
+    }
   });
 export const CreateRequestData = CreateRequestAPI.dataSelector;
 export const CreateRequestError = CreateRequestAPI.errorSelector;
@@ -88,3 +86,34 @@ export const GetRequestDetailsErrorSelector =
   GetRequestDetailsAPI.errorSelector;
 
 export const getRequestDetailsResetter = getResetter(GetRequestDetailsAPI);
+
+// Cancel Request
+
+const CancelRequestAPI = makeFetchAction(CANCEL_REQUEST, (id, desc) =>
+  nfetch({
+    endpoint: `/api/Request/Cancel`,
+    method: "DELETE",
+  })({
+    id,
+    description: desc,
+  })
+);
+
+export const cancelRequest = (id, desc) =>
+  respondToSuccess(
+    CancelRequestAPI.actionCreator(id, desc),
+    (resp, _, store) => {
+      store.dispatch(
+        getRequestPaging({
+          status: "",
+          productTitle: "",
+          pageIndex: 1,
+          pageSize: 10,
+        })
+      );
+    }
+  );
+export const CancelRequestData = CancelRequestAPI.dataSelector;
+export const CancelRequestError = CancelRequestAPI.errorSelector;
+
+export const CancelRequestResetter = getResetter(CancelRequestAPI);

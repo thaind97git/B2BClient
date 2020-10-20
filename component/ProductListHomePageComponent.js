@@ -38,11 +38,8 @@ const connectToRedux = connect(
   }),
   (dispatch) => ({
     getCategories: () => dispatch(getCategories()),
-    getProductByCategory: (
-      id = "13bad386-dcce-46eb-b4e2-09bbc32cd2e7",
-      pageSize,
-      pageIndex
-    ) => dispatch(getProductByCategory(id, pageSize, pageIndex)),
+    getProductByCategory: (id, pageSize, pageIndex) =>
+      dispatch(getProductByCategory(id, pageSize, pageIndex)),
   })
 );
 

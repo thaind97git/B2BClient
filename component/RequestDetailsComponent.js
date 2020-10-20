@@ -1,24 +1,43 @@
-import { Button, Col, Divider, Empty, Row, Space, Typography } from "antd";
-import React, { Fragment, useEffect } from "react";
-import { R_PENDING } from "../enums/requestStatus";
+import {
+  Button,
+  Col,
+  Divider,
+  Empty,
+  Modal,
+  Row,
+  Skeleton,
+  Space,
+  Typography,
+} from "antd";
+import React, { Fragment, useEffect, useState } from "react";
+import { R_CANCELED, R_PENDING } from "../enums/requestStatus";
 import RequestStatusComponent from "./Utils/RequestStatusComponent";
-import { DATE_TIME_FORMAT, displayCurrency } from "../utils";
+import { DATE_TIME_FORMAT, displayCurrency, openNotification } from "../utils";
 import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
 import {
+  CancelRequestData,
+  CancelRequestError,
   getRequestDetails,
   GetRequestDetailsDataSelector,
+  getRequestDetailsResetter,
 } from "../stores/RequestState";
 import Moment from "react-moment";
 import Router from "next/router";
+import RequestCancelComponent from "./RequestCancelComponent";
 const { Title } = Typography;
 
 const connectToRedux = connect(
   createStructuredSelector({
     requestDetailsData: GetRequestDetailsDataSelector,
+    cancelRequestData: CancelRequestData,
+    cancelRequestError: CancelRequestError,
   }),
   (dispatch) => ({
     getRequestDetails: (id) => dispatch(getRequestDetails(id)),
+    resetData: () => {
+      dispatch(getRequestDetailsResetter);
+    },
   })
 );
 
@@ -40,14 +59,41 @@ const RequestDetailsComponent = ({
   requestDetailsData,
   getRequestDetails,
   requestId,
+  resetData,
+  cancelRequestError,
+  cancelRequestData,
 }) => {
+  const [loading, setLoading] = useState(true);
+  const [openCancel, setOpenCancel] = useState(false);
   useEffect(() => {
     if (requestId) {
       getRequestDetails(requestId);
     }
-  }, [requestId, getRequestDetails]);
+    return () => {
+      resetData();
+    };
+  }, [requestId, getRequestDetails, resetData]);
+
+  useEffect(() => {
+    if (requestDetailsData) {
+      setLoading(false);
+    }
+  }, [requestDetailsData]);
+
+  useEffect(() => {
+    if (cancelRequestData) {
+      setOpenCancel(false);
+    }
+    if (cancelRequestError) {
+      openNotification("error", { message: "Can cel RFQ fail" });
+    }
+  }, [cancelRequestError, cancelRequestData]);
+
   if (!requestId) {
     return <Empty description="Can not find any request !" />;
+  }
+  if (loading) {
+    return <Skeleton active />;
   }
   const {
     product = {},
@@ -74,21 +120,37 @@ const RequestDetailsComponent = ({
     let result = [];
     switch (status) {
       case R_PENDING:
-        result = [
-          {
-            label: "Edit",
-            action: () =>
-              Router.push(
-                `/buyer/rfq/update?id=${(requestDetailsData || {}).id}`
-              ),
-          },
-          {
-            label: "Cancel",
-            buttonProps: {
-              danger: true,
+        if (!isSupplier) {
+          result = [
+            {
+              label: "Reject",
+              buttonProps: {
+                danger: true,
+              },
+              action: () => {},
             },
-          },
-        ];
+          ];
+        }
+        if (isSupplier) {
+          result = [
+            {
+              label: "Edit",
+              action: () =>
+                Router.push(
+                  `/buyer/rfq/update?id=${(requestDetailsData || {}).id}`
+                ),
+            },
+            {
+              label: "Cancel",
+              buttonProps: {
+                danger: true,
+              },
+              action: () => {
+                setOpenCancel(true);
+              },
+            },
+          ];
+        }
         break;
       default:
         result = [];
@@ -101,9 +163,25 @@ const RequestDetailsComponent = ({
   console.log(preferredUnitPrice);
   return (
     <Row style={{ width: "100%" }}>
+      <Modal
+        onOk={() => setOpenCancel(false)}
+        onCancel={() => setOpenCancel(false)}
+        title="Cancel RFQ"
+        visible={openCancel}
+        footer={false}
+      >
+        {openCancel ? (
+          <RequestCancelComponent requestId={(requestDetailsData || {}).id} />
+        ) : null}
+      </Modal>
       <Col style={{ padding: "12px 0px" }} span={24}>
         Status: <RequestStatusComponent status={requestStatus.id} />
       </Col>
+      {requestStatus.id === R_CANCELED && (
+        <Col style={{ padding: "12px 0px" }} span={24}>
+          Cancel reason: {requestStatus.cancelReason || "N/A"}
+        </Col>
+      )}
       <Col style={{ padding: "12px 0px" }} span={24}>
         <Space>
           {(getButtonActionsByStatus(requestStatus.id) || []).map(
@@ -135,7 +213,10 @@ const RequestDetailsComponent = ({
         title="Sourcing Purpose"
         content={sourcingPurpose.description}
       />
-      <DescriptionItem title="Quantity" content={`${quantity} ${unit}`} />
+      <DescriptionItem
+        title="Quantity"
+        content={`${quantity} ${product.unitType}`}
+      />
       <DescriptionItem title="Trade Term" content={tradeTerm.description} />
       <DescriptionItem
         title="Preferred Unit Price"

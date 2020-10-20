@@ -84,7 +84,7 @@ export const createNewProduct = (product, fileList) =>
     (resp, _, store) => {
       if (resp) {
         onUploadImage(resp, fileList);
-        Router.push("admin/product");
+        Router.push("/admin/product");
       }
     }
   );

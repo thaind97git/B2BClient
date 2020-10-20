@@ -22,6 +22,7 @@ import RequestDetailsComponent from "./RequestDetailsComponent";
 import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
 import {
+  CancelRequestData,
   getRequestPaging,
   GetRequestPagingData,
   GetRequestPagingError,
@@ -34,6 +35,7 @@ const connectToRedux = connect(
   createStructuredSelector({
     requestPagingData: GetRequestPagingData,
     requestPagingError: GetRequestPagingError,
+    cancelRequestData: CancelRequestData,
   }),
   (dispatch) => ({
     getRequest: (
@@ -95,6 +97,7 @@ const BuyerRequestManagement = ({
   getRequest,
   requestPagingData,
   requestPagingError,
+  cancelRequestData,
 }) => {
   const [searchMessage, setSearchMessage] = useState("");
   const [dateRange, setDateRange] = useState(DEFAULT_DATE_RANGE);
@@ -108,6 +111,13 @@ const BuyerRequestManagement = ({
       setLoading(false);
     }
   }, [requestPagingError, requestPagingData]);
+
+  useEffect(() => {
+    if (!!cancelRequestData) {
+      console.log({ cancelRequestData });
+      setOpenDetails(false);
+    }
+  }, [cancelRequestData]);
   function handleChange(value) {
     setStatus(value);
   }
@@ -158,7 +168,9 @@ const BuyerRequestManagement = ({
           visible={openDetails}
           key={"right"}
         >
-          <RequestDetailsComponent requestId={currentRequestSelected.id} />
+          {openDetails ? (
+            <RequestDetailsComponent requestId={currentRequestSelected.id} />
+          ) : null}
         </Drawer>
         <Title level={4}>Your Request for Quotation</Title>
         <Button onClick={() => {}} type="primary">
@@ -181,7 +193,9 @@ const BuyerRequestManagement = ({
               placeholder="Filter by status"
               style={{ width: 200 }}
               onChange={handleChange}
+              defaultValue=""
             >
+              <Option value="">All Status</Option>
               <Option value={R_PENDING}>Pending</Option>
               <Option value={R_DONE}>Done</Option>
               <Option value={R_REJECTED}>Rejected</Option>
