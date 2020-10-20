@@ -80,8 +80,6 @@ const ReactTableLayout = ({
     hasPaging,
   ]);
 
-  console.log({ totalCount });
-
   return (
     <div style={{ width: "100%" }}>
       {hasAction && (

@@ -3,6 +3,7 @@ import {
   Col,
   Divider,
   Empty,
+  Modal,
   Row,
   Skeleton,
   Space,
@@ -11,21 +12,26 @@ import {
 import React, { Fragment, useEffect, useState } from "react";
 import { R_PENDING } from "../enums/requestStatus";
 import RequestStatusComponent from "./Utils/RequestStatusComponent";
-import { DATE_TIME_FORMAT, displayCurrency } from "../utils";
+import { DATE_TIME_FORMAT, displayCurrency, openNotification } from "../utils";
 import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
 import {
+  CancelRequestData,
+  CancelRequestError,
   getRequestDetails,
   GetRequestDetailsDataSelector,
   getRequestDetailsResetter,
 } from "../stores/RequestState";
 import Moment from "react-moment";
 import Router from "next/router";
+import RequestCancelComponent from "./RequestCancelComponent";
 const { Title } = Typography;
 
 const connectToRedux = connect(
   createStructuredSelector({
     requestDetailsData: GetRequestDetailsDataSelector,
+    cancelRequestData: CancelRequestData,
+    cancelRequestError: CancelRequestError,
   }),
   (dispatch) => ({
     getRequestDetails: (id) => dispatch(getRequestDetails(id)),
@@ -54,8 +60,11 @@ const RequestDetailsComponent = ({
   getRequestDetails,
   requestId,
   resetData,
+  cancelRequestError,
+  cancelRequestData,
 }) => {
   const [loading, setLoading] = useState(true);
+  const [openCancel, setOpenCancel] = useState(false);
   useEffect(() => {
     if (requestId) {
       getRequestDetails(requestId);
@@ -70,6 +79,15 @@ const RequestDetailsComponent = ({
       setLoading(false);
     }
   }, [requestDetailsData]);
+
+  useEffect(() => {
+    if (cancelRequestData) {
+      setOpenCancel(false);
+    }
+    if (cancelRequestError) {
+      openNotification("error", { message: "Can cel RFQ fail" });
+    }
+  }, [cancelRequestError, cancelRequestData]);
 
   if (!requestId) {
     return <Empty description="Can not find any request !" />;
@@ -115,6 +133,9 @@ const RequestDetailsComponent = ({
             buttonProps: {
               danger: true,
             },
+            action: () => {
+              setOpenCancel(true);
+            },
           },
         ];
         break;
@@ -128,6 +149,17 @@ const RequestDetailsComponent = ({
   const leadTimeDisplay = `Ship in ${leadTime} day(s) after supplier receives the initial payment`;
   return (
     <Row style={{ width: "100%" }}>
+      <Modal
+        onOk={() => setOpenCancel(false)}
+        onCancel={() => setOpenCancel(false)}
+        title="Cancel RFQ"
+        visible={openCancel}
+        footer={false}
+      >
+        {openCancel ? (
+          <RequestCancelComponent requestId={(requestDetailsData || {}).id} />
+        ) : null}
+      </Modal>
       <Col style={{ padding: "12px 0px" }} span={24}>
         Status: <RequestStatusComponent status={requestStatus.id} />
       </Col>

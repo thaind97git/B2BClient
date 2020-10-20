@@ -22,6 +22,7 @@ import RequestDetailsComponent from "./RequestDetailsComponent";
 import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
 import {
+  CancelRequestData,
   getRequestPaging,
   GetRequestPagingData,
   GetRequestPagingError,
@@ -34,6 +35,7 @@ const connectToRedux = connect(
   createStructuredSelector({
     requestPagingData: GetRequestPagingData,
     requestPagingError: GetRequestPagingError,
+    cancelRequestData: CancelRequestData,
   }),
   (dispatch) => ({
     getRequest: (
@@ -95,6 +97,7 @@ const BuyerRequestManagement = ({
   getRequest,
   requestPagingData,
   requestPagingError,
+  cancelRequestData,
 }) => {
   const [searchMessage, setSearchMessage] = useState("");
   const [dateRange, setDateRange] = useState(DEFAULT_DATE_RANGE);
@@ -108,6 +111,13 @@ const BuyerRequestManagement = ({
       setLoading(false);
     }
   }, [requestPagingError, requestPagingData]);
+
+  useEffect(() => {
+    if (!!cancelRequestData) {
+      console.log({ cancelRequestData });
+      setOpenDetails(false);
+    }
+  }, [cancelRequestData]);
   function handleChange(value) {
     setStatus(value);
   }

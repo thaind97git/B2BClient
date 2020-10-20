@@ -7,6 +7,7 @@ import Router from "next/router";
 const CREATE_REQUEST = "CreateRequestAPI";
 const GET_REQUEST_PAGING = "GetRequestPagingAPI";
 const GET_REQUEST_DETAILS = "GetRequestDetailsAPI";
+const CANCEL_REQUEST = "CancelRequestAPI";
 
 // Create new Request
 const CreateRequestAPI = makeFetchAction(CREATE_REQUEST, (object) =>
@@ -85,3 +86,34 @@ export const GetRequestDetailsErrorSelector =
   GetRequestDetailsAPI.errorSelector;
 
 export const getRequestDetailsResetter = getResetter(GetRequestDetailsAPI);
+
+// Cancel Request
+
+const CancelRequestAPI = makeFetchAction(CANCEL_REQUEST, (id, desc) =>
+  nfetch({
+    endpoint: `/api/Request/Cancel`,
+    method: "DELETE",
+  })({
+    id,
+    description: desc,
+  })
+);
+
+export const cancelRequest = (id, desc) =>
+  respondToSuccess(
+    CancelRequestAPI.actionCreator(id, desc),
+    (resp, _, store) => {
+      store.dispatch(
+        getRequestPaging({
+          status: "",
+          productTitle: "",
+          pageIndex: 1,
+          pageSize: 10,
+        })
+      );
+    }
+  );
+export const CancelRequestData = CancelRequestAPI.dataSelector;
+export const CancelRequestError = CancelRequestAPI.errorSelector;
+
+export const CancelRequestResetter = getResetter(CancelRequestAPI);
