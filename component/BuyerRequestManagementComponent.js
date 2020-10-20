@@ -158,7 +158,9 @@ const BuyerRequestManagement = ({
           visible={openDetails}
           key={"right"}
         >
-          <RequestDetailsComponent requestId={currentRequestSelected.id} />
+          {openDetails ? (
+            <RequestDetailsComponent requestId={currentRequestSelected.id} />
+          ) : null}
         </Drawer>
         <Title level={4}>Your Request for Quotation</Title>
         <Button onClick={() => {}} type="primary">
@@ -181,7 +183,9 @@ const BuyerRequestManagement = ({
               placeholder="Filter by status"
               style={{ width: 200 }}
               onChange={handleChange}
+              defaultValue=""
             >
+              <Option value="">All Status</Option>
               <Option value={R_PENDING}>Pending</Option>
               <Option value={R_DONE}>Done</Option>
               <Option value={R_REJECTED}>Rejected</Option>

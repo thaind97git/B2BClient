@@ -1,11 +1,8 @@
 import { makeFetchAction } from "redux-api-call";
-import {
-  respondToFailure,
-  respondToSuccess,
-} from "../middlewares/api-reaction";
+import { respondToSuccess } from "../middlewares/api-reaction";
 import nfetch from "../libs/nfetch";
 import { getResetter } from "../libs";
-import { openNotification } from "../utils";
+import Router from "next/router";
 
 const CREATE_REQUEST = "CreateRequestAPI";
 const GET_REQUEST_PAGING = "GetRequestPagingAPI";
@@ -19,11 +16,11 @@ const CreateRequestAPI = makeFetchAction(CREATE_REQUEST, (object) =>
 );
 
 export const createRequest = (object) =>
-  respondToFailure(CreateRequestAPI.actionCreator(object), (resp) => {
-    // if (resp) {
-    //   Router.push("buyer/rfq");
-    // }
-    openNotification("error", { message: "Create new request fail" });
+  respondToSuccess(CreateRequestAPI.actionCreator(object), (resp) => {
+    if (resp) {
+      console.log("xxxx");
+      Router.push("/buyer/rfq");
+    }
   });
 export const CreateRequestData = CreateRequestAPI.dataSelector;
 export const CreateRequestError = CreateRequestAPI.errorSelector;

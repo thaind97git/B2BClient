@@ -1,5 +1,14 @@
-import { Button, Col, Divider, Empty, Row, Space, Typography } from "antd";
-import React, { Fragment, useEffect } from "react";
+import {
+  Button,
+  Col,
+  Divider,
+  Empty,
+  Row,
+  Skeleton,
+  Space,
+  Typography,
+} from "antd";
+import React, { Fragment, useEffect, useState } from "react";
 import { R_PENDING } from "../enums/requestStatus";
 import RequestStatusComponent from "./Utils/RequestStatusComponent";
 import { DATE_TIME_FORMAT, displayCurrency } from "../utils";
@@ -8,6 +17,7 @@ import { createStructuredSelector } from "reselect";
 import {
   getRequestDetails,
   GetRequestDetailsDataSelector,
+  getRequestDetailsResetter,
 } from "../stores/RequestState";
 import Moment from "react-moment";
 import Router from "next/router";
@@ -19,6 +29,9 @@ const connectToRedux = connect(
   }),
   (dispatch) => ({
     getRequestDetails: (id) => dispatch(getRequestDetails(id)),
+    resetData: () => {
+      dispatch(getRequestDetailsResetter);
+    },
   })
 );
 
@@ -40,14 +53,29 @@ const RequestDetailsComponent = ({
   requestDetailsData,
   getRequestDetails,
   requestId,
+  resetData,
 }) => {
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
     if (requestId) {
       getRequestDetails(requestId);
     }
-  }, [requestId, getRequestDetails]);
+    return () => {
+      resetData();
+    };
+  }, [requestId, getRequestDetails, resetData]);
+
+  useEffect(() => {
+    if (requestDetailsData) {
+      setLoading(false);
+    }
+  }, [requestDetailsData]);
+
   if (!requestId) {
     return <Empty description="Can not find any request !" />;
+  }
+  if (loading) {
+    return <Skeleton active />;
   }
   const {
     product = {},
