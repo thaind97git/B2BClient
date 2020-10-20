@@ -19,6 +19,7 @@ import {
   GetRequestPagingError,
 } from "../stores/RequestState";
 import Moment from "react-moment";
+import { get } from "lodash/fp";
 const { Option, OptGroup } = Select;
 
 const connectToRedux = connect(
@@ -48,11 +49,6 @@ const columns = [
     key: "name",
   },
   {
-    title: "Category",
-    dataIndex: "category",
-    key: "category",
-  },
-  {
     title: "Preferred Unit Price",
     dataIndex: "price",
     key: "price",
@@ -63,15 +59,10 @@ const columns = [
     key: "quantity",
   },
   {
-    title: "Date Created",
-    dataIndex: "dateCreated",
-    key: "dateCreated",
+    title: "Due Date",
+    dataIndex: "dueDate",
+    key: "dueDate",
   },
-  // {
-  //   title: "Status",
-  //   dataIndex: "status",
-  //   key: "status",
-  // },
 
   {
     title: "Actions",
@@ -115,8 +106,9 @@ const AdminRequestManagement = ({
       requestData.map((request = {}) => ({
         key: request.id,
         price: displayCurrency(+request.preferredUnitPrice),
-        category: request.product.description,
-        quantity: +request.quantity || 0,
+        name: request.product.description,
+        quantity:
+          +request.quantity || 0 + " " + get("product.unitType")(request),
         dueDate: (
           <Moment format={DATE_TIME_FORMAT}>{new Date(request.dueDate)}</Moment>
         ),
@@ -136,89 +128,6 @@ const AdminRequestManagement = ({
       }))
     );
   };
-
-  const dataSource = [
-    {
-      key: "1",
-      price: displayCurrency(300000),
-      name: "Iphone 5",
-      category: "Mobile Phone",
-      quantity: 30,
-      createdBy: "User 1",
-      dateCreated: "30/09/2020 02:07:26 PM",
-      dueDate: "30/09/2020 02:07:26 PM",
-      status: <RequestStatusComponent status={R_PENDING} />,
-      actions: (
-        <Button onClick={() => setOpenDetails(true)} size="small" type="link">
-          View
-        </Button>
-      ),
-    },
-    {
-      key: "2",
-      price: displayCurrency(300000),
-      name: "Laptop Gaming For Go Pro",
-      category: "Laptop",
-      quantity: 30,
-      createdBy: "User 1",
-      dateCreated: "30/09/2020 02:07:26 PM",
-      dueDate: "30/09/2020 02:07:26 PM",
-      status: <RequestStatusComponent status={R_PENDING} />,
-      actions: (
-        <Button onClick={() => setOpenDetails(true)} size="small" type="link">
-          View
-        </Button>
-      ),
-    },
-    {
-      key: "3",
-      price: displayCurrency(300000),
-      name: "Gaming Gear Razor",
-      category: "Electronic Device",
-      quantity: 30,
-      createdBy: "User 1",
-      dateCreated: "30/09/2020 02:07:26 PM",
-      dueDate: "30/09/2020 02:07:26 PM",
-      status: <RequestStatusComponent status={R_PENDING} />,
-      actions: (
-        <Button onClick={() => setOpenDetails(true)} size="small" type="link">
-          View
-        </Button>
-      ),
-    },
-    {
-      key: "4",
-      price: displayCurrency(300000),
-      name: "Leather",
-      category: "Cloth",
-      quantity: 30,
-      createdBy: "User 1",
-      dateCreated: "30/09/2020 02:07:26 PM",
-      dueDate: "30/09/2020 02:07:26 PM",
-      status: <RequestStatusComponent status={R_PENDING} />,
-      actions: (
-        <Button onClick={() => setOpenDetails(true)} size="small" type="link">
-          View
-        </Button>
-      ),
-    },
-    {
-      key: "5",
-      price: displayCurrency(300000),
-      name: "Samsung Galaxy S300",
-      category: "Mobile Phone",
-      quantity: 30,
-      createdBy: "User 1",
-      dateCreated: "30/09/2020 02:07:26 PM",
-      dueDate: "30/09/2020 02:07:26 PM",
-      status: <RequestStatusComponent status={R_PENDING} />,
-      actions: (
-        <Button onClick={() => setOpenDetails(true)} size="small" type="link">
-          View
-        </Button>
-      ),
-    },
-  ];
 
   const rowSelection = {
     onChange: (selectedRowKeys, selectedRows) => {
@@ -384,7 +293,12 @@ const AdminRequestManagement = ({
         visible={openDetails}
         key={"right"}
       >
-        <RequestDetailsComponent isSupplier={false} />
+        {openDetails ? (
+          <RequestDetailsComponent
+            requestId={(currentRequestSelected || {}).id}
+            isSupplier={false}
+          />
+        ) : null}
       </Drawer>
       {/* <Table dataSource={dataSource} columns={columns} /> */}
     </div>

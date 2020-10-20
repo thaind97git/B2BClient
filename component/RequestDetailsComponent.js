@@ -120,24 +120,37 @@ const RequestDetailsComponent = ({
     let result = [];
     switch (status) {
       case R_PENDING:
-        result = [
-          {
-            label: "Edit",
-            action: () =>
-              Router.push(
-                `/buyer/rfq/update?id=${(requestDetailsData || {}).id}`
-              ),
-          },
-          {
-            label: "Cancel",
-            buttonProps: {
-              danger: true,
+        if (!isSupplier) {
+          result = [
+            {
+              label: "Reject",
+              buttonProps: {
+                danger: true,
+              },
+              action: () => {},
             },
-            action: () => {
-              setOpenCancel(true);
+          ];
+        }
+        if (isSupplier) {
+          result = [
+            {
+              label: "Edit",
+              action: () =>
+                Router.push(
+                  `/buyer/rfq/update?id=${(requestDetailsData || {}).id}`
+                ),
             },
-          },
-        ];
+            {
+              label: "Cancel",
+              buttonProps: {
+                danger: true,
+              },
+              action: () => {
+                setOpenCancel(true);
+              },
+            },
+          ];
+        }
         break;
       default:
         result = [];
