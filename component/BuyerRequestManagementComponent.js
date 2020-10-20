@@ -22,7 +22,6 @@ import RequestDetailsComponent from "./RequestDetailsComponent";
 import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
 import {
-  CancelRequestData,
   getRequestPaging,
   GetRequestPagingData,
   GetRequestPagingError,
@@ -36,16 +35,9 @@ const connectToRedux = connect(
   createStructuredSelector({
     requestPagingData: GetRequestPagingData,
     requestPagingError: GetRequestPagingError,
-    cancelRequestData: CancelRequestData,
   }),
   (dispatch) => ({
-    getRequest: (
-      pageIndex,
-      pageSize,
-      searchMessage,
-      dateRange,
-      exCondition
-    ) => {
+    getRequest: (pageIndex, pageSize, searchMessage, dateRange, status) => {
       dispatch(
         getRequestPaging({
           pageSize,
@@ -53,7 +45,7 @@ const connectToRedux = connect(
           fromDate: dateRange.fromDate,
           toDate: dateRange.toDate,
           productTitle: searchMessage,
-          status: exCondition.split(",")[0],
+          status: [status],
         })
       );
     },
@@ -101,7 +93,6 @@ const BuyerRequestManagement = ({
   getRequest,
   requestPagingData,
   requestPagingError,
-  cancelRequestData,
 }) => {
   const [searchMessage, setSearchMessage] = useState("");
   const [dateRange, setDateRange] = useState(DEFAULT_DATE_RANGE);
@@ -116,11 +107,6 @@ const BuyerRequestManagement = ({
     }
   }, [requestPagingError, requestPagingData]);
 
-  useEffect(() => {
-    if (!!cancelRequestData) {
-      setOpenDetails(false);
-    }
-  }, [cancelRequestData]);
   function handleChange(value) {
     setStatus(value);
   }
@@ -183,7 +169,10 @@ const BuyerRequestManagement = ({
           key={"right"}
         >
           {openDetails ? (
-            <RequestDetailsComponent requestId={currentRequestSelected.id} />
+            <RequestDetailsComponent
+              setOpenDetails={setOpenDetails}
+              requestId={currentRequestSelected.id}
+            />
           ) : null}
         </Drawer>
         <Title level={4}>Your Request for Quotation</Title>

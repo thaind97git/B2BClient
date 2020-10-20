@@ -24,6 +24,10 @@ const AllCategoryComponent = ({
   getAllCategory,
   onGetValue,
   onGetLabel,
+  onGetLastValue,
+  isSearchStyle = true,
+  style = {},
+  ...other
 }) => {
   useEffect(() => {
     getAllCategory();
@@ -52,16 +56,23 @@ const AllCategoryComponent = ({
     typeof onGetLabel === "function" &&
       onGetLabel(currentLabelSelected.join(" >> "));
     typeof onGetValue === "function" && onGetValue(currentValueSelected);
+    typeof onGetLastValue === "function" &&
+      onGetLastValue(currentValueSelected[currentValueSelected.length - 1]);
   }
   return (
     <Fragment>
       <Cascader
         placeholder="Select category"
-        style={{ width: "224px", margin: "-5px -14px", height: 40 }}
+        style={Object.assign(
+          {},
+          isSearchStyle && { width: "224px", margin: "-5px -14px", height: 40 },
+          style
+        )}
         options={optionCate}
         onChange={onChange}
         changeOnSelect
         defaultValue={["all"]}
+        {...other}
       />
       <style jsx global>
         {`

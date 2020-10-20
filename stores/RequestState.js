@@ -3,12 +3,13 @@ import { respondToSuccess } from "../middlewares/api-reaction";
 import nfetch from "../libs/nfetch";
 import { getResetter } from "../libs";
 import Router from "next/router";
+import { R_PENDING } from "../enums/requestStatus";
 
 const CREATE_REQUEST = "CreateRequestAPI";
 const GET_REQUEST_PAGING = "GetRequestPagingAPI";
 const GET_REQUEST_DETAILS = "GetRequestDetailsAPI";
 const CANCEL_REQUEST = "CancelRequestAPI";
-
+const REJECT_REQUEST = "RejectRequestAPI";
 // Create new Request
 const CreateRequestAPI = makeFetchAction(CREATE_REQUEST, (object) =>
   nfetch({
@@ -30,11 +31,11 @@ export const CreateRequestResetter = getResetter(CreateRequestAPI);
 // Get Request Paging
 const GetRequestPagingAPI = makeFetchAction(
   GET_REQUEST_PAGING,
-  ({ status, productTitle, fromDate, toDate, pageIndex, pageSize }) => {
+  ({ status = [], productTitle, fromDate, toDate, pageIndex, pageSize }) => {
     return nfetch({
       endpoint: `/api/Request/Filter?${
-        status ? "statusId=" + status + "&" : ""
-      }${productTitle && "productTitle=" + productTitle + "&"}${
+        status && status.length > 0 ? "statuses=" + status.join(",") + "&" : ""
+      }${productTitle && "productName=" + productTitle + "&"}${
         fromDate ? "fromDate=" + fromDate + "&" : ""
       }${
         toDate ? "toDate=" + toDate + "&" : ""
@@ -45,7 +46,7 @@ const GetRequestPagingAPI = makeFetchAction(
 );
 
 export const getRequestPaging = ({
-  status,
+  status = [],
   productTitle,
   fromDate,
   toDate,
@@ -88,7 +89,6 @@ export const GetRequestDetailsErrorSelector =
 export const getRequestDetailsResetter = getResetter(GetRequestDetailsAPI);
 
 // Cancel Request
-
 const CancelRequestAPI = makeFetchAction(CANCEL_REQUEST, (id, desc) =>
   nfetch({
     endpoint: `/api/Request/Cancel`,
@@ -117,3 +117,33 @@ export const CancelRequestData = CancelRequestAPI.dataSelector;
 export const CancelRequestError = CancelRequestAPI.errorSelector;
 
 export const CancelRequestResetter = getResetter(CancelRequestAPI);
+
+// Cancel Request
+const RejectRequestAPI = makeFetchAction(REJECT_REQUEST, (id, desc) =>
+  nfetch({
+    endpoint: `/api/Request/Reject`,
+    method: "DELETE",
+  })({
+    id,
+    description: desc,
+  })
+);
+
+export const rejectRequest = (id, desc) =>
+  respondToSuccess(
+    RejectRequestAPI.actionCreator(id, desc),
+    (resp, _, store) => {
+      store.dispatch(
+        getRequestPaging({
+          status: [R_PENDING],
+          productTitle: "",
+          pageIndex: 1,
+          pageSize: 10,
+        })
+      );
+    }
+  );
+export const RejectRequestData = RejectRequestAPI.dataSelector;
+export const RejectRequestError = RejectRequestAPI.errorSelector;
+
+export const RejectRequestResetter = getResetter(RejectRequestAPI);

@@ -29,16 +29,8 @@ const ADMIN_MENU = [
   {
     key: "2",
     icon: <FallOutlined />,
-    label: "Request",
-    link: undefined,
-    subMenu: [
-      {
-        subKey: "2.1",
-        subLink: "/aggregator/request",
-        subIcon: <OrderedListOutlined />,
-        subLabel: "Requests",
-      },
-    ],
+    label: "Requests",
+    link: "/aggregator/request",
   },
   {
     key: "3",

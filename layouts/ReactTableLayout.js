@@ -42,7 +42,7 @@ const ReactTableLayout = ({
     exCondition = [],
     exElement,
   } = searchProps;
-  const otherCondition = exCondition.join(",");
+  const otherCondition = exCondition.join("-");
   const { dateRange, setDateRange } = dateRangeProps;
   const [pageSizeTable, setPageSizeTable] = useState(pageSize);
   const [pageIndex, setPageIndex] = useState(page);
@@ -66,7 +66,7 @@ const ReactTableLayout = ({
             pageSizeTable,
             searchMessage,
             dateRange,
-            otherCondition
+            ...exCondition
           )
         );
     }

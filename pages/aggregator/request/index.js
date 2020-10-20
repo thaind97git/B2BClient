@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import AdminRequestCanceledComponent from "../../../component/AdminRequestCanceledComponent";
-import AdminRequestGroupedComponent from "../../../component/AdminRequestGroupedComponent";
-import AdminRequestManagementComponent from "../../../component/AdminRequestManagementComponent";
+import AdminRequestProcessedComponent from "../../../component/AdminRequestProcessedComponent";
+import AdminRequestProcessingComponent from "../../../component/AdminRequestProcessingComponent";
+import AdminRequestPendingComponent from "../../../component/AdminRequestPendingComponent";
 import AggregatorLayout from "../../../layouts/AggregatorLayout";
 import TabsLayout from "../../../layouts/TabsLayout";
 
@@ -14,7 +14,7 @@ const Page = () => {
       key: "1",
       content: (
         <div>
-          <AdminRequestManagementComponent />
+          <AdminRequestPendingComponent />
         </div>
       ),
     },
@@ -23,7 +23,7 @@ const Page = () => {
       key: "2",
       content: (
         <div>
-          <AdminRequestGroupedComponent />
+          <AdminRequestProcessingComponent />
         </div>
       ),
     },
@@ -32,7 +32,7 @@ const Page = () => {
       key: "3",
       content: (
         <div>
-          <AdminRequestCanceledComponent />
+          <AdminRequestProcessedComponent />
         </div>
       ),
     },

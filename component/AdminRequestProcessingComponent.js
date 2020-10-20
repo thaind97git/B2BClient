@@ -7,21 +7,51 @@ import {
   R_WAIT_FOR_AUCTION,
 } from "../enums/requestStatus";
 import ReactTableLayout from "../layouts/ReactTableLayout";
-import { DEFAULT_DATE_RANGE, displayCurrency } from "../utils";
+import {
+  DATE_TIME_FORMAT,
+  DEFAULT_DATE_RANGE,
+  displayCurrency,
+} from "../utils";
 import RequestStatusComponent from "./Utils/RequestStatusComponent";
 import RequestDetailsComponent from "./RequestDetailsComponent";
+import { connect } from "react-redux";
+import { createStructuredSelector } from "reselect";
+import {
+  getRequestPaging,
+  GetRequestPagingData,
+  GetRequestPagingError,
+} from "../stores/RequestState";
+import Moment from "react-moment";
+import { get } from "lodash/fp";
+import AllCategoryComponent from "./AllCategoryComponent";
 const { Option, OptGroup } = Select;
+const connectToRedux = connect(
+  createStructuredSelector({
+    requestPagingData: GetRequestPagingData,
+    requestPagingError: GetRequestPagingError,
+  }),
+  (dispatch) => ({
+    getRequest: (pageIndex, pageSize, searchMessage, dateRange, status, xy) => {
+      console.log({ status, xy });
+      dispatch(
+        getRequestPaging({
+          pageSize,
+          pageIndex,
+          fromDate: dateRange.fromDate,
+          toDate: dateRange.toDate,
+          productTitle: searchMessage,
+          status,
+        })
+      );
+    },
+  })
+);
 
 const columns = [
   {
     title: "Product Name",
     dataIndex: "name",
     key: "name",
-  },
-  {
-    title: "Category",
-    dataIndex: "category",
-    key: "category",
   },
   {
     title: "Preferred Unit Price",
@@ -59,11 +89,46 @@ const columns = [
 function handleChange(value) {
   console.log(`selected ${value}`);
 }
-const AdminRequestGroupedComponent = () => {
+
+const statusFilter = [R_GROUPED, R_BIDDING, R_WAIT_FOR_AUCTION, R_NEGOTIATING];
+const AdminRequestProcessingComponent = ({
+  requestPagingData,
+  requestPagingError,
+  getRequest,
+}) => {
   const [searchMessage, setSearchMessage] = useState("");
   const [dateRange, setDateRange] = useState(DEFAULT_DATE_RANGE);
   const [openDetails, setOpenDetails] = useState(false);
-
+  const [currentRequestSelected, setCurrentRequestSelected] = useState({});
+  const getRequestTable = (requestData = []) => {
+    return (
+      requestData &&
+      requestData.length > 0 &&
+      requestData.map((request = {}) => ({
+        key: request.id,
+        price: displayCurrency(+request.preferredUnitPrice),
+        name: request.product.description,
+        quantity:
+          +request.quantity || 0 + " " + get("product.unitType")(request),
+        dueDate: (
+          <Moment format={DATE_TIME_FORMAT}>{new Date(request.dueDate)}</Moment>
+        ),
+        status: <RequestStatusComponent status={request.requestStatus.id} />,
+        actions: (
+          <Button
+            onClick={() => {
+              setCurrentRequestSelected(request);
+              setOpenDetails(true);
+            }}
+            size="small"
+            type="link"
+          >
+            View
+          </Button>
+        ),
+      }))
+    );
+  };
   const dataSource = [
     {
       key: "4",
@@ -170,17 +235,25 @@ const AdminRequestGroupedComponent = () => {
       ),
     },
   ];
+
+  let requestData = [],
+    totalCount = 0;
+  if (requestPagingData) {
+    requestData = requestPagingData.data;
+    totalCount = requestPagingData.total;
+  }
   return (
     <div>
       <ReactTableLayout
-      dispatchAction={() => { }}
+        dispatchAction={getRequest}
         searchProps={{
           placeholder: "Search by product name",
           searchMessage,
           setSearchMessage,
           exElement: (
             <Fragment>
-              <Select
+              <AllCategoryComponent />
+              {/* <Select
                 size="large"
                 placeholder="Filter by group"
                 style={{ width: 200 }}
@@ -205,18 +278,19 @@ const AdminRequestGroupedComponent = () => {
                 <OptGroup label="Category 2">
                   <Option value="Yiminghe">Sub-1 Category 1</Option>
                 </OptGroup>
-              </Select>
+              </Select> */}
             </Fragment>
           ),
+          exCondition: [statusFilter],
         }}
         dateRangeProps={{
           dateRange,
           setDateRange,
         }}
-        data={dataSource}
+        data={getRequestTable(requestData || [])}
         columns={columns}
+        totalCount={totalCount}
       />
-      {/* <Table dataSource={dataSource} columns={columns} /> */}
       <Drawer
         width={640}
         title="RFQ details"
@@ -226,10 +300,13 @@ const AdminRequestGroupedComponent = () => {
         visible={openDetails}
         key={"right"}
       >
-        <RequestDetailsComponent isSupplier={false} />
+        <RequestDetailsComponent
+          isSupplier={false}
+          requestId={(currentRequestSelected || {}).id}
+        />
       </Drawer>
     </div>
   );
 };
 
-export default AdminRequestGroupedComponent;
+export default connectToRedux(AdminRequestProcessingComponent);

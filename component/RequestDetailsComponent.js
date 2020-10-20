@@ -22,10 +22,13 @@ import {
   getRequestDetails,
   GetRequestDetailsDataSelector,
   getRequestDetailsResetter,
+  RejectRequestData,
+  RejectRequestError,
 } from "../stores/RequestState";
 import Moment from "react-moment";
 import Router from "next/router";
 import RequestCancelComponent from "./RequestCancelComponent";
+import RequestRejectComponent from "./RequestRejectComponent";
 const { Title } = Typography;
 
 const connectToRedux = connect(
@@ -33,6 +36,8 @@ const connectToRedux = connect(
     requestDetailsData: GetRequestDetailsDataSelector,
     cancelRequestData: CancelRequestData,
     cancelRequestError: CancelRequestError,
+    rejectRequestData: RejectRequestData,
+    rejectRequestError: RejectRequestError,
   }),
   (dispatch) => ({
     getRequestDetails: (id) => dispatch(getRequestDetails(id)),
@@ -63,9 +68,13 @@ const RequestDetailsComponent = ({
   resetData,
   cancelRequestError,
   cancelRequestData,
+  rejectRequestData,
+  rejectRequestError,
+  setOpenDetails,
 }) => {
   const [loading, setLoading] = useState(true);
   const [openCancel, setOpenCancel] = useState(false);
+  const [openReject, setOpenReject] = useState(false);
   useEffect(() => {
     if (requestId) {
       getRequestDetails(requestId);
@@ -84,11 +93,21 @@ const RequestDetailsComponent = ({
   useEffect(() => {
     if (cancelRequestData) {
       setOpenCancel(false);
+      typeof setOpenDetails === "function" && setOpenDetails(false);
     }
     if (cancelRequestError) {
-      openNotification("error", { message: "Can cel RFQ fail" });
+      openNotification("error", { message: "Cancel RFQ fail" });
     }
-  }, [cancelRequestError, cancelRequestData]);
+  }, [cancelRequestError, cancelRequestData, setOpenDetails]);
+  useEffect(() => {
+    if (rejectRequestData) {
+      setOpenReject(false);
+      typeof setOpenDetails === "function" && setOpenDetails(false);
+    }
+    if (rejectRequestError) {
+      openNotification("error", { message: "Reject RFQ fail" });
+    }
+  }, [rejectRequestError, rejectRequestData, setOpenDetails]);
 
   if (!requestId) {
     return <Empty description="Can not find any request !" />;
@@ -129,7 +148,9 @@ const RequestDetailsComponent = ({
               buttonProps: {
                 danger: true,
               },
-              action: () => {},
+              action: () => {
+                setOpenReject(true);
+              },
             },
           ];
         }
@@ -162,7 +183,6 @@ const RequestDetailsComponent = ({
   };
 
   const leadTimeDisplay = `Ship in ${leadTime} day(s) after supplier receives the initial payment`;
-  console.log(preferredUnitPrice);
   return (
     <Row style={{ width: "100%" }}>
       <Modal
@@ -174,6 +194,17 @@ const RequestDetailsComponent = ({
       >
         {openCancel ? (
           <RequestCancelComponent requestId={(requestDetailsData || {}).id} />
+        ) : null}
+      </Modal>
+      <Modal
+        onOk={() => setOpenReject(false)}
+        onCancel={() => setOpenReject(false)}
+        title="Reject RFQ"
+        visible={openReject}
+        footer={false}
+      >
+        {openReject ? (
+          <RequestRejectComponent requestId={(requestDetailsData || {}).id} />
         ) : null}
       </Modal>
       <Col style={{ padding: "12px 0px" }} span={24}>
@@ -206,7 +237,6 @@ const RequestDetailsComponent = ({
         <Title level={5}>Product Basic Information</Title>
       </Col>
       <DescriptionItem title="Product Name" content={product.description} />
-      {/* <DescriptionItem title="Category" content={category} /> */}
       <DescriptionItem
         title="Sourcing Type"
         content={sourcingType.description}

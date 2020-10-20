@@ -1,10 +1,26 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Col, Drawer, List, Row, Skeleton, Typography } from "antd";
 import AllCategoryComponent from "./AllCategoryComponent";
 import Search from "antd/lib/input/Search";
 import ProductDetailComponent from "./ProductDetailComponent";
+import { connect } from "react-redux";
+import { createStructuredSelector } from "reselect";
+import {
+  getProductByCategory,
+  GetProductByCategoryData,
+  GetProductByCategoryError,
+} from "../stores/ProductState";
 const { Title } = Typography;
-
+const connectToRedux = connect(
+  createStructuredSelector({
+    getProductByCategoryData: GetProductByCategoryData,
+    getProductByCategoryError: GetProductByCategoryError,
+  }),
+  (dispatch) => ({
+    getProductByCategory: (id, pageSize, pageIndex) =>
+      dispatch(getProductByCategory(id, pageSize, pageIndex)),
+  })
+);
 const LIST_PRODUCT = [
   {
     title: "Smartphone iPhone 8 Plus 64GB ",
@@ -72,9 +88,68 @@ const LIST_PRODUCT = [
   },
 ];
 
-const SupplierProductComponent = () => {
+const recordInOnePage = 10;
+
+const SupplierProductComponent = ({
+  getProductByCategory,
+  getProductByCategoryData,
+  getProductByCategoryError,
+}) => {
   const [currentCateSelected, setCurrentCateSelected] = useState("");
   const [openDetails, setOpenDetails] = useState(false);
+  const [category, setCategory] = useState("all");
+  const [searchMessage, setSearchMessage] = useState("");
+  const [pageSize, setPageSize] = useState(recordInOnePage);
+  const pageIndex = 1;
+
+  const [loading, setLoading] = useState(false);
+  const [data, setData] = useState([]);
+  const [list, setList] = useState([]);
+
+  useEffect(() => {
+    if (getProductByCategoryData) {
+      const newData = data.concat(getProductByCategoryData.data);
+      setLoading(false);
+      setData(newData);
+      setList(newData);
+      window.dispatchEvent(new Event("resize"));
+    }
+  }, [getProductByCategoryData]);
+
+  const onLoadMore = () => {
+    if (searchMessage) {
+      setLoading(true);
+      setList(
+        data.concat(
+          [...new Array(recordInOnePage)].map(() => ({
+            loading: true,
+            name: {},
+          }))
+        )
+      );
+      getProductByCategory(category, pageSize, pageIndex);
+    }
+  };
+  let totalCount = 0;
+  if (getProductByCategoryData) {
+    totalCount = getProductByCategoryData.total;
+  }
+
+  const loadMore =
+    list.length < totalCount && !loading ? (
+      <div
+        style={{
+          textAlign: "center",
+          marginTop: 12,
+          height: 32,
+          lineHeight: "32px",
+        }}
+      >
+        <Button type="primary" onClick={onLoadMore}>
+          Loading more
+        </Button>
+      </div>
+    ) : null;
   return (
     <div>
       <Drawer
@@ -88,25 +163,18 @@ const SupplierProductComponent = () => {
       >
         <ProductDetailComponent />
       </Drawer>
-      {/* <Modal
-        okText="Submit"
-        width={1000}
-        title="Request new category"
-        visible={openRequestProduct}
-        onOk={() => setOpenRequestProduct(false)}
-        // onCancel={this.handleCancel}
-      >
-        <SupplierRequestProductComponent />
-      </Modal> */}
       <Row>
         <Col span={24}>
           <Row style={{ marginBottom: 32 }} justify="center">
-            <Col span={12} id="search-product">
+            <Col span={18} id="search-product">
               <Title level={5}>Search product inside system</Title>
               <Search
+                value={searchMessage}
                 addonBefore={
                   <AllCategoryComponent
-                    onGetValue={() => {}}
+                    onGetLastValue={(value) => {
+                      setCategory(value);
+                    }}
                     onGetLabel={(label) => {
                       setCurrentCateSelected(label);
                     }}
@@ -115,7 +183,13 @@ const SupplierProductComponent = () => {
                 placeholder="Product name"
                 enterButton="Search"
                 size="large"
-                onSearch={(value) => console.log(value)}
+                onSearch={(value) => {
+                  if (value) {
+                    setLoading(true);
+                    getProductByCategory(category, pageSize, pageIndex);
+                  }
+                  setSearchMessage(value);
+                }}
               />
               <div>{currentCateSelected}</div>
             </Col>
@@ -126,17 +200,18 @@ const SupplierProductComponent = () => {
             <Col id="list-product-supplier" span={18}>
               <List
                 className="demo-loadmore-list"
-                // loading={initLoading}
                 itemLayout="horizontal"
-                loadMore={true}
+                loadMore={loadMore}
                 dataSource={LIST_PRODUCT}
                 renderItem={(item) => (
                   <List.Item
-                    actions={[
-                      <Button size="small" type="primary">
-                        Register Sell product
-                      </Button>,
-                    ]}
+                    actions={
+                      !item.loading && [
+                        <Button size="small" type="primary">
+                          Register Sell product
+                        </Button>,
+                      ]
+                    }
                   >
                     <Skeleton
                       avatar
@@ -172,6 +247,17 @@ const SupplierProductComponent = () => {
                   </List.Item>
                 )}
               />
+              {/* <Row justify="center">
+                <Button
+                  style={{ marginTop: 40 }}
+                  type="primary"
+                  onClick={() => {
+                    setPageSize((prev) => prev + recordInOnePage);
+                  }}
+                >
+                  Load more
+                </Button>
+              </Row> */}
             </Col>
           </Row>
         </Col>
@@ -189,4 +275,4 @@ const SupplierProductComponent = () => {
     </div>
   );
 };
-export default SupplierProductComponent;
+export default connectToRedux(SupplierProductComponent);

@@ -20,6 +20,7 @@ import {
 } from "../stores/RequestState";
 import Moment from "react-moment";
 import { get } from "lodash/fp";
+import AllCategoryComponent from "./AllCategoryComponent";
 const { Option, OptGroup } = Select;
 
 const connectToRedux = connect(
@@ -28,7 +29,15 @@ const connectToRedux = connect(
     requestPagingError: GetRequestPagingError,
   }),
   (dispatch) => ({
-    getRequest: (pageIndex, pageSize, searchMessage, dateRange, status) =>
+    getRequest: (
+      pageIndex,
+      pageSize,
+      searchMessage,
+      dateRange,
+      status,
+      category
+    ) => {
+      console.log({ category });
       dispatch(
         getRequestPaging({
           pageSize,
@@ -38,7 +47,8 @@ const connectToRedux = connect(
           productTitle: searchMessage,
           status,
         })
-      ),
+      );
+    },
   })
 );
 
@@ -71,9 +81,7 @@ const columns = [
   },
 ];
 
-function handleChange(value) {
-  console.log(`selected ${value}`);
-}
+const statusFilter = [R_PENDING];
 
 const AdminRequestManagement = ({
   requestPagingData,
@@ -84,11 +92,11 @@ const AdminRequestManagement = ({
   const [dateRange, setDateRange] = useState(DEFAULT_DATE_RANGE);
   const [recordSelected, setRecordSelected] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
-  const [openGroupModal, setOpenGroupModal] = useState(false);
+  const [openGroup, setOpenGroup] = useState(false);
   const [openDetails, setOpenDetails] = useState(false);
   const [currentRequestSelected, setCurrentRequestSelected] = useState({});
 
-  const [status, setStatus] = useState(null);
+  const [category, setCategory] = useState("1");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -97,7 +105,7 @@ const AdminRequestManagement = ({
     }
   }, [requestPagingError, requestPagingData]);
   function handleChange(value) {
-    setStatus(value);
+    setCategory(value);
   }
   const getRequestTable = (requestData = []) => {
     return (
@@ -161,17 +169,17 @@ const AdminRequestManagement = ({
       <Modal
         width={800}
         title="Create New Group"
-        visible={openGroupModal}
-        onOk={() => setOpenGroupModal(false)}
-        onCancel={() => setOpenGroupModal(true)}
+        visible={openGroup}
+        onOk={() => setOpenGroup(false)}
+        onCancel={() => setOpenGroup(true)}
         footer={[
-          <Button key="back" onClick={() => setOpenGroupModal(false)}>
+          <Button key="back" onClick={() => setOpenGroup(false)}>
             Cancel
           </Button>,
           <Button
             key="submit"
             type="primary"
-            onClick={() => setOpenGroupModal(false)}
+            onClick={() => setOpenGroup(false)}
           >
             Submit
           </Button>,
@@ -187,7 +195,7 @@ const AdminRequestManagement = ({
         footer={[
           <Row justify="space-between">
             <Col>
-              <Button type="primary" onClick={() => setOpenGroupModal(true)}>
+              <Button type="primary" onClick={() => setOpenGroup(true)}>
                 Create new group
               </Button>
             </Col>
@@ -260,21 +268,13 @@ const AdminRequestManagement = ({
           searchMessage,
           setSearchMessage,
           exElement: (
-            <Select
+            <AllCategoryComponent
+              onGetLastValue={(value) => setCategory(value)}
               size="large"
-              placeholder="Filter by category"
-              style={{ width: 200 }}
-              onChange={handleChange}
-            >
-              <OptGroup label="Category 1">
-                <Option value="jack">Sub-1 Category 1</Option>
-                <Option value="lucy">Sub-2 Category 1</Option>
-              </OptGroup>
-              <OptGroup label="Category 2">
-                <Option value="Yiminghe">Sub-1 Category 1</Option>
-              </OptGroup>
-            </Select>
+              isSearchStyle={false}
+            />
           ),
+          exCondition: [statusFilter, category],
         }}
         dateRangeProps={{
           dateRange,
@@ -295,6 +295,7 @@ const AdminRequestManagement = ({
       >
         {openDetails ? (
           <RequestDetailsComponent
+            setOpenDetails={setOpenDetails}
             requestId={(currentRequestSelected || {}).id}
             isSupplier={false}
           />
