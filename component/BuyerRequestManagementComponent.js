@@ -1,4 +1,4 @@
-import { Button, Drawer, Row, Select, Typography } from "antd";
+import { Button, Drawer, Popover, Row, Select, Typography } from "antd";
 import React, { useEffect, useState } from "react";
 import ReactTableLayout from "../layouts/ReactTableLayout";
 import {
@@ -28,6 +28,7 @@ import {
   GetRequestPagingError,
 } from "../stores/RequestState";
 import Moment from "react-moment";
+import { get } from "lodash/fp";
 const { Option } = Select;
 const { Title } = Typography;
 
@@ -62,8 +63,8 @@ const connectToRedux = connect(
 const columns = [
   {
     title: "Product Name",
-    dataIndex: "category",
-    key: "category",
+    dataIndex: "name",
+    key: "name",
   },
   {
     title: "Preferred Unit Price",
@@ -93,6 +94,9 @@ const columns = [
   },
 ];
 
+const displayProductName = (name) =>
+  name ? (name.length > 100 ? name.slice(0, 80) + " ..." : name) : "";
+
 const BuyerRequestManagement = ({
   getRequest,
   requestPagingData,
@@ -114,7 +118,6 @@ const BuyerRequestManagement = ({
 
   useEffect(() => {
     if (!!cancelRequestData) {
-      console.log({ cancelRequestData });
       setOpenDetails(false);
     }
   }, [cancelRequestData]);
@@ -126,8 +129,19 @@ const BuyerRequestManagement = ({
       ? requestData.map((request = {}) => ({
           key: request.id,
           price: displayCurrency(+request.preferredUnitPrice),
-          category: request.product.description,
-          quantity: +request.quantity || 0,
+          name: (
+            <Popover content={request.product.description}>
+              <a
+                target="_blank"
+                rel="noreferrer"
+                href={`/product-details?id=${get("product.id")(request)}`}
+              >
+                {displayProductName(request.product.description)}
+              </a>
+            </Popover>
+          ),
+          quantity:
+            (+request.quantity || 0) + " " + get("product.unitType")(request),
           dueDate: (
             <Moment format={DATE_TIME_FORMAT}>
               {new Date(request.dueDate)}

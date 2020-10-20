@@ -7,6 +7,7 @@ import {
   Row,
   Skeleton,
   Space,
+  Tag,
   Typography,
 } from "antd";
 import React, { Fragment, useEffect, useState } from "react";
@@ -97,17 +98,15 @@ const RequestDetailsComponent = ({
   }
   const {
     product = {},
-    currency = {},
     shippingMethod = {},
     sourcingType = {},
     sourcingPurpose = {},
     quantity,
-    unit = "",
     tradeTerm = {},
     preferredUnitPrice,
     dueDate,
     description,
-    certifi,
+    certifications = [],
     leadTime,
     requestStatus = {},
     paymentTerm = {},
@@ -115,6 +114,9 @@ const RequestDetailsComponent = ({
     ward = {},
     province = {},
     address,
+    cancelReason,
+    buyer = {},
+    otherRequirements,
   } = requestDetailsData || {};
   const getButtonActionsByStatus = (status) => {
     let result = [];
@@ -179,7 +181,7 @@ const RequestDetailsComponent = ({
       </Col>
       {requestStatus.id === R_CANCELED && (
         <Col style={{ padding: "12px 0px" }} span={24}>
-          Cancel reason: {requestStatus.cancelReason || "N/A"}
+          Cancel reason: <b>{cancelReason || "N/A"}</b>
         </Col>
       )}
       <Col style={{ padding: "12px 0px" }} span={24}>
@@ -211,7 +213,7 @@ const RequestDetailsComponent = ({
       />
       <DescriptionItem
         title="Sourcing Purpose"
-        content={sourcingPurpose.description}
+        content={sourcingPurpose.description || "N/A"}
       />
       <DescriptionItem
         title="Quantity"
@@ -231,7 +233,18 @@ const RequestDetailsComponent = ({
       <Col span={24}>
         <Title level={5}>Supplier Capability</Title>
       </Col>
-      <DescriptionItem title="Certifications" content={certifi} />
+      <DescriptionItem
+        title="Certifications"
+        content={certifications.map((cer) => (
+          <Fragment>
+            <Tag color="processing">{cer.description}</Tag>
+          </Fragment>
+        ))}
+      />
+      <DescriptionItem
+        title="Other Requirements"
+        content={otherRequirements || "N/A"}
+      />
       <Divider />
       <Col span={24}>
         <Title level={5}>Shipping Capability</Title>
@@ -254,9 +267,12 @@ const RequestDetailsComponent = ({
           <Col span={24}>
             <Title level={5}>RFQ Owner</Title>
           </Col>
-          <DescriptionItem title="Created by" content="User 1" />
-          <DescriptionItem title="Email" content="user1@gmail.com" />
-          <DescriptionItem title="Phone" content="0123456789" />
+          <DescriptionItem
+            title="Created by"
+            content={(buyer || {}).fullName}
+          />
+          <DescriptionItem title="Email" content={(buyer || {}).email} />
+          <DescriptionItem title="Phone" content={(buyer || {}).phoneNumber} />
         </Fragment>
       )}
 

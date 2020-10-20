@@ -146,9 +146,7 @@ const PriceInput = ({
   setPrice,
   currencyData = [],
 }) => {
-  const [currency, setCurrency] = useState(
-    ((currencyData && currencyData[0]) || {}).id
-  );
+  const currency = ((currencyData && currencyData[0]) || {}).id;
 
   const triggerChange = (changedValue) => {
     if (onChange) {
@@ -177,6 +175,7 @@ const PriceInput = ({
   return (
     <span>
       <InputNumber
+        placeholder="Enter the preferred unit price"
         onChange={onNumberChange}
         min={0}
         style={{ width: "50%" }}
@@ -195,16 +194,8 @@ const PriceInput = ({
   );
 };
 
-const QuantityInput = ({
-  value = {
-    number: 1,
-  },
-  onChange,
-  unitData = [],
-  unitId,
-}) => {
-  const number = 1;
-  const unitSelected = (unitData || []).find((unit) => unit.id === unitId);
+const QuantityInput = ({ value = {}, onChange, unitOfMeasure }) => {
+  const number = null;
   const triggerChange = (changedValue) => {
     if (onChange) {
       onChange({
@@ -233,11 +224,11 @@ const QuantityInput = ({
         value={value.number || number}
         onChange={onNumberChange}
         style={{ width: "50%" }}
-        min={1}
+        min={0}
         placeholder="Enter the product quantity"
       />
       <Input
-        value={(unitSelected || {}).description}
+        value={(unitOfMeasure || {}).description}
         disabled
         style={{
           width: "48%",
@@ -296,7 +287,6 @@ const BuyerRequestCreateComponent = ({
   getSupCertification,
   sourcingTypeData,
   sourcingPurposeData,
-  unitData,
   currencyData,
   tradeTermData,
   shippingMethodData,
@@ -312,23 +302,15 @@ const BuyerRequestCreateComponent = ({
   wardData,
   districtData,
   createRequest,
-  createRequestData,
   createRequestError,
   resetData,
   isUpdate = false,
-  requestDetailsData,
-  requestDetailsError,
-  getRequestDetails,
 }) => {
   const [price, setPrice] = useState(0);
   const router = useRouter();
   const [loadingRFQ, setLoadingRFQ] = useState(false);
-  let productId, requestId;
-  if (isUpdate) {
-    requestId = router.query.id;
-  } else {
-    productId = router.query.productId;
-  }
+  const [form] = Form.useForm();
+  let productId = router.query.productId;
 
   useEffect(() => {
     getSourcingType();
@@ -479,6 +461,7 @@ const BuyerRequestCreateComponent = ({
         <Row align="middle" justify="center">
           <Col sm={20} md={18}>
             <Form
+              form={form}
               {...formItemLayout}
               autoComplete="new-password"
               className="register-form"
@@ -516,7 +499,10 @@ const BuyerRequestCreateComponent = ({
                         },
                       ]}
                     >
-                      <Select style={{ width: "50%" }}>
+                      <Select
+                        placeholder="Please select"
+                        style={{ width: "50%" }}
+                      >
                         {!!sourcingTypeData &&
                           sourcingTypeData.map((type) => (
                             <Option
@@ -534,14 +520,17 @@ const BuyerRequestCreateComponent = ({
                     <FormItem
                       label="Sourcing Purpose"
                       name="sourcingPurposeId"
-                      rules={[
-                        {
-                          required: true,
-                          message: "Please select Sourcing Purpose",
-                        },
-                      ]}
+                      // rules={[
+                      //   {
+                      //     required: true,
+                      //     message: "Please select Sourcing Purpose",
+                      //   },
+                      // ]}
                     >
-                      <Select style={{ width: "50%" }}>
+                      <Select
+                        placeholder="Please select"
+                        style={{ width: "50%" }}
+                      >
                         {!!sourcingPurposeData &&
                           sourcingPurposeData.map((type) => (
                             <Option
@@ -570,8 +559,7 @@ const BuyerRequestCreateComponent = ({
                       ]}
                     >
                       <QuantityInput
-                        unitData={unitData}
-                        unitId={get("unitOfMeasure.id")(productDetailsData)}
+                        unitOfMeasure={get("unitOfMeasure")(productDetailsData)}
                       />
                     </FormItem>
                   </Col>
@@ -615,7 +603,10 @@ const BuyerRequestCreateComponent = ({
                         },
                       ]}
                     >
-                      <Select style={{ width: "50%" }}>
+                      <Select
+                        placeholder="Please select"
+                        style={{ width: "50%" }}
+                      >
                         {!!tradeTermData &&
                           tradeTermData.map((type) => (
                             <Option
@@ -739,7 +730,10 @@ const BuyerRequestCreateComponent = ({
                       label="Shipping Method"
                       name="shippingMethodId"
                     >
-                      <Select style={{ width: "50%" }}>
+                      <Select
+                        placeholder="Please select"
+                        style={{ width: "50%" }}
+                      >
                         {!!shippingMethodData &&
                           shippingMethodData.map((type) => (
                             <Option
@@ -765,8 +759,11 @@ const BuyerRequestCreateComponent = ({
                       ]}
                     >
                       <Select
+                        placeholder="Please select"
                         onChange={(value) => {
                           getDistrict(value);
+                          console.log({ form });
+                          form.resetFields(["districtId", "wardId"]);
                         }}
                         showSearch
                         filterOption={(input, option) =>
@@ -798,8 +795,10 @@ const BuyerRequestCreateComponent = ({
                       ]}
                     >
                       <Select
+                        placeholder="Please select"
                         onChange={(value) => {
                           getWard(value);
+                          form.resetFields(["wardId"]);
                         }}
                         showSearch
                         filterOption={(input, option) =>
@@ -820,7 +819,7 @@ const BuyerRequestCreateComponent = ({
                   </Col>
                   <Col style={styles.colStyle} span={24}>
                     <FormItem
-                      label="ward"
+                      label="Ward"
                       name="wardId"
                       rules={[
                         {
@@ -829,7 +828,10 @@ const BuyerRequestCreateComponent = ({
                         },
                       ]}
                     >
-                      <Select style={{ width: "50%" }}>
+                      <Select
+                        placeholder="Please select"
+                        style={{ width: "50%" }}
+                      >
                         {!!wardData &&
                           wardData.map((ward) => (
                             <Option key={ward.id} value={ward.id}>
@@ -855,10 +857,6 @@ const BuyerRequestCreateComponent = ({
                   </Col>
                   <Col style={styles.colStyle} span={24}>
                     <FormItem label="Lead Time" name="leadTime">
-                      {/* Ship in <span>&nbsp;</span>
-                      <InputNumber min={0} style={{ width: 100 }} />
-                      <span>&nbsp;</span>
-                      day(s) after supplier receives the initial payment */}
                       <LeadTimeInput />
                     </FormItem>
                   </Col>
@@ -873,7 +871,10 @@ const BuyerRequestCreateComponent = ({
                         },
                       ]}
                     >
-                      <Select style={{ width: "50%" }}>
+                      <Select
+                        placeholder="Please select"
+                        style={{ width: "50%" }}
+                      >
                         {!!paymentTermData &&
                           paymentTermData.map((type) => (
                             <Option
