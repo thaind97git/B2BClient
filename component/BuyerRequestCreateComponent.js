@@ -108,8 +108,8 @@ const connectToRedux = connect(
     getSupCertification: () => dispatch(getSupplierCertification()),
     getProductDetails: (id) => dispatch(getProductDetails(id)),
     getProvince: () => dispatch(getProvince()),
-    getWard: (provinceId) => dispatch(getWard(provinceId)),
-    getDistrict: (wardId) => dispatch(getDistrict(wardId)),
+    getDistrict: (provinceId) => dispatch(getDistrict(provinceId)),
+    getWard: (districtId) => dispatch(getWard(districtId)),
     createRequest: (object) => dispatch(createRequest(object)),
     getRequestDetails: (id) => dispatch(getRequestDetails(id)),
     resetData: () => {
@@ -733,7 +733,7 @@ const BuyerRequestCreateComponent = ({
                     >
                       <Select
                         onChange={(value) => {
-                          getWard(value);
+                          getDistrict(value);
                         }}
                         showSearch
                         filterOption={(input, option) =>
@@ -755,38 +755,6 @@ const BuyerRequestCreateComponent = ({
 
                   <Col style={styles.colStyle} span={24}>
                     <FormItem
-                      label="Ward"
-                      name="wardId"
-                      rules={[
-                        {
-                          required: true,
-                          message: "Please select ward",
-                        },
-                      ]}
-                    >
-                      <Select
-                        onChange={(value) => {
-                          getDistrict(value);
-                        }}
-                        showSearch
-                        filterOption={(input, option) =>
-                          option.children
-                            .toLowerCase()
-                            .indexOf(input.toLowerCase()) >= 0
-                        }
-                        style={{ width: "50%" }}
-                      >
-                        {!!wardData &&
-                          wardData.map((ward) => (
-                            <Option key={ward.id} value={ward.id}>
-                              {ward.description}
-                            </Option>
-                          ))}
-                      </Select>
-                    </FormItem>
-                  </Col>
-                  <Col style={styles.colStyle} span={24}>
-                    <FormItem
                       label="District"
                       name="districtId"
                       rules={[
@@ -796,11 +764,43 @@ const BuyerRequestCreateComponent = ({
                         },
                       ]}
                     >
-                      <Select style={{ width: "50%" }}>
+                      <Select
+                        onChange={(value) => {
+                          getWard(value);
+                        }}
+                        showSearch
+                        filterOption={(input, option) =>
+                          option.children
+                            .toLowerCase()
+                            .indexOf(input.toLowerCase()) >= 0
+                        }
+                        style={{ width: "50%" }}
+                      >
                         {!!districtData &&
                           districtData.map((district) => (
                             <Option key={district.id} value={district.id}>
                               {district.description}
+                            </Option>
+                          ))}
+                      </Select>
+                    </FormItem>
+                  </Col>
+                  <Col style={styles.colStyle} span={24}>
+                    <FormItem
+                      label="ward"
+                      name="wardId"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please select ward",
+                        },
+                      ]}
+                    >
+                      <Select style={{ width: "50%" }}>
+                        {!!wardData &&
+                          wardData.map((ward) => (
+                            <Option key={ward.id} value={ward.id}>
+                              {ward.description}
                             </Option>
                           ))}
                       </Select>

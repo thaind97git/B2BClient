@@ -98,6 +98,7 @@ const RequestDetailsComponent = ({
   };
 
   const leadTimeDisplay = `Ship in ${leadTime} day(s) after supplier receives the initial payment`;
+  console.log(preferredUnitPrice);
   return (
     <Row style={{ width: "100%" }}>
       <Col style={{ padding: "12px 0px" }} span={24}>
