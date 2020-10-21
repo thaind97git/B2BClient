@@ -197,7 +197,7 @@ const ProductListHomePageComponent = ({
             minHeight: 600,
             maxHeight: 1339,
             overflow: "hidden",
-            overflowY: "scroll",
+            overflowY: "auto",
           }}
         >
           <Row>
