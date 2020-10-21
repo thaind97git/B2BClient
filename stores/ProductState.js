@@ -4,6 +4,7 @@ import nfetch from "../libs/nfetch";
 import { getResetter } from "../libs";
 import { getToken } from "../libs/localStorage";
 import Router from "next/router";
+import { openNotification } from "../utils";
 
 const GET_PRODUCT_BY_CATEGORY = "GetProductByCategoryAPI";
 const GET_PRODUCT_DETAILS = "GetProductDetailsAPI";
@@ -81,16 +82,15 @@ const CreateProductAPI = makeFetchAction(CREATE_PRODUCT, (product) =>
 );
 
 export const createNewProduct = (product, fileList) =>
-  respondToSuccess(
-    CreateProductAPI.actionCreator(product),
-    (resp, _, store) => {
-      if (resp) {
-        console.log({ respCreateNewProduct: resp });
-        onUploadImage(resp, fileList);
-        // Router.push("/admin/product");
-      }
+  respondToSuccess(CreateProductAPI.actionCreator(product), (resp) => {
+    if (resp) {
+      openNotification("success", {
+        message: "Create new product success !",
+      });
+      onUploadImage(resp, fileList);
+      Router.push("/admin/product");
     }
-  );
+  });
 
 export const CreateNewProductData = CreateProductAPI.dataSelector;
 export const CreateNEwProductError = CreateProductAPI.errorSelector;
