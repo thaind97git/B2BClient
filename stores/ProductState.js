@@ -54,12 +54,14 @@ export const GetProductDetailsResetter = getResetter(GetProductDetailsAPI);
 
 // Create product
 const onUploadImage = (productId, fileList) => {
+  const listFileOrigin = fileList.map((file) => file.originFileObj);
   const formData = new FormData();
-  formData.append("files", fileList);
+  for (let file of listFileOrigin) {
+    formData.append("files", file);
+  }
 
   var myHeaders = new Headers();
   myHeaders.append("Authorization", `Bearer ${getToken()}`);
-
   var requestOptions = {
     method: "PUT",
     headers: myHeaders,
@@ -83,8 +85,9 @@ export const createNewProduct = (product, fileList) =>
     CreateProductAPI.actionCreator(product),
     (resp, _, store) => {
       if (resp) {
+        console.log({ respCreateNewProduct: resp });
         onUploadImage(resp, fileList);
-        Router.push("/admin/product");
+        // Router.push("/admin/product");
       }
     }
   );

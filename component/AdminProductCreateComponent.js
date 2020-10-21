@@ -8,7 +8,7 @@ import {
   Typography,
   Card,
   Select,
-  Upload
+  Upload,
 } from "antd";
 import Modal from "antd/lib/modal/Modal";
 import BuyerRequestCategoryComponent from "./BuyerRequestCategoryComponent";
@@ -22,7 +22,7 @@ import {
 } from "../stores/SupportRequestState";
 import ImgCrop from "antd-img-crop";
 import MarkdownEditorComponent from "./MarkdownEditorComponent";
-import { openNotification } from "../utils";
+import { acceptFileMimes, acceptFileTypes, openNotification } from "../utils";
 import { createNewProduct } from "../stores/ProductState";
 
 const { Title } = Typography;
@@ -54,7 +54,7 @@ function getBase64(file) {
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = () => resolve(reader.result);
-    reader.onerror = error => reject(error);
+    reader.onerror = (error) => reject(error);
   });
 }
 
@@ -69,8 +69,8 @@ const AdminProductCreateComponent = ({
   const [fileList, setFileList] = useState([]);
   const [preview, setPreview] = useState({
     previewVisible: false,
-    previewImage: '',
-    previewTitle: ''
+    previewImage: "",
+    previewTitle: "",
   });
 
   useEffect(() => {
@@ -101,35 +101,23 @@ const AdminProductCreateComponent = ({
   };
 
   const onChange = ({ fileList: newFileList }) => {
+    console.log({ newFileList });
     setFileList(newFileList);
   };
 
-  // const onPreview = async (file) => {
-  //   let src = file.url;
-  //   if (!src) {
-  //     src = await new Promise((resolve) => {
-  //       const reader = new FileReader();
-  //       reader.readAsDataURL(file.originFileObj);
-  //       reader.onload = () => resolve(reader.result);
-  //     });
-  //   }
-  //   const image = new Image();
-  //   image.src = src;
-  //   const imgWindow = window.open(src);
-  //   imgWindow.document.write(image.outerHTML);
-  // };
   const onCancel = () => setPreview({ previewVisible: false });
 
-  const onPreview = async file => {
+  const onPreview = async (file) => {
     if (!file.url && !file.preview) {
       file.preview = await getBase64(file.originFileObj);
     }
     console.log(file.url);
-        console.log(file);
+    console.log(file);
     setPreview({
       previewImage: file.url || file.preview,
       previewVisible: true,
-      previewTitle: file.name || file.url.substring(file.url.lastIndexOf('/') + 1),
+      previewTitle:
+        file.name || file.url.substring(file.url.lastIndexOf("/") + 1),
     });
   };
 
@@ -276,11 +264,21 @@ const AdminProductCreateComponent = ({
                 >
                   <ImgCrop rotate>
                     <Upload
+                      accept=".png, .jpg, .jpeg"
                       action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
                       listType="picture-card"
                       fileList={fileList}
                       onChange={onChange}
                       onPreview={onPreview}
+                      beforeUpload={(file) => {
+                        if (acceptFileMimes.includes(file.type)) {
+                          return true;
+                        }
+                        openNotification("error", {
+                          message: `We just accept file type for ${acceptFileTypes}`,
+                        });
+                        return false;
+                      }}
                     >
                       {fileList.length < 5 && "+ Upload"}
                       <Modal
@@ -289,7 +287,11 @@ const AdminProductCreateComponent = ({
                         footer={null}
                         onCancel={onCancel}
                       >
-                        <img alt="example" style={{ width: '100%' }} src={preview.previewImage} />
+                        <img
+                          alt="example"
+                          style={{ width: "100%" }}
+                          src={preview.previewImage}
+                        />
                       </Modal>
                     </Upload>
                   </ImgCrop>
@@ -300,7 +302,7 @@ const AdminProductCreateComponent = ({
           <Row justify="center" align="middle">
             <Col span={6}>
               <Button
-                onClick={() => { }}
+                onClick={() => {}}
                 block
                 className="submit"
                 type="primary"

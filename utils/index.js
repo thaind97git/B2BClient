@@ -1,4 +1,16 @@
-import { flow, get, isArray } from "lodash/fp";
+import {
+  camelCase,
+  compact,
+  concat,
+  flow,
+  forEach,
+  get,
+  isArray,
+  join,
+  map,
+  split,
+  tap,
+} from "lodash/fp";
 import { getToken } from "../libs/localStorage";
 import axios from "axios";
 import moment from "moment";
@@ -147,3 +159,13 @@ export const parseCurrencyInput = (amount) => {
 export const formatCurrencyInput = (amount) => {
   return amount.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 };
+
+export const acceptFileMimes = ["image/jpeg", "image/png", "image/jpg"];
+
+export const acceptFileTypes = flow(
+  join(""),
+  tap(console.log),
+  split("image/"),
+  compact,
+  join("/")
+)(acceptFileMimes);
