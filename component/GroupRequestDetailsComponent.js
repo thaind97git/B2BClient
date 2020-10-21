@@ -137,7 +137,7 @@ const GroupRequestDetailsComponent = ({
               Chat
             </a>
           </Button>
-          <Button size="small" style={{ color: "green" }}>
+          <Button size="small" style={{ color: "green" }} onClick={()=>{Router.push(`/aggregator/order/confirmation?groupID=${1}`);}}>
             Closing sales
           </Button>
 

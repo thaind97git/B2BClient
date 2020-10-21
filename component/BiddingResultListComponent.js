@@ -2,6 +2,7 @@ import { Collapse, Row, Table, Typography, List, Button } from "antd";
 import React from "react";
 import { CaretRightOutlined } from "@ant-design/icons";
 import { displayCurrency } from "../utils";
+import Router from "next/router";
 const { Panel } = Collapse;
 const { Link } = Typography;
 const columns = [
@@ -107,7 +108,9 @@ const BiddingResultListComponent = () => {
         dataSource={dataSrc}
       />
       <Row justify="start" style={{ marginTop: 32 }}>
-        <Button disabled type="primary">
+        <Button type="primary" onClick={() => {
+            Router.push(`/aggregator/order/confirmation?groupID=${1}`);
+          }}>
           Closing Sales
         </Button>
       </Row>
