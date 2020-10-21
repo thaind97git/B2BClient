@@ -31,8 +31,7 @@ const connectToRedux = connect(
     requestPagingError: GetRequestPagingError,
   }),
   (dispatch) => ({
-    getRequest: (pageIndex, pageSize, searchMessage, dateRange, status, xy) => {
-      console.log({ status, xy });
+    getRequest: (pageIndex, pageSize, searchMessage, dateRange, status) => {
       dispatch(
         getRequestPaging({
           pageSize,
@@ -63,16 +62,16 @@ const columns = [
     dataIndex: "quantity",
     key: "quantity",
   },
-  {
-    title: "Group",
-    dataIndex: "group",
-    key: "group",
-  },
-  {
-    title: "Date Created",
-    dataIndex: "dateCreated",
-    key: "dateCreated",
-  },
+  // {
+  //   title: "Group",
+  //   dataIndex: "group",
+  //   key: "group",
+  // },
+  // {
+  //   title: "Date Created",
+  //   dataIndex: "dateCreated",
+  //   key: "dateCreated",
+  // },
   {
     title: "Status",
     dataIndex: "status",
@@ -100,6 +99,7 @@ const AdminRequestProcessingComponent = ({
   const [dateRange, setDateRange] = useState(DEFAULT_DATE_RANGE);
   const [openDetails, setOpenDetails] = useState(false);
   const [currentRequestSelected, setCurrentRequestSelected] = useState({});
+  const [category, setCategory] = useState("1");
   const getRequestTable = (requestData = []) => {
     return (
       requestData &&
@@ -252,36 +252,14 @@ const AdminRequestProcessingComponent = ({
           setSearchMessage,
           exElement: (
             <Fragment>
-              <AllCategoryComponent />
-              {/* <Select
+              <AllCategoryComponent
+                onGetLastValue={(value) => setCategory(value)}
                 size="large"
-                placeholder="Filter by group"
-                style={{ width: 200 }}
-                onChange={handleChange}
-              >
-                <Option value="1">Group 1</Option>
-                <Option value="2">Group 2</Option>
-                <Option value="3">Group 3</Option>
-                <Option value="4">Group 4</Option>
-                <Option value="5">Group 5</Option>
-              </Select>
-              <Select
-                size="large"
-                placeholder="Filter by category"
-                style={{ width: 200 }}
-                onChange={handleChange}
-              >
-                <OptGroup label="Category 1">
-                  <Option value="jack">Sub-1 Category 1</Option>
-                  <Option value="lucy">Sub-2 Category 1</Option>
-                </OptGroup>
-                <OptGroup label="Category 2">
-                  <Option value="Yiminghe">Sub-1 Category 1</Option>
-                </OptGroup>
-              </Select> */}
+                isSearchStyle={false}
+              />
             </Fragment>
           ),
-          exCondition: [statusFilter],
+          exCondition: [statusFilter, category],
         }}
         dateRangeProps={{
           dateRange,

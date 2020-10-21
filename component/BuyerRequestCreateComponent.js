@@ -123,7 +123,7 @@ const connectToRedux = connect(
       dispatch(GetShippingMethodResetter);
       dispatch(GetPaymentTermResetter);
       dispatch(GetSupplierCertificationResetter);
-      dispatch(GetProductDetailsResetter);
+      // dispatch(GetProductDetailsResetter);
       dispatch(GetProvinceResetter);
       dispatch(GetWardResetter);
       dispatch(GetDistrictResetter);
@@ -398,7 +398,7 @@ const BuyerRequestCreateComponent = ({
     return <Skeleton active />;
   }
 
-  if ((!productDetailsData || productDetailsError) && !createRequestError) {
+  if (!productDetailsData || productDetailsError) {
     return (
       <Fragment>
         <Empty description="Can not find any product! Please choose specify product before submit RFQ" />
