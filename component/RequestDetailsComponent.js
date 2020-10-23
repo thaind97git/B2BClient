@@ -236,7 +236,18 @@ const RequestDetailsComponent = ({
       <Col span={24}>
         <Title level={5}>Product Basic Information</Title>
       </Col>
-      <DescriptionItem title="Product Name" content={product.description} />
+      <DescriptionItem
+        title="Product Name"
+        content={
+          <a
+            href={`/product-details?id=${product.id}`}
+            target="_blank"
+            rel="noreferrer"
+          >
+            {product.description}
+          </a>
+        }
+      />
       <DescriptionItem
         title="Sourcing Type"
         content={sourcingType.description}

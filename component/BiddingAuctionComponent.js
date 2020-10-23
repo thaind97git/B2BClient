@@ -66,14 +66,14 @@ const columns = [
 ];
 
 const data2 = [
-  "New bid of 800,000 đ.",
-  "New bid of 790,000 đ.",
-  <b>You bid of 780,000 đ.</b>,
-  "New bid of 772,000 đ.",
-  <b>You bid of 765,000 đ.</b>,
-  "New bid of 764,000 đ.",
-  "New bid of 760,000 đ.",
-  <b>You bid of 740,000 đ.</b>,
+  "A Supplier has bid 800,000 đ per product",
+  "A Supplier has bid 790,000 đ per product",
+  <b>You have bid 780,000 đ per product</b>,
+  "A Supplier has bid 772,000 đ per product",
+  <b>You have bid 765,000 đ per product</b>,
+  "A Supplier has bid 764,000 đ per product",
+  "A Supplier has bid 760,000 đ per product",
+  <b>You have bid 740,000 đ per product</b>,
 ];
 
 const data = [
@@ -152,7 +152,7 @@ const BiddingAuctionComponent = () => {
       <Row gutter={16}>
         <Col md={12} sm={24}>
           <Descriptions title="Reverse Auction Information" bordered>
-            <Descriptions.Item label="REVERSE NAME" span={3}>
+            <Descriptions.Item label="REVERSE AUCTION NAME" span={3}>
               IR Night Vision Hidden Camera Watch Sport - 24/10/2020
             </Descriptions.Item>
             <Descriptions.Item label="PRODUCT NAME" span={3}>

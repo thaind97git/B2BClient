@@ -86,7 +86,7 @@ const BiddingResultListComponent = () => {
         className="site-collapse-custom-collapse"
       >
         <Panel
-          header="Live Auction Feed"
+          header="Live Reverse Auction Feed"
           key="1"
           className="site-collapse-custom-panel"
         >
