@@ -109,14 +109,14 @@ const SupplierBiddingComponent = () => {
             <Option value="c4">Category 4</Option>
           </Select>
           <Select
-            placeholder="Filter by time"
+            placeholder="Sort by"
             style={{
               width: "200px",
               margin: "0 4px",
             }}
           >
-            <Option value="today">Today</Option>
             <Option value="new">Newest</Option>
+            <Option value="old">Oldest</Option>
           </Select>
         </Space>
       </Row>
