@@ -1,4 +1,5 @@
 import React, { Fragment } from "react";
+import { getToken, removeToken } from "../libs/localStorage";
 
 const HomePageLayout = ({
   children,
@@ -81,19 +82,37 @@ const HomePageLayout = ({
             <a href="#">
               <i className="fa fa-envelope"></i>
             </a>
-            <a href="/login" style={{ fontSize: 14 }}>
-              Hi, Linh
-            </a>
-            {/* <a style={{ fontSize: 18 }} className="scrollto" href="/register">
-              Register
-            </a>
-            <a
-              style={{ fontSize: 18 }}
-              className="im-supplier scrollto"
-              href="/login"
-            >
-              Login
-            </a> */}
+            {getToken() ? (
+              <Fragment>
+                <a href="/login" style={{ fontSize: 14 }}>
+                  Hi, Linh
+                </a>
+                <a
+                  href="/login"
+                  style={{ fontSize: 14 }}
+                  onClick={() => removeToken()}
+                >
+                  Logout
+                </a>
+              </Fragment>
+            ) : (
+              <Fragment>
+                <a
+                  style={{ fontSize: 18 }}
+                  className="scrollto"
+                  href="/register"
+                >
+                  Register
+                </a>
+                <a
+                  style={{ fontSize: 18 }}
+                  className="im-supplier scrollto"
+                  href="/login"
+                >
+                  Login
+                </a>
+              </Fragment>
+            )}
           </nav>
         </div>
       </header>

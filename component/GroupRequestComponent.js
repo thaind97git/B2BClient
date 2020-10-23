@@ -54,7 +54,7 @@ const dataSource = [
     ),
     category: "Laptop",
     status: <GroupStatusComponent status={G_PENDING} />,
-    dateCreated: "27/09/1999",
+    dateCreated: "24/10/2020",
     actions: (
       <Space>
         <Button
@@ -89,7 +89,7 @@ const dataSource = [
     ),
     category: "Mobile Phone",
     status: <GroupStatusComponent status={G_NEGOTIATING} />,
-    dateCreated: "27/09/1999",
+    dateCreated: "24/09/2020",
     actions: (
       <Space>
         <Button
@@ -122,7 +122,7 @@ const dataSource = [
     ),
     category: "Cloth",
     status: <GroupStatusComponent status={G_PENDING} />,
-    dateCreated: "27/09/1999",
+    dateCreated: "05/09/2020",
     actions: (
       <Space>
         <Button
@@ -155,7 +155,7 @@ const dataSource = [
     ),
     category: "Keyboard",
     status: <GroupStatusComponent status={G_FAILED} />,
-    dateCreated: "27/09/1999",
+    dateCreated: "01/09/2020",
     actions: (
       <Space>
         <Button
