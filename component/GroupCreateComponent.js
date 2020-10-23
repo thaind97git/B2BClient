@@ -55,6 +55,8 @@ const GroupCreateComponent = ({
           onFinish={onFinish}
           initialValues={{
             unit: "Set",
+            productName:
+              "A7 Action Camera 4k HD720P Sports Camera Waterproof video cam 2.0 inches LCD Screen 170 Lens Waterproof Sports Camera",
           }}
         >
           <Row align="middle">
@@ -83,7 +85,11 @@ const GroupCreateComponent = ({
                   },
                 ]}
               >
-                <Input size="large" placeholder="Enter the product name" />
+                <Input.TextArea
+                  disabled
+                  size="large"
+                  placeholder="Enter the product name"
+                />
               </FormItem>
             </Col>
           </Row>
@@ -94,6 +100,10 @@ const GroupCreateComponent = ({
               </FormItem>
             </Col>
           </Row>
+          <i>
+            Note: All of the requests choosing will automatic added to this
+            Group
+          </i>
         </Form>
       </Col>
     </Row>

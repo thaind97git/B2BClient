@@ -1,4 +1,14 @@
-import { Button, Col, Divider, Radio, Row, Select, Drawer } from "antd";
+import {
+  Button,
+  Col,
+  Divider,
+  Radio,
+  Row,
+  Select,
+  Drawer,
+  Tag,
+  Collapse,
+} from "antd";
 import Modal from "antd/lib/modal/Modal";
 import React, { useEffect, useState } from "react";
 import { R_PENDING } from "../enums/requestStatus";
@@ -21,8 +31,8 @@ import {
 import Moment from "react-moment";
 import { get } from "lodash/fp";
 import AllCategoryComponent from "./AllCategoryComponent";
-const { Option, OptGroup } = Select;
-
+import { createLink } from "../libs";
+const { Panel } = Collapse;
 const connectToRedux = connect(
   createStructuredSelector({
     requestPagingData: GetRequestPagingData,
@@ -86,6 +96,7 @@ const AdminRequestManagement = ({
   requestPagingData,
   requestPagingError,
   getRequest,
+  setDefaultTab,
 }) => {
   const [searchMessage, setSearchMessage] = useState("");
   const [dateRange, setDateRange] = useState(DEFAULT_DATE_RANGE);
@@ -111,6 +122,7 @@ const AdminRequestManagement = ({
       requestData &&
       requestData.length > 0 &&
       requestData.map((request = {}) => ({
+        productId: get("product.id")(request),
         key: request.id,
         price: displayCurrency(+request.preferredUnitPrice),
         name: request.product.description,
@@ -146,7 +158,10 @@ const AdminRequestManagement = ({
       setRecordSelected(selectedRows);
     },
     getCheckboxProps: (record) => ({
-      disabled: record.name === "Disabled User", // Column configuration not to be checked
+      disabled:
+        recordSelected.length !== 0
+          ? record.productId !== get("[0].productId")(recordSelected)
+          : false,
       name: record.name,
     }),
   };
@@ -166,7 +181,7 @@ const AdminRequestManagement = ({
   return (
     <div>
       <Modal
-        width={800}
+        width={1000}
         title="Create New Group"
         visible={openGroup}
         onOk={() => setOpenGroup(false)}
@@ -187,7 +202,8 @@ const AdminRequestManagement = ({
         <GroupCreateComponent />
       </Modal>
       <Modal
-        title="Listing Group"
+        width={1000}
+        title="Listing Group inside A7 Action Camera 4k HD720P Sports Camera Waterproof video cam 2.0 inches LCD Screen 170 Lens Waterproof Sports Camera"
         visible={modalVisible}
         onOk={() => setModalVisible(false)}
         onCancel={() => setModalVisible(true)}
@@ -205,7 +221,10 @@ const AdminRequestManagement = ({
               <Button
                 key="submit"
                 type="primary"
-                onClick={() => setModalVisible(false)}
+                onClick={() => {
+                  setDefaultTab("2");
+                  setModalVisible(false);
+                }}
               >
                 Submit
               </Button>
@@ -216,34 +235,91 @@ const AdminRequestManagement = ({
         <Radio.Group style={{ width: "100%" }} onChange={onChange}>
           <Row>
             <Col span={24}>
-              <Radio value="A">
-                <b>Group Iphone 6s 32Gb</b> created inside Iphone
+              <Radio style={{ width: "100%" }} value="A">
+                <b>Group A7 Action Camera 4k HD720P - 02/10/2020</b> created
+                inside <Tag color="processing">Action & Sports Camera</Tag>
+                <div>
+                  <Collapse bordered={false} defaultActiveKey={[]}>
+                    <Panel header="More details" key="1">
+                      <ul>
+                        <li>
+                          Total RFQ added: <b>5</b>
+                        </li>
+                        <li>
+                          Total quantity: <b>80 Pieces</b>
+                        </li>
+                        <li>
+                          Min RFQ price: <b>{displayCurrency(1950000)}</b>
+                        </li>
+                        <li>
+                          Max RFQ price: <b>{displayCurrency(2000000)}</b>
+                        </li>
+                        <li>
+                          Note: <i>N/A</i>
+                        </li>
+                        <li>
+                          <a
+                            rel="noreferrer"
+                            target="_blank"
+                            href={createLink([
+                              "aggregator",
+                              "group",
+                              "details?id=1",
+                            ])}
+                          >
+                            View details
+                          </a>
+                        </li>
+                      </ul>
+                    </Panel>
+                  </Collapse>
+                </div>
               </Radio>
             </Col>
             <Divider />
             <Col span={24}>
-              <Radio value="B">
-                <b>Group Iphone 8 64Gb</b> created inside Iphone
+              <Radio style={{ width: "100%" }} value="B">
+                <b>Group A7 Action Camera 4k HD720P - 23/10/2020</b> created
+                inside <Tag color="processing">Action & Sports Camera</Tag>
+                <div>
+                  <Collapse bordered={false} defaultActiveKey={[]}>
+                    <Panel header="More details" key="1">
+                      <ul>
+                        <li>
+                          Total RFQ added: <b>3</b>
+                        </li>
+                        <li>
+                          Total quantity: <b>130 Pieces</b>
+                        </li>
+                        <li>
+                          Min RFQ price: <b>{displayCurrency(1850000)}</b>
+                        </li>
+                        <li>
+                          Max RFQ price: <b>{displayCurrency(1900000)}</b>
+                        </li>
+                        <li>
+                          Note: <i>N/A</i>
+                        </li>
+                        <li>
+                          <a
+                            rel="noreferrer"
+                            target="_blank"
+                            href={createLink([
+                              "aggregator",
+                              "group",
+                              "details?id=1",
+                            ])}
+                          >
+                            View details
+                          </a>
+                        </li>
+                      </ul>
+                    </Panel>
+                  </Collapse>
+                </div>
               </Radio>
             </Col>
             <Divider />
-            <Col span={24}>
-              <Radio value="C">
-                <b>Group Mackbook Air 2015</b> created inside Mackbook
-              </Radio>
-            </Col>
-            <Divider />
-            <Col span={24}>
-              <Radio value="D">
-                <b>Group Mackbook Air 2018</b> created inside Mackbook
-              </Radio>
-            </Col>
-            <Divider />
-            <Col span={24}>
-              <Radio value="E">
-                <b>Group Mackbook Air 2018</b> created inside Mackbook
-              </Radio>
-            </Col>
           </Row>
         </Radio.Group>
       </Modal>

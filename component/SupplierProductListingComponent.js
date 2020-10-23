@@ -1,7 +1,10 @@
-import { Button, Row, Select, Typography } from "antd";
+import { Button, Row, Select, Typography, Badge, Tag, Col } from "antd";
+import { ShoppingCartOutlined } from "@ant-design/icons";
+import Router from "next/router";
 import React, { useState } from "react";
 import ReactTableLayout from "../layouts/ReactTableLayout";
 import { DEFAULT_DATE_RANGE } from "../utils";
+import AllCategoryComponent from "./AllCategoryComponent";
 const { Option } = Select;
 const { Title } = Typography;
 const LIST_PRODUCT = [
@@ -101,14 +104,25 @@ const SupplierProductListingComponent = () => {
     return {
       productName: product.title,
       dateCreated: "30/10/2020 2:02:00 PM",
-      status: "Active",
-      details: <Button>Views</Button>,
+      status: <Tag color="success">Active</Tag>,
+      details: <Button type="link">Views</Button>,
     };
   });
 
   return (
     <Row>
-      <Title level={4}>Product Company Management</Title>
+      <Col span={24}>
+        <Row justify="space-between">
+          <Title level={4}>Product Company Management</Title>
+          <Button
+            icon={<ShoppingCartOutlined />}
+            onClick={() => Router.push("/supplier/product/register")}
+            type="primary"
+          >
+            Register other product
+          </Button>
+        </Row>
+      </Col>
       <ReactTableLayout
         dispatchAction={() => {}}
         searchProps={{
@@ -116,16 +130,7 @@ const SupplierProductListingComponent = () => {
           searchMessage,
           setSearchMessage,
           exElement: (
-            <Select
-              size="large"
-              placeholder="Filter by category"
-              style={{ width: 200 }}
-              // onChange={handleChange}
-            >
-              <Option value="pending">Category 1</Option>
-              <Option value="done">Category 2</Option>
-              <Option value="rejected">Category 3</Option>
-            </Select>
+            <AllCategoryComponent size="large" isSearchStyle={false} />
           ),
         }}
         dateRangeProps={{

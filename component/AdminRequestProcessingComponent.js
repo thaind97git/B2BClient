@@ -24,6 +24,7 @@ import {
 import Moment from "react-moment";
 import { get } from "lodash/fp";
 import AllCategoryComponent from "./AllCategoryComponent";
+import { createLink } from "../libs";
 const { Option, OptGroup } = Select;
 const connectToRedux = connect(
   createStructuredSelector({
@@ -62,11 +63,11 @@ const columns = [
     dataIndex: "quantity",
     key: "quantity",
   },
-  // {
-  //   title: "Group",
-  //   dataIndex: "group",
-  //   key: "group",
-  // },
+  {
+    title: "Group",
+    dataIndex: "group",
+    key: "group",
+  },
   // {
   //   title: "Date Created",
   //   dataIndex: "dateCreated",
@@ -132,14 +133,20 @@ const AdminRequestProcessingComponent = ({
   const dataSource = [
     {
       key: "4",
-      fromPrice: "60$",
-      toPrice: "80$",
-      price: displayCurrency(300000),
-      name: "Iphone 5",
-      category: "Mobile Phone",
-      quantity: 30,
+      price: displayCurrency(2000000),
+      name:
+        "A7 Action Camera 4k HD720P Sports Camera Waterproof video cam 2.0 inches LCD Screen 170 Lens Waterproof Sports Camera",
+      quantity: 140,
       createdBy: "User 2",
-      group: "Group 1",
+      group: (
+        <a
+          rel="noreferrer"
+          target="_blank"
+          href={createLink(["aggregator", "group", "details?id=1"])}
+        >
+          Group A7 Action Camera 4k HD720P - 23/10/2020
+        </a>
+      ),
       status: <RequestStatusComponent status={R_GROUPED} />,
       dateCreated: "30/09/2020 02:07:26 PM",
       actions: (
@@ -150,84 +157,22 @@ const AdminRequestProcessingComponent = ({
     },
     {
       key: "5",
-      fromPrice: "60$",
-      toPrice: "80$",
-      price: displayCurrency(300000),
-      name: "Iphone 5",
+      price: displayCurrency(1950000),
+      name:
+        "A7 Action Camera 4k HD720P Sports Camera Waterproof video cam 2.0 inches LCD Screen 170 Lens Waterproof Sports Camera",
       category: "Mobile Phone",
-      quantity: 30,
-      createdBy: "User 3",
-      group: "Group 2",
+      quantity: 50,
+      group: (
+        <a
+          rel="noreferrer"
+          target="_blank"
+          href={createLink(["aggregator", "group", "details?id=1"])}
+        >
+          Group A7 Action Camera 4k HD720P - 02/10/2020
+        </a>
+      ),
       status: <RequestStatusComponent status={R_GROUPED} />,
       dateCreated: "30/09/2020 02:07:26 PM",
-      actions: (
-        <Button onClick={() => setOpenDetails(true)} size="small" type="link">
-          View
-        </Button>
-      ),
-    },
-    {
-      key: "6",
-      price: displayCurrency(300000),
-      name: "Iphone 5",
-      category: "Mobile Phone",
-      quantity: 30,
-      createdBy: "User 1",
-      group: "Group 3",
-      dateCreated: "30/09/2020 02:07:26 PM",
-      dueDate: "30/09/2020 02:07:26 PM",
-      status: <RequestStatusComponent status={R_BIDDING} />,
-      actions: (
-        <Button onClick={() => setOpenDetails(true)} size="small" type="link">
-          View
-        </Button>
-      ),
-    },
-    {
-      key: "7",
-      price: displayCurrency(300000),
-      name: "Iphone 5",
-      category: "Mobile Phone",
-      quantity: 30,
-      createdBy: "User 1",
-      group: "Group 4",
-      dateCreated: "30/09/2020 02:07:26 PM",
-      dueDate: "30/09/2020 02:07:26 PM",
-      status: <RequestStatusComponent status={R_WAIT_FOR_AUCTION} />,
-      actions: (
-        <Button onClick={() => setOpenDetails(true)} size="small" type="link">
-          View
-        </Button>
-      ),
-    },
-    {
-      key: "8",
-      price: displayCurrency(300000),
-      name: "Iphone 5",
-      category: "Mobile Phone",
-      quantity: 30,
-      createdBy: "User 1",
-      group: "Group 5",
-      dateCreated: "30/09/2020 02:07:26 PM",
-      dueDate: "30/09/2020 02:07:26 PM",
-      status: <RequestStatusComponent status={R_NEGOTIATING} />,
-      actions: (
-        <Button onClick={() => setOpenDetails(true)} size="small" type="link">
-          View
-        </Button>
-      ),
-    },
-    {
-      key: "9",
-      price: displayCurrency(300000),
-      name: "Iphone 5",
-      category: "Mobile Phone",
-      quantity: 30,
-      createdBy: "User 1",
-      group: "Group 6",
-      dateCreated: "30/09/2020 02:07:26 PM",
-      dueDate: "30/09/2020 02:07:26 PM",
-      status: <RequestStatusComponent status={R_NEGOTIATING} />,
       actions: (
         <Button onClick={() => setOpenDetails(true)} size="small" type="link">
           View
@@ -245,7 +190,7 @@ const AdminRequestProcessingComponent = ({
   return (
     <div>
       <ReactTableLayout
-        dispatchAction={getRequest}
+        // dispatchAction={getRequest}
         searchProps={{
           placeholder: "Search by product name",
           searchMessage,
@@ -265,7 +210,7 @@ const AdminRequestProcessingComponent = ({
           dateRange,
           setDateRange,
         }}
-        data={getRequestTable(requestData || [])}
+        data={dataSource}
         columns={columns}
         totalCount={totalCount}
       />

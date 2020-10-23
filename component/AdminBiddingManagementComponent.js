@@ -13,7 +13,8 @@ function callback(key) {
 const dataSource = [
   {
     key: "1",
-    name: "Macbook Pro 2015",
+    name:
+      "Group A7 Action Camera 4k HD720P - 02/10/2020 Auction Status: Bidding",
     duration: "30 Minutes",
     dateCreated: "January 30, 2020 17:00 GTM",
     createdBy: "John Smith",
@@ -26,7 +27,7 @@ const dataSource = [
   },
   {
     key: "2",
-    name: "Samsum Galaxy",
+    name: "Group 2",
     duration: "1 Hour",
     dateCreated: "January 30, 2020 17:00 GTM",
     createdBy: "Ryota",
@@ -34,7 +35,7 @@ const dataSource = [
   },
   {
     key: "2",
-    name: "Samsum Galaxy",
+    name: "Group 3",
     duration: "2 Hours",
     dateCreated: "January 30, 2020 17:00 GTM",
     createdBy: "Ryota",
@@ -42,7 +43,7 @@ const dataSource = [
   },
   {
     key: "2",
-    name: "Samsum Galaxy",
+    name: "Group 4",
     duration: "2 Hours",
     dateCreated: "January 30, 2020 17:00 GTM",
     createdBy: "Ryota",

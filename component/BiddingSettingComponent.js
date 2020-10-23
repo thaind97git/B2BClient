@@ -53,7 +53,7 @@ const BiddingSettingComponent = ({ setIsDoneSetting, setDefaultTab }) => {
   const [currentValue, setCurrentValue] = useState(0);
   const [qualificationValue, setQualificationValue] = useState(0);
   const [qualificationPrice, setQualificationPrice] = useState(0);
-  const [quantity, setQuantity] = useState(11);
+  const [quantity, setQuantity] = useState(220);
   const onFinish = (values) => {
     console.log("Received values of form: ", values);
     setIsDoneSetting(true);
@@ -75,6 +75,9 @@ const BiddingSettingComponent = ({ setIsDoneSetting, setDefaultTab }) => {
         layout="vertical"
         onFinish={onFinish}
         initialValues={{
+          group: "a",
+          productName:
+            "A7 Action Camera 4k HD720P Sports Camera Waterproof video cam 2.0 inches LCD Screen 170 Lens Waterproof Sports Camera",
           dynamic: "none",
           minimumDuration: "10",
           minimumBid: 0.5,
@@ -110,8 +113,14 @@ const BiddingSettingComponent = ({ setIsDoneSetting, setDefaultTab }) => {
                 },
               ]}
             >
-              <Select showSearch={true} placeholder="Search by group name">
-                <Option value="l">Laptop Gaming Asus</Option>
+              <Select
+                disabled
+                showSearch={true}
+                placeholder="Search by group name"
+              >
+                <Option value="a">
+                  Group A7 Action Camera 4k HD720P - 02/10/2020
+                </Option>
                 <Option value="j">Jean for men</Option>
                 <Option value="k">Keyboard gaming</Option>
                 <Option value="g">Gaming Mouse</Option>
@@ -133,7 +142,7 @@ const BiddingSettingComponent = ({ setIsDoneSetting, setDefaultTab }) => {
                 },
               ]}
             >
-              <Input placeholder="Enter the product name" />
+              <Input disabled placeholder="Enter the product name" />
             </Form.Item>
           </Col>
           <Col md={12} sm={20} style={styles.colStyle}>
@@ -147,7 +156,7 @@ const BiddingSettingComponent = ({ setIsDoneSetting, setDefaultTab }) => {
                 },
               ]}
             >
-              <Select>
+              <Select disabled>
                 <Option value="vnd">VNĐ</Option>
               </Select>
             </Form.Item>
@@ -184,7 +193,7 @@ const BiddingSettingComponent = ({ setIsDoneSetting, setDefaultTab }) => {
                 },
               ]}
             >
-              <Select>
+              <Select disabled>
                 <Option value="pieces">Pieces</Option>
                 <Option value="bags">Bags</Option>
                 <Option value="boxes">Boxes</Option>
@@ -200,7 +209,7 @@ const BiddingSettingComponent = ({ setIsDoneSetting, setDefaultTab }) => {
         <Row>
           <Col md={12} sm={20} style={styles.colStyle}>
             <Form.Item
-              label="Current Price (Not show to participants)"
+              label="Current Price (Not show to participants) - Average price in unit: 1.984.545"
               name="currentPrice"
               rules={[
                 {
@@ -210,13 +219,16 @@ const BiddingSettingComponent = ({ setIsDoneSetting, setDefaultTab }) => {
               ]}
             >
               <InputNumber
-                style={{ width: "100%" }}
-                formatter={currencyFormatter(currencyValue)}
-                parser={currencyParser}
-                value={currentPrice}
                 onChange={(value) => {
                   setCurrentPrice(value);
                 }}
+                placeholder="Enter the current price"
+                style={{ width: "100%" }}
+                min={0}
+                formatter={(value) =>
+                  `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                }
+                parser={(value) => value.replace(/,*/g, "")}
               />
             </Form.Item>
           </Col>
@@ -232,7 +244,7 @@ const BiddingSettingComponent = ({ setIsDoneSetting, setDefaultTab }) => {
         <Row>
           <Col md={12} sm={20} style={styles.colStyle}>
             <Form.Item
-              label="Qualification Price"
+              label="Qualification Price - Min RFQ price: 1.950.000 đ"
               name="quaPrice"
               rules={[
                 {
@@ -242,12 +254,14 @@ const BiddingSettingComponent = ({ setIsDoneSetting, setDefaultTab }) => {
               ]}
             >
               <InputNumber
+                placeholder="Enter the qualification price"
                 style={{ width: "100%" }}
-                formatter={currencyFormatter(currencyValue)}
-                parser={currencyParser}
-                value={qualificationPrice}
+                min={0}
+                formatter={(value) =>
+                  `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                }
+                parser={(value) => value.replace(/,*/g, "")}
                 onChange={(value) => setQualificationPrice(value)}
-                prefix="đ"
               />
             </Form.Item>
           </Col>
@@ -365,7 +379,7 @@ const BiddingSettingComponent = ({ setIsDoneSetting, setDefaultTab }) => {
                     },
                   ]}
                 >
-                  <Input suffix="%" />
+                  <Input type="number" min={0} suffix="%" />
                 </Form.Item>
               </Col>
               <Col span={12} style={styles.colStyle}>
@@ -379,7 +393,7 @@ const BiddingSettingComponent = ({ setIsDoneSetting, setDefaultTab }) => {
                     },
                   ]}
                 >
-                  <Input suffix="%" />
+                  <Input type="number" min={0} suffix="%" />
                 </Form.Item>
               </Col>
             </Row>

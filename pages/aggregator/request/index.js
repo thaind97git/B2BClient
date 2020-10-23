@@ -14,7 +14,7 @@ const Page = () => {
       key: "1",
       content: (
         <div>
-          <AdminRequestPendingComponent />
+          <AdminRequestPendingComponent setDefaultTab={setDefaultTab} />
         </div>
       ),
     },

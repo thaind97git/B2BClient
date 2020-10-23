@@ -9,7 +9,9 @@ const BiddingOverviewComponent = ({ isSupplier = true }) => {
           title="Event Brief"
           description={
             <Row className="info">
-              <Col span={24}>We are looking to source 20 laptops.</Col>
+              <Col span={24}>
+                We are looking to source 220 A7 Action Camera 4k HD720P.
+              </Col>
               <Col span={24}>
                 These must be delivered to our Ho Chi Minh office
               </Col>
@@ -48,7 +50,9 @@ const BiddingOverviewComponent = ({ isSupplier = true }) => {
             <Row>
               <Col span={24}>
                 Event Name:{" "}
-                <span className="info">Apple Macbook Air 13 inches</span>
+                <span className="info">
+                  Group A7 Action Camera 4k HD720P - 02/10/2020
+                </span>
               </Col>
               <Col span={24}>
                 Event type: <span className="info">Online Reverse Auction</span>
@@ -68,10 +72,13 @@ const BiddingOverviewComponent = ({ isSupplier = true }) => {
             <Row>
               <Col span={24}>
                 Product Name:{" "}
-                <span className="info">Macbook Air 13 inches</span>
+                <span className="info">
+                  A7 Action Camera 4k HD720P Sports Camera Waterproof video cam
+                  2.0 inches LCD Screen 170 Lens Waterproof Sports Camera
+                </span>
               </Col>
               <Col span={24}>
-                Quantity of UoM's: <span className="info">60 Units</span>
+                Quantity of UoM's: <span className="info">220 Units</span>
               </Col>
               {!isSupplier && (
                 <Col span={24}>
@@ -113,7 +120,7 @@ const BiddingOverviewComponent = ({ isSupplier = true }) => {
               {!isSupplier && (
                 <Fragment>
                   <Col span={24}>
-                    Minimum Bid Change: <span className="info">10%</span>
+                    Minimum Bid Change: <span className="info">1%</span>
                   </Col>
                   <Col span={24}>
                     Maximum Bid Change: <span className="info">10 %</span>

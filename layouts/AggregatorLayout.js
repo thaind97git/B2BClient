@@ -35,16 +35,16 @@ const ADMIN_MENU = [
   {
     key: "3",
     icon: <ExperimentOutlined />,
-    label: "Bidding",
-    link: undefined,
-    subMenu: [
-      {
-        subKey: "3.1",
-        subLink: "/aggregator/bidding",
-        subIcon: <OrderedListOutlined />,
-        subLabel: "Biddings",
-      },
-    ],
+    label: "Biddings",
+    link: "/aggregator/bidding",
+    // subMenu: [
+    //   {
+    //     subKey: "3.1",
+    //     subLink: "/aggregator/bidding",
+    //     subIcon: <OrderedListOutlined />,
+    //     subLabel: "Biddings",
+    //   },
+    // ],
   },
   {
     key: "4",

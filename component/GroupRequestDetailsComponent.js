@@ -19,10 +19,12 @@ import ListingSupplierByCategoryComponent from "./ListingSupplierByCategoryCompo
 import RequestDetailsComponent from "./RequestDetailsComponent";
 import UserProfileComponent from "./UserProfileComponent";
 import GroupStatusComponent from "./Utils/GroupStatusComponent";
+import { displayCurrency, getAveragePrice } from "../utils";
+import { createLink } from "../libs";
 
 const { Title } = Typography;
 const groupRequestColumns = [
-  { title: "Product Name", dataIndex: "category", key: "category" },
+  // { title: "Product Name", dataIndex: "category", key: "category" },
   { title: "Preferred Unit Price", dataIndex: "price", key: "price" },
   { title: "Quantity", dataIndex: "quantity", key: "quantity" },
   { title: "Date Created", dataIndex: "dateCreated", key: "dateCreated" },
@@ -40,13 +42,14 @@ const SUPPLIER_CONTACT = [
 const GroupRequestDetailsComponent = ({
   group = {
     id: 1,
-    title: "Iphone 7S",
-    category: <Tag color="processing">Iphone</Tag>,
+    title: "Group A7 Action Camera 4k HD720P - 02/10/2020",
+    category: <Tag color="processing">Action & Sports Camera</Tag>,
     dateCreated: "27/09/2020",
     dateUpdated: "28/09/2020",
-    description: "This Group will focus about Iphone 7S 64Gb",
-    quantity: "60 Units",
-    priceInUnit: "6,700,000 đ",
+    description: "This Group will focus about Camera A7",
+    quantity: "190 Units",
+    minPrice: displayCurrency(1950000),
+    maxPrice: displayCurrency(2000000),
     status: G_NEGOTIATING,
   },
 }) => {
@@ -57,9 +60,8 @@ const GroupRequestDetailsComponent = ({
   const REQUEST_LIST = [
     {
       key: "1",
-      price: "7,000,000 đ",
-      category: "Iphone 7S 64Gb",
-      quantity: 20,
+      price: displayCurrency(1950000),
+      quantity: 50,
       createdBy: "User 1",
       dateCreated: "30/09/2020 02:07:26 PM",
       actions: (
@@ -78,9 +80,8 @@ const GroupRequestDetailsComponent = ({
     },
     {
       key: "2",
-      price: "6,800,000 đ",
-      category: "Iphone 7S 64Gb",
-      quantity: 20,
+      price: displayCurrency(2000000),
+      quantity: 140,
       createdBy: "User 1",
       dateCreated: "30/09/2020 02:07:26 PM",
       actions: (
@@ -99,9 +100,8 @@ const GroupRequestDetailsComponent = ({
     },
     {
       key: "3",
-      price: "6,500,000 đ",
-      category: "Iphone 7s 64Gb",
-      quantity: 20,
+      price: displayCurrency(1970000),
+      quantity: 30,
       createdBy: "User 1",
       dateCreated: "30/09/2020 02:07:26 PM",
       actions: (
@@ -137,7 +137,13 @@ const GroupRequestDetailsComponent = ({
               Chat
             </a>
           </Button>
-          <Button size="small" style={{ color: "green" }} onClick={()=>{Router.push(`/aggregator/order/confirmation?groupID=${1}`);}}>
+          <Button
+            size="small"
+            style={{ color: "green" }}
+            onClick={() => {
+              Router.push(`/aggregator/order/confirmation?groupID=${1}`);
+            }}
+          >
             Closing sales
           </Button>
 
@@ -238,6 +244,8 @@ const GroupRequestDetailsComponent = ({
     status,
     priceInUnit,
     quantity,
+    minPrice,
+    maxPrice,
   } = group;
   return (
     <Fragment>
@@ -282,9 +290,6 @@ const GroupRequestDetailsComponent = ({
           >
             Create Reverse Auction
           </Button>
-          <Button type="primary" onClick={() => setIsOpenContact(true)}>
-            Add Suppliers
-          </Button>
         </Space>
       </Row>
       <Space direction="vertical">
@@ -293,16 +298,42 @@ const GroupRequestDetailsComponent = ({
           style={{ width: "100%" }}
         >
           <Descriptions>
+            <Descriptions.Item label="Product Name" span={3}>
+              <a
+                rel="noreferrer"
+                target="_blank"
+                href={createLink(["product-details?productId=1"])}
+              >
+                <b>
+                  A7 Action Camera 4k HD720P Sports Camera Waterproof video cam
+                  2.0 inches LCD Screen 170 Lens Waterproof Sports Camera
+                </b>
+              </a>
+            </Descriptions.Item>
             <Descriptions.Item label="Category">{category}</Descriptions.Item>
             <Descriptions.Item label="Created date">
               {dateCreated}
             </Descriptions.Item>
-            <Descriptions.Item label="Updated Date">
-              {dateUpdated}
+            <Descriptions.Item label="Total Quantity">
+              {REQUEST_LIST.reduce((prev, current) => {
+                return prev + current.quantity;
+              }, 0)}{" "}
+              Units
             </Descriptions.Item>
-            <Descriptions.Item label="Quantity">{quantity}</Descriptions.Item>
             <Descriptions.Item label="Average price in unit">
-              {priceInUnit}
+              {displayCurrency(
+                getAveragePrice([
+                  { price: 1950000, quantity: 50 },
+                  { price: 1970000, quantity: 30 },
+                  { price: 2000000, quantity: 140 },
+                ])
+              )}
+            </Descriptions.Item>
+            <Descriptions.Item label="Min RFQ price">
+              {minPrice}
+            </Descriptions.Item>
+            <Descriptions.Item label="Max RFQ price">
+              {maxPrice}
             </Descriptions.Item>
             <Descriptions.Item label="Status">
               <GroupStatusComponent status={status} />
@@ -339,6 +370,13 @@ const GroupRequestDetailsComponent = ({
         >
           <div>
             <Table
+              footer={() => {
+                return (
+                  <Button type="primary" onClick={() => setIsOpenContact(true)}>
+                    Add Suppliers
+                  </Button>
+                );
+              }}
               bordered
               columns={SUPPLIER_CONTACT}
               dataSource={SUPPLIER_CONTACT_DATA}
@@ -357,10 +395,18 @@ const GroupRequestDetailsComponent = ({
         <ListingSupplierByCategoryComponent category={category} />
       </Modal>
       <Modal
-        width={600}
+        width={800}
         onCancel={() => setIsOpenAddRequest(false)}
         onOk={() => setIsOpenAddRequest(false)}
-        title="Add Request"
+        title={
+          <div>
+            Add Requests created inside{" "}
+            <i>
+              A7 Action Camera 4k HD720P Sports Camera Waterproof video cam 2.0
+              inches LCD Screen 170 Lens Waterproof Sports Camera
+            </i>
+          </div>
+        }
         visible={isOpenAddRequest}
         okText="Add"
       >

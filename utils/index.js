@@ -169,3 +169,17 @@ export const acceptFileTypes = flow(
   compact,
   join("/")
 )(acceptFileMimes);
+
+export const getAveragePrice = (prices = []) => {
+  const totalQuantity = prices.reduce((prev, current) => {
+    return prev + current.quantity;
+  }, 0);
+  if (totalQuantity === 0) {
+    return 0;
+  }
+  const totalAmount = prices.reduce((prev, current) => {
+    return prev + current.quantity * current.price;
+  }, 0);
+
+  return Math.floor(totalAmount / totalQuantity);
+};

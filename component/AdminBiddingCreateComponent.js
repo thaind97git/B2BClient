@@ -81,12 +81,6 @@ const AdminBiddingCreateComponent = () => {
           </Checkbox>
         </div>
         <br />
-        {/* <Checkbox.Group
-          style={{ width: "100%" }}
-          options={plainOptions}
-          value={checkbox.checkedList}
-          onChange={onChange}
-        /> */}
         <Checkbox.Group style={{ width: "100%" }} onChange={onChange}>
           <Row>
             {plainOptions.map((option, index) => {

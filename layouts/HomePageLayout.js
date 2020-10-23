@@ -81,7 +81,10 @@ const HomePageLayout = ({
             <a href="#">
               <i className="fa fa-envelope"></i>
             </a>
-            <a style={{ fontSize: 18 }} className="scrollto" href="/login">
+            <a href="/login" style={{ fontSize: 14 }}>
+              Hi, Linh
+            </a>
+            {/* <a style={{ fontSize: 18 }} className="scrollto" href="/register">
               Register
             </a>
             <a
@@ -90,7 +93,7 @@ const HomePageLayout = ({
               href="/login"
             >
               Login
-            </a>
+            </a> */}
           </nav>
         </div>
       </header>

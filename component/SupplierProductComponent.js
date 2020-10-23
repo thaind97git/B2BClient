@@ -1,5 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Button, Col, Drawer, List, Row, Skeleton, Typography } from "antd";
+import {
+  Button,
+  Col,
+  Drawer,
+  List,
+  Modal,
+  Row,
+  Skeleton,
+  Typography,
+} from "antd";
 import AllCategoryComponent from "./AllCategoryComponent";
 import Search from "antd/lib/input/Search";
 import ProductDetailComponent from "./ProductDetailComponent";
@@ -10,6 +19,7 @@ import {
   GetProductByCategoryData,
   GetProductByCategoryError,
 } from "../stores/ProductState";
+import SupplierProductOptionComponent from "./SupplierProductOptionComponent";
 const { Title } = Typography;
 const connectToRedux = connect(
   createStructuredSelector({
@@ -106,6 +116,8 @@ const SupplierProductComponent = ({
   const [data, setData] = useState([]);
   const [list, setList] = useState([]);
 
+  const [openOption, setOpenOption] = useState(false);
+
   useEffect(() => {
     if (getProductByCategoryData) {
       const newData = data.concat(getProductByCategoryData.data);
@@ -152,6 +164,16 @@ const SupplierProductComponent = ({
     ) : null;
   return (
     <div>
+      <Modal
+        title="Create options"
+        centered
+        visible={openOption}
+        onOk={() => setOpenOption(false)}
+        onCancel={() => setOpenOption(false)}
+        width={1000}
+      >
+        <SupplierProductOptionComponent />
+      </Modal>
       <Drawer
         width={640}
         title="Product details"
@@ -203,11 +225,16 @@ const SupplierProductComponent = ({
                 itemLayout="horizontal"
                 loadMore={loadMore}
                 dataSource={LIST_PRODUCT}
-                renderItem={(item) => (
+                renderItem={(item, index) => (
                   <List.Item
+                    key={index}
                     actions={
                       !item.loading && [
-                        <Button size="small" type="primary">
+                        <Button
+                          onClick={() => setOpenOption(true)}
+                          size="small"
+                          type="primary"
+                        >
                           Register Sell product
                         </Button>,
                       ]
