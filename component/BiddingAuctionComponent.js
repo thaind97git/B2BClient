@@ -11,6 +11,7 @@ import {
   Space,
   Statistic,
   Table,
+  List,
 } from "antd";
 import { ArrowUpOutlined, CaretRightOutlined } from "@ant-design/icons";
 import { displayCurrency } from "../utils";
@@ -19,6 +20,7 @@ import {
   currencyParser,
   currencyValue,
 } from "../libs/currencyFormatter";
+import { uniqBy } from "lodash";
 const { Panel } = Collapse;
 const Rank = ({ rank }) => {
   let color;
@@ -56,66 +58,50 @@ const columns = [
     key: "total",
     render: (text, record) => `${record.total}`,
   },
-  {
-    title: "Rank",
-    key: "rank",
-    render: (text, record) => <Rank rank={record.rank} />,
-  },
+  // {
+  //   title: "Rank",
+  //   key: "rank",
+  //   render: (text, record) => <Rank rank={record.rank} />,
+  // },
+];
+
+const data2 = [
+  "New bid of 800,000 đ.",
+  "New bid of 790,000 đ.",
+  <b>You bid of 780,000 đ.</b>,
+  "New bid of 772,000 đ.",
+  <b>You bid of 765,000 đ.</b>,
+  "New bid of 764,000 đ.",
+  "New bid of 760,000 đ.",
+  <b>You bid of 740,000 đ.</b>,
 ];
 
 const data = [
   {
     no: 1,
-    bid: displayCurrency(800000),
-    total: displayCurrency(16000000),
-    rank: 1,
+    bid: displayCurrency(780000),
+    total: displayCurrency(171600000),
   },
   {
     no: 2,
-    bid: displayCurrency(780000),
-    total: displayCurrency(15600000),
-    rank: 5,
+    bid: displayCurrency(765000),
+    total: displayCurrency(168300000),
   },
   {
     no: 3,
-    bid: displayCurrency(750000),
-    total: displayCurrency(15000000),
-    rank: 2,
-  },
-  {
-    no: 4,
     bid: displayCurrency(740000),
-    total: displayCurrency(14800000),
-    rank: 3,
-  },
-  {
-    no: 5,
-    bid: displayCurrency(735000),
-    total: displayCurrency(14700000),
-    rank: 3,
-  },
-  {
-    no: 6,
-    bid: displayCurrency(730000),
-    total: displayCurrency(14600000),
-    rank: 4,
-  },
-  {
-    no: 6,
-    bid: displayCurrency(610000),
-    total: displayCurrency(12200000),
-    rank: 1,
+    total: displayCurrency(162800000),
   },
 ];
 
-const unit = 20;
+const unit = 220;
 const BiddingAuctionComponent = () => {
   const [isPlaceBid, setIsPlaceBid] = useState(false);
-  const [currentBid, setCurrentBid] = useState(750000);
+  const [currentBid, setCurrentBid] = useState(780000);
   const [bidTemp, setBidTemp] = useState(0);
   const [totalLot, setTotalLot] = useState(unit * currentBid);
-  const minimumChange = 600000;
-  const maximumChange = 830000;
+  const minimumChange = 700000;
+  const maximumChange = 800000;
   return (
     <div>
       <Collapse
@@ -126,7 +112,7 @@ const BiddingAuctionComponent = () => {
         )}
         className="site-collapse-custom-collapse"
       >
-        <Panel
+        {/* <Panel
           header="Live Auction Feed"
           key="1"
           className="site-collapse-custom-panel"
@@ -135,36 +121,52 @@ const BiddingAuctionComponent = () => {
             The Live Auction Feed will provide real-time notifications of
             messages and changes to the auction settings
           </p>
+        </Panel> */}
+        <Panel
+          header="Live Reverse Auction Feed"
+          key="1"
+          className="site-collapse-custom-panel"
+        >
+          <div style={{ height: 200, overflowY: "scroll" }}>
+            <List
+              size="small"
+              dataSource={data2}
+              renderItem={(item) => <List.Item>{item}</List.Item>}
+            />
+          </div>
         </Panel>
       </Collapse>
 
       <Row justify="center">
-        <Card bordered={false}>
+        <Card bordered={false} style={{ textAlign: "center" }}>
           <Statistic
-            title="Rank Notification"
-            value={1}
+            title="Lowest Bid"
+            value={"772,000 đ"}
             precision={0}
             valueStyle={{ color: "#3f8600" }}
-            prefix={<ArrowUpOutlined />}
+            // prefix={<ArrowUpOutlined />}
           />
         </Card>
       </Row>
 
       <Row gutter={16}>
         <Col md={12} sm={24}>
-          <Descriptions title="Auction Information" bordered>
-            <Descriptions.Item label="LOT NAME" span={3}>
-              Apple Macbook Air 13 inches
+          <Descriptions title="Reverse Auction Information" bordered>
+            <Descriptions.Item label="REVERSE NAME" span={3}>
+              IR Night Vision Hidden Camera Watch Sport - 24/10/2020
+            </Descriptions.Item>
+            <Descriptions.Item label="PRODUCT NAME" span={3}>
+              IR Night Vision Hidden Camera Watch Sport Wear Watch Camera WIFI
             </Descriptions.Item>
             <Descriptions.Item label="QUANTITY x UNIT MEASURE (UOM)" span={3}>
-              20 x Each
+              {unit} x Each
+            </Descriptions.Item>
+            <Descriptions.Item label="QUALIFICATION PRICE" span={3}>
+              800.000 đ
             </Descriptions.Item>
             <Descriptions.Item label="BID RANGE" span={3}>
-              {isPlaceBid
-                ? `${displayCurrency(minimumChange)} - ${displayCurrency(
-                    maximumChange
-                  )}`
-                : "-"}
+              {displayCurrency(minimumChange)} -{" "}
+              {displayCurrency(maximumChange)}
             </Descriptions.Item>
             <Descriptions.Item label="YOUR BID PER UOM" span={3}>
               {isPlaceBid ? (
@@ -172,13 +174,14 @@ const BiddingAuctionComponent = () => {
                   style={{ minWidth: 200 }}
                   min={minimumChange}
                   max={maximumChange}
-                  formatter={currencyFormatter(currencyValue)}
-                  parser={currencyParser}
+                  formatter={(value) =>
+                    `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                  }
+                  parser={(value) => value.replace(/,*/g, "")}
                   onChange={(value) => {
                     setBidTemp(value);
                     setTotalLot(value * unit);
                   }}
-                  prefix="đ"
                 />
               ) : (
                 `${displayCurrency(currentBid)}`

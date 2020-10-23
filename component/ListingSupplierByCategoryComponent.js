@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Checkbox, Row, Col, Space, Divider } from "antd";
+import { Checkbox, Row, Col, Space, Divider, Tag } from "antd";
+import { displayCurrency } from "../utils";
 const CheckboxGroup = Checkbox.Group;
 
 const ListingSupplierByCategoryComponent = () => {
@@ -16,6 +17,18 @@ const ListingSupplierByCategoryComponent = () => {
               <i>supplier4@gmail.com</i>
             </span>
             )
+          </div>
+          <div>
+            <Tag style={{ fontSize: 12, padding: 4 }}>
+              <div style={{ minWidth: 160 }}>
+                {">="} {50} Units - <b>{displayCurrency(1150000)} / Unit</b>
+              </div>
+            </Tag>
+            <Tag style={{ fontSize: 12, padding: 4 }}>
+              <div style={{ minWidth: 160 }}>
+                {">="} {100} Units - <b>{displayCurrency(1100000)} / Unit</b>
+              </div>
+            </Tag>
           </div>
 
           <Divider />
@@ -35,6 +48,18 @@ const ListingSupplierByCategoryComponent = () => {
             </span>
             )
           </div>
+          <div>
+            <Tag style={{ fontSize: 12, padding: 4 }}>
+              <div style={{ minWidth: 160 }}>
+                {">="} {40} Units - <b>{displayCurrency(1150000)} / Unit</b>
+              </div>
+            </Tag>
+            <Tag style={{ fontSize: 12, padding: 4 }}>
+              <div style={{ minWidth: 160 }}>
+                {">="} {110} Units - <b>{displayCurrency(1100000)} / Unit</b>
+              </div>
+            </Tag>
+          </div>
           <Divider />
         </Space>
       ),
@@ -51,6 +76,18 @@ const ListingSupplierByCategoryComponent = () => {
               <i>supplier6@gmail.com</i>
             </span>
             )
+          </div>
+          <div>
+            <Tag style={{ fontSize: 12, padding: 4 }}>
+              <div style={{ minWidth: 160 }}>
+                {">="} {60} Units - <b>{displayCurrency(1150000)} / Unit</b>
+              </div>
+            </Tag>
+            <Tag style={{ fontSize: 12, padding: 4 }}>
+              <div style={{ minWidth: 160 }}>
+                {">="} {120} Units - <b>{displayCurrency(1100000)} / Unit</b>
+              </div>
+            </Tag>
           </div>
           <Divider />
         </Space>

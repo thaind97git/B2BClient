@@ -133,10 +133,9 @@ const AdminRequestProcessingComponent = ({
   const dataSource = [
     {
       key: "4",
-      price: displayCurrency(2000000),
-      name:
-        "A7 Action Camera 4k HD720P Sports Camera Waterproof video cam 2.0 inches LCD Screen 170 Lens Waterproof Sports Camera",
-      quantity: 140,
+      price: displayCurrency(1200000),
+      name: "IR Night Vision Hidden Camera Watch Sport Wear Watch Camera WIFI",
+      quantity: 50,
       createdBy: "User 2",
       group: (
         <a
@@ -144,7 +143,7 @@ const AdminRequestProcessingComponent = ({
           target="_blank"
           href={createLink(["aggregator", "group", "details?id=1"])}
         >
-          Group A7 Action Camera 4k HD720P - 23/10/2020
+          Group IR Night Vision Hidden Camera Watch Sport - 23/10/2020
         </a>
       ),
       status: <RequestStatusComponent status={R_GROUPED} />,
@@ -157,18 +156,40 @@ const AdminRequestProcessingComponent = ({
     },
     {
       key: "5",
-      price: displayCurrency(1950000),
-      name:
-        "A7 Action Camera 4k HD720P Sports Camera Waterproof video cam 2.0 inches LCD Screen 170 Lens Waterproof Sports Camera",
+      price: displayCurrency(1190000),
+      name: "IR Night Vision Hidden Camera Watch Sport Wear Watch Camera WIFI",
       category: "Mobile Phone",
-      quantity: 50,
+      quantity: 30,
       group: (
         <a
           rel="noreferrer"
           target="_blank"
           href={createLink(["aggregator", "group", "details?id=1"])}
         >
-          Group A7 Action Camera 4k HD720P - 02/10/2020
+          Group IR Night Vision Hidden Camera Watch Sport - 02/10/2020
+        </a>
+      ),
+      status: <RequestStatusComponent status={R_GROUPED} />,
+      dateCreated: "30/09/2020 02:07:26 PM",
+      actions: (
+        <Button onClick={() => setOpenDetails(true)} size="small" type="link">
+          View
+        </Button>
+      ),
+    },
+    {
+      key: "5",
+      price: displayCurrency(1180000),
+      name: "IR Night Vision Hidden Camera Watch Sport Wear Watch Camera WIFI",
+      category: "Mobile Phone",
+      quantity: 140,
+      group: (
+        <a
+          rel="noreferrer"
+          target="_blank"
+          href={createLink(["aggregator", "group", "details?id=1"])}
+        >
+          Group IR Night Vision Hidden Camera Watch Sport - 02/10/2020
         </a>
       ),
       status: <RequestStatusComponent status={R_GROUPED} />,

@@ -85,6 +85,7 @@ const BiddingSupplierListComponent = () => {
   return (
     <Row>
       <Modal
+        width={1000}
         onCancel={() => setIsOpenContact(false)}
         title="Add Supplier"
         visible={isOpenContact}

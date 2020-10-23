@@ -42,14 +42,15 @@ const SUPPLIER_CONTACT = [
 const GroupRequestDetailsComponent = ({
   group = {
     id: 1,
-    title: "Group A7 Action Camera 4k HD720P - 02/10/2020",
+    title: "Group IR Night Vision Hidden Camera Watch Sport - 23/10/2020",
     category: <Tag color="processing">Action & Sports Camera</Tag>,
     dateCreated: "27/09/2020",
     dateUpdated: "28/09/2020",
-    description: "This Group will focus about Camera A7",
+    description:
+      "This Group will focus about IR Night Vision Hidden Camera Watch Sport",
     quantity: "190 Units",
-    minPrice: displayCurrency(1950000),
-    maxPrice: displayCurrency(2000000),
+    minPrice: displayCurrency(1180000),
+    maxPrice: displayCurrency(1200000),
     status: G_NEGOTIATING,
   },
 }) => {
@@ -60,7 +61,7 @@ const GroupRequestDetailsComponent = ({
   const REQUEST_LIST = [
     {
       key: "1",
-      price: displayCurrency(1950000),
+      price: displayCurrency(1190000),
       quantity: 50,
       createdBy: "User 1",
       dateCreated: "30/09/2020 02:07:26 PM",
@@ -80,7 +81,7 @@ const GroupRequestDetailsComponent = ({
     },
     {
       key: "2",
-      price: displayCurrency(2000000),
+      price: displayCurrency(1180000),
       quantity: 140,
       createdBy: "User 1",
       dateCreated: "30/09/2020 02:07:26 PM",
@@ -100,7 +101,7 @@ const GroupRequestDetailsComponent = ({
     },
     {
       key: "3",
-      price: displayCurrency(1970000),
+      price: displayCurrency(1200000),
       quantity: 30,
       createdBy: "User 1",
       dateCreated: "30/09/2020 02:07:26 PM",
@@ -239,11 +240,8 @@ const GroupRequestDetailsComponent = ({
     title,
     category,
     dateCreated,
-    dateUpdated,
     description,
     status,
-    priceInUnit,
-    quantity,
     minPrice,
     maxPrice,
   } = group;
@@ -259,6 +257,7 @@ const GroupRequestDetailsComponent = ({
         key={"right"}
       >
         <RequestDetailsComponent
+          // requestId="fd450a99-991b-4164-c2e5-08d8773db076"
           buttonActions={[
             {
               label: "Remove",
@@ -305,8 +304,8 @@ const GroupRequestDetailsComponent = ({
                 href={createLink(["product-details?productId=1"])}
               >
                 <b>
-                  A7 Action Camera 4k HD720P Sports Camera Waterproof video cam
-                  2.0 inches LCD Screen 170 Lens Waterproof Sports Camera
+                  IR Night Vision Hidden Camera Watch Sport Wear Watch Camera
+                  WIFI
                 </b>
               </a>
             </Descriptions.Item>
@@ -323,9 +322,9 @@ const GroupRequestDetailsComponent = ({
             <Descriptions.Item label="Average price in unit">
               {displayCurrency(
                 getAveragePrice([
-                  { price: 1950000, quantity: 50 },
-                  { price: 1970000, quantity: 30 },
-                  { price: 2000000, quantity: 140 },
+                  { price: 1200000, quantity: 50 },
+                  { price: 1190000, quantity: 30 },
+                  { price: 1180000, quantity: 140 },
                 ])
               )}
             </Descriptions.Item>
@@ -386,6 +385,7 @@ const GroupRequestDetailsComponent = ({
         </Card>
       </Space>
       <Modal
+        width={1000}
         onCancel={() => setIsOpenContact(false)}
         onOk={() => setIsOpenContact(false)}
         title="Find Supplier"
@@ -402,8 +402,7 @@ const GroupRequestDetailsComponent = ({
           <div>
             Add Requests created inside{" "}
             <i>
-              A7 Action Camera 4k HD720P Sports Camera Waterproof video cam 2.0
-              inches LCD Screen 170 Lens Waterproof Sports Camera
+              IR Night Vision Hidden Camera Watch Sport Wear Watch Camera WIFI
             </i>
           </div>
         }

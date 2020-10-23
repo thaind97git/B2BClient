@@ -77,13 +77,13 @@ const BiddingSettingComponent = ({ setIsDoneSetting, setDefaultTab }) => {
         initialValues={{
           group: "a",
           productName:
-            "A7 Action Camera 4k HD720P Sports Camera Waterproof video cam 2.0 inches LCD Screen 170 Lens Waterproof Sports Camera",
+            "IR Night Vision Hidden Camera Watch Sport Wear Watch Camera WIFI",
           dynamic: "none",
           minimumDuration: "10",
           minimumBid: 0.5,
           maximumBid: 10,
           currency: "VNĐ",
-          units: "units",
+          units: "pieces",
           quantity: quantity,
         }}
       >
@@ -113,13 +113,9 @@ const BiddingSettingComponent = ({ setIsDoneSetting, setDefaultTab }) => {
                 },
               ]}
             >
-              <Select
-                disabled
-                showSearch={true}
-                placeholder="Search by group name"
-              >
+              <Select showSearch={true} placeholder="Search by group name">
                 <Option value="a">
-                  Group A7 Action Camera 4k HD720P - 02/10/2020
+                  Group IR Night Vision Hidden Camera Watch Sport - 23/10/2020
                 </Option>
                 <Option value="j">Jean for men</Option>
                 <Option value="k">Keyboard gaming</Option>
@@ -209,7 +205,7 @@ const BiddingSettingComponent = ({ setIsDoneSetting, setDefaultTab }) => {
         <Row>
           <Col md={12} sm={20} style={styles.colStyle}>
             <Form.Item
-              label="Current Price (Not show to participants) - Average price in unit: 1.984.545"
+              label="Current Price (Not show to participants)"
               name="currentPrice"
               rules={[
                 {
@@ -237,14 +233,15 @@ const BiddingSettingComponent = ({ setIsDoneSetting, setDefaultTab }) => {
               label="Current Value (Not show to participants)"
               name="currentValue"
             >
-              <Title level={4}>{displayCurrency(currentValue)}</Title>
+              <Title level={4}>{displayCurrency(currentValue)}</Title>Average
+              price in unit: 1.185.909 đ
             </Form.Item>
           </Col>
         </Row>
         <Row>
           <Col md={12} sm={20} style={styles.colStyle}>
             <Form.Item
-              label="Qualification Price - Min RFQ price: 1.950.000 đ"
+              label="Qualification Price"
               name="quaPrice"
               rules={[
                 {
@@ -267,33 +264,14 @@ const BiddingSettingComponent = ({ setIsDoneSetting, setDefaultTab }) => {
           </Col>
           <Col md={12} sm={20} style={styles.colStyle}>
             <Form.Item label="Qualification Value" name="quaValue">
-              <Title level={4}>{displayCurrency(qualificationValue)}</Title>
+              <Title level={4}>{displayCurrency(qualificationValue)} </Title>{" "}
+              Min RFQ price: 1.180.000 đ - Max RFQ price: 1.200.000 đ
             </Form.Item>
           </Col>
         </Row>
         <Row>
           <Col md={12} sm={20} style={styles.colStyle}>
-            <Form.Item
-              label="Brief"
-              name="brief"
-              rules={
-                [
-                  // {
-                  //   required: true,
-                  //   message: "Please enter the brief",
-                  // },
-                  // ({ getFieldValue }) => ({
-                  //   validator(rule, value) {
-                  //     console.log({ value });
-                  //     if (value) {
-                  //       return Promise.resolve();
-                  //     }
-                  //     return Promise.reject("Please enter the brief");
-                  //   },
-                  // }),
-                ]
-              }
-            >
+            <Form.Item label="Brief" name="brief">
               <MarkdownEditorComponent value={brief} setValue={setBrief} />
             </Form.Item>
           </Col>

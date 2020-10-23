@@ -9,7 +9,7 @@ const ListingRequestForGroupComponent = () => {
       id: 1,
       content: (
         <Space>
-          <b style={{ marginBottom: 0 }}>20 Units x 2.500.000 đ</b>
+          <b style={{ marginBottom: 0 }}>20 Units x 1.250.000 đ</b>
 
           <div>
             (
@@ -26,7 +26,7 @@ const ListingRequestForGroupComponent = () => {
       id: 2,
       content: (
         <Space>
-          <b style={{ marginBottom: 0 }}>50 Units x 2.100.000 đ</b>
+          <b style={{ marginBottom: 0 }}>50 Units x 1.300.000 đ</b>
 
           <div>
             (
@@ -43,7 +43,7 @@ const ListingRequestForGroupComponent = () => {
       id: 3,
       content: (
         <Space>
-          <b style={{ marginBottom: 0 }}>30 Units x 1.990.000 đ</b>
+          <b style={{ marginBottom: 0 }}>30 Units x 1.400.000 đ</b>
 
           <div>
             (

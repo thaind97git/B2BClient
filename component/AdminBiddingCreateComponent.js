@@ -1,16 +1,17 @@
 import { Button, Checkbox, Col, Divider, Row, Typography } from "antd";
 import Modal from "antd/lib/modal/Modal";
+import Router from "next/router";
 import React, { useState } from "react";
 import TabsLayout from "../layouts/TabsLayout";
 import BiddingSettingComponent from "./BiddingSettingComponent";
+import ListingSupplierByCategoryComponent from "./ListingSupplierByCategoryComponent";
 const { Title } = Typography;
 const plainOptions = [
   { id: 1, label: "Supplier 1 (supplier1@gmail.com)" },
-  { id: 2, label: "Supplier 1 (supplier1@gmail.com)" },
-  { id: 3, label: "Supplier 1 (supplier1@gmail.com)" },
-  { id: 4, label: "Supplier 1 (supplier1@gmail.com)" },
-  { id: 5, label: "Supplier 1 (supplier1@gmail.com)" },
-  { id: 6, label: "Supplier 1 (supplier1@gmail.com)" },
+  { id: 2, label: "Supplier 2 (supplier2@gmail.com)" },
+  { id: 3, label: "Supplier 3 (supplier3@gmail.com)" },
+  { id: 4, label: "Supplier 4 (supplier4@gmail.com)" },
+  { id: 5, label: "Supplier 5 (supplier5@gmail.com)" },
 ];
 
 const AdminBiddingCreateComponent = () => {
@@ -66,12 +67,16 @@ const AdminBiddingCreateComponent = () => {
   return (
     <div>
       <Modal
+        width={1000}
         title="Invite Supplier"
         visible={visible}
-        onOk={() => setVisible(false)}
+        onOk={() => {
+          Router.push("/aggregator/bidding");
+          setVisible(false);
+        }}
         onCancel={() => setVisible(false)}
       >
-        <div className="site-checkbox-all-wrapper">
+        {/* <div className="site-checkbox-all-wrapper">
           <Checkbox
             indeterminate={checkbox.indeterminate}
             onChange={onCheckAllChange}
@@ -80,8 +85,9 @@ const AdminBiddingCreateComponent = () => {
             Choose All Supplier
           </Checkbox>
         </div>
-        <br />
-        <Checkbox.Group style={{ width: "100%" }} onChange={onChange}>
+        <br /> */}
+        <ListingSupplierByCategoryComponent />
+        {/* <Checkbox.Group style={{ width: "100%" }} onChange={onChange}>
           <Row>
             {plainOptions.map((option, index) => {
               return (
@@ -94,7 +100,7 @@ const AdminBiddingCreateComponent = () => {
               );
             })}
           </Row>
-        </Checkbox.Group>
+        </Checkbox.Group> */}
       </Modal>
       <Row>
         <Title level={4}>New Event</Title>

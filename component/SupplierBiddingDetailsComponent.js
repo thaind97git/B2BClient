@@ -38,7 +38,7 @@ const SupplierBiddingDetailsComponent = ({ role = SUPPLIER }) => {
             Participants
           </TabPane>
         )}
-        <TabPane tab={<span>Auction</span>} key="5">
+        <TabPane tab={<span>Reverse Auction</span>} key="5">
           <BiddingAuctionComponent />
         </TabPane>
       </Tabs>

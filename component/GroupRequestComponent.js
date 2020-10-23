@@ -37,17 +37,17 @@ const dataSource = [
   {
     id: "1",
     key: "1",
-    name: "Group A7 Action Camera 4k HD720P - 02/10/2020",
+    name: "Group IR Night Vision Hidden Camera Watch Sport - 23/10/2020",
     createdBy: "Aggregator 1",
     product: (
-      <Tooltip title="A7 Action Camera 4k HD720P Sports Camera Waterproof video cam 2.0 inches LCD Screen 170 Lens Waterproof Sports Camera">
+      <Tooltip title="IR Night Vision Hidden Camera Watch Sport Wear Watch Camera WIFI">
         <a
           rel="noreferrer"
           target="_blank"
           href={createLink(["product-details?productId=1"])}
         >
           {displayGroupName(
-            "A7 Action Camera 4k HD720P Sports Camera Waterproof video cam 2.0 inches LCD Screen 170 Lens Waterproof Sports Camera"
+            "IR Night Vision Hidden Camera Watch Sport Wear Watch Camera WIFI"
           )}
         </a>
       </Tooltip>

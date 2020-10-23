@@ -202,8 +202,9 @@ const AdminRequestManagement = ({
         <GroupCreateComponent />
       </Modal>
       <Modal
+        closable
         width={1000}
-        title="Listing Group inside A7 Action Camera 4k HD720P Sports Camera Waterproof video cam 2.0 inches LCD Screen 170 Lens Waterproof Sports Camera"
+        title="Listing Group inside IR Night Vision Hidden Camera Watch Sport Wear Watch Camera WIFI"
         visible={modalVisible}
         onOk={() => setModalVisible(false)}
         onCancel={() => setModalVisible(true)}
@@ -236,8 +237,9 @@ const AdminRequestManagement = ({
           <Row>
             <Col span={24}>
               <Radio style={{ width: "100%" }} value="A">
-                <b>Group A7 Action Camera 4k HD720P - 02/10/2020</b> created
-                inside <Tag color="processing">Action & Sports Camera</Tag>
+                <b>IR Night Vision Hidden Camera Watch Sport - 02/10/2020</b>{" "}
+                created inside{" "}
+                <Tag color="processing">Action & Sports Camera</Tag>
                 <div>
                   <Collapse bordered={false} defaultActiveKey={[]}>
                     <Panel header="More details" key="1">
@@ -279,8 +281,9 @@ const AdminRequestManagement = ({
             <Divider />
             <Col span={24}>
               <Radio style={{ width: "100%" }} value="B">
-                <b>Group A7 Action Camera 4k HD720P - 23/10/2020</b> created
-                inside <Tag color="processing">Action & Sports Camera</Tag>
+                <b>IR Night Vision Hidden Camera Watch Sport - 23/10/2020</b>{" "}
+                created inside{" "}
+                <Tag color="processing">Action & Sports Camera</Tag>
                 <div>
                   <Collapse bordered={false} defaultActiveKey={[]}>
                     <Panel header="More details" key="1">
