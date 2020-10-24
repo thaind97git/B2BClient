@@ -143,7 +143,7 @@ const AdminRequestProcessingComponent = ({
           target="_blank"
           href={createLink(["aggregator", "group", "details?id=1"])}
         >
-          Group IR Night Vision Hidden Camera Watch Sport - 23/10/2020
+          Group IR Night Vision Hidden Camera Watch Sport - 02/10/2020
         </a>
       ),
       status: <RequestStatusComponent status={R_GROUPED} />,
