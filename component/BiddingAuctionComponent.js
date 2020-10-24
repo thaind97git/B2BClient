@@ -66,14 +66,14 @@ const columns = [
 ];
 
 const data2 = [
-  "A Supplier has bid 800,000 đ per product",
-  "A Supplier has bid 790,000 đ per product",
-  <b>You have bid 780,000 đ per product</b>,
-  "A Supplier has bid 772,000 đ per product",
-  <b>You have bid 765,000 đ per product</b>,
-  "A Supplier has bid 764,000 đ per product",
-  "A Supplier has bid 760,000 đ per product",
-  <b>You have bid 740,000 đ per product</b>,
+  "12:40:00 A Supplier has bid 800,000 đ per product",
+  "12:40:30 A Supplier has bid 790,000 đ per product",
+  <b>12:41:10 You have bid 780,000 đ per product</b>,
+  "12:41:30 A Supplier has bid 772,000 đ per product",
+  <b>12:41:50 You have bid 765,000 đ per product</b>,
+  "12:43:40 A Supplier has bid 764,000 đ per product",
+  "12:45:10 A Supplier has bid 760,000 đ per product",
+  <b>12:46:05 You have bid 740,000 đ per product</b>,
 ];
 
 const data = [
