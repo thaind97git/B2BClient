@@ -118,7 +118,7 @@ const ProductListHomePageComponent = ({
   getProductByCategoryError,
 }) => {
   const [currentCategorySelected, setCurrentCategorySelected] = useState({});
-  const [pageIndex, setPageIndex] = useState(0);
+  const [pageIndex, setPageIndex] = useState(1);
   const [loading, setLoading] = useState(true);
   const [searchValue, setSearchValue] = useState("");
 
@@ -274,8 +274,9 @@ const ProductListHomePageComponent = ({
       </Row>
       <Row style={{ marginTop: 16 }} justify="end">
         <Pagination
+          defaultCurrent={1}
           showSizeChanger={false}
-          showQuickJumper
+          // showQuickJumper
           // defaultCurrent={2}
           total={totalPage}
           onChange={onChange}

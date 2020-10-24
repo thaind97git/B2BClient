@@ -112,7 +112,7 @@ const BiddingResultListComponent = () => {
             Router.push(`/aggregator/order/confirmation?groupID=${1}`);
           }}
         >
-          Closing Sales
+          Closing Deal
         </Button>
       </Row>
     </Row>

@@ -142,10 +142,12 @@ const GroupRequestDetailsComponent = ({
             size="small"
             style={{ color: "green" }}
             onClick={() => {
-              Router.push(`/aggregator/order/confirmation?groupID=${1}`);
+              Router.push(
+                `/aggregator/order/confirmation?groupID=${1}&isNegotiating=true`
+              );
             }}
           >
-            Closing sales
+            Closing deal
           </Button>
 
           <Button
@@ -181,8 +183,16 @@ const GroupRequestDetailsComponent = ({
               Chat
             </a>
           </Button>
-          <Button size="small" style={{ color: "green" }}>
-            Closing sales{" "}
+          <Button
+            size="small"
+            style={{ color: "green" }}
+            onClick={() => {
+              Router.push(
+                `/aggregator/order/confirmation?groupID=${1}&isNegotiating=true`
+              );
+            }}
+          >
+            Closing deal
           </Button>
           <Button
             type="link"
@@ -212,8 +222,16 @@ const GroupRequestDetailsComponent = ({
               Chat
             </a>
           </Button>
-          <Button size="small" style={{ color: "green" }}>
-            Closing sales
+          <Button
+            size="small"
+            style={{ color: "green" }}
+            onClick={() => {
+              Router.push(
+                `/aggregator/order/confirmation?groupID=${1}&isNegotiating=true`
+              );
+            }}
+          >
+            Closing deal
           </Button>
           <Button
             type="link"

@@ -26,20 +26,17 @@ const dataSource = [
   },
   {
     key: "2",
-    name: "Followsun 50 in 1 Accessories for Go pro, Action Camera Mounts, Sports Camera Head Strap Chest Strap - 24/10/2020",
+    name:
+      "Followsun 50 in 1 Accessories for Go pro, Action Camera Mounts, Sports Camera Head Strap Chest Strap - 24/10/2020",
     duration: "2 Hours",
     dateCreated: "October 18, 2020 17:00 GTM",
     createdBy: "Ryota",
     status: <BiddingStatusComponent status={B_ACTIVE} />,
-    actions: (
-      <Button size="small" danger>
-        Cancel
-      </Button>
-    ),
   },
   {
     key: "3",
-    name: "Customization japanese School Uniform shirts wholesale Set - 27/09/1999",
+    name:
+      "Customization japanese School Uniform shirts wholesale Set - 27/09/2020",
     duration: "1 Hour",
     dateCreated: "September 25, 2020 17:00 GTM",
     createdBy: "Ryota",
@@ -47,12 +44,13 @@ const dataSource = [
   },
   {
     key: "4",
-    name: "Factory Direct Supply Double-breasted Breathable Chef Cook Uniform - 28/05/2020",
+    name:
+      "Factory Direct Supply Double-breasted Breathable Chef Cook Uniform - 28/05/2020",
     duration: "2 Hours",
     dateCreated: "May 27, 2020 17:00 GTM",
     createdBy: "Ryota",
     status: <BiddingStatusComponent status={B_DONE} />,
-  }
+  },
 ];
 
 const columns = [

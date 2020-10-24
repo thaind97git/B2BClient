@@ -1,6 +1,5 @@
 import {
   Form,
-  Input,
   Button,
   Row,
   Col,
@@ -8,28 +7,15 @@ import {
   InputNumber,
   Space,
   Card,
-  Select,
-  DatePicker,
-  Empty,
-  Skeleton,
   Table,
-  Descriptions,
   Drawer,
   Modal,
 } from "antd";
-import {
-  PhoneOutlined,
-  PrinterOutlined,
-  GlobalOutlined,
-  MailOutlined,
-  UserOutlined,
-  MobileOutlined,
-} from "@ant-design/icons";
+import { PhoneOutlined, UserOutlined, MobileOutlined } from "@ant-design/icons";
 import React, { useState } from "react";
 import RequestDetailsComponent from "./RequestDetailsComponent";
 import { displayCurrency } from "../utils";
-const { Title, Text } = Typography;
-const FormItem = Form.Item;
+const { Title } = Typography;
 const formItemLayout = {
   labelCol: { span: 4 },
   wrapperCol: { span: 16 },
@@ -57,11 +43,6 @@ const groupRequestColumns = [
   { title: "Quantity", dataIndex: "quantity", key: "quantity" },
   { title: "Date Created", dataIndex: "dateCreated", key: "dateCreated" },
   { title: "Actions", dataIndex: "actions", key: "actions" },
-];
-const productDetailsColumns = [
-  { title: "Product Name", dataIndex: "productName", key: "productName" },
-  { title: "Price", dataIndex: "productPrice", key: "productPrice" },
-  { title: "Total Quantity", dataIndex: "totalQuantity", key: "totalQuantity" },
 ];
 
 const REQUEST_LIST = [
@@ -130,23 +111,52 @@ const REQUEST_LIST = [
   },
 ];
 
-const totalQuantity = 0;
-const PRODUCT_DETAIL = [
-  {
-    productName:
-      "IR Night Vision Hidden Camera Watch Sport Wear Watch Camera WIFI",
-    productPrice: displayCurrency(1170000),
-    totalQuantity:
-      REQUEST_LIST.reduce((prev, current) => {
-        return prev + current.quantity;
-      }, 0) + " Pieces",
-  },
-];
+const totalQuantity = 220;
 
-const ConfirmationOrderComponent = (props) => {
-  // const [price, setPrice] = useState(0);
+const ConfirmationOrderComponent = ({ isNegotiating = false }) => {
+  const [price, setPrice] = useState(0);
   const [openRequestDetail, setOpenRequestDetail] = useState(false);
   const [form] = Form.useForm();
+
+  const productDetailsColumns = [
+    { title: "Product Name", dataIndex: "productName", key: "productName" },
+    {
+      title: "Price",
+      dataIndex: "productPrice",
+      key: "productPrice",
+      render: (text) => {
+        return isNegotiating ? (
+          <InputNumber
+            style={{ width: 150 }}
+            min={0}
+            formatter={(value) =>
+              `đ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+            }
+            parser={(value) => value.replace(/\đ\s?|(,*)/g, "")}
+            onChange={(value) => setPrice(value)}
+          />
+        ) : (
+          text
+        );
+      },
+    },
+    {
+      title: "Total Quantity",
+      dataIndex: "totalQuantity",
+      key: "totalQuantity",
+    },
+  ];
+  const PRODUCT_DETAIL = [
+    {
+      productName:
+        "IR Night Vision Hidden Camera Watch Sport Wear Watch Camera WIFI",
+      productPrice: isNegotiating ? price : displayCurrency(1170000),
+      totalQuantity:
+        REQUEST_LIST.reduce((prev, current) => {
+          return prev + current.quantity;
+        }, 0) + " Pieces",
+    },
+  ];
 
   return (
     <div>
@@ -213,11 +223,11 @@ const ConfirmationOrderComponent = (props) => {
                       <PhoneOutlined />
                       {SUPPLIER_DETAIL.companyPhone}
                       <br />
-                      <PrinterOutlined />
+                      {/* <PrinterOutlined />
                       <br />
                       <GlobalOutlined />
                       <br />
-                      <MailOutlined />
+                      <MailOutlined /> */}
                     </Card>
                   </Col>
                   <Col span={8}>
@@ -230,9 +240,9 @@ const ConfirmationOrderComponent = (props) => {
                       <MobileOutlined />
                       {SUPPLIER_DETAIL.phoneNumber}
                       <br />
-                      <UserOutlined />
+                      {/* <UserOutlined />
                       <br />
-                      <MobileOutlined />
+                      <MobileOutlined /> */}
                     </Card>
                   </Col>
                 </Row>
@@ -255,7 +265,10 @@ const ConfirmationOrderComponent = (props) => {
                   footer={() => (
                     <div align="right" style={{ height: "20px" }}>
                       <p style={{ color: "#199eb8", fontSize: 18 }}>
-                        Total {displayCurrency(257400000)}
+                        Total{" "}
+                        {isNegotiating
+                          ? displayCurrency(price * totalQuantity)
+                          : displayCurrency(257400000)}
                       </p>
                     </div>
                   )}
