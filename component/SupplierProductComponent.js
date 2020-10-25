@@ -165,7 +165,7 @@ const SupplierProductComponent = ({
   return (
     <div>
       <Modal
-        title="Create options"
+        title="Create Quotations"
         centered
         visible={openOption}
         onOk={() => setOpenOption(false)}
