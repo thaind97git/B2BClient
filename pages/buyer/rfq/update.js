@@ -1,11 +1,11 @@
 import React from "react";
-import BuyerRequestCreateComponent from "../../../component/BuyerRequestCreateComponent";
+import BuyerRequestUpdateComponent from "../../../component/BuyerRequestUpdateComponent";
 import BuyerLayout from "../../../layouts/BuyerLayout";
 
 const Page = () => {
   return (
     <BuyerLayout>
-      <BuyerRequestCreateComponent isUpdate={true} />
+      <BuyerRequestUpdateComponent />
     </BuyerLayout>
   );
 };
