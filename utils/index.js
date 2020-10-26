@@ -1,4 +1,16 @@
-import { flow, get, isArray } from "lodash/fp";
+import {
+  camelCase,
+  compact,
+  concat,
+  flow,
+  forEach,
+  get,
+  isArray,
+  join,
+  map,
+  split,
+  tap,
+} from "lodash/fp";
 import { getToken } from "../libs/localStorage";
 import axios from "axios";
 import moment from "moment";
@@ -146,4 +158,28 @@ export const parseCurrencyInput = (amount) => {
 
 export const formatCurrencyInput = (amount) => {
   return amount.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+};
+
+export const acceptFileMimes = ["image/jpeg", "image/png", "image/jpg"];
+
+export const acceptFileTypes = flow(
+  join(""),
+  tap(console.log),
+  split("image/"),
+  compact,
+  join("/")
+)(acceptFileMimes);
+
+export const getAveragePrice = (prices = []) => {
+  const totalQuantity = prices.reduce((prev, current) => {
+    return prev + current.quantity;
+  }, 0);
+  if (totalQuantity === 0) {
+    return 0;
+  }
+  const totalAmount = prices.reduce((prev, current) => {
+    return prev + current.quantity * current.price;
+  }, 0);
+
+  return Math.floor(totalAmount / totalQuantity);
 };

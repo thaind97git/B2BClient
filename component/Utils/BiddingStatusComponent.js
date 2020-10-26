@@ -25,9 +25,9 @@ const BiddingStatusComponent = ({ status }) => {
   const getLabelByStatus = (status) => {
     switch (status) {
       case B_FEATURE:
-        return "Feature";
+        return "Waiting";
       case B_ACTIVE:
-        return "Bidding";
+        return "Opening";
       case B_DONE:
         return "Done";
       case B_CLOSED:

@@ -17,78 +17,78 @@ const getFeatureDate = (numberDate = 0) => {
 const BIDDING_INVITE = [
   {
     id: 1,
-    title: "Apple Macbook Air 13 inches",
-    category: "Mackbook",
-    startTime: getFeatureDate(1),
+    title: "IR Night Vision Hidden Camera Watch Sport - 24/10/2020",
+    category: "Action & Sports Camera",
+    startTime: getFeatureDate(),
     owner: "John Smith",
     duration: 200,
     currency: "VND",
   },
-  {
-    id: 2,
-    title: "Jean for men",
-    category: "Cloth",
-    startTime: getFeatureDate(1),
-    owner: "John Smith",
-    duration: 500,
-    currency: "VND",
-  },
-  {
-    id: 3,
-    title: "Iphone 12 Plus",
-    category: "Iphone",
-    startTime: Date.now(),
-    owner: "John Smith",
-    duration: 400,
-    currency: "USD",
-  },
-  {
-    id: 4,
-    title: "Apple Macbook Air 15 inches",
-    category: "Mackbook",
-    startTime: getFeatureDate(1),
-    owner: "John Smith",
-    duration: 100,
-    currency: "USD",
-  },
+  // {
+  //   id: 2,
+  //   title: "Jean for men",
+  //   category: "Cloth",
+  //   startTime: getFeatureDate(1),
+  //   owner: "John Smith",
+  //   duration: 500,
+  //   currency: "VND",
+  // },
+  // {
+  //   id: 3,
+  //   title: "Iphone 12 Plus",
+  //   category: "Iphone",
+  //   startTime: Date.now(),
+  //   owner: "John Smith",
+  //   duration: 400,
+  //   currency: "USD",
+  // },
+  // {
+  //   id: 4,
+  //   title: "Apple Macbook Air 15 inches",
+  //   category: "Mackbook",
+  //   startTime: getFeatureDate(1),
+  //   owner: "John Smith",
+  //   duration: 100,
+  //   currency: "USD",
+  // },
 ];
 const BIDDING_INVITE2 = [
   {
     id: 1,
-    title: "Apple Macbook Air 13 inches",
-    category: "Mackbook",
+    title: "IR Night Vision Hidden Camera Watch Sport - 24/10/2020",
+    category: "Action & Sports Camera",
     startTime: getFeatureDate(1),
     owner: "John Smith",
     duration: 200,
     currency: "VND",
   },
-  {
-    id: 2,
-    title: "Jean for men",
-    category: "Cloth",
-    startTime: getFeatureDate(1),
-    owner: "John Smith",
-    duration: 500,
-    currency: "VND",
-  },
-  {
-    id: 3,
-    title: "Iphone 12 Plus",
-    category: "Iphone",
-    startTime: getFeatureDate(1),
-    owner: "John Smith",
-    duration: 400,
-    currency: "USD",
-  },
-  {
-    id: 4,
-    title: "Apple Macbook Air 15 inches",
-    category: "Mackbook",
-    startTime: getFeatureDate(1),
-    owner: "John Smith",
-    duration: 100,
-    currency: "USD",
-  },
+  // {
+  //   id: 2,
+  //   title: "Jean for men",
+  //   category: "Cloth",
+  //   startTime: getFeatureDate(1),
+  //   owner: "John Smith",
+  //   duration: 500,
+  //   currency: "VND",
+  // },
+  // {
+  //   id: 3,
+  //   title: "Iphone 12 Plus",
+  //   category: "Iphone",
+  //   startTime: getFeatureDate(1),
+  //   owner: "John Smith",
+  //   duration: 400,
+  //   currency: "USD",
+  // },
+  // {
+  //   id: 4,
+  //   title: "Apple Macbook Air 15 inches",
+  //   category: "Mackbook",
+  //   startTime: getFeatureDate(1),
+  //   owner: "John Smith",
+  //   duration: 100,
+  //   currency: "USD",
+  // },
 ];
 
 const SupplierBiddingComponent = () => {
@@ -109,14 +109,14 @@ const SupplierBiddingComponent = () => {
             <Option value="c4">Category 4</Option>
           </Select>
           <Select
-            placeholder="Filter by time"
+            placeholder="Sort by"
             style={{
               width: "200px",
               margin: "0 4px",
             }}
           >
-            <Option value="today">Today</Option>
             <Option value="new">Newest</Option>
+            <Option value="old">Oldest</Option>
           </Select>
         </Space>
       </Row>

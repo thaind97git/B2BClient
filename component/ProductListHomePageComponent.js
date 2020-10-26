@@ -11,6 +11,7 @@ import {
   Skeleton,
   Empty,
   Popover,
+  Spin,
 } from "antd";
 import Search from "antd/lib/input/Search";
 import Router from "next/router";
@@ -23,6 +24,7 @@ import {
 import {
   getProductByCategory,
   GetProductByCategoryData,
+  GetProductByCategoryError,
 } from "../stores/ProductState";
 import { get } from "lodash/fp";
 const { Meta } = Card;
@@ -32,19 +34,14 @@ const connectToRedux = connect(
   createStructuredSelector({
     categoryData: GetCategoriesDataSelector,
     getProductByCategoryData: GetProductByCategoryData,
+    getProductByCategoryError: GetProductByCategoryError,
   }),
   (dispatch) => ({
     getCategories: () => dispatch(getCategories()),
-    getProductByCategory: (
-      id = "13bad386-dcce-46eb-b4e2-09bbc32cd2e7",
-      pageSize,
-      pageIndex
-    ) => dispatch(getProductByCategory(id, pageSize, pageIndex)),
+    getProductByCategory: (id, pageSize, pageIndex) =>
+      dispatch(getProductByCategory(id, pageSize, pageIndex)),
   })
 );
-
-const displayProductTitle = (value) =>
-  value.length >= 36 ? value.slice(0, 60) + "..." : value;
 
 const ProductCard = ({ product }) => {
   return (
@@ -52,11 +49,13 @@ const ProductCard = ({ product }) => {
       id="popover-product-card"
       placement="rightTop"
       content={
-        <div
-          dangerouslySetInnerHTML={{
-            __html: product.description,
-          }}
-        />
+        <i>
+          <div
+            dangerouslySetInnerHTML={{
+              __html: product.description,
+            }}
+          />
+        </i>
       }
       title={product.productName}
     >
@@ -65,7 +64,7 @@ const ProductCard = ({ product }) => {
         size="small"
         hoverable
         bordered={false}
-        style={{ margin: 3, height: "auto" }}
+        style={{ margin: 3, height: 419 }}
         cover={
           <img
             style={{
@@ -75,15 +74,26 @@ const ProductCard = ({ product }) => {
               margin: "auto",
             }}
             alt="example"
-            src={product.image || "/static/images/default_product_img.png"}
+            src={
+              !!product.images && product.images.length > 0
+                ? process.env.API_SERVER_URL +
+                  "/api/Product/ProductImage/" +
+                  product.images[0]
+                : "/static/images/default_product_img.png"
+            }
           />
         }
       >
-        <Meta title={displayProductTitle(product.productName)} />
+        <Meta
+          onClick={() => {
+            Router.push(`/product-details?id=${product.id}`);
+          }}
+          title={product.productName}
+        />
 
         <Divider />
         <Row justify="space-around">
-          <span>Unit: {product.unit}</span>
+          <span>Unit: {product.unitOfMeasure.description}</span>
           <Button
             onClick={() => {
               Router.push(`/buyer/rfq/create?productId=${product.id}`);
@@ -105,9 +115,13 @@ const ProductListHomePageComponent = ({
   categoryData,
   getProductByCategory,
   getProductByCategoryData,
+  getProductByCategoryError,
 }) => {
   const [currentCategorySelected, setCurrentCategorySelected] = useState({});
-  const [pageIndex, setPageIndex] = useState(0);
+  const [pageIndex, setPageIndex] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [searchValue, setSearchValue] = useState("");
+
   const onSelect = (selectedKeys, info) => {
     setCurrentCategorySelected({
       name: info.node.title,
@@ -126,18 +140,28 @@ const ProductListHomePageComponent = ({
   }, [categoryData]);
 
   useEffect(() => {
-    if ((currentCategorySelected || {}).id !== "all") {
+    if (
+      (currentCategorySelected || {}).id &&
+      (currentCategorySelected || {}).id !== "all"
+    ) {
       getProductByCategory(
         (currentCategorySelected || {}).id,
         pageSize,
         pageIndex
       );
+      setLoading(true);
     }
   }, [currentCategorySelected, getProductByCategory, pageIndex]);
 
   useEffect(() => {
     getCategories();
   }, [getCategories]);
+
+  useEffect(() => {
+    if (getProductByCategoryError || getProductByCategoryData) {
+      setLoading(false);
+    }
+  }, [getProductByCategoryData, getProductByCategoryError]);
   if (!!categoryData) {
     const mapData = (categoryData) => {
       const resultTmp = categoryData.map((category) => {
@@ -152,7 +176,6 @@ const ProductListHomePageComponent = ({
       return resultTmp;
     };
     tree = mapData(categoryData);
-    // tree.unshift(allCateTree);
   }
   const onChange = (pageNumber) => {
     setPageIndex(pageNumber);
@@ -171,9 +194,10 @@ const ProductListHomePageComponent = ({
           style={{
             background: "white",
             boxShadow: "0 0 20px rgba(0,0,0,.1)",
-            height: 1339,
+            minHeight: 600,
+            maxHeight: 1339,
             overflow: "hidden",
-            overflowY: "scroll",
+            overflowY: "auto",
           }}
         >
           <Row>
@@ -204,6 +228,16 @@ const ProductListHomePageComponent = ({
                 </Col>
                 <Col span={8}>
                   <Search
+                    value={searchValue || ""}
+                    onChange={(event) => setSearchValue(event.target.value)}
+                    // onSearch={(value) =>
+                    //   getProductByCategory(
+                    //     (currentCategorySelected || {}).id,
+                    //     pageSize,
+                    //     pageIndex,
+                    //     value
+                    //   )
+                    // }
                     placeholder={`Search in ${
                       (currentCategorySelected || {}).name
                     }`}
@@ -214,7 +248,15 @@ const ProductListHomePageComponent = ({
             <Col span={24}>
               <Divider style={{ marginBottom: 8, marginTop: 8 }} />
             </Col>
-            {productData && productData.length > 0 ? (
+            {loading ? (
+              <Row
+                justify="center"
+                align="middle"
+                style={{ height: 400, margin: "auto" }}
+              >
+                <Spin />
+              </Row>
+            ) : productData && productData.length > 0 ? (
               productData.map((product, index) => (
                 <Col span={6} sm={12} md={6} key={index}>
                   <ProductCard product={product} />
@@ -232,8 +274,9 @@ const ProductListHomePageComponent = ({
       </Row>
       <Row style={{ marginTop: 16 }} justify="end">
         <Pagination
+          defaultCurrent={1}
           showSizeChanger={false}
-          showQuickJumper
+          // showQuickJumper
           // defaultCurrent={2}
           total={totalPage}
           onChange={onChange}
@@ -259,6 +302,21 @@ const ProductListHomePageComponent = ({
           #product-card .ant-card-meta-title {
             -webkit-line-clamp: 2;
             white-space: unset;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+          }
+          #product-card.ant-card-hoverable {
+            cursor: default;
+          }
+          #product-card .ant-card-meta-title:hover {
+            cursor: pointer;
+            text-decoration: underline;
+          }
+          #product-card .ant-card-meta {
+            height: 50px;
+          }
+          #product-card .ant-card-cover {
+            height: 280px;
           }
         `}
       </style>

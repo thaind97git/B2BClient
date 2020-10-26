@@ -147,7 +147,7 @@ const SupplierBiddingItemComponent = ({
                     type="primary"
                     size="small"
                   >
-                    Join to auction
+                    Join Event
                   </Button>
                 </Space>
               )}

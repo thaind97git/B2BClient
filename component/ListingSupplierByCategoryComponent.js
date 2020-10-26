@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Checkbox, Row, Col, Space, Divider } from "antd";
+import { Checkbox, Row, Col, Space, Divider, Tag } from "antd";
+import { displayCurrency } from "../utils";
 const CheckboxGroup = Checkbox.Group;
 
 const ListingSupplierByCategoryComponent = () => {
@@ -8,14 +9,26 @@ const ListingSupplierByCategoryComponent = () => {
       id: 1,
       content: (
         <Space>
-          <b style={{ marginBottom: 0 }}>Supplier 1</b>
+          <b style={{ marginBottom: 0 }}>Supplier 4</b>
 
           <div>
             (
             <span>
-              <i>thaindse62642@fpt.edu.vn</i>
+              <i>supplier4@gmail.com</i>
             </span>
             )
+          </div>
+          <div>
+            <Tag style={{ fontSize: 12, padding: 4 }}>
+              <div style={{ minWidth: 160 }}>
+                {">="} {50} Units - <b>{displayCurrency(1150000)} / Unit</b>
+              </div>
+            </Tag>
+            <Tag style={{ fontSize: 12, padding: 4 }}>
+              <div style={{ minWidth: 160 }}>
+                {">="} {100} Units - <b>{displayCurrency(1100000)} / Unit</b>
+              </div>
+            </Tag>
           </div>
 
           <Divider />
@@ -26,14 +39,26 @@ const ListingSupplierByCategoryComponent = () => {
       id: 2,
       content: (
         <Space>
-          <b style={{ marginBottom: 0 }}>Supplier 2</b>
+          <b style={{ marginBottom: 0 }}>Supplier 5</b>
 
           <div>
             (
             <span>
-              <i>thaind97.dev@gmail.com</i>
+              <i>supplier5@gmail.com</i>
             </span>
             )
+          </div>
+          <div>
+            <Tag style={{ fontSize: 12, padding: 4 }}>
+              <div style={{ minWidth: 160 }}>
+                {">="} {40} Units - <b>{displayCurrency(1150000)} / Unit</b>
+              </div>
+            </Tag>
+            <Tag style={{ fontSize: 12, padding: 4 }}>
+              <div style={{ minWidth: 160 }}>
+                {">="} {110} Units - <b>{displayCurrency(1100000)} / Unit</b>
+              </div>
+            </Tag>
           </div>
           <Divider />
         </Space>
@@ -43,14 +68,26 @@ const ListingSupplierByCategoryComponent = () => {
       id: 3,
       content: (
         <Space>
-          <b style={{ marginBottom: 0 }}>Supplier 3</b>
+          <b style={{ marginBottom: 0 }}>Supplier 6</b>
 
           <div>
             (
             <span>
-              <i>thaind97.info@gmail.com</i>
+              <i>supplier6@gmail.com</i>
             </span>
             )
+          </div>
+          <div>
+            <Tag style={{ fontSize: 12, padding: 4 }}>
+              <div style={{ minWidth: 160 }}>
+                {">="} {60} Units - <b>{displayCurrency(1150000)} / Unit</b>
+              </div>
+            </Tag>
+            <Tag style={{ fontSize: 12, padding: 4 }}>
+              <div style={{ minWidth: 160 }}>
+                {">="} {120} Units - <b>{displayCurrency(1100000)} / Unit</b>
+              </div>
+            </Tag>
           </div>
           <Divider />
         </Space>
@@ -82,7 +119,7 @@ const ListingSupplierByCategoryComponent = () => {
   };
   return (
     <div>
-      <div className="site-checkbox-all-wrapper">
+      {/* <div className="site-checkbox-all-wrapper">
         <Checkbox
           indeterminate={option.indeterminate}
           onChange={onCheckAllChange}
@@ -90,7 +127,7 @@ const ListingSupplierByCategoryComponent = () => {
         >
           Choose All Supplier
         </Checkbox>
-      </div>
+      </div> */}
       <br />
       <CheckboxGroup value={option.checkedList} onChange={onChange}>
         <Row>

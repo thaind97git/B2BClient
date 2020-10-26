@@ -28,7 +28,7 @@ const TabsLayout = ({
       {tabs.map((tab) => {
         return (
           <TabPane tab={tab.title} key={tab.key} {...tab.props}>
-            {tab.content}
+            {defaultTab === tab.key ? tab.content : null}
           </TabPane>
         );
       })}

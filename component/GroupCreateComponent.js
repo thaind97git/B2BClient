@@ -1,7 +1,20 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Form, Input, Row, Col, Cascader } from "antd";
+import { connect } from "react-redux";
+import { createStructuredSelector } from "reselect";
+import { createNewGroup, CreateNewGroupData } from "../stores/GroupState";
 
 const FormItem = Form.Item;
+
+const connectToRedux = connect(
+  createStructuredSelector({
+    createNewGroupData: CreateNewGroupData,
+  }),
+  (dispatch) => ({
+    createNewGroup: ({ groupName, productId, description }) =>
+      dispatch(createNewGroup({ groupName, productId, description })),
+  })
+);
 
 const styles = {
   colStyle: { padding: "0 8px" },
@@ -15,41 +28,16 @@ const formItemLayout = {
     span: 24,
   },
 };
-/*const options = [
-  {
-    value: "zhejiang",
-    label: "Category1",
-    children: [
-      {
-        value: "hangzhou",
-        label: "Category 1-1",
-        children: [
-          {
-            value: "xihu",
-            label: "Category 1-1-1",
-          },
-        ],
-      },
-    ],
-  },
-  {
-    value: "jiangsu",
-    label: "Category 2",
-    children: [
-      {
-        value: "nanjing",
-        label: "Category 2-1",
-        children: [
-          {
-            value: "zhonghuamen",
-            label: "Category 2-1-1",
-          },
-        ],
-      },
-    ],
-  },
-];*/
-const GroupCreateComponent = () => {
+const GroupCreateComponent = ({
+  createNewGroupData,
+  createNewGroup,
+  setOpenGroup,
+}) => {
+  useEffect(() => {
+    if (!!createNewGroupData) {
+      setOpenGroup(false);
+    }
+  }, [setOpenGroup, createNewGroupData]);
   const onFinish = (values) => {
     console.log("Received values of form: ", values);
   };
@@ -67,13 +55,10 @@ const GroupCreateComponent = () => {
           onFinish={onFinish}
           initialValues={{
             unit: "Set",
+            productName:
+              "IR Night Vision Hidden Camera Watch Sport Wear Watch Camera WIFI",
           }}
         >
-          {/* <Row justify="center">
-            <Title style={styles.titleStyle} level={2}>
-              Group
-            </Title>
-          </Row> */}
           <Row align="middle">
             <Col style={styles.colStyle} span={24}>
               <FormItem
@@ -100,15 +85,11 @@ const GroupCreateComponent = () => {
                   },
                 ]}
               >
-                
-                {/* <Cascader
+                <Input.TextArea
+                  disabled
                   size="large"
-                  options={options}
-                  expandTrigger="hover"
-                  // displayRender={displayRender}
-                  onChange={onChange}
-                /> */}
-                <Input size="large" placeholder="Enter the product name" />
+                  placeholder="Enter the product name"
+                />
               </FormItem>
             </Col>
           </Row>
@@ -119,10 +100,14 @@ const GroupCreateComponent = () => {
               </FormItem>
             </Col>
           </Row>
+          <i>
+            Note: All of the requests choosing will automatic added to this
+            Group
+          </i>
         </Form>
       </Col>
     </Row>
   );
 };
 
-export default GroupCreateComponent;
+export default connectToRedux(GroupCreateComponent);

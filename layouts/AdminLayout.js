@@ -11,6 +11,8 @@ import {
   OrderedListOutlined,
   FallOutlined,
   WechatOutlined,
+  FormOutlined,
+  BulbOutlined
 } from "@ant-design/icons";
 import MemberNavComponent from "../component/MemberNavComponent";
 import { currentPath } from "../utils";
@@ -21,9 +23,23 @@ const { Header, Content, Sider } = Layout;
 const ADMIN_MENU = [
   {
     key: "1",
-    icon: <CreditCardOutlined />,
+    icon: <BulbOutlined />,
     label: "Product",
     link: "/admin/product",
+    subMenu: [
+      {
+        subKey: "1.1",
+        subLink: "/admin/product",
+        subIcon: <OrderedListOutlined />,
+        subLabel: "Product List",
+      },
+      {
+        subKey: "1.1",
+        subLink: "/admin/product/create",
+        subIcon: <FormOutlined />,
+        subLabel: "Create New Product",
+      },
+    ],
   },
 ];
 

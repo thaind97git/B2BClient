@@ -9,7 +9,10 @@ const BiddingOverviewComponent = ({ isSupplier = true }) => {
           title="Event Brief"
           description={
             <Row className="info">
-              <Col span={24}>We are looking to source 20 laptops.</Col>
+              <Col span={24}>
+                We are looking 220 Pieces for IR Night Vision Hidden Camera
+                Watch Sport Wear Watch Camera WIFI.
+              </Col>
               <Col span={24}>
                 These must be delivered to our Ho Chi Minh office
               </Col>
@@ -32,7 +35,7 @@ const BiddingOverviewComponent = ({ isSupplier = true }) => {
                 Name: <span className="info">John Smith</span>
               </Col>
               <Col span={24}>
-                E-mail: <span className="info">thaind97.dev@gmail.com</span>
+                E-mail: <span className="info">aggregator1@gmail.com</span>
               </Col>
               <Col span={24}>
                 Phone: <span className="info">123456789</span>
@@ -48,7 +51,9 @@ const BiddingOverviewComponent = ({ isSupplier = true }) => {
             <Row>
               <Col span={24}>
                 Event Name:{" "}
-                <span className="info">Apple Macbook Air 13 inches</span>
+                <span className="info">
+                  Group IR Night Vision Hidden Camera Watch Sport - 23/10/2020
+                </span>
               </Col>
               <Col span={24}>
                 Event type: <span className="info">Online Reverse Auction</span>
@@ -68,18 +73,21 @@ const BiddingOverviewComponent = ({ isSupplier = true }) => {
             <Row>
               <Col span={24}>
                 Product Name:{" "}
-                <span className="info">Macbook Air 13 inches</span>
+                <span className="info">
+                  IR Night Vision Hidden Camera Watch Sport Wear Watch Camera
+                  WIFI
+                </span>
               </Col>
               <Col span={24}>
-                Quantity of UoM's: <span className="info">60 Units</span>
+                Quantity of UoM's: <span className="info">220 Pieces</span>
               </Col>
               {!isSupplier && (
                 <Col span={24}>
-                  Current Price: <span className="info">800.000 đ</span>
+                  Current Price: <span className="info">1.190.000 đ</span>
                 </Col>
               )}
               <Col span={24}>
-                Qualification Price: <span className="info">750.000 đ</span>
+                Qualification Price: <span className="info">1.180.000 đ</span>
               </Col>
             </Row>
           }
@@ -113,7 +121,7 @@ const BiddingOverviewComponent = ({ isSupplier = true }) => {
               {!isSupplier && (
                 <Fragment>
                   <Col span={24}>
-                    Minimum Bid Change: <span className="info">10%</span>
+                    Minimum Bid Change: <span className="info">1%</span>
                   </Col>
                   <Col span={24}>
                     Maximum Bid Change: <span className="info">10 %</span>

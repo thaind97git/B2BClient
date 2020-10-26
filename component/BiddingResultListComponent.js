@@ -2,6 +2,7 @@ import { Collapse, Row, Table, Typography, List, Button } from "antd";
 import React from "react";
 import { CaretRightOutlined } from "@ant-design/icons";
 import { displayCurrency } from "../utils";
+import Router from "next/router";
 const { Panel } = Collapse;
 const { Link } = Typography;
 const columns = [
@@ -55,23 +56,21 @@ const columns = [
 const dataSrc = [
   {
     currentValue: 850000,
-    noBids: 6,
+    noBids: 8,
     bestBid: 740000,
     leadSupplier: "Supplier Rank 1",
     active: 3,
   },
 ];
 const data = [
-  "12:40:00  Supplier-1 placed a bid of 800,000 đ. They rank 1",
-  "12:40:03  Supplier-2 placed a bid of 790,000 đ. They rank 1",
-  "12:41:20  Supplier-1 placed a bid of 770,000 đ. They rank 1",
-  "12:41:30  Supplier-3 placed a bid of 772,000 đ. They rank 2",
-  "12:41:50  Supplier-1 placed a bid of 765,000 đ. They rank 1",
-  "12:43:40  Supplier-2 placed a bid of 764,000 đ. They rank 1",
-  "12:45:10  Supplier-1 placed a bid of 775,000 đ. They rank 3",
-  "12:45:14  Supplier-3 placed a bid of 765,000 đ. They rank 2",
-  "12:46:00  Supplier-2 placed a bid of 760,000 đ. They rank 1",
-  "12:46:05  Supplier-1 placed a bid of 750,000 đ. They rank 1",
+  "12:40:00  Supplier-1 placed a bid of 800,000 đ.",
+  "12:40:03  Supplier-2 placed a bid of 790,000 đ.",
+  "12:41:20  Supplier-1 placed a bid of 780,000 đ.",
+  "12:41:30  Supplier-3 placed a bid of 772,000 đ.",
+  "12:41:50  Supplier-1 placed a bid of 765,000 đ.",
+  "12:43:40  Supplier-2 placed a bid of 764,000 đ.",
+  "12:45:10  Supplier-1 placed a bid of 760,000 đ.",
+  "12:46:05  Supplier-3 placed a bid of 740,000 đ.",
 ];
 
 const BiddingResultListComponent = () => {
@@ -87,7 +86,7 @@ const BiddingResultListComponent = () => {
         className="site-collapse-custom-collapse"
       >
         <Panel
-          header="Live Auction Feed"
+          header="Live Reverse Auction Feed"
           key="1"
           className="site-collapse-custom-panel"
         >
@@ -107,8 +106,13 @@ const BiddingResultListComponent = () => {
         dataSource={dataSrc}
       />
       <Row justify="start" style={{ marginTop: 32 }}>
-        <Button disabled type="primary">
-          Closing Sales
+        <Button
+          type="primary"
+          onClick={() => {
+            Router.push(`/aggregator/order/confirmation?groupID=${1}`);
+          }}
+        >
+          Closing Deal
         </Button>
       </Row>
     </Row>

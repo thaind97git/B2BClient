@@ -29,30 +29,22 @@ const ADMIN_MENU = [
   {
     key: "2",
     icon: <FallOutlined />,
-    label: "Request",
-    link: undefined,
-    subMenu: [
-      {
-        subKey: "2.1",
-        subLink: "/aggregator/request",
-        subIcon: <OrderedListOutlined />,
-        subLabel: "Requests",
-      },
-    ],
+    label: "Requests",
+    link: "/aggregator/request",
   },
   {
     key: "3",
     icon: <ExperimentOutlined />,
-    label: "Bidding",
-    link: undefined,
-    subMenu: [
-      {
-        subKey: "3.1",
-        subLink: "/aggregator/bidding",
-        subIcon: <OrderedListOutlined />,
-        subLabel: "Biddings",
-      },
-    ],
+    label: "Biddings",
+    link: "/aggregator/bidding",
+    // subMenu: [
+    //   {
+    //     subKey: "3.1",
+    //     subLink: "/aggregator/bidding",
+    //     subIcon: <OrderedListOutlined />,
+    //     subLabel: "Biddings",
+    //   },
+    // ],
   },
   {
     key: "4",

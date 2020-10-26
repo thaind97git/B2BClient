@@ -10,7 +10,7 @@ const { Title } = Typography;
 const AdminBiddingDetailsComponent = ({ bidding }) => {
   const [defaultTab, setDefaultTab] = useState("0");
   const {
-    groupName = "Group Mackbook Pro 2015",
+    groupName = "Group A7 Action Camera 4k HD720P - 02/10/2020",
     status = B_ACTIVE,
     hostBy = "John Smith",
   } = bidding || {};
@@ -26,7 +26,7 @@ const AdminBiddingDetailsComponent = ({ bidding }) => {
       content: <BiddingSupplierListComponent />,
     },
     {
-      title: "Auction",
+      title: "Reverse Auction",
       key: "2",
       content: <BiddingResultListComponent />,
     },

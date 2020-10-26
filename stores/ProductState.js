@@ -4,6 +4,7 @@ import nfetch from "../libs/nfetch";
 import { getResetter } from "../libs";
 import { getToken } from "../libs/localStorage";
 import Router from "next/router";
+import { openNotification } from "../utils";
 
 const GET_PRODUCT_BY_CATEGORY = "GetProductByCategoryAPI";
 const GET_PRODUCT_DETAILS = "GetProductDetailsAPI";
@@ -54,12 +55,14 @@ export const GetProductDetailsResetter = getResetter(GetProductDetailsAPI);
 
 // Create product
 const onUploadImage = (productId, fileList) => {
+  const listFileOrigin = fileList.map((file) => file.originFileObj);
   const formData = new FormData();
-  formData.append("files", fileList);
+  for (let file of listFileOrigin) {
+    formData.append("files", file);
+  }
 
   var myHeaders = new Headers();
   myHeaders.append("Authorization", `Bearer ${getToken()}`);
-
   var requestOptions = {
     method: "PUT",
     headers: myHeaders,
@@ -79,15 +82,15 @@ const CreateProductAPI = makeFetchAction(CREATE_PRODUCT, (product) =>
 );
 
 export const createNewProduct = (product, fileList) =>
-  respondToSuccess(
-    CreateProductAPI.actionCreator(product),
-    (resp, _, store) => {
-      if (resp) {
-        onUploadImage(resp, fileList);
-        Router.push("admin/product");
-      }
+  respondToSuccess(CreateProductAPI.actionCreator(product), (resp) => {
+    if (resp) {
+      openNotification("success", {
+        message: "Create new product success !",
+      });
+      onUploadImage(resp, fileList);
+      Router.push("/admin/product");
     }
-  );
+  });
 
 export const CreateNewProductData = CreateProductAPI.dataSelector;
 export const CreateNEwProductError = CreateProductAPI.errorSelector;

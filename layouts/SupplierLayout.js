@@ -39,22 +39,22 @@ const SUPPLIER_MENU = [
   {
     key: "2",
     icon: <PicLeftOutlined />,
-    label: "Product",
-    link: undefined,
-    subMenu: [
-      {
-        subKey: "2.1",
-        subLink: "/supplier/product/register",
-        subIcon: <ShoppingCartOutlined />,
-        subLabel: "Product Register",
-      },
-      {
-        subKey: "2.2",
-        subLink: "/supplier/product/listing",
-        subIcon: <OrderedListOutlined />,
-        subLabel: "Product Listing",
-      },
-    ],
+    label: "Product Listing",
+    link: "/supplier/product/listing",
+    // subMenu: [
+    //   {
+    //     subKey: "2.1",
+    //     subLink: "/supplier/product/register",
+    //     subIcon: <ShoppingCartOutlined />,
+    //     subLabel: "Product Register",
+    //   },
+    //   {
+    //     subKey: "2.2",
+    //     subLink: "/supplier/product/listing",
+    //     subIcon: <OrderedListOutlined />,
+    //     subLabel: "Product Listing",
+    //   },
+    // ],
   },
   {
     key: "3",

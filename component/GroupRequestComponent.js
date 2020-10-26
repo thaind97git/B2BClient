@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { connect } from "react-redux";
 import Router from "next/router";
 import { compose } from "redux";
-import { Button, Space, Typography, Row, Select, Input } from "antd";
+import { Button, Space, Typography, Row, Select, Input, Tooltip } from "antd";
 import ReactTableLayout from "../layouts/ReactTableLayout";
 import { DEFAULT_DATE_RANGE } from "../utils";
 import GroupStatusComponent from "./Utils/GroupStatusComponent";
@@ -15,6 +15,7 @@ import {
   G_PENDING,
   G_WAIT_FOR_AUCTION,
 } from "../enums/groupStatus";
+import { createLink } from "../libs";
 
 const { Title } = Typography;
 const { Option, OptGroup } = Select;
@@ -30,17 +31,30 @@ const connectToRedux = connect();
     })*/
 
 const enhance = compose(connectToRedux);
-
+const displayGroupName = (name) =>
+  name ? (name.length >= 40 ? name.slice(0, 40) : name) + " ..." : "";
 const dataSource = [
   {
     id: "1",
     key: "1",
-    name: "Laptop Gaming Asus",
+    name: "Group IR Night Vision Hidden Camera Watch Sport - 23/10/2020",
     createdBy: "Aggregator 1",
-    product: "Laptop Gaming Asus RTZ 12000",
+    product: (
+      <Tooltip title="IR Night Vision Hidden Camera Watch Sport Wear Watch Camera WIFI">
+        <a
+          rel="noreferrer"
+          target="_blank"
+          href={createLink(["product-details?productId=1"])}
+        >
+          {displayGroupName(
+            "IR Night Vision Hidden Camera Watch Sport Wear Watch Camera WIFI"
+          )}
+        </a>
+      </Tooltip>
+    ),
     category: "Laptop",
     status: <GroupStatusComponent status={G_PENDING} />,
-    dateCreated: "27/09/1999",
+    dateCreated: "24/10/2020",
     actions: (
       <Space>
         <Button
@@ -58,127 +72,90 @@ const dataSource = [
   {
     id: "2",
     key: "2",
-    name: "Iphone 12",
+    name: "Group A7 Action Camera 4k HD720P - 23/10/2020",
     createdBy: "Aggregator 2",
-    product: "Iphone 12",
+    product: (
+      <Tooltip title="A7 Action Camera 4k HD720P Sports Camera Waterproof video cam 2.0 inches LCD Screen 170 Lens Waterproof Sports Camera">
+        <a
+          rel="noreferrer"
+          target="_blank"
+          href={createLink(["product-details?productId=1"])}
+        >
+          {displayGroupName(
+            "A7 Action Camera 4k HD720P Sports Camera Waterproof video cam 2.0 inches LCD Screen 170 Lens Waterproof Sports Camera"
+          )}
+        </a>
+      </Tooltip>
+    ),
     category: "Mobile Phone",
-    status: <GroupStatusComponent status={G_BIDDING} />,
-    dateCreated: "27/09/1999",
-    actions: (
-      <Space>
-        <Button
-          type="link"
-          size="small"
-          onClick={() => {
-            Router.push("/aggregator/group/details?id=1");
-          }}
-        >
-          View
-        </Button>
-      </Space>
-    ),
-  },
-  {
-    id: "2",
-    key: "2",
-    name: "Jean for men",
-    createdBy: "Aggregator 3",
-    product: "Blue Jean",
-    category: "Cloth",
-    status: <GroupStatusComponent status={G_FAILED} />,
-    dateCreated: "27/09/1999",
-    actions: (
-      <Space>
-        <Button
-          type="link"
-          size="small"
-          onClick={() => {
-            Router.push("/aggregator/group/details?id=1");
-          }}
-        >
-          View
-        </Button>
-      </Space>
-    ),
-  },
-  {
-    id: "2",
-    key: "2",
-    name: "Keyboard gaming",
-    createdBy: "Aggregator 2",
-    product: "Keyboard Razor Z2",
-    category: "Keyboard",
-    status: <GroupStatusComponent status={G_DONE} />,
-    dateCreated: "27/09/1999",
-    actions: (
-      <Space>
-        <Button
-          type="link"
-          size="small"
-          onClick={() => {
-            Router.push("/aggregator/group/details?id=1");
-          }}
-        >
-          View
-        </Button>
-      </Space>
-    ),
-  },
-  {
-    id: "2",
-    key: "2",
-    name: "Gaming Mouse",
-    createdBy: "Aggregator 8",
-    product: "Razor Mouse",
-    category: "Mouse",
-    status: <GroupStatusComponent status={G_ORDERED} />,
-    dateCreated: "27/09/1999",
-    actions: (
-      <Space>
-        <Button
-          type="link"
-          size="small"
-          onClick={() => {
-            Router.push("/aggregator/group/details?id=1");
-          }}
-        >
-          View
-        </Button>
-      </Space>
-    ),
-  },
-  {
-    id: "2",
-    key: "2",
-    name: "Headphone for listen to music",
-    createdBy: "Aggregator 2",
-    product: "Headphone G18",
-    category: "HeadPhone",
-    status: <GroupStatusComponent status={G_WAIT_FOR_AUCTION} />,
-    dateCreated: "27/09/1999",
-    actions: (
-      <Space>
-        <Button
-          type="link"
-          size="small"
-          onClick={() => {
-            Router.push("/aggregator/group/details?id=1");
-          }}
-        >
-          View
-        </Button>
-      </Space>
-    ),
-  },
-  {
-    id: "2",
-    key: "2",
-    name: "Watch Ben 10",
-    createdBy: "Aggregator 14",
-    product: "Watch from Ben",
-    category: "Watch",
     status: <GroupStatusComponent status={G_NEGOTIATING} />,
-    dateCreated: "27/09/1999",
+    dateCreated: "24/09/2020",
+    actions: (
+      <Space>
+        <Button
+          type="link"
+          size="small"
+          onClick={() => {
+            Router.push("/aggregator/group/details?id=1");
+          }}
+        >
+          View
+        </Button>
+      </Space>
+    ),
+  },
+  {
+    id: "2",
+    key: "2",
+    name: "Group Sally Hansen Xtreme Wear Daycream - 19-09-2020",
+    createdBy: "Aggregator 3",
+    product: (
+      <Tooltip title="Sally Hansen Xtreme Wear Daycream">
+        <a
+          rel="noreferrer"
+          target="_blank"
+          href={createLink(["product-details?productId=1"])}
+        >
+          {displayGroupName("Sally Hansen Xtreme Wear Daycream")}
+        </a>
+      </Tooltip>
+    ),
+    category: "Cloth",
+    status: <GroupStatusComponent status={G_PENDING} />,
+    dateCreated: "05/09/2020",
+    actions: (
+      <Space>
+        <Button
+          type="link"
+          size="small"
+          onClick={() => {
+            Router.push("/aggregator/group/details?id=1");
+          }}
+        >
+          View
+        </Button>
+      </Space>
+    ),
+  },
+  {
+    id: "2",
+    key: "2",
+    name: "Group Apple Watch Sport Band (44mm) - 08-09-2020",
+    createdBy: "Aggregator 2",
+    product: (
+      <Tooltip title="Apple Watch Sport Band (44mm)">
+        <a
+          rel="noreferrer"
+          target="_blank"
+          href={createLink(["product-details?productId=1"])}
+        >
+          {displayGroupName("Apple Watch Sport Band (44mm)")}
+        </a>
+      </Tooltip>
+    ),
+    category: "Keyboard",
+    status: <GroupStatusComponent status={G_FAILED} />,
+    dateCreated: "01/09/2020",
     actions: (
       <Space>
         <Button
@@ -246,6 +223,7 @@ const GroupRequestComponent = () => {
         <Title level={3}>Group Management</Title>
       </Row>
       <ReactTableLayout
+        dispatchAction={() => {}}
         searchProps={{
           placeholder: "Group Name or Created By",
           searchMessage,

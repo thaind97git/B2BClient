@@ -1,33 +1,49 @@
-import { Button, Col, Divider, Empty, Row, Space, Typography } from "antd";
-import React, { Fragment, useEffect } from "react";
 import {
-  R_BIDDING,
-  R_CANCELED,
-  R_DONE,
-  R_GROUPED,
-  R_NEGOTIATING,
-  R_ORDERED,
-  R_PENDING,
-  R_REJECTED,
-  R_WAIT_FOR_AUCTION,
-} from "../enums/requestStatus";
+  Button,
+  Col,
+  Divider,
+  Empty,
+  Modal,
+  Row,
+  Skeleton,
+  Space,
+  Tag,
+  Typography,
+} from "antd";
+import React, { Fragment, useEffect, useState } from "react";
+import { R_CANCELED, R_PENDING } from "../enums/requestStatus";
 import RequestStatusComponent from "./Utils/RequestStatusComponent";
-import { DATE_TIME_FORMAT, displayCurrency } from "../utils";
+import { DATE_TIME_FORMAT, displayCurrency, openNotification } from "../utils";
 import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
 import {
+  CancelRequestData,
+  CancelRequestError,
   getRequestDetails,
   GetRequestDetailsDataSelector,
+  getRequestDetailsResetter,
+  RejectRequestData,
+  RejectRequestError,
 } from "../stores/RequestState";
 import Moment from "react-moment";
+import Router from "next/router";
+import RequestCancelComponent from "./RequestCancelComponent";
+import RequestRejectComponent from "./RequestRejectComponent";
 const { Title } = Typography;
 
 const connectToRedux = connect(
   createStructuredSelector({
     requestDetailsData: GetRequestDetailsDataSelector,
+    cancelRequestData: CancelRequestData,
+    cancelRequestError: CancelRequestError,
+    rejectRequestData: RejectRequestData,
+    rejectRequestError: RejectRequestError,
   }),
   (dispatch) => ({
     getRequestDetails: (id) => dispatch(getRequestDetails(id)),
+    resetData: () => {
+      dispatch(getRequestDetailsResetter);
+    },
   })
 );
 
@@ -44,74 +60,72 @@ const DescriptionItem = ({ title, content }) => (
   </Col>
 );
 
-const getButtonActionsByStatus = (status) => {
-  let result = [];
-  switch (status) {
-    case R_PENDING:
-      result = [
-        { label: "Edit" },
-        { label: "Cancel", buttonProps: { danger: true } },
-      ];
-      break;
-    case R_WAIT_FOR_AUCTION:
-      result = [];
-      break;
-    case R_REJECTED:
-      result = [];
-      break;
-    case R_ORDERED:
-      result = [];
-      break;
-    case R_NEGOTIATING:
-      result = [];
-      break;
-    case R_GROUPED:
-      result = [];
-      break;
-    case R_DONE:
-      result = [];
-      break;
-    case R_CANCELED:
-      result = [];
-      break;
-    case R_BIDDING:
-      result = [];
-      break;
-
-    default:
-      break;
-  }
-  return result;
-};
-
 const RequestDetailsComponent = ({
-  buttonActions = [],
   isSupplier = true,
   requestDetailsData,
   getRequestDetails,
   requestId,
+  resetData,
+  cancelRequestError,
+  cancelRequestData,
+  rejectRequestData,
+  rejectRequestError,
+  setOpenDetails,
 }) => {
+  const [loading, setLoading] = useState(true);
+  const [openCancel, setOpenCancel] = useState(false);
+  const [openReject, setOpenReject] = useState(false);
   useEffect(() => {
     if (requestId) {
       getRequestDetails(requestId);
     }
-  }, [requestId, getRequestDetails]);
+    return () => {
+      resetData();
+    };
+  }, [requestId, getRequestDetails, resetData]);
+
+  useEffect(() => {
+    if (requestDetailsData) {
+      setLoading(false);
+    }
+  }, [requestDetailsData]);
+
+  useEffect(() => {
+    if (cancelRequestData) {
+      setOpenCancel(false);
+      typeof setOpenDetails === "function" && setOpenDetails(false);
+    }
+    if (cancelRequestError) {
+      openNotification("error", { message: "Cancel RFQ fail" });
+    }
+  }, [cancelRequestError, cancelRequestData, setOpenDetails]);
+  useEffect(() => {
+    if (rejectRequestData) {
+      setOpenReject(false);
+      typeof setOpenDetails === "function" && setOpenDetails(false);
+    }
+    if (rejectRequestError) {
+      openNotification("error", { message: "Reject RFQ fail" });
+    }
+  }, [rejectRequestError, rejectRequestData, setOpenDetails]);
+
   if (!requestId) {
     return <Empty description="Can not find any request !" />;
   }
+  if (loading) {
+    return <Skeleton active />;
+  }
   const {
     product = {},
-    currency = {},
     shippingMethod = {},
     sourcingType = {},
     sourcingPurpose = {},
     quantity,
-    unit = "",
     tradeTerm = {},
     preferredUnitPrice,
     dueDate,
     description,
-    certifi,
+    certifications = [],
     leadTime,
     requestStatus = {},
     paymentTerm = {},
@@ -119,13 +133,88 @@ const RequestDetailsComponent = ({
     ward = {},
     province = {},
     address,
+    cancelReason,
+    buyer = {},
+    otherRequirements,
   } = requestDetailsData || {};
+  const getButtonActionsByStatus = (status) => {
+    let result = [];
+    switch (status) {
+      case R_PENDING:
+        if (!isSupplier) {
+          result = [
+            {
+              label: "Reject",
+              buttonProps: {
+                danger: true,
+              },
+              action: () => {
+                setOpenReject(true);
+              },
+            },
+          ];
+        }
+        if (isSupplier) {
+          result = [
+            {
+              label: "Edit",
+              action: () =>
+                Router.push(
+                  `/buyer/rfq/update?id=${(requestDetailsData || {}).id}`
+                ),
+            },
+            {
+              label: "Cancel",
+              buttonProps: {
+                danger: true,
+              },
+              action: () => {
+                setOpenCancel(true);
+              },
+            },
+          ];
+        }
+        break;
+      default:
+        result = [];
+        break;
+    }
+    return result;
+  };
+
   const leadTimeDisplay = `Ship in ${leadTime} day(s) after supplier receives the initial payment`;
   return (
     <Row style={{ width: "100%" }}>
+      <Modal
+        onOk={() => setOpenCancel(false)}
+        onCancel={() => setOpenCancel(false)}
+        title="Cancel RFQ"
+        visible={openCancel}
+        footer={false}
+      >
+        {openCancel ? (
+          <RequestCancelComponent requestId={(requestDetailsData || {}).id} />
+        ) : null}
+      </Modal>
+      <Modal
+        onOk={() => setOpenReject(false)}
+        onCancel={() => setOpenReject(false)}
+        title="Reject RFQ"
+        visible={openReject}
+        footer={false}
+      >
+        {openReject ? (
+          <RequestRejectComponent requestId={(requestDetailsData || {}).id} />
+        ) : null}
+      </Modal>
       <Col style={{ padding: "12px 0px" }} span={24}>
         Status: <RequestStatusComponent status={requestStatus.id} />
       </Col>
+      {requestStatus.id === R_CANCELED && (
+        <Col style={{ padding: "12px 0px" }} span={24}>
+          Cancel reason: <b>{cancelReason || "N/A"}</b>
+        </Col>
+      )}
       <Col style={{ padding: "12px 0px" }} span={24}>
         <Space>
           {(getButtonActionsByStatus(requestStatus.id) || []).map(
@@ -133,7 +222,7 @@ const RequestDetailsComponent = ({
               <Button
                 key={index}
                 onClick={() => {
-                  typeof button.actions === "function" && button.action();
+                  typeof button.action === "function" && button.action();
                 }}
                 size="small"
                 {...button.buttonProps}
@@ -147,17 +236,30 @@ const RequestDetailsComponent = ({
       <Col span={24}>
         <Title level={5}>Product Basic Information</Title>
       </Col>
-      <DescriptionItem title="Product Name" content={product.description} />
-      {/* <DescriptionItem title="Category" content={category} /> */}
+      <DescriptionItem
+        title="Product Name"
+        content={
+          <a
+            href={`/product-details?id=${product.id}`}
+            target="_blank"
+            rel="noreferrer"
+          >
+            {product.description}
+          </a>
+        }
+      />
       <DescriptionItem
         title="Sourcing Type"
         content={sourcingType.description}
       />
       <DescriptionItem
         title="Sourcing Purpose"
-        content={sourcingPurpose.description}
+        content={sourcingPurpose.description || "N/A"}
       />
-      <DescriptionItem title="Quantity" content={`${quantity} ${unit}`} />
+      <DescriptionItem
+        title="Quantity"
+        content={`${quantity} ${product.unitType}`}
+      />
       <DescriptionItem title="Trade Term" content={tradeTerm.description} />
       <DescriptionItem
         title="Preferred Unit Price"
@@ -172,7 +274,18 @@ const RequestDetailsComponent = ({
       <Col span={24}>
         <Title level={5}>Supplier Capability</Title>
       </Col>
-      <DescriptionItem title="Certifications" content={certifi} />
+      <DescriptionItem
+        title="Certifications"
+        content={certifications.map((cer) => (
+          <Fragment>
+            <Tag color="processing">{cer.description}</Tag>
+          </Fragment>
+        ))}
+      />
+      <DescriptionItem
+        title="Other Requirements"
+        content={otherRequirements || "N/A"}
+      />
       <Divider />
       <Col span={24}>
         <Title level={5}>Shipping Capability</Title>
@@ -188,15 +301,19 @@ const RequestDetailsComponent = ({
         } - ${(province || {}).description}`}
       />
       <DescriptionItem title="Lead Time" content={leadTimeDisplay} />
+      <DescriptionItem title="Payment Term" content={paymentTerm.description} />
       {!isSupplier && (
         <Fragment>
           <Divider />
           <Col span={24}>
             <Title level={5}>RFQ Owner</Title>
           </Col>
-          <DescriptionItem title="Created by" content="User 1" />
-          <DescriptionItem title="Email" content="user1@gmail.com" />
-          <DescriptionItem title="Phone" content="0123456789" />
+          <DescriptionItem
+            title="Created by"
+            content={(buyer || {}).fullName}
+          />
+          <DescriptionItem title="Email" content={(buyer || {}).email} />
+          <DescriptionItem title="Phone" content={(buyer || {}).phoneNumber} />
         </Fragment>
       )}
 

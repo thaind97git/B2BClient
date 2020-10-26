@@ -1,15 +1,10 @@
 import { Button, Select, Drawer, Row, Typography } from "antd";
+import Link from "next/link";
 import React, { Fragment, useState } from "react";
 import ReactTableLayout from "../layouts/ReactTableLayout";
 import { DEFAULT_DATE_RANGE, displayCurrency } from "../utils";
-import RequestStatusComponent from "./Utils/RequestStatusComponent";
-import RequestDetailsComponent from "./RequestDetailsComponent";
-import {
-  R_CANCELED,
-  R_DONE,
-  R_ORDERED,
-  R_REJECTED,
-} from "../enums/requestStatus";
+import { createLink } from "../libs";
+import AllCategoryComponent from "./AllCategoryComponent";
 const { Option, OptGroup } = Select;
 const { Title } = Typography;
 
@@ -51,75 +46,44 @@ const AdminProductManagementComponent = () => {
   const dataSource = [
     {
       key: "1",
-      name: "Iphone 5",
+      name: "Apple Watch Sport Band (44mm) - Cyprus Green - Regular",
       category: "Mobile Phone",
       unit: "units",
       dateCreated: "30/09/2020 02:07:26 PM",
-      actions: (
-        <Button onClick={() => setOpenDetails(true)} size="small" type="link">
-          View
-        </Button>
-      ),
+      actions: <Link href="#">View</Link>,
     },
     {
       key: "2",
-      name: "Iphone 5",
-      category: "Mobile Phone",
-      unit: "units",
+      name: "Sally Hansen Xtreme Wear Daycream",
+      category: "Cords",
+      unit: "Chains",
       dateCreated: "30/09/2020 02:07:26 PM",
-      actions: (
-        <Button onClick={() => setOpenDetails(true)} size="small" type="link">
-          View
-        </Button>
-      ),
+      actions: <Link href="#">View</Link>,
     },
     {
       key: "3",
-      name: "Iphone 5",
-      category: "Mobile Phone",
+      name: "BEST PENTIUM PRO GOLD CERAMIC CPU SCRAP / HIGH GRADE CPU SCRAP",
+      category: "CPUs",
       unit: "units",
       dateCreated: "30/09/2020 02:07:26 PM",
-      actions: (
-        <Button onClick={() => setOpenDetails(true)} size="small" type="link">
-          View
-        </Button>
-      ),
+      actions: <Link href="#">View</Link>,
     },
     {
       key: "4",
-      name: "Iphone 5",
-      category: "Mobile Phone",
+      name: "Factory price is high quality and cheap Single Head Cutting Saw",
+      category: "Building Material Making Machinery Parts",
       unit: "units",
       dateCreated: "30/09/2020 02:07:26 PM",
-      actions: (
-        <Button onClick={() => setOpenDetails(true)} size="small" type="link">
-          View
-        </Button>
-      ),
+      actions: <Link href="#">View</Link>,
     },
     {
       key: "5",
-      name: "Iphone 5",
-      category: "Mobile Phone",
-      unit: "units",
+      name:
+        "7Inch 2 din touch screen Car Multimedia MP5 player with Bluetooth functions",
+      category: "Auto Electrical Systems",
+      unit: "Pieces",
       dateCreated: "30/09/2020 02:07:26 PM",
-      actions: (
-        <Button onClick={() => setOpenDetails(true)} size="small" type="link">
-          View
-        </Button>
-      ),
-    },
-    {
-      key: "6",
-      name: "Iphone 5",
-      category: "Mobile Phone",
-      unit: "units",
-      dateCreated: "30/09/2020 02:07:26 PM",
-      actions: (
-        <Button onClick={() => setOpenDetails(true)} size="small" type="link">
-          View
-        </Button>
-      ),
+      actions: <Link href="#">View</Link>,
     },
   ];
   return (
@@ -127,9 +91,7 @@ const AdminProductManagementComponent = () => {
       <Row justify="space-between">
         <Title level={4}>Product List</Title>
         <Button onClick={() => {}} type="primary">
-          <a href="/admin/product/create" target="_blank">
-            Create new product
-          </a>
+          <a href="/admin/product/create">Create new product</a>
         </Button>
       </Row>
       <ReactTableLayout
@@ -140,20 +102,7 @@ const AdminProductManagementComponent = () => {
           setSearchMessage,
           exElement: (
             <Fragment>
-              <Select
-                size="large"
-                placeholder="Filter by category"
-                style={{ width: 200 }}
-                onChange={handleChange}
-              >
-                <OptGroup label="Category 1">
-                  <Option value="jack">Sub-1 Category 1</Option>
-                  <Option value="lucy">Sub-2 Category 1</Option>
-                </OptGroup>
-                <OptGroup label="Category 2">
-                  <Option value="Yiminghe">Sub-1 Category 1</Option>
-                </OptGroup>
-              </Select>
+              <AllCategoryComponent size="large" isSearchStyle={false} />
             </Fragment>
           ),
         }}
@@ -164,18 +113,6 @@ const AdminProductManagementComponent = () => {
         data={dataSource}
         columns={columns}
       />
-      {/* <Table dataSource={dataSource} columns={columns} /> */}
-      <Drawer
-        width={640}
-        title="RFQ details"
-        placement={"right"}
-        closable={true}
-        onClose={() => setOpenDetails(false)}
-        visible={openDetails}
-        key={"right"}
-      >
-        <RequestDetailsComponent isSupplier={false} />
-      </Drawer>
     </div>
   );
 };

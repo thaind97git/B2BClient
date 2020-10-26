@@ -1,4 +1,5 @@
 import React, { Fragment } from "react";
+import { getToken, removeToken } from "../libs/localStorage";
 
 const HomePageLayout = ({
   children,
@@ -47,15 +48,21 @@ const HomePageLayout = ({
               <li>
                 <a href="#product">Products</a>
               </li>
-              <li>
-                <a href="#about">About Us</a>
-              </li>
-              <li>
-                <a href="#features">Features</a>
-              </li>
-              <li>
-                <a href="#team">Team</a>
-              </li>
+              {isAbout && (
+                <li>
+                  <a href="#about">About Us</a>
+                </li>
+              )}
+              {isFeature && (
+                <li>
+                  <a href="#features">Features</a>
+                </li>
+              )}
+              {isCta && (
+                <li>
+                  <a href="#team">Team</a>
+                </li>
+              )}
               <li>
                 <a href="#contact">Contact Us</a>
               </li>
@@ -75,16 +82,37 @@ const HomePageLayout = ({
             <a href="#">
               <i className="fa fa-envelope"></i>
             </a>
-            <a style={{ fontSize: 18 }} className="scrollto" href="/login">
-              Register
-            </a>
-            <a
-              style={{ fontSize: 18 }}
-              className="im-supplier scrollto"
-              href="/login"
-            >
-              Login
-            </a>
+            {getToken() ? (
+              <Fragment>
+                <a href="/login" style={{ fontSize: 14 }}>
+                  Hi, Linh
+                </a>
+                <a
+                  href="/login"
+                  style={{ fontSize: 14 }}
+                  onClick={() => removeToken()}
+                >
+                  Logout
+                </a>
+              </Fragment>
+            ) : (
+              <Fragment>
+                <a
+                  style={{ fontSize: 18 }}
+                  className="scrollto"
+                  href="/register"
+                >
+                  Register
+                </a>
+                <a
+                  style={{ fontSize: 18 }}
+                  className="im-supplier scrollto"
+                  href="/login"
+                >
+                  Login
+                </a>
+              </Fragment>
+            )}
           </nav>
         </div>
       </header>
@@ -606,6 +634,20 @@ const HomePageLayout = ({
       <a className="scrolltop" href="#">
         <span className="fa fa-angle-up"></span>
       </a>
+      <script src="/static/homepage/assets/vendor/jquery/jquery.min.js"></script>
+      <script src="/static/homepage/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+      <script src="/static/homepage/assets/vendor/jquery.easing/jquery.easing.min.js"></script>
+      <script src="/static/homepage/assets/vendor/php-email-form/validate.js"></script>
+      <script src="/static/homepage/assets/vendor/counterup/counterup.min.js"></script>
+      <script src="/static/homepage/assets/vendor/tether/js/tether.min.js"></script>
+      <script src="/static/homepage/assets/vendor/jquery-sticky/jquery.sticky.js"></script>
+      <script src="/static/homepage/assets/vendor/venobox/venobox.min.js"></script>
+      <script src="/static/homepage/assets/vendor/lockfixed/jquery.lockfixed.min.js"></script>
+      <script src="/static/homepage/assets/vendor/waypoints/jquery.waypoints.min.js"></script>
+      <script src="/static/homepage/assets/vendor/superfish/superfish.min.js"></script>
+      <script src="/static/homepage/assets/vendor/hoverIntent/hoverIntent.js"></script>
+
+      <script src="/static/homepage/assets/js/main.js"></script>
       {/* <BackTop>
   <span className="fa fa-angle-up"></span>
 </BackTop> */}

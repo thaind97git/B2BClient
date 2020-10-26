@@ -19,10 +19,12 @@ import ListingSupplierByCategoryComponent from "./ListingSupplierByCategoryCompo
 import RequestDetailsComponent from "./RequestDetailsComponent";
 import UserProfileComponent from "./UserProfileComponent";
 import GroupStatusComponent from "./Utils/GroupStatusComponent";
+import { displayCurrency, getAveragePrice } from "../utils";
+import { createLink } from "../libs";
 
 const { Title } = Typography;
 const groupRequestColumns = [
-  { title: "Product Name", dataIndex: "category", key: "category" },
+  // { title: "Product Name", dataIndex: "category", key: "category" },
   { title: "Preferred Unit Price", dataIndex: "price", key: "price" },
   { title: "Quantity", dataIndex: "quantity", key: "quantity" },
   { title: "Date Created", dataIndex: "dateCreated", key: "dateCreated" },
@@ -40,13 +42,15 @@ const SUPPLIER_CONTACT = [
 const GroupRequestDetailsComponent = ({
   group = {
     id: 1,
-    title: "Iphone 7S",
-    category: <Tag color="processing">Iphone</Tag>,
+    title: "Group IR Night Vision Hidden Camera Watch Sport - 23/10/2020",
+    category: <Tag color="processing">Action & Sports Camera</Tag>,
     dateCreated: "27/09/2020",
     dateUpdated: "28/09/2020",
-    description: "This Group will focus about Iphone 7S 64Gb",
-    quantity: "60 Units",
-    priceInUnit: "6,700,000 đ",
+    description:
+      "This Group will focus about IR Night Vision Hidden Camera Watch Sport",
+    quantity: "190 Units",
+    minPrice: displayCurrency(1180000),
+    maxPrice: displayCurrency(1200000),
     status: G_NEGOTIATING,
   },
 }) => {
@@ -57,9 +61,8 @@ const GroupRequestDetailsComponent = ({
   const REQUEST_LIST = [
     {
       key: "1",
-      price: "7,000,000 đ",
-      category: "Iphone 7S 64Gb",
-      quantity: 20,
+      price: displayCurrency(1190000),
+      quantity: 50,
       createdBy: "User 1",
       dateCreated: "30/09/2020 02:07:26 PM",
       actions: (
@@ -78,9 +81,8 @@ const GroupRequestDetailsComponent = ({
     },
     {
       key: "2",
-      price: "6,800,000 đ",
-      category: "Iphone 7S 64Gb",
-      quantity: 20,
+      price: displayCurrency(1180000),
+      quantity: 140,
       createdBy: "User 1",
       dateCreated: "30/09/2020 02:07:26 PM",
       actions: (
@@ -99,9 +101,8 @@ const GroupRequestDetailsComponent = ({
     },
     {
       key: "3",
-      price: "6,500,000 đ",
-      category: "Iphone 7s 64Gb",
-      quantity: 20,
+      price: displayCurrency(1200000),
+      quantity: 30,
       createdBy: "User 1",
       dateCreated: "30/09/2020 02:07:26 PM",
       actions: (
@@ -137,8 +138,16 @@ const GroupRequestDetailsComponent = ({
               Chat
             </a>
           </Button>
-          <Button size="small" style={{ color: "green" }}>
-            Closing sales
+          <Button
+            size="small"
+            style={{ color: "green" }}
+            onClick={() => {
+              Router.push(
+                `/aggregator/order/confirmation?groupID=${1}&isNegotiating=true`
+              );
+            }}
+          >
+            Closing deal
           </Button>
 
           <Button
@@ -174,8 +183,16 @@ const GroupRequestDetailsComponent = ({
               Chat
             </a>
           </Button>
-          <Button size="small" style={{ color: "green" }}>
-            Closing sales{" "}
+          <Button
+            size="small"
+            style={{ color: "green" }}
+            onClick={() => {
+              Router.push(
+                `/aggregator/order/confirmation?groupID=${1}&isNegotiating=true`
+              );
+            }}
+          >
+            Closing deal
           </Button>
           <Button
             type="link"
@@ -205,8 +222,16 @@ const GroupRequestDetailsComponent = ({
               Chat
             </a>
           </Button>
-          <Button size="small" style={{ color: "green" }}>
-            Closing sales
+          <Button
+            size="small"
+            style={{ color: "green" }}
+            onClick={() => {
+              Router.push(
+                `/aggregator/order/confirmation?groupID=${1}&isNegotiating=true`
+              );
+            }}
+          >
+            Closing deal
           </Button>
           <Button
             type="link"
@@ -233,11 +258,10 @@ const GroupRequestDetailsComponent = ({
     title,
     category,
     dateCreated,
-    dateUpdated,
     description,
     status,
-    priceInUnit,
-    quantity,
+    minPrice,
+    maxPrice,
   } = group;
   return (
     <Fragment>
@@ -251,6 +275,7 @@ const GroupRequestDetailsComponent = ({
         key={"right"}
       >
         <RequestDetailsComponent
+          // requestId="fd450a99-991b-4164-c2e5-08d8773db076"
           buttonActions={[
             {
               label: "Remove",
@@ -282,9 +307,6 @@ const GroupRequestDetailsComponent = ({
           >
             Create Reverse Auction
           </Button>
-          <Button type="primary" onClick={() => setIsOpenContact(true)}>
-            Add Suppliers
-          </Button>
         </Space>
       </Row>
       <Space direction="vertical">
@@ -293,16 +315,42 @@ const GroupRequestDetailsComponent = ({
           style={{ width: "100%" }}
         >
           <Descriptions>
+            <Descriptions.Item label="Product Name" span={3}>
+              <a
+                rel="noreferrer"
+                target="_blank"
+                href={createLink(["product-details?productId=1"])}
+              >
+                <b>
+                  IR Night Vision Hidden Camera Watch Sport Wear Watch Camera
+                  WIFI
+                </b>
+              </a>
+            </Descriptions.Item>
             <Descriptions.Item label="Category">{category}</Descriptions.Item>
             <Descriptions.Item label="Created date">
               {dateCreated}
             </Descriptions.Item>
-            <Descriptions.Item label="Updated Date">
-              {dateUpdated}
+            <Descriptions.Item label="Total Quantity">
+              {REQUEST_LIST.reduce((prev, current) => {
+                return prev + current.quantity;
+              }, 0)}{" "}
+              Units
             </Descriptions.Item>
-            <Descriptions.Item label="Quantity">{quantity}</Descriptions.Item>
             <Descriptions.Item label="Average price in unit">
-              {priceInUnit}
+              {displayCurrency(
+                getAveragePrice([
+                  { price: 1200000, quantity: 50 },
+                  { price: 1190000, quantity: 30 },
+                  { price: 1180000, quantity: 140 },
+                ])
+              )}
+            </Descriptions.Item>
+            <Descriptions.Item label="Min RFQ price">
+              {minPrice}
+            </Descriptions.Item>
+            <Descriptions.Item label="Max RFQ price">
+              {maxPrice}
             </Descriptions.Item>
             <Descriptions.Item label="Status">
               <GroupStatusComponent status={status} />
@@ -339,6 +387,13 @@ const GroupRequestDetailsComponent = ({
         >
           <div>
             <Table
+              footer={() => {
+                return (
+                  <Button type="primary" onClick={() => setIsOpenContact(true)}>
+                    Add Suppliers
+                  </Button>
+                );
+              }}
               bordered
               columns={SUPPLIER_CONTACT}
               dataSource={SUPPLIER_CONTACT_DATA}
@@ -348,6 +403,7 @@ const GroupRequestDetailsComponent = ({
         </Card>
       </Space>
       <Modal
+        width={1000}
         onCancel={() => setIsOpenContact(false)}
         onOk={() => setIsOpenContact(false)}
         title="Find Supplier"
@@ -357,10 +413,17 @@ const GroupRequestDetailsComponent = ({
         <ListingSupplierByCategoryComponent category={category} />
       </Modal>
       <Modal
-        width={600}
+        width={800}
         onCancel={() => setIsOpenAddRequest(false)}
         onOk={() => setIsOpenAddRequest(false)}
-        title="Add Request"
+        title={
+          <div>
+            Add Requests created inside{" "}
+            <i>
+              IR Night Vision Hidden Camera Watch Sport Wear Watch Camera WIFI
+            </i>
+          </div>
+        }
         visible={isOpenAddRequest}
         okText="Add"
       >

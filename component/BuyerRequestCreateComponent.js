@@ -15,11 +15,12 @@ import {
   Skeleton,
 } from "antd";
 import { LeftOutlined } from "@ant-design/icons";
-import { displayCurrency } from "../utils";
+import { displayCurrency, openNotification } from "../utils";
 import { createStructuredSelector } from "reselect";
 import { connect } from "react-redux";
 import Router, { useRouter } from "next/router";
 import { SET_CATEGORY_SELECTED } from "../stores/initState";
+import { get } from "lodash/fp";
 import {
   getCurrency,
   GetCurrencyData,
@@ -65,7 +66,11 @@ import {
 import {
   createRequest,
   CreateRequestData,
+  CreateRequestError,
   CreateRequestResetter,
+  getRequestDetails,
+  GetRequestDetailsDataSelector,
+  GetRequestDetailsErrorSelector,
 } from "../stores/RequestState";
 
 const { Title } = Typography;
@@ -88,6 +93,9 @@ const connectToRedux = connect(
     wardData: GetWardData,
     districtData: GetDistrictData,
     createRequestData: CreateRequestData,
+    createRequestError: CreateRequestError,
+    requestDetailsData: GetRequestDetailsDataSelector,
+    requestDetailsError: GetRequestDetailsErrorSelector,
   }),
   (dispatch) => ({
     removeCategorySelected: () =>
@@ -102,9 +110,10 @@ const connectToRedux = connect(
     getSupCertification: () => dispatch(getSupplierCertification()),
     getProductDetails: (id) => dispatch(getProductDetails(id)),
     getProvince: () => dispatch(getProvince()),
-    getWard: (provinceId) => dispatch(getWard(provinceId)),
-    getDistrict: (wardId) => dispatch(getDistrict(wardId)),
+    getDistrict: (provinceId) => dispatch(getDistrict(provinceId)),
+    getWard: (districtId) => dispatch(getWard(districtId)),
     createRequest: (object) => dispatch(createRequest(object)),
+    getRequestDetails: (id) => dispatch(getRequestDetails(id)),
     resetData: () => {
       dispatch(GetSourcingTypeResetter);
       dispatch(GetSourcingPurposeResetter);
@@ -114,7 +123,7 @@ const connectToRedux = connect(
       dispatch(GetShippingMethodResetter);
       dispatch(GetPaymentTermResetter);
       dispatch(GetSupplierCertificationResetter);
-      dispatch(GetProductDetailsResetter);
+      // dispatch(GetProductDetailsResetter);
       dispatch(GetProvinceResetter);
       dispatch(GetWardResetter);
       dispatch(GetDistrictResetter);
@@ -137,9 +146,7 @@ const PriceInput = ({
   setPrice,
   currencyData = [],
 }) => {
-  const [currency, setCurrency] = useState(
-    ((currencyData && currencyData[0]) || {}).id
-  );
+  const currency = ((currencyData && currencyData[0]) || {}).id;
 
   const triggerChange = (changedValue) => {
     if (onChange) {
@@ -153,9 +160,8 @@ const PriceInput = ({
   };
 
   const onNumberChange = (value) => {
-    console.log({ value });
     const newNumber = parseInt(value || 0, 10);
-    if (Number.isNaN(price)) {
+    if (Number.isNaN(newNumber)) {
       return;
     }
 
@@ -169,6 +175,7 @@ const PriceInput = ({
   return (
     <span>
       <InputNumber
+        placeholder="Enter the preferred unit price"
         onChange={onNumberChange}
         min={0}
         style={{ width: "50%" }}
@@ -187,17 +194,8 @@ const PriceInput = ({
   );
 };
 
-const QuantityInput = ({
-  value = {
-    number: 1,
-  },
-  onChange,
-  unitData = [],
-  unitId,
-}) => {
-  const number = 1;
-  const unitSelected = (unitData || []).find((unit) => unit.id === unitId);
-
+const QuantityInput = ({ value = {}, onChange, unitOfMeasure }) => {
+  const number = null;
   const triggerChange = (changedValue) => {
     if (onChange) {
       onChange({
@@ -211,7 +209,7 @@ const QuantityInput = ({
   const onNumberChange = (value) => {
     const newNumber = parseInt(value || 1, 10);
 
-    if (Number.isNaN(number)) {
+    if (Number.isNaN(newNumber)) {
       return;
     }
 
@@ -226,17 +224,49 @@ const QuantityInput = ({
         value={value.number || number}
         onChange={onNumberChange}
         style={{ width: "50%" }}
-        min={1}
+        min={0}
         placeholder="Enter the product quantity"
       />
       <Input
-        value={(unitSelected || {}).description}
+        value={(unitOfMeasure || {}).description}
         disabled
         style={{
           width: "48%",
           margin: "0 4px",
         }}
       />
+    </span>
+  );
+};
+
+const LeadTimeInput = ({ value = {}, onChange }) => {
+  const triggerChange = (changedValue) => {
+    if (onChange) {
+      onChange({
+        ...value,
+        ...changedValue,
+      });
+    }
+  };
+
+  const onNumberChange = (value) => {
+    const newNumber = parseInt(value || 1, 10);
+
+    if (Number.isNaN(newNumber)) {
+      return;
+    }
+
+    triggerChange({
+      number: newNumber,
+    });
+  };
+
+  return (
+    <span>
+      Ship in <span>&nbsp;</span>
+      <InputNumber onChange={onNumberChange} min={0} style={{ width: 100 }} />
+      <span>&nbsp;</span>
+      day(s) after supplier receives the initial payment
     </span>
   );
 };
@@ -257,7 +287,6 @@ const BuyerRequestCreateComponent = ({
   getSupCertification,
   sourcingTypeData,
   sourcingPurposeData,
-  unitData,
   currencyData,
   tradeTermData,
   shippingMethodData,
@@ -273,13 +302,15 @@ const BuyerRequestCreateComponent = ({
   wardData,
   districtData,
   createRequest,
-  createRequestData,
+  createRequestError,
   resetData,
+  isUpdate = false,
 }) => {
   const [price, setPrice] = useState(0);
   const router = useRouter();
   const [loadingRFQ, setLoadingRFQ] = useState(false);
-  const productId = router.query.productId;
+  const [form] = Form.useForm();
+  let productId = router.query.productId;
 
   useEffect(() => {
     getSourcingType();
@@ -310,40 +341,54 @@ const BuyerRequestCreateComponent = ({
     }
   }, [getProductDetails, productId]);
 
+  // useEffect(() => {
+  //   if (!!requestId) {
+  //     getRequestDetails(requestId);
+  //     setLoadingRFQ(true);
+  //   }
+  // }, [getRequestDetails, requestId]);
+
   useEffect(() => {
     if (productDetailsData || productDetailsError) {
       setLoadingRFQ(false);
     }
   }, [productDetailsError, productDetailsData]);
 
+  // useEffect(() => {
+  //   if (requestDetailsError || requestDetailsData) {
+  //     setLoadingRFQ(false);
+  //   }
+  // }, [requestDetailsData, requestDetailsError]);
+
   useEffect(() => {
-    if (!!createRequestData) {
-      Router.push("buyer/rfq");
+    if (!!createRequestError) {
+      openNotification("error", { message: "Create new request fail" });
     }
     return () => {
       resetData();
     };
-  }, [createRequestData, resetData]);
+  }, [createRequestError, resetData]);
 
   const onFinish = (values) => {
     values.productId = productId + "";
-    values.preferredUnitPrice = values.preferredUnitPrice.price + "";
+    values.preferredUnitPrice = get("preferredUnitPrice.price")(values) + "";
     values.quantity = values.quantity.number + "";
     values.dueDate = moment.utc(new Date(values.dueDate)).format();
     values.currencyId = (currencyData || [])[0].id;
-    console.log("Received values of form: ", values);
+    values.certifications = values.certifications || [];
+    values.leadTime = values.leadTime.number;
     createRequest(values);
   };
 
   const checkPrice = (rule, value) => {
-    if (value.price > 0) {
+    if (value && value.price > 0) {
       return Promise.resolve();
     }
 
     return Promise.reject("Price must be greater than zero!");
   };
   const checkUnit = (rule, value) => {
-    if (value.number > 0) {
+    if (value && value.number > 0) {
       return Promise.resolve();
     }
 
@@ -353,7 +398,7 @@ const BuyerRequestCreateComponent = ({
     return <Skeleton active />;
   }
 
-  if (!productId || !productDetailsData || productDetailsError) {
+  if (!productDetailsData || productDetailsError) {
     return (
       <Fragment>
         <Empty description="Can not find any product! Please choose specify product before submit RFQ" />
@@ -364,6 +409,45 @@ const BuyerRequestCreateComponent = ({
         </div>
       </Fragment>
     );
+  }
+  // else if (isUpdate && (requestDetailsError || !requestDetailsData)) {
+  //   return (
+  //     <Fragment>
+  //       <Empty description="Can not find any request !" />
+  //       <div style={{ textAlign: "center", paddingTop: 32 }}>
+  //         <Button onClick={() => Router.push("/buyer/rfq")} type="primary">
+  //           <LeftOutlined /> Back to RFQ list
+  //         </Button>
+  //       </div>
+  //     </Fragment>
+  //   );
+  // }
+  let initForm = {};
+  if (!isUpdate) {
+    initForm.productName = productDetailsData.productName;
+  } else {
+    // initForm.productName = get("product.description")(requestDetailsData);
+    // initForm.sourcingPurposeId = get("sourcingPurpose.id")(requestDetailsData);
+    // initForm.sourcingTypeId = get("sourcingType.description")(
+    //   requestDetailsData
+    // );
+    // initForm.quantity = get("quantity")(requestDetailsData);
+    // initForm.preferredUnitPrice = get("preferredUnitPrice")(requestDetailsData);
+    // initForm.tradeTermId = get("tradeTerm.id")(requestDetailsData);
+    // initForm.dueDate =
+    //   get("dueDate")(requestDetailsData) &&
+    //   moment(get("dueDate")(requestDetailsData));
+    // initForm.description = get("description")(requestDetailsData);
+    // initForm.certifications = get("certifications")(requestDetailsData) || [];
+    // initForm.otherRequirements = get("otherRequirements")(requestDetailsData);
+    // initForm.shippingMethodId = get("shippingMethod.id")(requestDetailsData);
+    // initForm.provinceId = get("province.id")(requestDetailsData);
+    // // getWard(initForm.provinceId);
+    // // initForm.wardId = get("ward.id")(requestDetailsData);
+    // // initForm.districtId = get("district.id")(requestDetailsData);
+    // initForm.address = get("address")(requestDetailsData);
+    // initForm.leadTime = get("leadTime")(requestDetailsData);
+    // initForm.paymentTermId = get("paymentTerm.id")(requestDetailsData);
   }
 
   return (
@@ -377,14 +461,12 @@ const BuyerRequestCreateComponent = ({
         <Row align="middle" justify="center">
           <Col sm={20} md={18}>
             <Form
+              form={form}
               {...formItemLayout}
               autoComplete="new-password"
               className="register-form"
               onFinish={onFinish}
-              initialValues={{
-                productName: productDetailsData.productName,
-                unit: "Unit",
-              }}
+              initialValues={initForm}
             >
               <Row justify="center">
                 <Title style={styles.titleStyle} level={2}>
@@ -417,7 +499,10 @@ const BuyerRequestCreateComponent = ({
                         },
                       ]}
                     >
-                      <Select style={{ width: "50%" }}>
+                      <Select
+                        placeholder="Please select"
+                        style={{ width: "50%" }}
+                      >
                         {!!sourcingTypeData &&
                           sourcingTypeData.map((type) => (
                             <Option
@@ -435,14 +520,17 @@ const BuyerRequestCreateComponent = ({
                     <FormItem
                       label="Sourcing Purpose"
                       name="sourcingPurposeId"
-                      rules={[
-                        {
-                          required: true,
-                          message: "Please select Sourcing Purpose",
-                        },
-                      ]}
+                      // rules={[
+                      //   {
+                      //     required: true,
+                      //     message: "Please select Sourcing Purpose",
+                      //   },
+                      // ]}
                     >
-                      <Select style={{ width: "50%" }}>
+                      <Select
+                        placeholder="Please select"
+                        style={{ width: "50%" }}
+                      >
                         {!!sourcingPurposeData &&
                           sourcingPurposeData.map((type) => (
                             <Option
@@ -471,8 +559,7 @@ const BuyerRequestCreateComponent = ({
                       ]}
                     >
                       <QuantityInput
-                        unitData={unitData}
-                        unitId={(productDetailsData || {}).unitOfMeasureId}
+                        unitOfMeasure={get("unitOfMeasure")(productDetailsData)}
                       />
                     </FormItem>
                   </Col>
@@ -516,7 +603,10 @@ const BuyerRequestCreateComponent = ({
                         },
                       ]}
                     >
-                      <Select style={{ width: "50%" }}>
+                      <Select
+                        placeholder="Please select"
+                        style={{ width: "50%" }}
+                      >
                         {!!tradeTermData &&
                           tradeTermData.map((type) => (
                             <Option
@@ -606,7 +696,10 @@ const BuyerRequestCreateComponent = ({
                     </FormItem>
                   </Col>
                   <Col style={styles.colStyle} span={24}>
-                    <FormItem label="Other Requirements" name="otherRe">
+                    <FormItem
+                      label="Other Requirements"
+                      name="otherRequirements"
+                    >
                       <Input.TextArea
                         autoSize={{ minRows: 4 }}
                         placeholder="To receive fast and accurate quotations from suitable suppliers, please present your supplier requirements as specifically as possible. "
@@ -637,7 +730,10 @@ const BuyerRequestCreateComponent = ({
                       label="Shipping Method"
                       name="shippingMethodId"
                     >
-                      <Select style={{ width: "50%" }}>
+                      <Select
+                        placeholder="Please select"
+                        style={{ width: "50%" }}
+                      >
                         {!!shippingMethodData &&
                           shippingMethodData.map((type) => (
                             <Option
@@ -663,8 +759,11 @@ const BuyerRequestCreateComponent = ({
                       ]}
                     >
                       <Select
+                        placeholder="Please select"
                         onChange={(value) => {
-                          getWard(value);
+                          getDistrict(value);
+                          console.log({ form });
+                          form.resetFields(["districtId", "wardId"]);
                         }}
                         showSearch
                         filterOption={(input, option) =>
@@ -686,6 +785,40 @@ const BuyerRequestCreateComponent = ({
 
                   <Col style={styles.colStyle} span={24}>
                     <FormItem
+                      label="District"
+                      name="districtId"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please select district",
+                        },
+                      ]}
+                    >
+                      <Select
+                        placeholder="Please select"
+                        onChange={(value) => {
+                          getWard(value);
+                          form.resetFields(["wardId"]);
+                        }}
+                        showSearch
+                        filterOption={(input, option) =>
+                          option.children
+                            .toLowerCase()
+                            .indexOf(input.toLowerCase()) >= 0
+                        }
+                        style={{ width: "50%" }}
+                      >
+                        {!!districtData &&
+                          districtData.map((district) => (
+                            <Option key={district.id} value={district.id}>
+                              {district.description}
+                            </Option>
+                          ))}
+                      </Select>
+                    </FormItem>
+                  </Col>
+                  <Col style={styles.colStyle} span={24}>
+                    <FormItem
                       label="Ward"
                       name="wardId"
                       rules={[
@@ -696,42 +829,13 @@ const BuyerRequestCreateComponent = ({
                       ]}
                     >
                       <Select
-                        onChange={(value) => {
-                          getDistrict(value);
-                        }}
-                        showSearch
-                        filterOption={(input, option) =>
-                          option.children
-                            .toLowerCase()
-                            .indexOf(input.toLowerCase()) >= 0
-                        }
+                        placeholder="Please select"
                         style={{ width: "50%" }}
                       >
                         {!!wardData &&
                           wardData.map((ward) => (
                             <Option key={ward.id} value={ward.id}>
                               {ward.description}
-                            </Option>
-                          ))}
-                      </Select>
-                    </FormItem>
-                  </Col>
-                  <Col style={styles.colStyle} span={24}>
-                    <FormItem
-                      label="District"
-                      name="districtId"
-                      rules={[
-                        {
-                          required: true,
-                          message: "Please select district",
-                        },
-                      ]}
-                    >
-                      <Select style={{ width: "50%" }}>
-                        {!!districtData &&
-                          districtData.map((district) => (
-                            <Option key={district.id} value={district.id}>
-                              {district.description}
                             </Option>
                           ))}
                       </Select>
@@ -753,10 +857,7 @@ const BuyerRequestCreateComponent = ({
                   </Col>
                   <Col style={styles.colStyle} span={24}>
                     <FormItem label="Lead Time" name="leadTime">
-                      Ship in <span>&nbsp;</span>
-                      <InputNumber min={0} style={{ width: 100 }} />
-                      <span>&nbsp;</span>
-                      day(s) after supplier receives the initial payment
+                      <LeadTimeInput />
                     </FormItem>
                   </Col>
                   <Col style={styles.colStyle} span={24}>
@@ -770,7 +871,10 @@ const BuyerRequestCreateComponent = ({
                         },
                       ]}
                     >
-                      <Select style={{ width: "50%" }}>
+                      <Select
+                        placeholder="Please select"
+                        style={{ width: "50%" }}
+                      >
                         {!!paymentTermData &&
                           paymentTermData.map((type) => (
                             <Option

@@ -22,7 +22,7 @@ import {
 } from "../stores/SupportRequestState";
 import ImgCrop from "antd-img-crop";
 import MarkdownEditorComponent from "./MarkdownEditorComponent";
-import { openNotification } from "../utils";
+import { acceptFileMimes, acceptFileTypes, openNotification } from "../utils";
 import { createNewProduct } from "../stores/ProductState";
 
 const { Title } = Typography;
@@ -49,6 +49,14 @@ const formItemLayout = {
   labelCol: { span: 4 },
   wrapperCol: { span: 16 },
 };
+function getBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = (error) => reject(error);
+  });
+}
 
 const AdminProductCreateComponent = ({
   removeCategorySelected,
@@ -59,6 +67,11 @@ const AdminProductCreateComponent = ({
 }) => {
   const [openCategory, setOpenCategory] = useState(false);
   const [fileList, setFileList] = useState([]);
+  const [preview, setPreview] = useState({
+    previewVisible: false,
+    previewImage: "",
+    previewTitle: "",
+  });
 
   useEffect(() => {
     getUnit();
@@ -88,22 +101,24 @@ const AdminProductCreateComponent = ({
   };
 
   const onChange = ({ fileList: newFileList }) => {
+    console.log({ newFileList });
     setFileList(newFileList);
   };
 
+  const onCancel = () => setPreview({ previewVisible: false });
+
   const onPreview = async (file) => {
-    let src = file.url;
-    if (!src) {
-      src = await new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file.originFileObj);
-        reader.onload = () => resolve(reader.result);
-      });
+    if (!file.url && !file.preview) {
+      file.preview = await getBase64(file.originFileObj);
     }
-    const image = new Image();
-    image.src = src;
-    const imgWindow = window.open(src);
-    imgWindow.document.write(image.outerHTML);
+    console.log(file.url);
+    console.log(file);
+    setPreview({
+      previewImage: file.url || file.preview,
+      previewVisible: true,
+      previewTitle:
+        file.name || file.url.substring(file.url.lastIndexOf("/") + 1),
+    });
   };
 
   return (
@@ -249,13 +264,35 @@ const AdminProductCreateComponent = ({
                 >
                   <ImgCrop rotate>
                     <Upload
+                      accept=".png, .jpg, .jpeg"
                       action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
                       listType="picture-card"
                       fileList={fileList}
                       onChange={onChange}
                       onPreview={onPreview}
+                      beforeUpload={(file) => {
+                        if (acceptFileMimes.includes(file.type)) {
+                          return true;
+                        }
+                        openNotification("error", {
+                          message: `We just accept file type for ${acceptFileTypes}`,
+                        });
+                        return false;
+                      }}
                     >
                       {fileList.length < 5 && "+ Upload"}
+                      <Modal
+                        visible={preview.previewVisible}
+                        title={preview.previewTitle}
+                        footer={null}
+                        onCancel={onCancel}
+                      >
+                        <img
+                          alt="example"
+                          style={{ width: "100%" }}
+                          src={preview.previewImage}
+                        />
+                      </Modal>
                     </Upload>
                   </ImgCrop>
                 </FormItem>

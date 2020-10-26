@@ -9,14 +9,12 @@ const ListingRequestForGroupComponent = () => {
       id: 1,
       content: (
         <Space>
-          <b style={{ marginBottom: 0 }}>
-            Iphone 7s 64Gb - 20 Units x 7.500.000 đ
-          </b>
+          <b style={{ marginBottom: 0 }}>20 Units x 1.250.000 đ</b>
 
           <div>
             (
             <span>
-              Posted inside <Tag color="processing">Iphone</Tag>
+              Posted inside <Tag color="processing">Action & Sports Camera</Tag>
             </span>
             )
           </div>
@@ -28,14 +26,12 @@ const ListingRequestForGroupComponent = () => {
       id: 2,
       content: (
         <Space>
-          <b style={{ marginBottom: 0 }}>
-            Iphone 7s 32Gb - 50 Units x 6.500.000 đ
-          </b>
+          <b style={{ marginBottom: 0 }}>50 Units x 1.300.000 đ</b>
 
           <div>
             (
             <span>
-              Posted inside <Tag color="processing">Iphone</Tag>
+              Posted inside <Tag color="processing">Action & Sports Camera</Tag>
             </span>
             )
           </div>
@@ -47,15 +43,14 @@ const ListingRequestForGroupComponent = () => {
       id: 3,
       content: (
         <Space>
-          <b style={{ marginBottom: 0 }}>
-            Iphone 6s 64Gb - 30 Units x 6.000.000 đ
-          </b>
+          <b style={{ marginBottom: 0 }}>30 Units x 1.400.000 đ</b>
 
           <div>
             (
             <span>
               <i>
-                Posted inside <Tag color="processing">Iphone</Tag>
+                Posted inside{" "}
+                <Tag color="processing">Action & Sports Camera</Tag>
               </i>
             </span>
             )
@@ -90,7 +85,7 @@ const ListingRequestForGroupComponent = () => {
   };
   return (
     <div>
-      <div className="site-checkbox-all-wrapper">
+      {/* <div className="site-checkbox-all-wrapper">
         <Checkbox
           indeterminate={option.indeterminate}
           onChange={onCheckAllChange}
@@ -98,7 +93,7 @@ const ListingRequestForGroupComponent = () => {
         >
           Choose all Request
         </Checkbox>
-      </div>
+      </div> */}
       <br />
       <CheckboxGroup value={option.checkedList} onChange={onChange}>
         <Row>
