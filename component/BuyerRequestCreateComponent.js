@@ -61,7 +61,6 @@ import {
   getProductDetails,
   GetProductDetailsData,
   GetProductDetailsError,
-  GetProductDetailsResetter,
 } from "../stores/ProductState";
 import {
   createRequest,

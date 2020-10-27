@@ -185,7 +185,7 @@ const AdminRequestManagement = ({
         title="Create New Group"
         visible={openGroup}
         onOk={() => setOpenGroup(false)}
-        onCancel={() => setOpenGroup(true)}
+        onCancel={() => setOpenGroup(false)}
         footer={[
           <Button key="back" onClick={() => setOpenGroup(false)}>
             Cancel
@@ -207,7 +207,7 @@ const AdminRequestManagement = ({
         title="Listing Group inside IR Night Vision Hidden Camera Watch Sport Wear Watch Camera WIFI"
         visible={modalVisible}
         onOk={() => setModalVisible(false)}
-        onCancel={() => setModalVisible(true)}
+        onCancel={() => setModalVisible(false)}
         footer={[
           <Row justify="space-between">
             <Col>

@@ -1,18 +1,24 @@
 import React, { useEffect } from "react";
-import { Form, Input, Row, Col, Cascader } from "antd";
+import { Form, Input, Row, Col } from "antd";
 import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
 import { createNewGroup, CreateNewGroupData } from "../stores/GroupState";
+import {
+  getProductDetails,
+  GetProductDetailsData,
+} from "../stores/ProductState";
 
 const FormItem = Form.Item;
 
 const connectToRedux = connect(
   createStructuredSelector({
     createNewGroupData: CreateNewGroupData,
+    productDetailsData: GetProductDetailsData,
   }),
   (dispatch) => ({
     createNewGroup: ({ groupName, productId, description }) =>
       dispatch(createNewGroup({ groupName, productId, description })),
+    getProduct: (id) => dispatch(getProductDetails(id)),
   })
 );
 
@@ -32,18 +38,27 @@ const GroupCreateComponent = ({
   createNewGroupData,
   createNewGroup,
   setOpenGroup,
+  productId,
+  getProduct,
+  productDetailsData,
 }) => {
   useEffect(() => {
     if (!!createNewGroupData) {
       setOpenGroup(false);
     }
   }, [setOpenGroup, createNewGroupData]);
+
+  useEffect(() => {
+    if (!!productId) {
+      getProduct(productId);
+    }
+  }, [productId, getProduct]);
+
   const onFinish = (values) => {
     console.log("Received values of form: ", values);
+    values.productId = (productDetailsData || {}).id;
+    createNewGroup(values);
   };
-  function onChange(value) {
-    console.log(value);
-  }
 
   return (
     <Row align="middle" justify="center">
@@ -55,8 +70,7 @@ const GroupCreateComponent = ({
           onFinish={onFinish}
           initialValues={{
             unit: "Set",
-            productName:
-              "IR Night Vision Hidden Camera Watch Sport Wear Watch Camera WIFI",
+            productName: (productDetailsData || {}).productName,
           }}
         >
           <Row align="middle">
