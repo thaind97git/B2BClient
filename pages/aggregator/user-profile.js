@@ -1,4 +1,4 @@
-import withAuth from "../../component/HOC/AuthenAdminHOC";
+import withAuth from "../../component/HOC/AuthenHOC";
 import UserProfileComponent from "../../component/UserProfileComponent";
 import AggregatorLayout from "../../layouts/AggregatorLayout";
 
