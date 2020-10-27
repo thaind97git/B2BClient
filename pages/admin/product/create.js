@@ -1,5 +1,6 @@
 import React from "react";
 import AdminProductCreateComponent from "../../../component/AdminProductCreateComponent";
+import withAuth from "../../../component/HOC/AuthenHOC";
 import AdminLayout from "../../../layouts/AdminLayout";
 const Page = () => {
   return (
@@ -8,4 +9,4 @@ const Page = () => {
     </AdminLayout>
   );
 };
-export default Page;
+export default withAuth(Page);

@@ -1,4 +1,5 @@
 import React from "react";
+import withAuth from "../../component/HOC/AuthenHOC";
 import SupplierChatComponent from "../../component/SupplierChatComponent";
 import SupplierLayout from "../../layouts/SupplierLayout";
 const Page = () => {
@@ -8,4 +9,4 @@ const Page = () => {
     </SupplierLayout>
   );
 };
-export default Page;
+export default withAuth(Page);
