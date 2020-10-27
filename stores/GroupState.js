@@ -28,7 +28,7 @@ export const CreateNewGroupResetter = getResetter(CreateNewGroupAPI);
 // Add request to group
 
 const AddRequestToGroupAPI = makeFetchAction(
-  CREATE_NEW_GROUP,
+  ADD_REQUEST_TO_GROUP,
   ({ groupId, requestIds }) =>
     nfetch({
       endpoint: "/api/Group/RequestToGroup",

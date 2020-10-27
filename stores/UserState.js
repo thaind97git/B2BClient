@@ -24,7 +24,7 @@ export const userLogin = ({ email, password }) =>
       openNotification("success", { message: "Login success" });
       const returnUrl = Router.query["returnUrl"];
       if (resp.role === BUYER) {
-        if (!!returnUrl && returnUrl === "/buyer/rfq/create") {
+        if (!!returnUrl && returnUrl.includes("/buyer/rfq/create")) {
           Router.push(returnUrl);
         } else {
           Router.push("/buyer/rfq");
@@ -50,24 +50,45 @@ export const userLoginDataSelector = UserLoginAPI.dataSelector;
 export const userLoginDataErrorSelector = UserLoginAPI.errorSelector;
 export const userLoginResetter = getResetter(UserLoginAPI);
 
+export const verifyScopeAndRole = (scope, role) => {
+  if (scope === "buyer" && role === BUYER) {
+    return true;
+  } else if (scope === "supplier" && role === SUPPLIER) {
+    return true;
+  } else if (scope === "aggregator" && role === MODERATOR) {
+    return true;
+  } else if (scope === "admin" && role === ADMIN) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
 export const GetCurrentUserAPI = makeFetchAction(
   GET_CURRENT_USER,
   nfetch({
-    endpoint: "/abc",
+    endpoint: "/api/Account/Self",
+    method: "GET",
   })
 );
 
-export const getCurrentUser = () =>
+export const getCurrentUser = (scope = "buyer") =>
   respondToSuccess(GetCurrentUserAPI.actionCreator(), (resp) => {
     if (resp.errors) {
       console.error(resp.errors);
       return;
     }
 
+    if (!verifyScopeAndRole(scope, resp.role)) {
+      Router.push(
+        `/login?returnUrl=${Router.pathname}${window.location.search}`
+      );
+    }
+
     return;
   });
 
-export const GetCurrentUserDataSelector = GetCurrentUserAPI.dataSelector;
+export const currentUserSelector = GetCurrentUserAPI.dataSelector;
 
 export const verifyScopeAndRoleAdmin = (user) => {
   if (!user) {

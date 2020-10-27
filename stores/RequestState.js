@@ -4,12 +4,15 @@ import nfetch from "../libs/nfetch";
 import { getResetter } from "../libs";
 import Router from "next/router";
 import { R_PENDING } from "../enums/requestStatus";
+import { openNotification } from "../utils";
 
 const CREATE_REQUEST = "CreateRequestAPI";
 const GET_REQUEST_PAGING = "GetRequestPagingAPI";
 const GET_REQUEST_DETAILS = "GetRequestDetailsAPI";
 const CANCEL_REQUEST = "CancelRequestAPI";
 const REJECT_REQUEST = "RejectRequestAPI";
+
+const UPDATE_REQUEST = "UpdateRequestAPI";
 // Create new Request
 const CreateRequestAPI = makeFetchAction(CREATE_REQUEST, (object) =>
   nfetch({
@@ -20,7 +23,6 @@ const CreateRequestAPI = makeFetchAction(CREATE_REQUEST, (object) =>
 export const createRequest = (object) =>
   respondToSuccess(CreateRequestAPI.actionCreator(object), (resp) => {
     if (resp) {
-      console.log("xxxx");
       Router.push("/buyer/rfq");
     }
   });
@@ -147,3 +149,22 @@ export const RejectRequestData = RejectRequestAPI.dataSelector;
 export const RejectRequestError = RejectRequestAPI.errorSelector;
 
 export const RejectRequestResetter = getResetter(RejectRequestAPI);
+
+// Update Request
+const UpdateRequestAPI = makeFetchAction(UPDATE_REQUEST, (object) =>
+  nfetch({
+    endpoint: "/api/Request",
+    method: "PUT",
+  })(object)
+);
+
+export const updateRequest = (object) =>
+  respondToSuccess(UpdateRequestAPI.actionCreator(object), (resp) => {
+    if (resp) {
+      openNotification("success", { message: "Update request success!" });
+      Router.push("/buyer/rfq");
+    }
+  });
+export const UpdateRequestData = UpdateRequestAPI.dataSelector;
+export const UpdateRequestError = UpdateRequestAPI.errorSelector;
+export const UpdateRequestResetter = getResetter(UpdateRequestAPI);

@@ -1,4 +1,5 @@
 import React from "react";
+import withAuth from "../../../component/HOC/AuthenHOC";
 import SupplierBiddingDetailsComponent from "../../../component/SupplierBiddingDetailsComponent";
 import SupplierLayout from "../../../layouts/SupplierLayout";
 const BiddingDetailsPage = () => {
@@ -8,4 +9,4 @@ const BiddingDetailsPage = () => {
     </SupplierLayout>
   );
 };
-export default BiddingDetailsPage;
+export default withAuth(BiddingDetailsPage);
