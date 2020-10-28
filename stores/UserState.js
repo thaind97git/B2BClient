@@ -7,8 +7,8 @@ import { getResetter } from "../libs";
 import Router from "next/router";
 import { openNotification } from "../utils";
 const GET_CURRENT_USER = "GetCurrentUserAPI";
-const USER_LOGIN = "UserLoginAPI";
-const USER_REGISTER = "UserRegisterAPI";
+export const USER_LOGIN = "UserLoginAPI";
+export const USER_REGISTER = "UserRegisterAPI";
 
 //Login
 export const UserLoginAPI = makeFetchAction(USER_LOGIN, ({ email, password }) =>
@@ -21,7 +21,7 @@ export const userLogin = ({ email, password }) =>
   respondToSuccess(UserLoginAPI.actionCreator({ email, password }), (resp) => {
     if (resp.token) {
       saveToken(resp.token);
-      openNotification("success", { message: "Login success" });
+      // openNotification("success", { message: "Login success" });
       const returnUrl = Router.query["returnUrl"];
       if (resp.role === BUYER) {
         if (!!returnUrl && returnUrl.includes("/buyer/rfq/create")) {
@@ -134,3 +134,5 @@ export const userRegister = (object) =>
 export const userRegisterDataSelector = UserRegisterAPI.dataSelector;
 export const userRegisterErrorSelector = UserRegisterAPI.errorSelector;
 export const userRegisterResetter = getResetter(UserRegisterAPI);
+
+export default {};

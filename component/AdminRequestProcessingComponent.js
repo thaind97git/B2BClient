@@ -68,11 +68,6 @@ const columns = [
     dataIndex: "group",
     key: "group",
   },
-  // {
-  //   title: "Date Created",
-  //   dataIndex: "dateCreated",
-  //   key: "dateCreated",
-  // },
   {
     title: "Status",
     dataIndex: "status",

@@ -7,6 +7,7 @@ import {
   DATE_TIME_FORMAT,
   DEFAULT_DATE_RANGE,
   displayCurrency,
+  openNotification,
 } from "../utils";
 import GroupCreateComponent from "./GroupCreateComponent";
 import RequestStatusComponent from "./Utils/RequestStatusComponent";
@@ -22,10 +23,21 @@ import Moment from "react-moment";
 import { get } from "lodash/fp";
 import AllCategoryComponent from "./AllCategoryComponent";
 import ListingGroupByProductComponent from "./ListingGroupByProductComponent";
+import {
+  addRequestToGroup,
+  AddRequestToGroupData,
+  AddRequestToGroupError,
+  CreateNewGroupData,
+} from "../stores/GroupState";
+import { CreateNewProductError } from "../stores/ProductState";
 const connectToRedux = connect(
   createStructuredSelector({
     requestPagingData: GetRequestPagingData,
     requestPagingError: GetRequestPagingError,
+    addRequestData: AddRequestToGroupData,
+    addRequestError: AddRequestToGroupError,
+    createNewGroupData: CreateNewGroupData,
+    createNewGroupError: CreateNewProductError,
   }),
   (dispatch) => ({
     getRequest: (
@@ -47,6 +59,9 @@ const connectToRedux = connect(
         })
       );
     },
+
+    addRequest: (groupId, requestIds) =>
+      dispatch(addRequestToGroup({ groupId, requestIds })),
   })
 );
 
@@ -85,20 +100,37 @@ const AdminRequestManagement = ({
   requestPagingData,
   requestPagingError,
   getRequest,
-  setDefaultTab,
+  addRequest,
+  addRequestData,
+  createNewGroupData,
 }) => {
   const [searchMessage, setSearchMessage] = useState("");
   const [dateRange, setDateRange] = useState(DEFAULT_DATE_RANGE);
   const [recordSelected, setRecordSelected] = useState([]);
   const [requestIdSelected, setRequestIdSelected] = useState([]);
   const [currentProductId, setCurrentProductId] = useState(null);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [openGroup, setOpenGroup] = useState(false);
+  const [openCreateGroup, setOpenCreateGroup] = useState(false);
+  const [openListGroup, setOpenListGroup] = useState(false);
   const [openDetails, setOpenDetails] = useState(false);
   const [currentRequestSelected, setCurrentRequestSelected] = useState({});
 
   const [category, setCategory] = useState("1");
   const [loading, setLoading] = useState(true);
+
+  const [currentGroupId, setCurrentGroupId] = useState(null);
+
+  useEffect(() => {
+    if (addRequestData) {
+      setOpenListGroup(false);
+      setRecordSelected([]);
+    }
+  }, [addRequestData]);
+
+  useEffect(() => {
+    if (createNewGroupData) {
+      setOpenCreateGroup(false);
+    }
+  }, [createNewGroupData]);
 
   useEffect(() => {
     if (requestPagingError || requestPagingData) {
@@ -137,6 +169,17 @@ const AdminRequestManagement = ({
     );
   };
 
+  let requestData = [],
+    totalCount = 0;
+  if (requestPagingData) {
+    requestData = requestPagingData.data;
+    totalCount = requestPagingData.total;
+  }
+
+  const isAllInOne = (requestData || []).every(
+    (request) =>
+      get("product.id")(request) === get("[0].product.id")(requestData)
+  );
   const rowSelection = {
     onChange: (selectedRowKeys, selectedRows) => {
       setRecordSelected(selectedRows);
@@ -151,24 +194,18 @@ const AdminRequestManagement = ({
           : false,
       name: record.name,
     }),
+    hideSelectAll: isAllInOne ? false : true,
   };
-
-  let requestData = [],
-    totalCount = 0;
-  if (requestPagingData) {
-    requestData = requestPagingData.data;
-    totalCount = requestPagingData.total;
-  }
   return (
     <div>
       <Modal
         width={1000}
         title="Create New Group"
-        visible={openGroup}
-        onOk={() => setOpenGroup(false)}
-        onCancel={() => setOpenGroup(false)}
+        visible={openCreateGroup}
+        onOk={() => setOpenCreateGroup(false)}
+        onCancel={() => setOpenCreateGroup(false)}
         footer={[
-          <Button key="back" onClick={() => setOpenGroup(false)}>
+          <Button key="back" onClick={() => setOpenCreateGroup(false)}>
             Cancel
           </Button>,
           <Button
@@ -181,7 +218,7 @@ const AdminRequestManagement = ({
           </Button>,
         ]}
       >
-        {openGroup ? (
+        {openCreateGroup ? (
           <GroupCreateComponent
             requestIds={[requestIdSelected]}
             productId={currentProductId}
@@ -192,25 +229,25 @@ const AdminRequestManagement = ({
         closable
         width={1000}
         title={`Listing Group inside ${(recordSelected[0] || {}).name}`}
-        visible={modalVisible}
-        onOk={() => setModalVisible(false)}
-        onCancel={() => setModalVisible(false)}
+        visible={openListGroup}
+        onOk={() => setOpenListGroup(false)}
+        onCancel={() => setOpenListGroup(false)}
         footer={[
           <Row justify="space-between">
             <Col>
-              <Button type="primary" onClick={() => setOpenGroup(true)}>
+              <Button type="primary" onClick={() => setOpenCreateGroup(true)}>
                 Create new group
               </Button>
             </Col>
             <Col>
-              <Button key="back" onClick={() => setModalVisible(false)}>
+              <Button key="back" onClick={() => setOpenListGroup(false)}>
                 Cancel
               </Button>
               <Button
                 key="submit"
                 type="primary"
                 onClick={() => {
-                  setDefaultTab("2");
+                  addRequest(currentGroupId, requestIdSelected);
                 }}
               >
                 Submit
@@ -219,13 +256,16 @@ const AdminRequestManagement = ({
           </Row>,
         ]}
       >
-        {modalVisible ? (
-          <ListingGroupByProductComponent productId={currentProductId} />
+        {openListGroup ? (
+          <ListingGroupByProductComponent
+            setCurrentGroupId={setCurrentGroupId}
+            productId={currentProductId}
+          />
         ) : null}
       </Modal>
       <Row justify="end">
         <Button
-          onClick={() => setModalVisible(true)}
+          onClick={() => setOpenListGroup(true)}
           type="primary"
           disabled={recordSelected.length > 0 ? false : true}
         >
@@ -276,7 +316,6 @@ const AdminRequestManagement = ({
           />
         ) : null}
       </Drawer>
-      {/* <Table dataSource={dataSource} columns={columns} /> */}
     </div>
   );
 };

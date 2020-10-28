@@ -3,10 +3,15 @@ import { makeFetchAction } from "redux-api-call";
 import { respondToSuccess } from "../middlewares/api-reaction";
 import nfetch from "../libs/nfetch";
 import { getResetter } from "../libs";
+import { getRequestPaging } from "./RequestState";
+import { R_PENDING } from "../enums/requestStatus";
+import { compact, concat, flow } from "lodash/fp";
+import { join } from "lodash";
 
-const CREATE_NEW_GROUP = "CreateNewGroupAPI";
-const ADD_REQUEST_TO_GROUP = "AddRequestToGroupAPI";
+export const CREATE_NEW_GROUP = "CreateNewGroupAPI";
+export const ADD_REQUEST_TO_GROUP = "AddRequestToGroupAPI";
 const GET_GROUP_BY_PRODUCT_ID = "GetGroupByProductIdAPI";
+const GET_GROUP_PAGING = "GetGroupPagingAPI";
 
 // Create new group
 const CreateNewGroupAPI = makeFetchAction(
@@ -27,18 +32,33 @@ export const CreateNewGroupError = CreateNewGroupAPI.errorSelector;
 export const CreateNewGroupResetter = getResetter(CreateNewGroupAPI);
 
 // Add request to group
-
 const AddRequestToGroupAPI = makeFetchAction(
   ADD_REQUEST_TO_GROUP,
   ({ groupId, requestIds }) =>
     nfetch({
-      endpoint: "/api/Group/RequestToGroup",
+      endpoint: "/api/Group/Requests",
       method: "PUT",
     })({ groupId, requestIds })
 );
 
 export const addRequestToGroup = ({ groupId, requestIds }) =>
-  respondToSuccess(AddRequestToGroupAPI.actionCreator({ groupId, requestIds }));
+  respondToSuccess(
+    AddRequestToGroupAPI.actionCreator({ groupId, requestIds }),
+    (resp, _, store) => {
+      if (resp) {
+        store.dispatch(
+          getRequestPaging({
+            status: [R_PENDING],
+            productTitle: "",
+            fromDate: null,
+            toDate: null,
+            pageIndex: 1,
+            pageSize: 10,
+          })
+        );
+      }
+    }
+  );
 
 export const AddRequestToGroupData = AddRequestToGroupAPI.dataSelector;
 export const AddRequestToGroupError = AddRequestToGroupAPI.errorSelector;
@@ -47,15 +67,58 @@ export const AddRequestToGroupResetter = getResetter(AddRequestToGroupAPI);
 //Get Group By Product Id
 const GetGroupByProductIdAPI = makeFetchAction(
   GET_GROUP_BY_PRODUCT_ID,
-  (productId) =>
+  (productId, pageIndex, pageSize) =>
     nfetch({
-      endpoint: `/api/Group/Filter?productId=${productId}`,
+      endpoint: `/api/Group/Filter?productId=${productId}&pageIndex=${pageIndex}&pageSize=${pageSize}`,
       method: "GET",
     })()
 );
 
-export const getGroupByProductId = (productId) =>
-  respondToSuccess(GetGroupByProductIdAPI.actionCreator(productId));
+export const getGroupByProductId = (productId, pageIndex, pageSize) =>
+  respondToSuccess(
+    GetGroupByProductIdAPI.actionCreator(productId, pageIndex, pageSize)
+  );
 export const GetGroupByProductIdData = GetGroupByProductIdAPI.dataSelector;
 export const GetGroupByProductIdError = GetGroupByProductIdAPI.errorSelector;
 export const GetGroupByProductIdResetter = getResetter(GetGroupByProductIdAPI);
+
+// Get Group Paging
+const GetGroupPagingAPI = makeFetchAction(
+  GET_GROUP_PAGING,
+  ({ categoryId, productName, fromDate, toDate, pageIndex, pageSize }) => {
+    return nfetch({
+      endpoint: `/api/Group/Filter?${
+        categoryId ? "categoryId=" + categoryId + "&" : ""
+      }${productName && "productName=" + productName + "&"}${
+        fromDate ? "fromDate=" + fromDate + "&" : ""
+      }${
+        toDate ? "toDate=" + toDate + "&" : ""
+      }pageIndex=${pageIndex}&pageSize=${pageSize}&dateDescending=true`,
+      method: "GET",
+    })();
+  }
+);
+
+export const getGroupPaging = ({
+  categoryId,
+  productName,
+  fromDate,
+  toDate,
+  pageIndex,
+  pageSize,
+}) =>
+  respondToSuccess(
+    GetGroupPagingAPI.actionCreator({
+      categoryId,
+      productName,
+      fromDate,
+      toDate,
+      pageIndex,
+      pageSize,
+    }),
+    () => {}
+  );
+
+export const GetGroupPagingData = GetGroupPagingAPI.dataSelector;
+export const GetGroupPagingError = GetGroupPagingAPI.errorSelector;
+export const GetGroupPagingResetter = getResetter(GetGroupPagingAPI);
