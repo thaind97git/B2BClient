@@ -129,6 +129,8 @@ const AdminRequestManagement = ({
   useEffect(() => {
     if (createNewGroupData) {
       setOpenCreateGroup(false);
+      setOpenListGroup(false);
+      setRecordSelected([]);
     }
   }, [createNewGroupData]);
 
@@ -220,7 +222,7 @@ const AdminRequestManagement = ({
       >
         {openCreateGroup ? (
           <GroupCreateComponent
-            requestIds={[requestIdSelected]}
+            requestIds={requestIdSelected}
             productId={currentProductId}
           />
         ) : null}

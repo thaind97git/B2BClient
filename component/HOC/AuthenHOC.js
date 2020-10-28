@@ -33,11 +33,8 @@ function withAuth(AuthComponent) {
     componentDidMount() {
       if (!isServer) {
         const scope = getScopeByUrl(Router.pathname);
-        this.props.dispatch(getCurrentUser(scope));
+        this.props.dispatch(getCurrentUser({ scope }));
       }
-      // if (this.props.currentUserError) {
-      //   Router.push("/login");
-      // }
     }
 
     render() {

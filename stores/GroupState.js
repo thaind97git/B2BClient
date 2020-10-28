@@ -7,11 +7,13 @@ import { getRequestPaging } from "./RequestState";
 import { R_PENDING } from "../enums/requestStatus";
 import { compact, concat, flow } from "lodash/fp";
 import { join } from "lodash";
+import { GetCurrentUserAPI } from "./UserState";
 
 export const CREATE_NEW_GROUP = "CreateNewGroupAPI";
 export const ADD_REQUEST_TO_GROUP = "AddRequestToGroupAPI";
 const GET_GROUP_BY_PRODUCT_ID = "GetGroupByProductIdAPI";
 const GET_GROUP_PAGING = "GetGroupPagingAPI";
+const GET_GROUP_DETAILS = "GetGroupDetailsAPI";
 
 // Create new group
 const CreateNewGroupAPI = makeFetchAction(
@@ -24,7 +26,21 @@ const CreateNewGroupAPI = makeFetchAction(
 
 export const createNewGroup = ({ groupName, requestIds, description }) =>
   respondToSuccess(
-    CreateNewGroupAPI.actionCreator({ groupName, requestIds, description })
+    CreateNewGroupAPI.actionCreator({ groupName, requestIds, description }),
+    (resp, _, store) => {
+      if (resp) {
+        store.dispatch(
+          getRequestPaging({
+            status: [R_PENDING],
+            productTitle: "",
+            fromDate: null,
+            toDate: null,
+            pageIndex: 1,
+            pageSize: 10,
+          })
+        );
+      }
+    }
   );
 
 export const CreateNewGroupData = CreateNewGroupAPI.dataSelector;
@@ -122,3 +138,17 @@ export const getGroupPaging = ({
 export const GetGroupPagingData = GetGroupPagingAPI.dataSelector;
 export const GetGroupPagingError = GetGroupPagingAPI.errorSelector;
 export const GetGroupPagingResetter = getResetter(GetGroupPagingAPI);
+
+// Group details
+const GetGroupDetailsAPI = makeFetchAction(GET_GROUP_DETAILS, (id) =>
+  nfetch({
+    endpoint: `/api/Group?groupId=${id}`,
+    method: "GET",
+  })()
+);
+
+export const getGroupDetails = (id) =>
+  respondToSuccess(GetGroupDetailsAPI.actionCreator(id));
+export const GetGroupDetailsData = GetGroupDetailsAPI.dataSelector;
+export const GetGroupDetailsError = GetGroupDetailsAPI.errorSelector;
+export const GetGroupDetailsResetter = getResetter(GetGroupDetailsAPI);

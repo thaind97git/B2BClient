@@ -71,6 +71,7 @@ const RequestDetailsComponent = ({
   rejectRequestData,
   rejectRequestError,
   setOpenDetails,
+  buttonActions,
 }) => {
   const [loading, setLoading] = useState(true);
   const [openCancel, setOpenCancel] = useState(false);
@@ -217,20 +218,22 @@ const RequestDetailsComponent = ({
       )}
       <Col style={{ padding: "12px 0px" }} span={24}>
         <Space>
-          {(getButtonActionsByStatus(requestStatus.id) || []).map(
-            (button, index) => (
-              <Button
-                key={index}
-                onClick={() => {
-                  typeof button.action === "function" && button.action();
-                }}
-                size="small"
-                {...button.buttonProps}
-              >
-                {button.label}
-              </Button>
-            )
-          )}
+          {(
+            buttonActions ||
+            getButtonActionsByStatus(requestStatus.id) ||
+            []
+          ).map((button, index) => (
+            <Button
+              key={index}
+              onClick={() => {
+                typeof button.action === "function" && button.action();
+              }}
+              size="small"
+              {...button.buttonProps}
+            >
+              {button.label}
+            </Button>
+          ))}
         </Space>
       </Col>
       <Col span={24}>

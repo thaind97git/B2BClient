@@ -255,8 +255,11 @@ const GroupRequestComponent = ({ getGroupPaging, groupPagingData }) => {
         actions: (
           <Button
             onClick={() => {
-              setCurrentGroupSelected(group);
-              setOpenDetails(true);
+              Router.push(
+                createLink(["aggregator", "group", `details?id=${group.id}`])
+              );
+              // setCurrentGroupSelected(group);
+              // setOpenDetails(true);
             }}
             size="small"
             type="link"

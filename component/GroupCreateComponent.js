@@ -19,8 +19,8 @@ const connectToRedux = connect(
     productDetailsError: GetProductDetailsError,
   }),
   (dispatch) => ({
-    createNewGroup: ({ groupName, productId, description }) =>
-      dispatch(createNewGroup({ groupName, productId, description })),
+    createNewGroup: ({ groupName, requestIds, description }) =>
+      dispatch(createNewGroup({ groupName, requestIds, description })),
     getProduct: (id) => dispatch(getProductDetails(id)),
     resetData: () => {
       dispatch(GetProductDetailsResetter);
@@ -51,7 +51,6 @@ const GroupCreateComponent = ({
   requestIds = [],
   resetData,
 }) => {
-  console.log({ requestIds, productId });
   useEffect(() => {
     if (!!createNewGroupData) {
       setOpenGroup(false);
@@ -71,10 +70,9 @@ const GroupCreateComponent = ({
   }, [resetData]);
 
   const onFinish = (values) => {
-    console.log("Received values of form: ", values);
     values.requestIds = requestIds;
     console.log({ values });
-    // createNewGroup(values);
+    createNewGroup(values);
   };
 
   if (!productDetailsData || productDetailsError) {
@@ -98,7 +96,7 @@ const GroupCreateComponent = ({
             <Col style={styles.colStyle} span={24}>
               <FormItem
                 label="Group Name"
-                name="groupTitle"
+                name="groupName"
                 rules={[
                   {
                     required: true,

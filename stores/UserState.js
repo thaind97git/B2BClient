@@ -21,7 +21,6 @@ export const userLogin = ({ email, password }) =>
   respondToSuccess(UserLoginAPI.actionCreator({ email, password }), (resp) => {
     if (resp.token) {
       saveToken(resp.token);
-      // openNotification("success", { message: "Login success" });
       const returnUrl = Router.query["returnUrl"];
       if (resp.role === BUYER) {
         if (!!returnUrl && returnUrl.includes("/buyer/rfq/create")) {
@@ -31,17 +30,25 @@ export const userLogin = ({ email, password }) =>
         }
       }
       if (resp.role === SUPPLIER) {
-        if (!!returnUrl && returnUrl === "/supplier") {
+        if (!!returnUrl && returnUrl.includes("/supplier")) {
           Router.push(returnUrl);
         } else {
           Router.push("/supplier/chat");
         }
       }
       if (resp.role === ADMIN) {
-        Router.push("/admin/product");
+        if (!!returnUrl && returnUrl.includes("/admin")) {
+          Router.push(returnUrl);
+        } else {
+          Router.push("/admin/product");
+        }
       }
       if (resp.role === MODERATOR) {
-        Router.push("/aggregator/request");
+        if (returnUrl && returnUrl.includes("/aggregator")) {
+          Router.push(returnUrl);
+        } else {
+          Router.push("/aggregator/request");
+        }
       }
     }
   });
@@ -72,17 +79,19 @@ export const GetCurrentUserAPI = makeFetchAction(
   })
 );
 
-export const getCurrentUser = (scope = "buyer") =>
+export const getCurrentUser = ({ scope, isVerify = true }) =>
   respondToSuccess(GetCurrentUserAPI.actionCreator(), (resp) => {
     if (resp.errors) {
       console.error(resp.errors);
       return;
     }
 
-    if (!verifyScopeAndRole(scope, resp.role)) {
-      Router.push(
-        `/login?returnUrl=${Router.pathname}${window.location.search}`
-      );
+    if (isVerify && scope) {
+      if (!verifyScopeAndRole(scope, resp.role)) {
+        Router.push(
+          `/login?returnUrl=${Router.pathname}${window.location.search}`
+        );
+      }
     }
 
     return;
@@ -90,6 +99,7 @@ export const getCurrentUser = (scope = "buyer") =>
 
 export const CurrentUserData = GetCurrentUserAPI.dataSelector;
 export const CurrentUserError = GetCurrentUserAPI.errorSelector;
+export const CurrentUserResetter = getResetter(GetCurrentUserAPI);
 
 export const verifyScopeAndRoleAdmin = (user) => {
   if (!user) {

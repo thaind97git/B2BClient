@@ -21,19 +21,16 @@ import {
   GetProductByCategoryError,
 } from "../stores/ProductState";
 import CategoryHomePageComponent from "./CategoryHomePageComponent";
-import { getCurrentUser, CurrentUserData } from "../stores/UserState";
 const { Meta } = Card;
 
 const connectToRedux = connect(
   createStructuredSelector({
     getProductByCategoryData: GetProductByCategoryData,
     getProductByCategoryError: GetProductByCategoryError,
-    currentUserData: CurrentUserData,
   }),
   (dispatch) => ({
     getProductByCategory: (id, pageSize, pageIndex) =>
       dispatch(getProductByCategory(id, pageSize, pageIndex)),
-    getCurrentUser: () => dispatch(getCurrentUser()),
   })
 );
 
