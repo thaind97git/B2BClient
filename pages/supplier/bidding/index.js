@@ -1,4 +1,5 @@
 import React from "react";
+import withAuth from "../../../component/HOC/AuthenHOC";
 import SupplierBiddingComponent from "../../../component/SupplierBiddingComponent";
 import SupplierLayout from "../../../layouts/SupplierLayout";
 const Page = () => {
@@ -8,4 +9,4 @@ const Page = () => {
     </SupplierLayout>
   );
 };
-export default Page;
+export default withAuth(Page);

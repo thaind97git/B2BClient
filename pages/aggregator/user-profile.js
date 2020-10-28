@@ -1,10 +1,13 @@
+import withAuth from "../../component/HOC/AuthenHOC";
 import UserProfileComponent from "../../component/UserProfileComponent";
 import AggregatorLayout from "../../layouts/AggregatorLayout";
 
-export default function UserProfilePage() {
+function UserProfilePage() {
   return (
     <AggregatorLayout>
       <UserProfileComponent />
     </AggregatorLayout>
   );
 }
+
+export default withAuth(UserProfilePage);

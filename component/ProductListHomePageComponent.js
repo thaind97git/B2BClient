@@ -5,10 +5,7 @@ import {
   Col,
   Button,
   Pagination,
-  Tree,
-  Typography,
   Divider,
-  Skeleton,
   Empty,
   Popover,
   Spin,
@@ -17,27 +14,21 @@ import Search from "antd/lib/input/Search";
 import Router from "next/router";
 import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
-import {
-  getCategories,
-  GetCategoriesDataSelector,
-} from "../stores/CategoryState";
+
 import {
   getProductByCategory,
   GetProductByCategoryData,
   GetProductByCategoryError,
 } from "../stores/ProductState";
-import { get } from "lodash/fp";
+import CategoryHomePageComponent from "./CategoryHomePageComponent";
 const { Meta } = Card;
-const { Title } = Typography;
 
 const connectToRedux = connect(
   createStructuredSelector({
-    categoryData: GetCategoriesDataSelector,
     getProductByCategoryData: GetProductByCategoryData,
     getProductByCategoryError: GetProductByCategoryError,
   }),
   (dispatch) => ({
-    getCategories: () => dispatch(getCategories()),
     getProductByCategory: (id, pageSize, pageIndex) =>
       dispatch(getProductByCategory(id, pageSize, pageIndex)),
   })
@@ -108,11 +99,8 @@ const ProductCard = ({ product }) => {
     </Popover>
   );
 };
-let tree = [];
 const pageSize = 12;
 const ProductListHomePageComponent = ({
-  getCategories,
-  categoryData,
   getProductByCategory,
   getProductByCategoryData,
   getProductByCategoryError,
@@ -121,28 +109,22 @@ const ProductListHomePageComponent = ({
   const [pageIndex, setPageIndex] = useState(1);
   const [loading, setLoading] = useState(true);
   const [searchValue, setSearchValue] = useState("");
+  const [firstCall, setFirstCall] = useState(true);
 
   const onSelect = (selectedKeys, info) => {
     setCurrentCategorySelected({
       name: info.node.title,
       id: info.node.key,
     });
+    getProductByCategory(info.node.key, pageSize, 1);
+    setLoading(true);
   };
-
-  useEffect(() => {
-    if (!!categoryData) {
-      const firstCate = get("[0]")(categoryData);
-      setCurrentCategorySelected({
-        name: firstCate.description,
-        id: firstCate.id,
-      });
-    }
-  }, [categoryData]);
 
   useEffect(() => {
     if (
       (currentCategorySelected || {}).id &&
-      (currentCategorySelected || {}).id !== "all"
+      (currentCategorySelected || {}).id !== "all" &&
+      firstCall === true
     ) {
       getProductByCategory(
         (currentCategorySelected || {}).id,
@@ -150,41 +132,34 @@ const ProductListHomePageComponent = ({
         pageIndex
       );
       setLoading(true);
+      setFirstCall(false);
     }
-  }, [currentCategorySelected, getProductByCategory, pageIndex]);
+  }, [pageIndex, currentCategorySelected, getProductByCategory, firstCall]);
 
   useEffect(() => {
-    getCategories();
-  }, [getCategories]);
+    setPageIndex(1);
+  }, [currentCategorySelected]);
 
   useEffect(() => {
     if (getProductByCategoryError || getProductByCategoryData) {
       setLoading(false);
     }
   }, [getProductByCategoryData, getProductByCategoryError]);
-  if (!!categoryData) {
-    const mapData = (categoryData) => {
-      const resultTmp = categoryData.map((category) => {
-        let obj = {};
-        obj.title = category.description;
-        obj.key = category.id;
-        if (!category.isItem) {
-          obj.children = mapData(category.subCategories);
-        }
-        return obj;
-      });
-      return resultTmp;
-    };
-    tree = mapData(categoryData);
-  }
+
   const onChange = (pageNumber) => {
     setPageIndex(pageNumber);
+    getProductByCategory(
+      (currentCategorySelected || {}).id,
+      pageSize,
+      pageNumber
+    );
+    setLoading(true);
   };
   let productData = [],
-    totalPage = 0;
+    count = 0;
   if (!!getProductByCategoryData) {
     productData = getProductByCategoryData.data;
-    totalPage = getProductByCategoryData.total;
+    count = getProductByCategoryData.total;
   }
   return (
     <div>
@@ -200,24 +175,10 @@ const ProductListHomePageComponent = ({
             overflowY: "auto",
           }}
         >
-          <Row>
-            <Title level={4} style={{ padding: "16px 0px 8px 16px" }}>
-              ALL CATEGORIES
-            </Title>
-          </Row>
-          <Row>
-            {tree.length === 0 ? (
-              <Skeleton active />
-            ) : (
-              <Tree
-                style={{ height: "100%" }}
-                defaultCheckedKeys={get("[0].id")(categoryData)}
-                defaultSelectedKeys={[get("[0].id")(categoryData)]}
-                onSelect={onSelect}
-                treeData={tree}
-              />
-            )}
-          </Row>
+          <CategoryHomePageComponent
+            setCurrentCategorySelected={setCurrentCategorySelected}
+            onSelect={onSelect}
+          />
         </Col>
         <Col span={19}>
           <Row>
@@ -274,11 +235,10 @@ const ProductListHomePageComponent = ({
       </Row>
       <Row style={{ marginTop: 16 }} justify="end">
         <Pagination
-          defaultCurrent={1}
+          pageSize={pageSize}
+          current={pageIndex}
           showSizeChanger={false}
-          // showQuickJumper
-          // defaultCurrent={2}
-          total={totalPage}
+          total={count}
           onChange={onChange}
         />
       </Row>

@@ -1,12 +1,13 @@
 import React from "react";
-import BuyerRequestCreateComponent from "../../../component/BuyerRequestCreateComponent";
+import BuyerRequestUpdateComponent from "../../../component/BuyerRequestUpdateComponent";
+import withAuth from "../../../component/HOC/AuthenHOC";
 import BuyerLayout from "../../../layouts/BuyerLayout";
 
 const Page = () => {
   return (
     <BuyerLayout>
-      <BuyerRequestCreateComponent isUpdate={true} />
+      <BuyerRequestUpdateComponent />
     </BuyerLayout>
   );
 };
-export default Page;
+export default withAuth(Page);

@@ -1,11 +1,14 @@
 import React from "react";
 import AggregatorLayout from "../../../layouts/AggregatorLayout";
 import GroupChatComponent from "../../../component/GroupChatComponent";
+import withAuth from "../../../component/HOC/AuthenHOC";
 
-export default function Home() {
+function Chat() {
   return (
     <AggregatorLayout>
       <GroupChatComponent />
     </AggregatorLayout>
   );
 }
+
+export default withAuth(Chat);

@@ -4,6 +4,7 @@ import AdminRequestProcessingComponent from "../../../component/AdminRequestProc
 import AdminRequestPendingComponent from "../../../component/AdminRequestPendingComponent";
 import AggregatorLayout from "../../../layouts/AggregatorLayout";
 import TabsLayout from "../../../layouts/TabsLayout";
+import withAuth from "../../../component/HOC/AuthenHOC";
 
 const Page = () => {
   const [defaultTab, setDefaultTab] = useState("1");
@@ -47,4 +48,4 @@ const Page = () => {
     </AggregatorLayout>
   );
 };
-export default Page;
+export default withAuth(Page);

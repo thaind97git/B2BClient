@@ -1,10 +1,13 @@
+import withAuth from "../../component/HOC/AuthenHOC";
 import UserProfileComponent from "../../component/UserProfileComponent";
 import BuyerLayout from "../../layouts/BuyerLayout";
 
-export default function UserProfilePage() {
+function UserProfilePage() {
   return (
     <BuyerLayout>
       <UserProfileComponent />
     </BuyerLayout>
   );
 }
+
+export default withAuth(UserProfilePage);

@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment, useCallback, useEffect, useState } from "react";
 import {
   Form,
   Input,
@@ -58,18 +58,16 @@ import {
 } from "../stores/SupportRequestState";
 import moment from "moment";
 import {
-  getProductDetails,
-  GetProductDetailsData,
-  GetProductDetailsError,
-} from "../stores/ProductState";
-import {
-  createRequest,
   CreateRequestData,
   CreateRequestError,
   CreateRequestResetter,
   getRequestDetails,
   GetRequestDetailsDataSelector,
   GetRequestDetailsErrorSelector,
+  updateRequest,
+  UpdateRequestData,
+  UpdateRequestError,
+  UpdateRequestResetter,
 } from "../stores/RequestState";
 
 const { Title } = Typography;
@@ -86,8 +84,6 @@ const connectToRedux = connect(
     shippingMethodData: GetShippingMethodData,
     paymentTermData: GetPaymentTermData,
     supCertificationData: GetSupplierCertificationData,
-    productDetailsData: GetProductDetailsData,
-    productDetailsError: GetProductDetailsError,
     provinceData: GetProvinceData,
     wardData: GetWardData,
     districtData: GetDistrictData,
@@ -95,6 +91,8 @@ const connectToRedux = connect(
     createRequestError: CreateRequestError,
     requestDetailsData: GetRequestDetailsDataSelector,
     requestDetailsError: GetRequestDetailsErrorSelector,
+    updateRequestData: UpdateRequestData,
+    updateRequestError: UpdateRequestError,
   }),
   (dispatch) => ({
     removeCategorySelected: () =>
@@ -107,12 +105,11 @@ const connectToRedux = connect(
     getShippingMethod: () => dispatch(getShippingMethod()),
     getPaymentTerm: () => dispatch(getPaymentTerm()),
     getSupCertification: () => dispatch(getSupplierCertification()),
-    getProductDetails: (id) => dispatch(getProductDetails(id)),
     getProvince: () => dispatch(getProvince()),
     getDistrict: (provinceId) => dispatch(getDistrict(provinceId)),
     getWard: (districtId) => dispatch(getWard(districtId)),
-    createRequest: (object) => dispatch(createRequest(object)),
     getRequestDetails: (id) => dispatch(getRequestDetails(id)),
+    updateRequest: (object) => dispatch(updateRequest(object)),
     resetData: () => {
       dispatch(GetSourcingTypeResetter);
       dispatch(GetSourcingPurposeResetter);
@@ -127,6 +124,7 @@ const connectToRedux = connect(
       dispatch(GetWardResetter);
       dispatch(GetDistrictResetter);
       dispatch(CreateRequestResetter);
+      dispatch(UpdateRequestResetter);
     },
   })
 );
@@ -147,7 +145,7 @@ const PriceInput = ({
 }) => {
   const currency = ((currencyData && currencyData[0]) || {}).id;
 
-  const triggerChange = (changedValue) => {
+  const triggerChange = useCallback((changedValue) => {
     if (onChange) {
       onChange({
         price,
@@ -156,7 +154,11 @@ const PriceInput = ({
         ...changedValue,
       });
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    triggerChange(price);
+  }, []);
 
   const onNumberChange = (value) => {
     const newNumber = parseInt(value || 0, 10);
@@ -174,6 +176,7 @@ const PriceInput = ({
   return (
     <span>
       <InputNumber
+        value={price}
         placeholder="Enter the preferred unit price"
         onChange={onNumberChange}
         min={0}
@@ -193,17 +196,8 @@ const PriceInput = ({
   );
 };
 
-const QuantityInput = ({ value = {}, onChange, unitOfMeasure }) => {
-  const number = null;
-  const triggerChange = (changedValue) => {
-    if (onChange) {
-      onChange({
-        number,
-        ...value,
-        ...changedValue,
-      });
-    }
-  };
+const QuantityInput = ({ value = {}, onChange, unitOfMeasure, quantity }) => {
+  const number = quantity;
 
   const onNumberChange = (value) => {
     const newNumber = parseInt(value || 1, 10);
@@ -216,6 +210,18 @@ const QuantityInput = ({ value = {}, onChange, unitOfMeasure }) => {
       number: newNumber,
     });
   };
+  const triggerChange = useCallback((changedValue) => {
+    if (onChange) {
+      onChange({
+        number,
+        ...value,
+        ...changedValue,
+      });
+    }
+  }, []);
+  useEffect(() => {
+    triggerChange(quantity);
+  }, [quantity, triggerChange]);
 
   return (
     <span>
@@ -227,7 +233,7 @@ const QuantityInput = ({ value = {}, onChange, unitOfMeasure }) => {
         placeholder="Enter the product quantity"
       />
       <Input
-        value={(unitOfMeasure || {}).description}
+        value={unitOfMeasure}
         disabled
         style={{
           width: "48%",
@@ -238,7 +244,7 @@ const QuantityInput = ({ value = {}, onChange, unitOfMeasure }) => {
   );
 };
 
-const LeadTimeInput = ({ value = {}, onChange }) => {
+const LeadTimeInput = ({ value = {}, onChange, leadTime }) => {
   const triggerChange = (changedValue) => {
     if (onChange) {
       onChange({
@@ -263,7 +269,12 @@ const LeadTimeInput = ({ value = {}, onChange }) => {
   return (
     <span>
       Ship in <span>&nbsp;</span>
-      <InputNumber onChange={onNumberChange} min={0} style={{ width: 100 }} />
+      <InputNumber
+        defaultValue={leadTime}
+        onChange={onNumberChange}
+        min={0}
+        style={{ width: 100 }}
+      />
       <span>&nbsp;</span>
       day(s) after supplier receives the initial payment
     </span>
@@ -275,7 +286,7 @@ function disabledDate(current) {
   return current && current < moment().endOf("day");
 }
 
-const BuyerRequestCreateComponent = ({
+const BuyerRequestUpdateComponent = ({
   getSourcingType,
   getSourcingPurpose,
   getUnit,
@@ -291,25 +302,27 @@ const BuyerRequestCreateComponent = ({
   shippingMethodData,
   paymentTermData,
   supCertificationData,
-  getProductDetails,
-  productDetailsData,
-  productDetailsError,
   getProvince,
   getWard,
   getDistrict,
   provinceData,
   wardData,
   districtData,
-  createRequest,
-  createRequestError,
+  updateRequest,
   resetData,
-  isUpdate = false,
+  requestDetailsData,
+  requestDetailsError,
+  getRequestDetails,
+  updateRequestError,
 }) => {
   const [price, setPrice] = useState(0);
   const router = useRouter();
   const [loadingRFQ, setLoadingRFQ] = useState(false);
   const [form] = Form.useForm();
-  let productId = router.query.productId;
+  const [currentProvince, setCurrentProvince] = useState(null);
+  const [initForm, setInitForm] = useState({});
+  const [currentDistrict, setCurrentDistrict] = useState(null);
+  let requestId = router.query.id;
 
   useEffect(() => {
     getSourcingType();
@@ -334,49 +347,72 @@ const BuyerRequestCreateComponent = ({
   ]);
 
   useEffect(() => {
-    if (!!productId) {
-      getProductDetails(productId);
+    if (!!requestId) {
+      getRequestDetails(requestId);
       setLoadingRFQ(true);
     }
-  }, [getProductDetails, productId]);
-
-  // useEffect(() => {
-  //   if (!!requestId) {
-  //     getRequestDetails(requestId);
-  //     setLoadingRFQ(true);
-  //   }
-  // }, [getRequestDetails, requestId]);
+  }, [getRequestDetails, requestId]);
 
   useEffect(() => {
-    if (productDetailsData || productDetailsError) {
+    if (requestDetailsError || requestDetailsData) {
       setLoadingRFQ(false);
     }
-  }, [productDetailsError, productDetailsData]);
-
-  // useEffect(() => {
-  //   if (requestDetailsError || requestDetailsData) {
-  //     setLoadingRFQ(false);
-  //   }
-  // }, [requestDetailsData, requestDetailsError]);
+  }, [requestDetailsData, requestDetailsError]);
 
   useEffect(() => {
-    if (!!createRequestError) {
-      openNotification("error", { message: "Create new request fail" });
+    if (!!updateRequestError) {
+      openNotification("error", { message: "Update request fail" });
     }
     return () => {
       resetData();
     };
-  }, [createRequestError, resetData]);
+  }, [updateRequestError, resetData]);
 
+  useEffect(() => {
+    getDistrict(currentProvince);
+  }, [currentProvince, getDistrict]);
+
+  useEffect(() => {
+    getWard(currentDistrict);
+  }, [currentDistrict, getWard]);
+
+  useEffect(() => {
+    let initForm = {};
+    initForm.productName = get("product.description")(requestDetailsData);
+    initForm.sourcingPurposeId = get("sourcingPurpose.id")(requestDetailsData);
+    initForm.sourcingTypeId = get("sourcingType.id")(requestDetailsData);
+    initForm.quantity = +get("quantity")(requestDetailsData);
+    initForm.preferredUnitPrice = +get("preferredUnitPrice")(
+      requestDetailsData
+    );
+    initForm.tradeTermId = get("tradeTerm.id")(requestDetailsData);
+    initForm.dueDate =
+      get("dueDate")(requestDetailsData) &&
+      moment(get("dueDate")(requestDetailsData));
+    initForm.description = get("description")(requestDetailsData);
+    initForm.certifications = (
+      get("certifications")(requestDetailsData) || []
+    ).map((cer) => cer.id);
+    initForm.otherRequirements = get("otherRequirements")(requestDetailsData);
+    initForm.shippingMethodId = get("shippingMethod.id")(requestDetailsData);
+    initForm.provinceId = get("province.id")(requestDetailsData);
+    setCurrentProvince(initForm.provinceId);
+    initForm.districtId = get("district.id")(requestDetailsData);
+    setCurrentDistrict(initForm.districtId);
+    initForm.wardId = get("ward.id")(requestDetailsData);
+    initForm.address = get("address")(requestDetailsData);
+    initForm.leadTime = get("leadTime")(requestDetailsData);
+    initForm.paymentTermId = get("paymentTerm.id")(requestDetailsData);
+    setInitForm(initForm);
+  }, [requestDetailsData]);
   const onFinish = (values) => {
-    values.productId = productId + "";
     values.preferredUnitPrice = get("preferredUnitPrice.price")(values) + "";
     values.quantity = values.quantity.number + "";
     values.dueDate = moment.utc(new Date(values.dueDate)).format();
     values.currencyId = (currencyData || [])[0].id;
     values.certifications = values.certifications || [];
     values.leadTime = values.leadTime.number;
-    createRequest(values);
+    updateRequest(values);
   };
 
   const checkPrice = (rule, value) => {
@@ -397,57 +433,20 @@ const BuyerRequestCreateComponent = ({
     return <Skeleton active />;
   }
 
-  if (!productDetailsData || productDetailsError) {
+  if (!requestDetailsData || requestDetailsError) {
     return (
       <Fragment>
-        <Empty description="Can not find any product! Please choose specify product before submit RFQ" />
+        <Empty description="Can not find any request! Make sure you choose specify request" />
         <div style={{ textAlign: "center", paddingTop: 32 }}>
-          <Button onClick={() => Router.push("/")} type="primary">
-            <LeftOutlined /> Back to product list
+          <Button onClick={() => Router.push("/buyer/rfq")} type="primary">
+            <LeftOutlined /> Back to RFQ list
           </Button>
         </div>
       </Fragment>
     );
   }
-  // else if (isUpdate && (requestDetailsError || !requestDetailsData)) {
-  //   return (
-  //     <Fragment>
-  //       <Empty description="Can not find any request !" />
-  //       <div style={{ textAlign: "center", paddingTop: 32 }}>
-  //         <Button onClick={() => Router.push("/buyer/rfq")} type="primary">
-  //           <LeftOutlined /> Back to RFQ list
-  //         </Button>
-  //       </div>
-  //     </Fragment>
-  //   );
-  // }
-  let initForm = {};
-  if (!isUpdate) {
-    initForm.productName = productDetailsData.productName;
-  } else {
-    // initForm.productName = get("product.description")(requestDetailsData);
-    // initForm.sourcingPurposeId = get("sourcingPurpose.id")(requestDetailsData);
-    // initForm.sourcingTypeId = get("sourcingType.description")(
-    //   requestDetailsData
-    // );
-    // initForm.quantity = get("quantity")(requestDetailsData);
-    // initForm.preferredUnitPrice = get("preferredUnitPrice")(requestDetailsData);
-    // initForm.tradeTermId = get("tradeTerm.id")(requestDetailsData);
-    // initForm.dueDate =
-    //   get("dueDate")(requestDetailsData) &&
-    //   moment(get("dueDate")(requestDetailsData));
-    // initForm.description = get("description")(requestDetailsData);
-    // initForm.certifications = get("certifications")(requestDetailsData) || [];
-    // initForm.otherRequirements = get("otherRequirements")(requestDetailsData);
-    // initForm.shippingMethodId = get("shippingMethod.id")(requestDetailsData);
-    // initForm.provinceId = get("province.id")(requestDetailsData);
-    // // getWard(initForm.provinceId);
-    // // initForm.wardId = get("ward.id")(requestDetailsData);
-    // // initForm.districtId = get("district.id")(requestDetailsData);
-    // initForm.address = get("address")(requestDetailsData);
-    // initForm.leadTime = get("leadTime")(requestDetailsData);
-    // initForm.paymentTermId = get("paymentTerm.id")(requestDetailsData);
-  }
+
+  console.log({ requestDetailsData });
 
   return (
     <Row>
@@ -558,7 +557,10 @@ const BuyerRequestCreateComponent = ({
                       ]}
                     >
                       <QuantityInput
-                        unitOfMeasure={get("unitOfMeasure")(productDetailsData)}
+                        quantity={get("quantity")(requestDetailsData)}
+                        unitOfMeasure={get("product.unitType")(
+                          requestDetailsData
+                        )}
                       />
                     </FormItem>
                   </Col>
@@ -585,7 +587,7 @@ const BuyerRequestCreateComponent = ({
                       ]}
                     >
                       <PriceInput
-                        price={price}
+                        price={price || initForm.preferredUnitPrice}
                         setPrice={setPrice}
                         currencyData={currencyData}
                       />
@@ -856,7 +858,9 @@ const BuyerRequestCreateComponent = ({
                   </Col>
                   <Col style={styles.colStyle} span={24}>
                     <FormItem label="Lead Time" name="leadTime">
-                      <LeadTimeInput />
+                      <LeadTimeInput
+                        leadTime={get("leadTime")(requestDetailsData)}
+                      />
                     </FormItem>
                   </Col>
                   <Col style={styles.colStyle} span={24}>
@@ -910,4 +914,4 @@ const BuyerRequestCreateComponent = ({
   );
 };
 
-export default connectToRedux(BuyerRequestCreateComponent);
+export default connectToRedux(BuyerRequestUpdateComponent);
