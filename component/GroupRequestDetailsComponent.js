@@ -6,28 +6,42 @@ import {
   Row,
   Space,
   Table,
-  Tag,
   Typography,
   Modal,
+  Empty,
+  Skeleton,
 } from "antd";
 import { CloseCircleOutlined } from "@ant-design/icons";
 import Router from "next/router";
-import React, { Fragment, useState } from "react";
-import { G_NEGOTIATING } from "../enums/groupStatus";
+import React, { Fragment, useEffect, useState } from "react";
 import ListingRequestForGroupComponent from "./ListingRequestForGroupComponent";
 import ListingSupplierByCategoryComponent from "./ListingSupplierByCategoryComponent";
 import RequestDetailsComponent from "./RequestDetailsComponent";
 import UserProfileComponent from "./UserProfileComponent";
 import GroupStatusComponent from "./Utils/GroupStatusComponent";
-import { displayCurrency, getAveragePrice } from "../utils";
-import { createLink } from "../libs";
+import { DATE_TIME_FORMAT, displayCurrency } from "../utils";
+import { connect } from "react-redux";
+import { createStructuredSelector } from "reselect";
+import {
+  GetGroupDetailsData,
+  getGroupDetails,
+  GetGroupDetailsResetter,
+  GetGroupDetailsError,
+} from "../stores/GroupState";
+import {
+  getRequestByGroupId,
+  getRequestByGroupIdData,
+  getRequestByGroupIdError,
+} from "../stores/RequestState";
+import Moment from "react-moment";
+import RequestStatusComponent from "./Utils/RequestStatusComponent";
 
 const { Title } = Typography;
 const groupRequestColumns = [
   // { title: "Product Name", dataIndex: "category", key: "category" },
   { title: "Preferred Unit Price", dataIndex: "price", key: "price" },
   { title: "Quantity", dataIndex: "quantity", key: "quantity" },
-  { title: "Date Created", dataIndex: "dateCreated", key: "dateCreated" },
+  { title: "Due Date", dataIndex: "dueDate", key: "dueDate" },
   { title: "Actions", dataIndex: "actions", key: "actions" },
 ];
 const SUPPLIER_CONTACT = [
@@ -39,87 +53,56 @@ const SUPPLIER_CONTACT = [
   { title: "", dataIndex: "remove", key: "remove" },
 ];
 
+const connectToRedux = connect(
+  createStructuredSelector({
+    groupDetailsData: GetGroupDetailsData,
+    groupDetailsError: GetGroupDetailsError,
+    requestByGroupIdData: getRequestByGroupIdData,
+    requestByGroupIdError: getRequestByGroupIdError,
+  }),
+  (dispatch) => ({
+    getGroupDetails: (id) => dispatch(getGroupDetails(id)),
+    getRequestByGroupId: (id) => dispatch(getRequestByGroupId(id)),
+    resetData: () => dispatch(GetGroupDetailsResetter),
+  })
+);
+
 const GroupRequestDetailsComponent = ({
-  group = {
-    id: 1,
-    title: "Group IR Night Vision Hidden Camera Watch Sport - 23/10/2020",
-    category: <Tag color="processing">Action & Sports Camera</Tag>,
-    dateCreated: "27/09/2020",
-    dateUpdated: "28/09/2020",
-    description:
-      "This Group will focus about IR Night Vision Hidden Camera Watch Sport",
-    quantity: "190 Units",
-    minPrice: displayCurrency(1180000),
-    maxPrice: displayCurrency(1200000),
-    status: G_NEGOTIATING,
-  },
+  getGroupDetails,
+  groupDetailsData,
+  resetData,
+  groupDetailsError,
+  getRequestByGroupId,
+  requestByGroupIdData,
 }) => {
   const [isOpenContact, setIsOpenContact] = useState(false);
   const [isOpenAddRequest, setIsOpenAddRequest] = useState(false);
   const [openRequestDetail, setOpenRequestDetail] = useState(false);
   const [openSupplierDetail, setOpenSupplierDetail] = useState(false);
-  const REQUEST_LIST = [
-    {
-      key: "1",
-      price: displayCurrency(1190000),
-      quantity: 50,
-      createdBy: "User 1",
-      dateCreated: "30/09/2020 02:07:26 PM",
-      actions: (
-        <Space>
-          <Button
-            type="link"
-            onClick={() => {
-              setOpenRequestDetail(true);
-            }}
-          >
-            {" "}
-            Details
-          </Button>
-        </Space>
-      ),
-    },
-    {
-      key: "2",
-      price: displayCurrency(1180000),
-      quantity: 140,
-      createdBy: "User 1",
-      dateCreated: "30/09/2020 02:07:26 PM",
-      actions: (
-        <Space>
-          <Button
-            type="link"
-            onClick={() => {
-              setOpenRequestDetail(true);
-            }}
-          >
-            {" "}
-            Details
-          </Button>
-        </Space>
-      ),
-    },
-    {
-      key: "3",
-      price: displayCurrency(1200000),
-      quantity: 30,
-      createdBy: "User 1",
-      dateCreated: "30/09/2020 02:07:26 PM",
-      actions: (
-        <Space>
-          <Button
-            type="link"
-            onClick={() => {
-              setOpenRequestDetail(true);
-            }}
-          >
-            {" "}
-            Details
-          </Button>
-        </Space>
-      ),
-    },
-  ];
+  const [currentRequestSelected, setCurrentRequestSelected] = useState({});
+
+  const [loading, setLoading] = useState(true);
+  const groupId = Router.query.id;
+
+  useEffect(() => {
+    if (!!groupId) {
+      getGroupDetails(groupId);
+      getRequestByGroupId(groupId);
+    }
+  }, [groupId, getGroupDetails, getRequestByGroupId]);
+
+  useEffect(() => {
+    if (groupDetailsData || groupDetailsError) {
+      setLoading(false);
+    }
+  }, [groupDetailsData, groupDetailsError]);
+
+  useEffect(() => {
+    return () => {
+      resetData();
+    };
+  }, [resetData]);
+
   const SUPPLIER_CONTACT_DATA = [
     {
       name: "Supplier 1",
@@ -251,18 +234,55 @@ const GroupRequestDetailsComponent = ({
     },
   ];
 
-  if (!group) {
-    return null;
+  if (loading) {
+    return <Skeleton active />;
+  }
+
+  if (!groupDetailsData || groupDetailsError) {
+    return <Empty description="Can not find any group!" />;
   }
   const {
-    title,
+    groupName,
     category,
     dateCreated,
     description,
-    status,
+    groupStatus,
     minPrice,
     maxPrice,
-  } = group;
+    quantity,
+    averagePrice,
+    product,
+  } = groupDetailsData;
+
+  const { id: status } = groupStatus || {};
+  const { productName, id: productId, unitOfMeasure } = product || {};
+  const { description: unit } = unitOfMeasure || {};
+  const getRequestTable = (requestData = []) =>
+    requestData &&
+    requestData.length > 0 &&
+    requestData.map((request = {}) => ({
+      key: request.id,
+      price: displayCurrency(+request.preferredUnitPrice),
+      name: request.product.description,
+      quantity: +request.quantity || 0,
+      dueDate: (
+        <Moment format={DATE_TIME_FORMAT}>{new Date(request.dueDate)}</Moment>
+      ),
+      status: <RequestStatusComponent status={request.requestStatus.id} />,
+      actions: (
+        <Button
+          onClick={() => {
+            setCurrentRequestSelected(request);
+            setOpenRequestDetail(true);
+          }}
+          size="small"
+          type="link"
+        >
+          View
+        </Button>
+      ),
+    }));
+
   return (
     <Fragment>
       <Drawer
@@ -275,15 +295,8 @@ const GroupRequestDetailsComponent = ({
         key={"right"}
       >
         <RequestDetailsComponent
-          // requestId="fd450a99-991b-4164-c2e5-08d8773db076"
-          buttonActions={[
-            {
-              label: "Remove",
-              buttonProps: {
-                danger: true,
-              },
-            },
-          ]}
+          isSupplier={false}
+          requestId={currentRequestSelected.id}
         />
       </Drawer>
       <Drawer
@@ -298,7 +311,7 @@ const GroupRequestDetailsComponent = ({
         <UserProfileComponent isDrawer={true} />
       </Drawer>
       <Row justify="space-between">
-        <Title level={4}>Group Name: {title}</Title>
+        <Title level={4}>Group Name: {groupName}</Title>
         <Space>
           <Button
             danger
@@ -319,42 +332,30 @@ const GroupRequestDetailsComponent = ({
               <a
                 rel="noreferrer"
                 target="_blank"
-                href={createLink(["product-details?productId=1"])}
+                href={`/product-details?id=${productId}`}
               >
-                <b>
-                  IR Night Vision Hidden Camera Watch Sport Wear Watch Camera
-                  WIFI
-                </b>
+                <b>{productName}</b>
               </a>
-            </Descriptions.Item>
-            <Descriptions.Item label="Category">{category}</Descriptions.Item>
-            <Descriptions.Item label="Created date">
-              {dateCreated}
-            </Descriptions.Item>
-            <Descriptions.Item label="Total Quantity">
-              {REQUEST_LIST.reduce((prev, current) => {
-                return prev + current.quantity;
-              }, 0)}{" "}
-              Units
-            </Descriptions.Item>
-            <Descriptions.Item label="Average price in unit">
-              {displayCurrency(
-                getAveragePrice([
-                  { price: 1200000, quantity: 50 },
-                  { price: 1190000, quantity: 30 },
-                  { price: 1180000, quantity: 140 },
-                ])
-              )}
-            </Descriptions.Item>
-            <Descriptions.Item label="Min RFQ price">
-              {minPrice}
-            </Descriptions.Item>
-            <Descriptions.Item label="Max RFQ price">
-              {maxPrice}
             </Descriptions.Item>
             <Descriptions.Item label="Status">
               <GroupStatusComponent status={status} />
             </Descriptions.Item>
+            <Descriptions.Item label="Created date">
+              {dateCreated}
+            </Descriptions.Item>
+            <Descriptions.Item label="Total Quantity">
+              {quantity} {unit}
+            </Descriptions.Item>
+            <Descriptions.Item label="Average price in unit">
+              {displayCurrency(Math.floor(averagePrice))}
+            </Descriptions.Item>
+            <Descriptions.Item label="Min RFQ price">
+              {displayCurrency(minPrice)}
+            </Descriptions.Item>
+            <Descriptions.Item label="Max RFQ price">
+              {displayCurrency(maxPrice)}
+            </Descriptions.Item>
+
             <Descriptions.Item label="Description">
               {description}
             </Descriptions.Item>
@@ -376,7 +377,7 @@ const GroupRequestDetailsComponent = ({
                 </Button>
               )}
               columns={groupRequestColumns}
-              dataSource={REQUEST_LIST}
+              dataSource={getRequestTable((requestByGroupIdData || {}).data)}
               rowKey="id"
             />
           </div>
@@ -433,4 +434,4 @@ const GroupRequestDetailsComponent = ({
   );
 };
 
-export default GroupRequestDetailsComponent;
+export default connectToRedux(GroupRequestDetailsComponent);

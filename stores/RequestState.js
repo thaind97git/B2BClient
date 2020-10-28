@@ -9,10 +9,11 @@ import { openNotification } from "../utils";
 const CREATE_REQUEST = "CreateRequestAPI";
 const GET_REQUEST_PAGING = "GetRequestPagingAPI";
 const GET_REQUEST_DETAILS = "GetRequestDetailsAPI";
-const CANCEL_REQUEST = "CancelRequestAPI";
-const REJECT_REQUEST = "RejectRequestAPI";
-
+export const CANCEL_REQUEST = "CancelRequestAPI";
+export const REJECT_REQUEST = "RejectRequestAPI";
 const UPDATE_REQUEST = "UpdateRequestAPI";
+const GET_REQUEST_BY_GROUP_ID = "GetRequestByGroupIdAPI";
+
 // Create new Request
 const CreateRequestAPI = makeFetchAction(CREATE_REQUEST, (object) =>
   nfetch({
@@ -168,3 +169,19 @@ export const updateRequest = (object) =>
 export const UpdateRequestData = UpdateRequestAPI.dataSelector;
 export const UpdateRequestError = UpdateRequestAPI.errorSelector;
 export const UpdateRequestResetter = getResetter(UpdateRequestAPI);
+
+// Get Request By Group Id
+const GetRequestByGroupIdAPI = makeFetchAction(
+  GET_REQUEST_BY_GROUP_ID,
+  (groupId) =>
+    nfetch({
+      endpoint: `/api/Group/Requests?groupId=${groupId}`,
+      method: "GET",
+    })()
+);
+
+export const getRequestByGroupId = (groupId) =>
+  respondToSuccess(GetRequestByGroupIdAPI.actionCreator(groupId));
+export const getRequestByGroupIdData = GetRequestByGroupIdAPI.dataSelector;
+export const getRequestByGroupIdError = GetRequestByGroupIdAPI.errorSelector;
+export const getRequestByGroupIdResetter = getResetter(GetRequestByGroupIdAPI);

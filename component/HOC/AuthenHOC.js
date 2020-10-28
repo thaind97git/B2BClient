@@ -3,9 +3,10 @@ import { createStructuredSelector } from "reselect";
 import React from "react";
 
 import {
-  currentUserSelector,
+  CurrentUserData,
   getCurrentUser,
   verifyScopeAndRole,
+  CurrentUserError,
 } from "../../stores/UserState";
 import { isServer } from "../../utils";
 import { Row, Spin } from "antd";
@@ -14,7 +15,8 @@ import Router from "next/router";
 
 const connectWithRedux = connect(
   createStructuredSelector({
-    currentUser: currentUserSelector,
+    currentUser: CurrentUserData,
+    currentUserError: CurrentUserError,
   })
 );
 
@@ -31,7 +33,7 @@ function withAuth(AuthComponent) {
     componentDidMount() {
       if (!isServer) {
         const scope = getScopeByUrl(Router.pathname);
-        this.props.dispatch(getCurrentUser(scope));
+        this.props.dispatch(getCurrentUser({ scope }));
       }
     }
 

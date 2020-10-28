@@ -93,5 +93,5 @@ export const createNewProduct = (product, fileList) =>
   });
 
 export const CreateNewProductData = CreateProductAPI.dataSelector;
-export const CreateNEwProductError = CreateProductAPI.errorSelector;
+export const CreateNewProductError = CreateProductAPI.errorSelector;
 export const CreateNewProductResetter = getResetter(CreateProductAPI);

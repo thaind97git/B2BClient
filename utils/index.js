@@ -183,3 +183,19 @@ export const getAveragePrice = (prices = []) => {
 
   return Math.floor(totalAmount / totalQuantity);
 };
+
+export const calculateGroupRequest = (requests = []) => {
+  const arrayPrice = requests.map((request) => +request.preferredUnitPrice);
+  const totalRequest = requests.length;
+  const totalQuantity = requests.reduce((prev, current) => {
+    return prev + +current.quantity;
+  }, 0);
+  const minPrice = Math.min(...arrayPrice);
+  const maxPrice = Math.max(...arrayPrice);
+  return {
+    totalRequest,
+    totalQuantity: totalQuantity + " " + (requests[0] || {}).product.unitType,
+    minPrice: displayCurrency(minPrice),
+    maxPrice: displayCurrency(maxPrice),
+  };
+};

@@ -4,7 +4,7 @@ import Router from "next/router";
 import { compose } from "redux";
 import { Button, Space, Typography, Row, Select, Input, Tooltip } from "antd";
 import ReactTableLayout from "../layouts/ReactTableLayout";
-import { DEFAULT_DATE_RANGE } from "../utils";
+import { DATE_TIME_FORMAT, DEFAULT_DATE_RANGE } from "../utils";
 import GroupStatusComponent from "./Utils/GroupStatusComponent";
 import {
   G_BIDDING,
@@ -16,19 +16,39 @@ import {
   G_WAIT_FOR_AUCTION,
 } from "../enums/groupStatus";
 import { createLink } from "../libs";
+import { createStructuredSelector } from "reselect";
+import { getGroupPaging, GetGroupPagingData } from "../stores/GroupState";
+import AllCategoryComponent from "./AllCategoryComponent";
+import Moment from "react-moment";
 
 const { Title } = Typography;
 const { Option, OptGroup } = Select;
 const { Search } = Input;
 
-const connectToRedux = connect();
-/*createStructuredSelector({
-        userLoginData: userLoginDataSelector,
-    }),
-    (dispatch) => ({
-        loginUser: ({ email, password }) =>
-            dispatch(userLogin({ email, password })),
-    })*/
+const connectToRedux = connect(
+  createStructuredSelector({
+    groupPagingData: GetGroupPagingData,
+  }),
+  (dispatch) => ({
+    getGroupPaging: (
+      pageIndex,
+      pageSize,
+      searchMessage,
+      dateRange,
+      categoryId
+    ) =>
+      dispatch(
+        getGroupPaging({
+          categoryId,
+          productName: searchMessage,
+          fromDate: dateRange.fromDate,
+          toDate: dateRange.toDate,
+          pageIndex,
+          pageSize,
+        })
+      ),
+  })
+);
 
 const enhance = compose(connectToRedux);
 const displayGroupName = (name) =>
@@ -184,11 +204,6 @@ const columns = [
     key: "product",
   },
   {
-    title: "Category",
-    dataIndex: "category",
-    key: "category",
-  },
-  {
     title: "Created By",
     dataIndex: "createdBy",
     key: "createdBy",
@@ -214,44 +229,78 @@ function handleChange(value) {
   console.log(`selected ${value}`);
 }
 
-const GroupRequestComponent = () => {
+const GroupRequestComponent = ({ getGroupPaging, groupPagingData }) => {
   const [searchMessage, setSearchMessage] = useState("");
+  const [category, setCategory] = useState("1");
   const [dateRange, setDateRange] = useState(DEFAULT_DATE_RANGE);
+  const [currentGroupSelected, setCurrentGroupSelected] = useState({});
+  const [openDetails, setOpenDetails] = useState(false);
+
+  const getGroupTable = (groupData = []) => {
+    return (
+      groupData &&
+      groupData.length > 0 &&
+      groupData.map((group = {}) => ({
+        key: group.id,
+        // price: displayCurrency(+group.preferredUnitPrice),
+        name: group.groupName,
+        product: group.product.description,
+        createdBy: "Test",
+        dateCreated: (
+          <Moment format={DATE_TIME_FORMAT}>
+            {new Date(group.dateCreated)}
+          </Moment>
+        ),
+        status: <GroupStatusComponent status={group.groupStatus.id} />,
+        actions: (
+          <Button
+            onClick={() => {
+              Router.push(
+                createLink(["aggregator", "group", `details?id=${group.id}`])
+              );
+              // setCurrentGroupSelected(group);
+              // setOpenDetails(true);
+            }}
+            size="small"
+            type="link"
+          >
+            View
+          </Button>
+        ),
+      }))
+    );
+  };
+  let groupData = [],
+    total = 0;
+  if (groupPagingData) {
+    groupData = groupPagingData.data;
+    total = groupPagingData.total;
+  }
   return (
     <div>
       <Row justify="space-between" align="middle">
         <Title level={3}>Group Management</Title>
       </Row>
       <ReactTableLayout
-        dispatchAction={() => {}}
+        dispatchAction={getGroupPaging}
         searchProps={{
           placeholder: "Group Name or Created By",
           searchMessage,
           setSearchMessage,
           exElement: (
-            <Space>
-              <Select
-                size="large"
-                placeholder="Filter by category"
-                style={{ width: 200 }}
-                onChange={handleChange}
-              >
-                <OptGroup label="Category 1">
-                  <Option value="jack">Sub-1 Category 1</Option>
-                  <Option value="lucy">Sub-2 Category 1</Option>
-                </OptGroup>
-                <OptGroup label="Category 2">
-                  <Option value="Yiminghe">Sub-1 Category 1</Option>
-                </OptGroup>
-              </Select>
-            </Space>
+            <AllCategoryComponent
+              onGetLastValue={(value) => setCategory(value)}
+              size="large"
+              isSearchStyle={false}
+            />
           ),
         }}
         dateRangeProps={{
           dateRange,
           setDateRange,
         }}
-        data={dataSource}
+        data={getGroupTable(groupData || [])}
+        totalCount={total}
         columns={columns}
       />
     </div>
