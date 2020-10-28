@@ -211,7 +211,7 @@ const AdminRequestProcessingComponent = ({
   return (
     <div>
       <ReactTableLayout
-        // dispatchAction={getRequest}
+        dispatchAction={getRequest}
         searchProps={{
           placeholder: "Search by product name",
           searchMessage,
@@ -231,7 +231,7 @@ const AdminRequestProcessingComponent = ({
           dateRange,
           setDateRange,
         }}
-        data={dataSource}
+        data={getRequestTable(requestData || [])}
         columns={columns}
         totalCount={totalCount}
       />

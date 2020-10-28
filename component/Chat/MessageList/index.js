@@ -5,6 +5,7 @@ import ToolbarButton from "../ToolbarButton";
 import Message from "../Message";
 import moment from "moment";
 import { HubConnectionBuilder } from "@microsoft/signalr";
+import { getToken } from "../../../libs/localStorage";
 const MY_USER_ID = "apple";
 
 const API_SERVER_URL =
@@ -20,7 +21,11 @@ export default function MessageList({ props }) {
 
   useEffect(() => {
     const newConnection = new HubConnectionBuilder()
-      .withUrl(`${API_SERVER_URL}/chatHub`)
+      .withUrl(`${API_SERVER_URL}/chatHub`, {
+        accessTokenFactory: () => {
+          return `${getToken()}`;
+        },
+      })
       .withAutomaticReconnect()
       .build();
 
@@ -29,7 +34,6 @@ export default function MessageList({ props }) {
 
   useEffect(() => {
     if (connection) {
-      console.log({ connection });
       connection
         .start()
         .then((result) => {

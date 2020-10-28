@@ -1,14 +1,4 @@
-import {
-  Button,
-  Col,
-  Divider,
-  Radio,
-  Row,
-  Select,
-  Drawer,
-  Tag,
-  Collapse,
-} from "antd";
+import { Button, Col, Row, Drawer } from "antd";
 import Modal from "antd/lib/modal/Modal";
 import React, { useEffect, useState } from "react";
 import { R_PENDING } from "../enums/requestStatus";
@@ -31,8 +21,7 @@ import {
 import Moment from "react-moment";
 import { get } from "lodash/fp";
 import AllCategoryComponent from "./AllCategoryComponent";
-import { createLink } from "../libs";
-const { Panel } = Collapse;
+import ListingGroupByProductComponent from "./ListingGroupByProductComponent";
 const connectToRedux = connect(
   createStructuredSelector({
     requestPagingData: GetRequestPagingData,
@@ -101,6 +90,8 @@ const AdminRequestManagement = ({
   const [searchMessage, setSearchMessage] = useState("");
   const [dateRange, setDateRange] = useState(DEFAULT_DATE_RANGE);
   const [recordSelected, setRecordSelected] = useState([]);
+  const [requestIdSelected, setRequestIdSelected] = useState([]);
+  const [currentProductId, setCurrentProductId] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [openGroup, setOpenGroup] = useState(false);
   const [openDetails, setOpenDetails] = useState(false);
@@ -114,9 +105,7 @@ const AdminRequestManagement = ({
       setLoading(false);
     }
   }, [requestPagingError, requestPagingData]);
-  function handleChange(value) {
-    setCategory(value);
-  }
+
   const getRequestTable = (requestData = []) => {
     return (
       requestData &&
@@ -150,12 +139,10 @@ const AdminRequestManagement = ({
 
   const rowSelection = {
     onChange: (selectedRowKeys, selectedRows) => {
-      console.log(
-        `selectedRowKeys: ${selectedRowKeys}`,
-        "selectedRows: ",
-        selectedRows
-      );
       setRecordSelected(selectedRows);
+      const requestIds = selectedRows.map((row) => row.key);
+      setRequestIdSelected(requestIds);
+      setCurrentProductId((selectedRows[0] || {}).productId);
     },
     getCheckboxProps: (record) => ({
       disabled:
@@ -165,12 +152,6 @@ const AdminRequestManagement = ({
       name: record.name,
     }),
   };
-  function onChange(checkedValues) {
-    console.log("checked = ", checkedValues);
-  }
-  useEffect(() => {
-    console.log(recordSelected);
-  }, [recordSelected]);
 
   let requestData = [],
     totalCount = 0;
@@ -193,18 +174,24 @@ const AdminRequestManagement = ({
           <Button
             key="submit"
             type="primary"
-            onClick={() => setOpenGroup(false)}
+            form="group-create"
+            htmlType="submit"
           >
             Submit
           </Button>,
         ]}
       >
-        <GroupCreateComponent />
+        {openGroup ? (
+          <GroupCreateComponent
+            requestIds={[requestIdSelected]}
+            productId={currentProductId}
+          />
+        ) : null}
       </Modal>
       <Modal
         closable
         width={1000}
-        title="Listing Group inside IR Night Vision Hidden Camera Watch Sport Wear Watch Camera WIFI"
+        title={`Listing Group inside ${(recordSelected[0] || {}).name}`}
         visible={modalVisible}
         onOk={() => setModalVisible(false)}
         onCancel={() => setModalVisible(false)}
@@ -224,7 +211,6 @@ const AdminRequestManagement = ({
                 type="primary"
                 onClick={() => {
                   setDefaultTab("2");
-                  setModalVisible(false);
                 }}
               >
                 Submit
@@ -233,98 +219,9 @@ const AdminRequestManagement = ({
           </Row>,
         ]}
       >
-        <Radio.Group style={{ width: "100%" }} onChange={onChange}>
-          <Row>
-            <Col span={24}>
-              <Radio style={{ width: "100%" }} value="A">
-                <b>IR Night Vision Hidden Camera Watch Sport - 02/10/2020</b>{" "}
-                created inside{" "}
-                <Tag color="processing">Action & Sports Camera</Tag>
-                <div>
-                  <Collapse bordered={false} defaultActiveKey={[]}>
-                    <Panel header="More details" key="1">
-                      <ul>
-                        <li>
-                          Total RFQ added: <b>5</b>
-                        </li>
-                        <li>
-                          Total quantity: <b>80 Pieces</b>
-                        </li>
-                        <li>
-                          Min RFQ price: <b>{displayCurrency(1950000)}</b>
-                        </li>
-                        <li>
-                          Max RFQ price: <b>{displayCurrency(2000000)}</b>
-                        </li>
-                        <li>
-                          Note: <i>N/A</i>
-                        </li>
-                        <li>
-                          <a
-                            rel="noreferrer"
-                            target="_blank"
-                            href={createLink([
-                              "aggregator",
-                              "group",
-                              "details?id=1",
-                            ])}
-                          >
-                            View details
-                          </a>
-                        </li>
-                      </ul>
-                    </Panel>
-                  </Collapse>
-                </div>
-              </Radio>
-            </Col>
-            <Divider />
-            <Col span={24}>
-              <Radio style={{ width: "100%" }} value="B">
-                <b>IR Night Vision Hidden Camera Watch Sport - 23/10/2020</b>{" "}
-                created inside{" "}
-                <Tag color="processing">Action & Sports Camera</Tag>
-                <div>
-                  <Collapse bordered={false} defaultActiveKey={[]}>
-                    <Panel header="More details" key="1">
-                      <ul>
-                        <li>
-                          Total RFQ added: <b>3</b>
-                        </li>
-                        <li>
-                          Total quantity: <b>130 Pieces</b>
-                        </li>
-                        <li>
-                          Min RFQ price: <b>{displayCurrency(1850000)}</b>
-                        </li>
-                        <li>
-                          Max RFQ price: <b>{displayCurrency(1900000)}</b>
-                        </li>
-                        <li>
-                          Note: <i>N/A</i>
-                        </li>
-                        <li>
-                          <a
-                            rel="noreferrer"
-                            target="_blank"
-                            href={createLink([
-                              "aggregator",
-                              "group",
-                              "details?id=1",
-                            ])}
-                          >
-                            View details
-                          </a>
-                        </li>
-                      </ul>
-                    </Panel>
-                  </Collapse>
-                </div>
-              </Radio>
-            </Col>
-            <Divider />
-          </Row>
-        </Radio.Group>
+        {modalVisible ? (
+          <ListingGroupByProductComponent productId={currentProductId} />
+        ) : null}
       </Modal>
       <Row justify="end">
         <Button

@@ -88,7 +88,8 @@ export const getCurrentUser = (scope = "buyer") =>
     return;
   });
 
-export const currentUserSelector = GetCurrentUserAPI.dataSelector;
+export const CurrentUserData = GetCurrentUserAPI.dataSelector;
+export const CurrentUserError = GetCurrentUserAPI.errorSelector;
 
 export const verifyScopeAndRoleAdmin = (user) => {
   if (!user) {
