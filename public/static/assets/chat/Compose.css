@@ -5,8 +5,9 @@
   background: white;
   border-top: 1px solid #eeeef1;
   position: fixed;
-  width: calc(100% - 20px);
-  bottom: 0px;
+  /* width: calc(100% - 20px); */
+  width: calc(41%);
+  bottom: 50px;
 }
 
 @supports (backdrop-filter: blur(20px)) {
@@ -18,15 +19,22 @@
 }
 
 .compose-input {
+  padding: 0 8px;
   flex: 1;
   border: none;
   font-size: 14px;
   height: 40px;
-  background: none;
+  background: #f4f4f8;
+  border-radius: 10px;
 }
 
 .compose-input::placeholder {
   opacity: 0.3;
+}
+
+.compose-input:focus {
+  border: none !important;
+  outline: none;
 }
 
 .compose .toolbar-button {

@@ -1,10 +1,10 @@
-import React from 'react';
-import ConversationList from '../ConversationList';
-import MessageList from '../MessageList';
+import React from "react";
+import ConversationList from "../ConversationList";
+import MessageList from "../MessageList";
 
-export default function Messenger({props}) {
+export default function Messenger({ props }) {
   return (
-    <div>
+    <div style={{ height: "100%" }}>
       <link
         rel="stylesheet"
         type="text/css"
@@ -35,9 +35,9 @@ export default function Messenger({props}) {
         </div>
 
         <div className="scrollable content">
-          <MessageList props={{ title: props.title }}/>
+          <MessageList props={{ title: props.title }} />
         </div>
       </div>
-    </div >
+    </div>
   );
 }

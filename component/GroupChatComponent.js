@@ -1,5 +1,5 @@
 import React from "react";
-import { Tabs, Row, Typography, Divider } from "antd";
+import { Tabs, Row, Typography } from "antd";
 import Messenger from "./Chat/Messenger";
 
 const { TabPane } = Tabs;
@@ -149,32 +149,36 @@ const GROUP_LIST = [
 
 const GroupChatComponent = () => {
   return (
-    <div>
+    <div
+      id="group-chat"
+      style={{ height: "76vh", overflowY: "hidden", position: "relative" }}
+    >
       <Row justify="space-between" align="middle">
         <Title level={3}>Aggregator Group Chat</Title>
       </Row>
-      <Tabs
-        defaultActiveKey="1"
-        tabPosition={"left"}
-        style={{height: '78vh'}}
-      >
-        {[...Array.from({ length: GROUP_LIST.length }, (v, i) => i)].map(
-          (i) => (
-            <TabPane
-              tab={
-                <div style={{ textAlign: "left" }}>
-                  <b>{GROUP_LIST[i].name}</b>
-                  <br />
-                  {GROUP_LIST[i].category}
-                </div>
-              }
-              key={i}
-            >
-              <Messenger props={{ title: GROUP_LIST[i].name }} />
-            </TabPane>
-          )
-        )}
+      <Tabs defaultActiveKey="1" tabPosition={"left"} style={{ height: "90%" }}>
+        {GROUP_LIST.map((group, index) => (
+          <TabPane
+            tab={
+              <div style={{ textAlign: "left" }}>
+                <b>{group.name}</b>
+                <br />
+                {group.category}
+              </div>
+            }
+            key={index}
+          >
+            <Messenger props={{ title: group.name }} />
+          </TabPane>
+        ))}
       </Tabs>
+      <style jsx global>
+        {`
+          #group-chat .ant-tabs-content.ant-tabs-content-left {
+            height: 100%;
+          }
+        `}
+      </style>
     </div>
   );
 };
