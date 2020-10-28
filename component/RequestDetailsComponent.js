@@ -11,19 +11,17 @@ import {
   Typography,
 } from "antd";
 import React, { Fragment, useEffect, useState } from "react";
-import { R_CANCELED, R_PENDING } from "../enums/requestStatus";
+import { R_CANCELED, R_GROUPED, R_PENDING } from "../enums/requestStatus";
 import RequestStatusComponent from "./Utils/RequestStatusComponent";
-import { DATE_TIME_FORMAT, displayCurrency, openNotification } from "../utils";
+import { DATE_TIME_FORMAT, displayCurrency } from "../utils";
 import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
 import {
   CancelRequestData,
-  CancelRequestError,
   getRequestDetails,
   GetRequestDetailsDataSelector,
   getRequestDetailsResetter,
   RejectRequestData,
-  RejectRequestError,
 } from "../stores/RequestState";
 import Moment from "react-moment";
 import Router from "next/router";
@@ -35,9 +33,7 @@ const connectToRedux = connect(
   createStructuredSelector({
     requestDetailsData: GetRequestDetailsDataSelector,
     cancelRequestData: CancelRequestData,
-    cancelRequestError: CancelRequestError,
     rejectRequestData: RejectRequestData,
-    rejectRequestError: RejectRequestError,
   }),
   (dispatch) => ({
     getRequestDetails: (id) => dispatch(getRequestDetails(id)),
@@ -66,12 +62,9 @@ const RequestDetailsComponent = ({
   getRequestDetails,
   requestId,
   resetData,
-  cancelRequestError,
   cancelRequestData,
   rejectRequestData,
-  rejectRequestError,
   setOpenDetails,
-  buttonActions,
 }) => {
   const [loading, setLoading] = useState(true);
   const [openCancel, setOpenCancel] = useState(false);
@@ -79,6 +72,7 @@ const RequestDetailsComponent = ({
   useEffect(() => {
     if (requestId) {
       getRequestDetails(requestId);
+      setLoading(true);
     }
     return () => {
       resetData();
@@ -86,7 +80,7 @@ const RequestDetailsComponent = ({
   }, [requestId, getRequestDetails, resetData]);
 
   useEffect(() => {
-    if (requestDetailsData) {
+    if (!!requestDetailsData) {
       setLoading(false);
     }
   }, [requestDetailsData]);
@@ -96,19 +90,13 @@ const RequestDetailsComponent = ({
       setOpenCancel(false);
       typeof setOpenDetails === "function" && setOpenDetails(false);
     }
-    if (cancelRequestError) {
-      openNotification("error", { message: "Cancel RFQ fail" });
-    }
-  }, [cancelRequestError, cancelRequestData, setOpenDetails]);
+  }, [cancelRequestData, setOpenDetails]);
   useEffect(() => {
     if (rejectRequestData) {
       setOpenReject(false);
       typeof setOpenDetails === "function" && setOpenDetails(false);
     }
-    if (rejectRequestError) {
-      openNotification("error", { message: "Reject RFQ fail" });
-    }
-  }, [rejectRequestError, rejectRequestData, setOpenDetails]);
+  }, [rejectRequestData, setOpenDetails]);
 
   if (!requestId) {
     return <Empty description="Can not find any request !" />;
@@ -154,8 +142,7 @@ const RequestDetailsComponent = ({
               },
             },
           ];
-        }
-        if (isSupplier) {
+        } else {
           result = [
             {
               label: "Edit",
@@ -174,6 +161,23 @@ const RequestDetailsComponent = ({
               },
             },
           ];
+        }
+        break;
+      case R_GROUPED:
+        if (!isSupplier) {
+          result = [
+            {
+              label: "Remove",
+              buttonProps: {
+                danger: true,
+              },
+              action: () => {
+                // setOpenReject(true);
+              },
+            },
+          ];
+        } else {
+          result = [];
         }
         break;
       default:
@@ -218,22 +222,20 @@ const RequestDetailsComponent = ({
       )}
       <Col style={{ padding: "12px 0px" }} span={24}>
         <Space>
-          {(
-            buttonActions ||
-            getButtonActionsByStatus(requestStatus.id) ||
-            []
-          ).map((button, index) => (
-            <Button
-              key={index}
-              onClick={() => {
-                typeof button.action === "function" && button.action();
-              }}
-              size="small"
-              {...button.buttonProps}
-            >
-              {button.label}
-            </Button>
-          ))}
+          {(getButtonActionsByStatus(requestStatus.id) || []).map(
+            (button, index) => (
+              <Button
+                key={index}
+                onClick={() => {
+                  typeof button.action === "function" && button.action();
+                }}
+                size="small"
+                {...button.buttonProps}
+              >
+                {button.label}
+              </Button>
+            )
+          )}
         </Space>
       </Col>
       <Col span={24}>

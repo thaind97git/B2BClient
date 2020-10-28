@@ -2,6 +2,7 @@ import { get } from "lodash/fp";
 import { ACTIONS } from "redux-api-call";
 import { openNotification } from "../utils";
 import { ADD_REQUEST_TO_GROUP, CREATE_NEW_GROUP } from "./GroupState";
+import { CANCEL_REQUEST, REJECT_REQUEST } from "./RequestState";
 import { USER_LOGIN, USER_REGISTER } from "./UserState";
 const hasErrors = get("json.errors");
 
@@ -23,6 +24,12 @@ export default {
         case CREATE_NEW_GROUP:
           msgNotify = "Create new Group success";
           break;
+        case CANCEL_REQUEST:
+          msgNotify = "Cancel Request success";
+          break;
+        case REJECT_REQUEST:
+          msgNotify = "Reject Request success";
+          break;
         default:
           break;
       }
@@ -41,6 +48,12 @@ export default {
           break;
         case CREATE_NEW_GROUP:
           msgNotify = "Create new Group fail";
+          break;
+        case CANCEL_REQUEST:
+          msgNotify = "Cancel Request fail";
+          break;
+        case REJECT_REQUEST:
+          msgNotify = "Reject Request fail";
           break;
         default:
           break;

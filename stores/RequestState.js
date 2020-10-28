@@ -9,8 +9,8 @@ import { openNotification } from "../utils";
 const CREATE_REQUEST = "CreateRequestAPI";
 const GET_REQUEST_PAGING = "GetRequestPagingAPI";
 const GET_REQUEST_DETAILS = "GetRequestDetailsAPI";
-const CANCEL_REQUEST = "CancelRequestAPI";
-const REJECT_REQUEST = "RejectRequestAPI";
+export const CANCEL_REQUEST = "CancelRequestAPI";
+export const REJECT_REQUEST = "RejectRequestAPI";
 const UPDATE_REQUEST = "UpdateRequestAPI";
 const GET_REQUEST_BY_GROUP_ID = "GetRequestByGroupIdAPI";
 

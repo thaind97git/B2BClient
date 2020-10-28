@@ -297,14 +297,6 @@ const GroupRequestDetailsComponent = ({
         <RequestDetailsComponent
           isSupplier={false}
           requestId={currentRequestSelected.id}
-          buttonActions={[
-            {
-              label: "Remove",
-              buttonProps: {
-                danger: true,
-              },
-            },
-          ]}
         />
       </Drawer>
       <Drawer
