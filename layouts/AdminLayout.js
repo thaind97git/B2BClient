@@ -12,7 +12,8 @@ import {
   FallOutlined,
   WechatOutlined,
   FormOutlined,
-  BulbOutlined
+  BulbOutlined,
+  SolutionOutlined,
 } from "@ant-design/icons";
 import MemberNavComponent from "../component/MemberNavComponent";
 import { currentPath } from "../utils";
@@ -25,7 +26,7 @@ const ADMIN_MENU = [
     key: "1",
     icon: <BulbOutlined />,
     label: "Product",
-    link: "/admin/product",
+    link: undefined,
     subMenu: [
       {
         subKey: "1.1",
@@ -40,6 +41,12 @@ const ADMIN_MENU = [
         subLabel: "Create New Product",
       },
     ],
+  },
+  {
+    key: "1",
+    icon: <SolutionOutlined />,
+    label: "Supplier",
+    link: "/admin/supplier",
   },
 ];
 

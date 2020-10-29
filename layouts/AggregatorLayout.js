@@ -15,6 +15,8 @@ import {
 import MemberNavComponent from "../component/MemberNavComponent";
 import { currentPath } from "../utils";
 import Link from "next/link";
+import { removeToken } from "../libs/localStorage";
+import Router from "next/router";
 
 const { Header, Content, Sider } = Layout;
 
@@ -37,26 +39,18 @@ const ADMIN_MENU = [
     icon: <ExperimentOutlined />,
     label: "Biddings",
     link: "/aggregator/bidding",
-    // subMenu: [
-    //   {
-    //     subKey: "3.1",
-    //     subLink: "/aggregator/bidding",
-    //     subIcon: <OrderedListOutlined />,
-    //     subLabel: "Biddings",
-    //   },
-    // ],
   },
   {
     key: "4",
     icon: <UserOutlined />,
-    label: "Group",
+    label: "Groups",
     link: "/aggregator/group",
     subMenu: [],
   },
   {
     key: "5",
     icon: <WechatOutlined />,
-    label: "Chat",
+    label: "Chats",
     link: "/aggregator/group/chat",
     subMenu: [],
   },
@@ -72,7 +66,13 @@ const PROFILE_MENU = (
     <Menu.Item>
       <a href="#">Company Profile</a>
     </Menu.Item>
-    <Menu.Item danger>
+    <Menu.Item
+      onClick={() => {
+        removeToken();
+        Router.push("/login");
+      }}
+      danger
+    >
       <LoginOutlined /> Sign out
     </Menu.Item>
   </Menu>

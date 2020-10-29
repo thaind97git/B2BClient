@@ -1,5 +1,23 @@
-import React, { Fragment } from "react";
-import { getToken, removeToken } from "../libs/localStorage";
+import React, { Fragment, useEffect } from "react";
+import { connect } from "react-redux";
+import { createStructuredSelector } from "reselect";
+import { BUYER } from "../enums/accountRoles";
+import { removeToken } from "../libs/localStorage";
+import {
+  CurrentUserData,
+  CurrentUserResetter,
+  getCurrentUser,
+} from "../stores/UserState";
+
+const connectToRedux = connect(
+  createStructuredSelector({
+    currentUserData: CurrentUserData,
+  }),
+  (dispatch) => ({
+    getCurrentUser: () => dispatch(getCurrentUser({ isVerify: false })),
+    resetData: () => dispatch(CurrentUserResetter),
+  })
+);
 
 const HomePageLayout = ({
   children,
@@ -7,7 +25,19 @@ const HomePageLayout = ({
   isFeature = true,
   isOurTeam = true,
   isCta = true,
+  currentUserData,
+  getCurrentUser,
+  resetData,
 }) => {
+  useEffect(() => {
+    getCurrentUser();
+  }, [getCurrentUser]);
+
+  useEffect(() => {
+    return () => {
+      resetData();
+    };
+  }, [resetData]);
   return (
     <Fragment>
       <link
@@ -82,10 +112,10 @@ const HomePageLayout = ({
             <a href="#">
               <i className="fa fa-envelope"></i>
             </a>
-            {getToken() ? (
+            {currentUserData && currentUserData.role === BUYER ? (
               <Fragment>
-                <a href="/login" style={{ fontSize: 14 }}>
-                  Hi, Linh
+                <a href="/buyer/user-profile" style={{ fontSize: 14 }}>
+                  Hi, {currentUserData.firstName}
                 </a>
                 <a
                   href="/login"
@@ -655,4 +685,4 @@ const HomePageLayout = ({
   );
 };
 
-export default HomePageLayout;
+export default connectToRedux(HomePageLayout);

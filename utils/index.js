@@ -96,7 +96,7 @@ export const doDispatchAction = (dispatch) => (fetchData) => {
 };
 
 export const DEFAULT_PAGING_INFO = {
-  page: 0,
+  page: 1,
   pageSize: 10,
   filterContents: "",
 };
@@ -182,4 +182,20 @@ export const getAveragePrice = (prices = []) => {
   }, 0);
 
   return Math.floor(totalAmount / totalQuantity);
+};
+
+export const calculateGroupRequest = (requests = []) => {
+  const arrayPrice = requests.map((request) => +request.preferredUnitPrice);
+  const totalRequest = requests.length;
+  const totalQuantity = requests.reduce((prev, current) => {
+    return prev + +current.quantity;
+  }, 0);
+  const minPrice = Math.min(...arrayPrice);
+  const maxPrice = Math.max(...arrayPrice);
+  return {
+    totalRequest,
+    totalQuantity: totalQuantity + " " + (requests[0] || {}).product.unitType,
+    minPrice: displayCurrency(minPrice),
+    maxPrice: displayCurrency(maxPrice),
+  };
 };

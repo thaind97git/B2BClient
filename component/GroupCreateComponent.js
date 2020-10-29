@@ -1,11 +1,13 @@
 import React, { useEffect } from "react";
-import { Form, Input, Row, Col } from "antd";
+import { Form, Input, Row, Col, Spin, Skeleton } from "antd";
 import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
 import { createNewGroup, CreateNewGroupData } from "../stores/GroupState";
 import {
   getProductDetails,
   GetProductDetailsData,
+  GetProductDetailsError,
+  GetProductDetailsResetter,
 } from "../stores/ProductState";
 
 const FormItem = Form.Item;
@@ -14,11 +16,15 @@ const connectToRedux = connect(
   createStructuredSelector({
     createNewGroupData: CreateNewGroupData,
     productDetailsData: GetProductDetailsData,
+    productDetailsError: GetProductDetailsError,
   }),
   (dispatch) => ({
-    createNewGroup: ({ groupName, productId, description }) =>
-      dispatch(createNewGroup({ groupName, productId, description })),
+    createNewGroup: ({ groupName, requestIds, description }) =>
+      dispatch(createNewGroup({ groupName, requestIds, description })),
     getProduct: (id) => dispatch(getProductDetails(id)),
+    resetData: () => {
+      dispatch(GetProductDetailsResetter);
+    },
   })
 );
 
@@ -41,6 +47,9 @@ const GroupCreateComponent = ({
   productId,
   getProduct,
   productDetailsData,
+  productDetailsError,
+  requestIds = [],
+  resetData,
 }) => {
   useEffect(() => {
     if (!!createNewGroupData) {
@@ -54,22 +63,32 @@ const GroupCreateComponent = ({
     }
   }, [productId, getProduct]);
 
+  useEffect(() => {
+    return () => {
+      resetData();
+    };
+  }, [resetData]);
+
   const onFinish = (values) => {
-    console.log("Received values of form: ", values);
-    values.productId = (productDetailsData || {}).id;
+    values.requestIds = requestIds;
+    console.log({ values });
     createNewGroup(values);
   };
+
+  if (!productDetailsData || productDetailsError) {
+    return <Skeleton active />;
+  }
 
   return (
     <Row align="middle" justify="center">
       <Col sm={20}>
         <Form
+          id="group-create"
           {...formItemLayout}
           autoComplete="new-password"
           className="register-form"
           onFinish={onFinish}
           initialValues={{
-            unit: "Set",
             productName: (productDetailsData || {}).productName,
           }}
         >
@@ -77,7 +96,7 @@ const GroupCreateComponent = ({
             <Col style={styles.colStyle} span={24}>
               <FormItem
                 label="Group Name"
-                name="groupTitle"
+                name="groupName"
                 rules={[
                   {
                     required: true,
