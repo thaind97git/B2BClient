@@ -43,7 +43,7 @@ const ADMIN_MENU = [
     ],
   },
   {
-    key: "1",
+    key: "2",
     icon: <SolutionOutlined />,
     label: "Supplier",
     link: "/admin/supplier",
