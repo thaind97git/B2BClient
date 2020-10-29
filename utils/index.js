@@ -96,7 +96,7 @@ export const doDispatchAction = (dispatch) => (fetchData) => {
 };
 
 export const DEFAULT_PAGING_INFO = {
-  page: 0,
+  page: 1,
   pageSize: 10,
   filterContents: "",
 };

@@ -1,9 +1,53 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Checkbox, Row, Col, Space, Divider, Tag } from "antd";
+import { connect } from "react-redux";
+import { createStructuredSelector } from "reselect";
+import {
+  getRequestByProductIdData,
+  getRequestSuggestByProductIdResetter,
+  getRequestSuggestByProductId,
+  getRequestSuggestByProductIdData,
+} from "../stores/RequestState";
+import { DEFAULT_PAGING_INFO } from "../utils";
 
 const CheckboxGroup = Checkbox.Group;
 
-const ListingRequestForGroupComponent = () => {
+const connectToRedux = connect(
+  createStructuredSelector({
+    requestByProductIdData: getRequestSuggestByProductIdData,
+  }),
+  (dispatch) => ({
+    getRequestByProductId: ({ productId, pageIndex, pageSize }) =>
+      dispatch(
+        getRequestSuggestByProductId({ productId, pageIndex, pageSize })
+      ),
+    resetData: () => {
+      dispatch(getRequestSuggestByProductIdResetter);
+    },
+  })
+);
+
+const ListingRequestForGroupComponent = ({
+  getRequestByProductId,
+  requestByProductIdData,
+  resetData,
+  productId,
+}) => {
+  const [pageIndex, setPageIndex] = useState(DEFAULT_PAGING_INFO.page);
+  const [pageSize, setPageSize] = useState(DEFAULT_PAGING_INFO.pageSize);
+
+  useEffect(() => {
+    return () => {
+      resetData();
+    };
+  }, [resetData]);
+
+  useEffect(() => {
+    if (productId) {
+      getRequestByProductId({ productId, pageIndex, pageSize });
+    }
+  }, [productId, getRequestByProductId, pageIndex, pageSize]);
+  console.log({ requestByProductIdData });
   const options = [
     {
       id: 1,
@@ -107,4 +151,4 @@ const ListingRequestForGroupComponent = () => {
     </div>
   );
 };
-export default ListingRequestForGroupComponent;
+export default connectToRedux(ListingRequestForGroupComponent);

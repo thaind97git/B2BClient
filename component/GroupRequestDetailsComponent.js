@@ -35,6 +35,11 @@ import {
 } from "../stores/RequestState";
 import Moment from "react-moment";
 import RequestStatusComponent from "./Utils/RequestStatusComponent";
+import {
+  getSupplierByGroupId,
+  GetSupplierByGroupIdData,
+  GetSupplierByGroupIdError,
+} from "../stores/SupplierState";
 
 const { Title } = Typography;
 const groupRequestColumns = [
@@ -59,10 +64,14 @@ const connectToRedux = connect(
     groupDetailsError: GetGroupDetailsError,
     requestByGroupIdData: getRequestByGroupIdData,
     requestByGroupIdError: getRequestByGroupIdError,
+    supplierByGroupIdData: GetSupplierByGroupIdData,
+    supplierByGroupIdError: GetSupplierByGroupIdError,
   }),
   (dispatch) => ({
     getGroupDetails: (id) => dispatch(getGroupDetails(id)),
     getRequestByGroupId: (id) => dispatch(getRequestByGroupId(id)),
+    getSupplierByGroupId: ({ groupId, pageIndex, pageSize }) =>
+      dispatch(getSupplierByGroupId({ groupId, pageIndex, pageSize })),
     resetData: () => dispatch(GetGroupDetailsResetter),
   })
 );
@@ -74,6 +83,9 @@ const GroupRequestDetailsComponent = ({
   groupDetailsError,
   getRequestByGroupId,
   requestByGroupIdData,
+  getSupplierByGroupId,
+  supplierByGroupIdData,
+  supplierByGroupIdError,
 }) => {
   const [isOpenContact, setIsOpenContact] = useState(false);
   const [isOpenAddRequest, setIsOpenAddRequest] = useState(false);
@@ -88,8 +100,9 @@ const GroupRequestDetailsComponent = ({
     if (!!groupId) {
       getGroupDetails(groupId);
       getRequestByGroupId(groupId);
+      getSupplierByGroupId({ groupId });
     }
-  }, [groupId, getGroupDetails, getRequestByGroupId]);
+  }, [groupId, getGroupDetails, getRequestByGroupId, getSupplierByGroupId]);
 
   useEffect(() => {
     if (groupDetailsData || groupDetailsError) {
@@ -283,6 +296,46 @@ const GroupRequestDetailsComponent = ({
       ),
     }));
 
+  const getSupplierTable = (supplierData = []) =>
+    supplierData &&
+    supplierData.length > 0 &&
+    supplierData.map((supplier = {}) => ({
+      key: supplier.id,
+      price: displayCurrency(+supplier.preferredUnitPrice),
+      name: supplier.product.description,
+      quantity: +supplier.quantity || 0,
+      dueDate: (
+        <Moment format={DATE_TIME_FORMAT}>{new Date(supplier.dueDate)}</Moment>
+      ),
+      status: <RequestStatusComponent status={supplier.supplierStatus.id} />,
+      actions: (
+        <Button
+          onClick={() => {
+            setCurrentRequestSelected(supplier);
+            setOpenRequestDetail(true);
+          }}
+          size="small"
+          type="link"
+        >
+          View
+        </Button>
+      ),
+    }));
+
+  let requestData = [],
+    totalRequest = 0,
+    supplierData = [],
+    totalSupplier = 0;
+  if (supplierByGroupIdData) {
+    supplierData = supplierByGroupIdData.data;
+    console.log({ supplierData });
+    totalSupplier = supplierByGroupIdData.total;
+  }
+  if (requestByGroupIdData) {
+    requestData = requestByGroupIdData.data;
+    totalRequest = requestByGroupIdData.total;
+  }
+
   return (
     <Fragment>
       <Drawer
@@ -292,7 +345,7 @@ const GroupRequestDetailsComponent = ({
         closable={true}
         onClose={() => setOpenRequestDetail(false)}
         visible={openRequestDetail}
-        key={"right"}
+        key={"rfq-details"}
       >
         <RequestDetailsComponent
           isSupplier={false}
@@ -306,7 +359,7 @@ const GroupRequestDetailsComponent = ({
         closable={true}
         onClose={() => setOpenSupplierDetail(false)}
         visible={openSupplierDetail}
-        key={"right"}
+        key={"supplier-details"}
       >
         <UserProfileComponent isDrawer={true} />
       </Drawer>
@@ -377,7 +430,7 @@ const GroupRequestDetailsComponent = ({
                 </Button>
               )}
               columns={groupRequestColumns}
-              dataSource={getRequestTable((requestByGroupIdData || {}).data)}
+              dataSource={getRequestTable(requestData || [])}
               rowKey="id"
             />
           </div>
@@ -428,7 +481,10 @@ const GroupRequestDetailsComponent = ({
         visible={isOpenAddRequest}
         okText="Add"
       >
-        <ListingRequestForGroupComponent category={category} />
+        <ListingRequestForGroupComponent
+          productId={productId}
+          category={category}
+        />
       </Modal>
     </Fragment>
   );

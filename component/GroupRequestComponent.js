@@ -204,11 +204,6 @@ const columns = [
     key: "product",
   },
   {
-    title: "Created By",
-    dataIndex: "createdBy",
-    key: "createdBy",
-  },
-  {
     title: "Status",
     dataIndex: "status",
     key: "status",
@@ -242,10 +237,8 @@ const GroupRequestComponent = ({ getGroupPaging, groupPagingData }) => {
       groupData.length > 0 &&
       groupData.map((group = {}) => ({
         key: group.id,
-        // price: displayCurrency(+group.preferredUnitPrice),
         name: group.groupName,
         product: group.product.description,
-        createdBy: "Test",
         dateCreated: (
           <Moment format={DATE_TIME_FORMAT}>
             {new Date(group.dateCreated)}
@@ -258,8 +251,6 @@ const GroupRequestComponent = ({ getGroupPaging, groupPagingData }) => {
               Router.push(
                 createLink(["aggregator", "group", `details?id=${group.id}`])
               );
-              // setCurrentGroupSelected(group);
-              // setOpenDetails(true);
             }}
             size="small"
             type="link"
