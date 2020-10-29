@@ -1,23 +1,27 @@
 import React, { useEffect, useState } from "react";
-import { Checkbox, Row, Col, Space, Divider, Tag } from "antd";
+import { Space, Divider, Tag } from "antd";
 import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
 import {
-  getRequestByProductIdData,
   getRequestSuggestByProductIdResetter,
   getRequestSuggestByProductId,
   getRequestSuggestByProductIdData,
 } from "../stores/RequestState";
-import { DEFAULT_PAGING_INFO } from "../utils";
-
-const CheckboxGroup = Checkbox.Group;
+import {
+  DATE_TIME_FORMAT,
+  DEFAULT_PAGING_INFO,
+  displayCurrency,
+} from "../utils";
+import ReactTableLayout from "../layouts/ReactTableLayout";
+import { get } from "lodash/fp";
+import Moment from "react-moment";
 
 const connectToRedux = connect(
   createStructuredSelector({
     requestByProductIdData: getRequestSuggestByProductIdData,
   }),
   (dispatch) => ({
-    getRequestByProductId: ({ productId, pageIndex, pageSize }) =>
+    getRequestByProductId: (pageIndex, pageSize, productId) =>
       dispatch(
         getRequestSuggestByProductId({ productId, pageIndex, pageSize })
       ),
@@ -27,14 +31,36 @@ const connectToRedux = connect(
   })
 );
 
+const columns = [
+  {
+    title: "Quantity",
+    dataIndex: "quantity",
+    key: "quantity",
+  },
+  {
+    title: "Preferred Unit Price",
+    dataIndex: "price",
+    key: "price",
+  },
+  {
+    title: "Create By",
+    dataIndex: "createBy",
+    key: "createBy",
+  },
+  {
+    title: "Due Date",
+    dataIndex: "dueDate",
+    key: "dueDate",
+  },
+];
+
 const ListingRequestForGroupComponent = ({
   getRequestByProductId,
   requestByProductIdData,
   resetData,
   productId,
 }) => {
-  const [pageIndex, setPageIndex] = useState(DEFAULT_PAGING_INFO.page);
-  const [pageSize, setPageSize] = useState(DEFAULT_PAGING_INFO.pageSize);
+  const [recordSelected, setRecordSelected] = useState([]);
 
   useEffect(() => {
     return () => {
@@ -42,112 +68,55 @@ const ListingRequestForGroupComponent = ({
     };
   }, [resetData]);
 
-  useEffect(() => {
-    if (productId) {
-      getRequestByProductId({ productId, pageIndex, pageSize });
-    }
-  }, [productId, getRequestByProductId, pageIndex, pageSize]);
-  console.log({ requestByProductIdData });
-  const options = [
-    {
-      id: 1,
-      content: (
-        <Space>
-          <b style={{ marginBottom: 0 }}>20 Units x 1.250.000 đ</b>
+  let requestData = [],
+    total = 0;
+  if (requestByProductIdData) {
+    requestData = requestByProductIdData.data;
+    total = requestByProductIdData.total;
+  }
 
-          <div>
-            (
-            <span>
-              Posted inside <Tag color="processing">Action & Sports Camera</Tag>
-            </span>
-            )
-          </div>
-          <Divider />
-        </Space>
-      ),
-    },
-    {
-      id: 2,
-      content: (
-        <Space>
-          <b style={{ marginBottom: 0 }}>50 Units x 1.300.000 đ</b>
-
-          <div>
-            (
-            <span>
-              Posted inside <Tag color="processing">Action & Sports Camera</Tag>
-            </span>
-            )
-          </div>
-          <Divider />
-        </Space>
-      ),
-    },
-    {
-      id: 3,
-      content: (
-        <Space>
-          <b style={{ marginBottom: 0 }}>30 Units x 1.400.000 đ</b>
-
-          <div>
-            (
-            <span>
-              <i>
-                Posted inside{" "}
-                <Tag color="processing">Action & Sports Camera</Tag>
-              </i>
-            </span>
-            )
-          </div>
-          <Divider />
-        </Space>
-      ),
-    },
-  ];
-
-  const [option, setCheckList] = useState({
-    checkedList: [],
-    indeterminate: false,
-    checkAll: false,
-  });
-
-  const onChange = (checkedList) => {
-    setCheckList({
-      checkedList,
-      indeterminate:
-        !!checkedList.length && checkedList.length < options.length,
-      checkAll: checkedList.length === options.length,
-    });
+  const getRequestTable = (requestData = []) => {
+    return (
+      requestData &&
+      requestData.length > 0 &&
+      requestData.map((request = {}) => ({
+        productId: get("product.id")(request),
+        key: request.id,
+        price: displayCurrency(+request.preferredUnitPrice),
+        quantity:
+          (+request.quantity || 0) + " " + get("product.unitType")(request),
+        dueDate: (
+          <Moment format={DATE_TIME_FORMAT}>{new Date(request.dueDate)}</Moment>
+        ),
+        createBy: request.buyer.fullName,
+      }))
+    );
   };
 
-  const onCheckAllChange = (e) => {
-    setCheckList({
-      checkedList: e.target.checked ? options : [],
-      indeterminate: false,
-      checkAll: e.target.checked,
-    });
+  const rowSelection = {
+    onChange: (selectedRowKeys, selectedRows) => {
+      setRecordSelected(selectedRows);
+    },
+    getCheckboxProps: (record) => ({
+      name: record.name,
+    }),
   };
   return (
     <div>
-      {/* <div className="site-checkbox-all-wrapper">
-        <Checkbox
-          indeterminate={option.indeterminate}
-          onChange={onCheckAllChange}
-          checked={option.checkAll}
-        >
-          Choose all Request
-        </Checkbox>
-      </div> */}
-      <br />
-      <CheckboxGroup value={option.checkedList} onChange={onChange}>
-        <Row>
-          {options.map((item, i) => (
-            <Col index={i} span={24}>
-              <Checkbox value={item.id}>{item.content}</Checkbox>
-            </Col>
-          ))}
-        </Row>
-      </CheckboxGroup>
+      <ReactTableLayout
+        dispatchAction={getRequestByProductId}
+        rowSelection={{
+          type: "checkbox",
+          ...rowSelection,
+        }}
+        hasAction={false}
+        data={getRequestTable(requestData || [])}
+        columns={columns}
+        totalCount={total}
+        searchProps={{
+          exCondition: [productId],
+        }}
+      />
     </div>
   );
 };

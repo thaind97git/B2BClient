@@ -31,6 +31,8 @@ function withAuth(AuthComponent) {
     };
 
     componentDidMount() {
+      console.log(this.props.currentUserError);
+      console.log(this.props.currentUser);
       if (!isServer) {
         const scope = getScopeByUrl(Router.pathname);
         this.props.dispatch(getCurrentUser({ scope }));

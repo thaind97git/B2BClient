@@ -15,11 +15,9 @@ export const UPDATE_CATEGORY = "UPDATE_CATEGORY";
 export const GET_CATEGORY_BY_ID = "GET_CATEGORY_BY_ID";
 
 // Service
-const GET_SERVICE = "GET_SERVICE";
 export const ADD_NEW_SERVICE = "ADD_NEW_SERVICE";
 export const UPDATE_SERVICE = "UPDATE_SERVICE";
 export const GET_SERVICE_BY_ID = "GET_SERVICE_BY_ID";
-const GET_SERVICE_BY_CATEGORY_ID = "GET_SERVICE_BY_CATEGORY_ID";
 
 //Get category
 const GetCategoriesAPI = makeFetchAction(GET_CATEGORY, () =>

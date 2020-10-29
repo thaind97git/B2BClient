@@ -39,26 +39,18 @@ const ADMIN_MENU = [
     icon: <ExperimentOutlined />,
     label: "Biddings",
     link: "/aggregator/bidding",
-    // subMenu: [
-    //   {
-    //     subKey: "3.1",
-    //     subLink: "/aggregator/bidding",
-    //     subIcon: <OrderedListOutlined />,
-    //     subLabel: "Biddings",
-    //   },
-    // ],
   },
   {
     key: "4",
     icon: <UserOutlined />,
-    label: "Group",
+    label: "Groups",
     link: "/aggregator/group",
     subMenu: [],
   },
   {
     key: "5",
     icon: <WechatOutlined />,
-    label: "Chat",
+    label: "Chats",
     link: "/aggregator/group/chat",
     subMenu: [],
   },

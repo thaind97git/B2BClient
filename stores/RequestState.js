@@ -37,13 +37,15 @@ const GetRequestPagingAPI = makeFetchAction(
   GET_REQUEST_PAGING,
   ({ status = [], productTitle, fromDate, toDate, pageIndex, pageSize }) => {
     return nfetch({
-      endpoint: `/api/Request/Filter?${
-        status && status.length > 0 ? "statuses=" + status.join(",") + "&" : ""
-      }${productTitle && "productName=" + productTitle + "&"}${
-        fromDate ? "fromDate=" + fromDate + "&" : ""
-      }${
-        toDate ? "toDate=" + toDate + "&" : ""
-      }pageIndex=${pageIndex}&pageSize=${pageSize}&dateDescending=true`,
+      endpoint: `/api/Request/Filter${generateQuery({
+        statuses: status,
+        productName: productTitle,
+        fromDate,
+        toDate,
+        pageIndex,
+        pageSize,
+        dateDescending: true,
+      })}`,
       method: "GET",
     })();
   }
@@ -174,15 +176,21 @@ export const UpdateRequestResetter = getResetter(UpdateRequestAPI);
 // Get Request By Group Id
 const GetRequestByGroupIdAPI = makeFetchAction(
   GET_REQUEST_BY_GROUP_ID,
-  (groupId) =>
+  ({ pageIndex, pageSize, groupId }) =>
     nfetch({
-      endpoint: `/api/Group/Requests?groupId=${groupId}`,
+      endpoint: `/api/Group/Requests${generateQuery({
+        groupId,
+        pageIndex,
+        pageSize,
+      })}`,
       method: "GET",
     })()
 );
 
-export const getRequestByGroupId = (groupId) =>
-  respondToSuccess(GetRequestByGroupIdAPI.actionCreator(groupId));
+export const getRequestByGroupId = ({ pageIndex, pageSize, groupId }) =>
+  respondToSuccess(
+    GetRequestByGroupIdAPI.actionCreator({ pageIndex, pageSize, groupId })
+  );
 export const getRequestByGroupIdData = GetRequestByGroupIdAPI.dataSelector;
 export const getRequestByGroupIdError = GetRequestByGroupIdAPI.errorSelector;
 export const getRequestByGroupIdResetter = getResetter(GetRequestByGroupIdAPI);

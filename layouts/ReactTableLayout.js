@@ -50,12 +50,21 @@ const ReactTableLayout = ({
   // const [visible, setVisible] = useState(false);
   // const [conditions, setConditions] = useState(exCondition);
 
-  // useEffect(() => {
-  //   if (hasPaging && !hasAction && isFetchPaging) {
-  //     doDispatchAction(dispatchAction());
-  //     setIsFetchPaging(false);
-  //   }
-  // }, [hasAction, hasPaging, dispatchAction, isFetchPaging]);
+  useEffect(() => {
+    if (hasPaging && !hasAction) {
+      typeof dispatchAction === "function" &&
+        doDispatchAction(
+          dispatchAction(pageIndex, pageSizeTable, ...exCondition)
+        );
+    }
+  }, [
+    hasAction,
+    hasPaging,
+    dispatchAction,
+    otherCondition,
+    pageIndex,
+    pageSizeTable,
+  ]);
 
   useEffect(() => {
     if (hasAction && hasPaging) {
@@ -115,19 +124,21 @@ const ReactTableLayout = ({
         {...others}
       />
       {hasPaging && (
-        <Pagination
-          showSizeChanger
-          current={pageIndex}
-          onShowSizeChange={(current, pageSize) => {
-            setPageSizeTable(pageSize);
-          }}
-          onChange={(pageIndex) => {
-            setPageIndex(pageIndex);
-          }}
-          style={{ marginTop: 24 }}
-          total={totalCount}
-          itemRender={itemRender}
-        />
+        <Row justify="end">
+          <Pagination
+            showSizeChanger
+            current={pageIndex}
+            onShowSizeChange={(current, pageSize) => {
+              setPageSizeTable(pageSize);
+            }}
+            onChange={(pageIndex) => {
+              setPageIndex(pageIndex);
+            }}
+            style={{ marginTop: 24 }}
+            total={totalCount}
+            itemRender={itemRender}
+          />
+        </Row>
       )}
     </div>
   );

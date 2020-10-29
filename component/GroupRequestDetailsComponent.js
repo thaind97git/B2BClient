@@ -40,6 +40,7 @@ import {
   GetSupplierByGroupIdData,
   GetSupplierByGroupIdError,
 } from "../stores/SupplierState";
+import ReactTableLayout from "../layouts/ReactTableLayout";
 
 const { Title } = Typography;
 const groupRequestColumns = [
@@ -69,7 +70,8 @@ const connectToRedux = connect(
   }),
   (dispatch) => ({
     getGroupDetails: (id) => dispatch(getGroupDetails(id)),
-    getRequestByGroupId: (id) => dispatch(getRequestByGroupId(id)),
+    getRequestByGroupId: (pageIndex, pageSize, groupId) =>
+      dispatch(getRequestByGroupId({ pageIndex, pageSize, groupId })),
     getSupplierByGroupId: ({ groupId, pageIndex, pageSize }) =>
       dispatch(getSupplierByGroupId({ groupId, pageIndex, pageSize })),
     resetData: () => dispatch(GetGroupDetailsResetter),
@@ -99,10 +101,9 @@ const GroupRequestDetailsComponent = ({
   useEffect(() => {
     if (!!groupId) {
       getGroupDetails(groupId);
-      getRequestByGroupId(groupId);
       getSupplierByGroupId({ groupId });
     }
-  }, [groupId, getGroupDetails, getRequestByGroupId, getSupplierByGroupId]);
+  }, [groupId, getGroupDetails, getSupplierByGroupId]);
 
   useEffect(() => {
     if (groupDetailsData || groupDetailsError) {
@@ -256,7 +257,6 @@ const GroupRequestDetailsComponent = ({
   }
   const {
     groupName,
-    category,
     dateCreated,
     description,
     groupStatus,
@@ -328,7 +328,6 @@ const GroupRequestDetailsComponent = ({
     totalSupplier = 0;
   if (supplierByGroupIdData) {
     supplierData = supplierByGroupIdData.data;
-    console.log({ supplierData });
     totalSupplier = supplierByGroupIdData.total;
   }
   if (requestByGroupIdData) {
@@ -397,16 +396,18 @@ const GroupRequestDetailsComponent = ({
               {dateCreated}
             </Descriptions.Item>
             <Descriptions.Item label="Total Quantity">
-              {quantity} {unit}
+              <b>
+                {quantity} {unit}
+              </b>
             </Descriptions.Item>
             <Descriptions.Item label="Average price in unit">
-              {displayCurrency(Math.floor(averagePrice))}
+              <b>{displayCurrency(Math.floor(averagePrice))}</b>
             </Descriptions.Item>
             <Descriptions.Item label="Min RFQ price">
-              {displayCurrency(minPrice)}
+              <b>{displayCurrency(minPrice)}</b>
             </Descriptions.Item>
             <Descriptions.Item label="Max RFQ price">
-              {displayCurrency(maxPrice)}
+              <b>{displayCurrency(maxPrice)}</b>
             </Descriptions.Item>
 
             <Descriptions.Item label="Description">
@@ -419,7 +420,25 @@ const GroupRequestDetailsComponent = ({
           style={{ width: "100%" }}
         >
           <div>
-            <Table
+            <ReactTableLayout
+              hasAction={false}
+              dispatchAction={getRequestByGroupId}
+              searchProps={{
+                exCondition: [groupId],
+              }}
+              data={getRequestTable(requestData || [])}
+              columns={groupRequestColumns}
+              totalCount={totalRequest}
+              footer={() => (
+                <Button
+                  type="primary"
+                  onClick={() => setIsOpenAddRequest(true)}
+                >
+                  Add Requests
+                </Button>
+              )}
+            />
+            {/* <Table
               bordered
               footer={() => (
                 <Button
@@ -432,7 +451,7 @@ const GroupRequestDetailsComponent = ({
               columns={groupRequestColumns}
               dataSource={getRequestTable(requestData || [])}
               rowKey="id"
-            />
+            /> */}
           </div>
         </Card>
         <Card
@@ -464,7 +483,7 @@ const GroupRequestDetailsComponent = ({
         visible={isOpenContact}
         okText="Add"
       >
-        <ListingSupplierByCategoryComponent category={category} />
+        {isOpenContact ? <ListingSupplierByCategoryComponent /> : null}
       </Modal>
       <Modal
         width={800}
@@ -472,19 +491,15 @@ const GroupRequestDetailsComponent = ({
         onOk={() => setIsOpenAddRequest(false)}
         title={
           <div>
-            Add Requests created inside{" "}
-            <i>
-              IR Night Vision Hidden Camera Watch Sport Wear Watch Camera WIFI
-            </i>
+            Add Requests created inside <i>{productName}</i>
           </div>
         }
         visible={isOpenAddRequest}
         okText="Add"
       >
-        <ListingRequestForGroupComponent
-          productId={productId}
-          category={category}
-        />
+        {isOpenAddRequest ? (
+          <ListingRequestForGroupComponent productId={productId} />
+        ) : null}
       </Modal>
     </Fragment>
   );

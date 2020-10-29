@@ -1,5 +1,5 @@
 import { makeFetchAction } from "redux-api-call";
-import { getResetter } from "../libs";
+import { generateQuery, getResetter } from "../libs";
 import nfetch from "../libs/nfetch";
 import { respondToSuccess } from "../middlewares/api-reaction";
 
@@ -10,7 +10,11 @@ const GetSupplierByGroupIdAPI = makeFetchAction(
   GET_SUPPLIER_BY_GROUP_ID,
   ({ groupId, pageIndex, pageSize }) =>
     nfetch({
-      endpoint: `/api/Group/Suppliers?groupId=${groupId}&pageIndex=${pageIndex}&pageSize=${pageSize}`,
+      endpoint: `/api/Group/Suppliers${generateQuery({
+        groupId,
+        pageIndex,
+        pageSize,
+      })}`,
       method: "GET",
     })()
 );
