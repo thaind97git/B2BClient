@@ -7,6 +7,7 @@ import Router from "next/router";
 import { openNotification } from "../utils";
 
 const GET_PRODUCT_BY_CATEGORY = "GetProductByCategoryAPI";
+const GET_PRODUCT_PAGING = "GetProductPagingAPI";
 const GET_PRODUCT_DETAILS = "GetProductDetailsAPI";
 const CREATE_PRODUCT = "CreateProductAPI";
 
@@ -31,6 +32,29 @@ export const GetProductByCategoryData = GetProductByCategoryAPI.dataSelector;
 export const GetProductByCategoryError = GetProductByCategoryAPI.errorSelector;
 export const GetProductByCategoryResetter = getResetter(
   GetProductByCategoryAPI
+);
+
+//Get Product paging
+const GetProductPagingAPI = makeFetchAction(
+  GET_PRODUCT_PAGING,
+  ({ productName, categoryID, pageSize, pageIndex }) => {
+    return nfetch({
+      endpoint: `/api/Product/Filter?${productName ? "name=" + productName + "&" : ""}${categoryID ? (categoryID != "all" ? "categoryId=" + categoryID + "&" : "") : ""}${pageIndex ? "pageIndex=" + pageIndex + "&" : ""}${pageSize ? "pageSize=" + pageSize + "&" : ""}`,
+      method: "GET",
+    })()
+  }
+);
+
+export const getProductPaging = ({ productName, categoryID, pageSize, pageIndex }) =>
+  respondToSuccess(
+    GetProductPagingAPI.actionCreator({ productName, categoryID, pageSize, pageIndex }),
+    () => { }
+  );
+
+export const GetProductPagingData = GetProductPagingAPI.dataSelector;
+export const GetProductPagingError = GetProductPagingAPI.errorSelector;
+export const getProductPagingResetter = getResetter(
+  GetProductPagingAPI
 );
 
 // Product Details

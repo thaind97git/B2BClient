@@ -125,7 +125,7 @@ const AdminRequestManagement = ({
         productId: get("product.id")(request),
         key: request.id,
         price: displayCurrency(+request.preferredUnitPrice),
-        name: request.product.description,
+        name: get("product.description")(request),
         quantity:
           +request.quantity || 0 + " " + get("product.unitType")(request),
         dueDate: (

@@ -34,7 +34,7 @@ const ADMIN_MENU = [
         subLabel: "Product List",
       },
       {
-        subKey: "1.1",
+        subKey: "1.2",
         subLink: "/admin/product/create",
         subIcon: <FormOutlined />,
         subLabel: "Create New Product",
