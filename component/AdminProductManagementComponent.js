@@ -214,8 +214,8 @@ const AdminProductManagementComponent = ({
       >
         {openDetails ? (
           <AdminProductDetailsComponent
-            setOpenDetails={setOpenDetails}
-            productId={(currentProductSelected || {}).id}
+            // setOpenDetails={setOpenDetails}
+            productID={(currentProductSelected || {}).id}
           />
         ) : null}
       </Drawer>

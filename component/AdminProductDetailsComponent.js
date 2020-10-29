@@ -1,27 +1,27 @@
+import React, { Fragment, useState, useEffect } from "react";
 import {
+    Button,
     Col,
     Divider,
-    Row,
-    Typography,
-    Button,
     Empty,
-    Tag,
+    Modal,
+    Row,
     Skeleton,
+    Space,
+    Tag,
+    Typography
 } from "antd";
-import Router, { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
 import ImageGallery from "react-image-gallery";
-import { connect } from "react-redux";
-import { createStructuredSelector } from "reselect";
 import {
     getProductDetails,
     GetProductDetailsData,
     GetProductDetailsError,
 } from "../stores/ProductState";
 import { get } from "lodash/fp";
-
+import { connect } from "react-redux";
+import Router from "next/router";
+import { createStructuredSelector } from "reselect";
 const { Title } = Typography;
-
 const connectToRedux = connect(
     createStructuredSelector({
         productDetailData: GetProductDetailsData,
@@ -31,59 +31,36 @@ const connectToRedux = connect(
         getProduct: (id) => dispatch(getProductDetails(id)),
     })
 );
-
 const DescriptionItem = ({ title, content }) => (
     <Col span={24}>
         <Row className="site-description-item-profile-wrapper">
-            <Col span={5}>
+            <Col span={8}>
                 <p className="site-description-item-profile-p-label">{title}:</p>
             </Col>
-            <Col span={19}>
+            <Col span={16}>
                 <b>{content}</b>
             </Col>
         </Row>
     </Col>
 );
-
 const AdminProductDetailsComponent = ({
     getProduct,
     productDetailData,
     productDetailError,
+    productID
 }) => {
-    const router = useRouter();
-    const id = router.query.id;
     const [loading, setLoading] = useState(true);
-
     useEffect(() => {
-        // const mobileNav = document.getElementById("mobile-nav");
-        // if (mobileNav) {
-        //   document.body.removeChild(mobileNav);
-        // }
-        // const mobileNavToggle = document.getElementById("mobile-nav-toggle");
-        // if (mobileNavToggle) {
-        //   document.body.removeChild(mobileNavToggle);
-        // }
-    }, []);
-
-    useEffect(() => {
-        getProduct(id);
-    }, [id, getProduct]);
+        getProduct(productID);
+    }, [productID, getProduct]);
     useEffect(() => {
         if (productDetailError || productDetailData) {
             setLoading(false);
         }
     }, [productDetailData, productDetailError]);
-
     if (loading) {
-        return (
-            <Row>
-                <Col span={16}>
-                    <Skeleton active />
-                </Col>
-            </Row>
-        );
+        return <Skeleton active />;
     }
-
     if (!productDetailData) {
         return (
             <Empty
@@ -99,118 +76,94 @@ const AdminProductDetailsComponent = ({
                 type="text/css"
                 href="/static/assets/image-gallery.css"
             />
-            <Space>
-                <Button
-                    onClick={() => {
-                    }}
-                    size="small"
-                    label="Reject"
-                    buttonProps={
-                        danger = true
-                    }
-                >
-                    Edit
-                        </Button>
-                    )
-            </Space>
-
-
-            <Col span={16}>
-                <Row
-                    style={{ paddingBottom: 24 }}
-                    justify="space-between"
-                    align="middle"
-                >
+            <Col span={24}>
+                <Space>
                     <Button
                         onClick={() => {
-                            Router.push("/");
+                            // typeof button.action === "function" && button.action();
                         }}
-                        type="link"
+                        size="small"
+                        label="Edit"
+                        action={() =>
+                            Router.push(
+                                ``
+                            )}
                     >
-                        {" "}
-                        {"< Back to product list"}
+                        Edit
                     </Button>
-                </Row>
-                <Row>
-                    <Col span={9}>
-                        <ImageGallery
-                            items={
-                                productDetailData.images
-                                    ? productDetailData.images.map((image) => ({
-                                        original: `${process.env.API_SERVER_URL}/api/Product/ProductImage/${image}`,
-                                        thumbnail: `${process.env.API_SERVER_URL}/api/Product/ProductImage/${image}`,
-                                    }))
-                                    : [
-                                        {
-                                            original: `/static/images/default_product_img.jpg`,
-                                            thumbnail: `/static/images/default_product_img.jpg`,
-                                        },
-                                    ]
-                            }
-                            showPlayButton={false}
-                            autoPlay={false}
-                        />
-                    </Col>
-                    <Col span={1} align="middle">
-                        <Divider type="vertical" style={{ height: "78vh" }} />
-                    </Col>
-                    <Col span={14}>
-                        <Row justify="space-between" align="middle">
-                            <Title level={4}>{(productDetailData || {}).productName}</Title>
-                        </Row>
-                        {get("category.description")(productDetailData) && (
-                            <DescriptionItem
-                                title="Category"
-                                content={
-                                    <Tag color="processing">
-                                        {(productDetailData || {}).category.description}
-                                    </Tag>
-                                }
-                            />
-                        )}
-                        <DescriptionItem
-                            title="Unit"
-                            content={get("unitOfMeasure.description")(productDetailData)}
-                        />
-                        <Divider />
-                        <i>
-                            <div
-                                dangerouslySetInnerHTML={{
-                                    __html: (productDetailData || {}).description,
-                                }}
-                            />
-                        </i>
-                        <Row>
-                            <Col style={{ margin: "60px 0px" }} span={6}>
-                                <Button
-                                    onClick={() => {
-                                        Router.push(
-                                            `/buyer/rfq/create?productId=${productDetailData.id}`
-                                        );
-                                    }}
-                                    size="middle"
-                                    type="primary"
-                                    style={{ width: "100%" }}
-                                >
-                                    Submit RFQ
-                  </Button>
-                            </Col>
-                        </Row>
-                    </Col>
-                </Row>
+                </Space>
             </Col>
-            <style jsx global>
-                {`
-            #buyer-product-details {
-              background: #fff;
-              padding: 60px 0px;
-            }
-            #buyer-product-details ul li {
-              list-style: inside;
-            }
-          `}
-            </style>
-        </Row>
-    );
-};
+            <Col span={24}>
+                <Title level={5}>Product Image</Title>
+            </Col>
+            <Col span={24}>
+            <ImageGallery
+                items={
+                    productDetailData.images
+                        ? productDetailData.images.map((image) => ({
+                            original: `${process.env.API_SERVER_URL}/api/Product/ProductImage/${image}`,
+                            thumbnail: `${process.env.API_SERVER_URL}/api/Product/ProductImage/${image}`,
+                        }))
+                        : [
+                            {
+                                original: `/static/images/default_product_img.jpg`,
+                                thumbnail: `/static/images/default_product_img.jpg`,
+                            },
+                        ]
+                }
+                showPlayButton={false}
+                autoPlay={false}
+            />
+            </Col>
+            <Col span={24}>
+                <Title level={5}>Product Basic Information</Title>
+            </Col>
+            <DescriptionItem
+                title="Product Name"
+                content={(productDetailData || {}).productName}
+            />
+            <DescriptionItem
+                title="Unit of measure"
+                content={get("unitOfMeasure.description")(productDetailData)}
+            />
+            <DescriptionItem
+                title="Description"
+                content={(productDetailData || {}).description}
+            />
+            <style jsx global>{`
+        .site-description-item-profile-wrapper {
+          margin-bottom: 7px;
+          color: rgba(0, 0, 0, 0.65);
+          font-size: 14px;
+          line-height: 1.5715;
+        }
+
+        [data-theme="compact"] .site-description-item-profile-wrapper {
+          font-size: 24px;
+          line-height: 1.66667;
+        }
+
+        .ant-drawer-body p.site-description-item-profile-p {
+          display: block;
+          margin-bottom: 16px;
+          color: rgba(0, 0, 0, 0.85);
+          font-size: 16px;
+          line-height: 1.5715;
+        }
+
+        [data-theme="compact"]
+          .ant-drawer-body
+          p.site-description-item-profile-p {
+          font-size: 14px;
+          line-height: 1.66667;
+        }
+
+        .site-description-item-profile-p-label {
+          display: inline-block;
+          margin-right: 8px;
+          color: rgba(0, 0, 0, 0.85);
+        }
+      `}</style>
+        </Row>)
+}
 export default connectToRedux(AdminProductDetailsComponent);
