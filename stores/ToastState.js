@@ -37,9 +37,9 @@ export default {
       return payload;
     } else if (type === ACTIONS.FAILURE) {
       switch (name) {
-        case USER_LOGIN:
-          msgNotify = "Login fail";
-          break;
+        // case USER_LOGIN:
+        //   msgNotify = "Login fail";
+        //   break;
         case USER_REGISTER:
           msgNotify = "Register fail";
           break;
