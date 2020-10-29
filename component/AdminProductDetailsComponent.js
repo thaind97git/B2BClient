@@ -82,13 +82,16 @@ const AdminProductDetailsComponent = ({
                     <Button
                         onClick={() => {
                             // typeof button.action === "function" && button.action();
+                            Router.push(
+                                `/admin/product/update?id=${productID}`
+                            )
                         }}
                         size="small"
                         label="Edit"
-                        action={() =>
-                            Router.push(
-                                ``
-                            )}
+                        // action={() =>
+                        //     Router.push(
+                        //         ``
+                        //     )}
                     >
                         Edit
                     </Button>
