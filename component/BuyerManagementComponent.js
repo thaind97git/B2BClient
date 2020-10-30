@@ -21,34 +21,31 @@ import {
 import RequestDetailsComponent from "./RequestDetailsComponent";
 import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
-
+import {
+  getRequestPaging,
+  GetRequestPagingData,
+  GetRequestPagingError,
+} from "../stores/RequestState";
 import Moment from "react-moment";
 import { get } from "lodash/fp";
 import {
-  banUser,
-  getSupplierPaging,
-  GetSupplierPagingData,
-  GetSupplierPagingError,
-  unBanUser,
-} from "../stores/SupplierState";
+  getBuyerPaging,
+  GetBuyerPagingData,
+  GetBuyerPagingError,
+} from "../stores/BuyerState";
+import { banUser, unBanUser } from "../stores/SupplierState";
 const { Option } = Select;
 const { Title } = Typography;
 
 const connectToRedux = connect(
   createStructuredSelector({
-    supplierPagingData: GetSupplierPagingData,
-    supplierPagingError: GetSupplierPagingError,
+    buyerPagingData: GetBuyerPagingData,
+    buyerPagingError: GetBuyerPagingError,
   }),
   (dispatch) => ({
-    getSupplierPaging: (
-      pageIndex,
-      pageSize,
-      searchMessage,
-      dateRange,
-      status
-    ) => {
+    getBuyerPaging: (pageIndex, pageSize, searchMessage, dateRange, status) => {
       dispatch(
-        getSupplierPaging({
+        getBuyerPaging({
           pageSize,
           pageIndex,
           email: searchMessage,
@@ -56,9 +53,8 @@ const connectToRedux = connect(
         })
       );
     },
-    banSupplier: ({ id, description }) =>
-      dispatch(banUser({ id, description })),
-    unBanSupplier: (id) => dispatch(unBanUser({ id })),
+    banBuyer: ({ id, description }) => dispatch(banUser({ id, description })),
+    unBanBuyer: (id) => dispatch(unBanUser({ id })),
   })
 );
 
@@ -95,37 +91,37 @@ const columns = [
   },
 ];
 
-const SupplierManagementComponent = ({
-  getSupplierPaging,
-  supplierPagingData,
-  supplierPagingError,
-  banSupplier,
-  unBanSupplier,
+const BuyerManagementComponent = ({
+  getBuyerPaging,
+  buyerPagingData,
+  buyerPagingError,
+  banBuyer,
+  unBanBuyer,
 }) => {
   const [searchMessage, setSearchMessage] = useState("");
   const [dateRange, setDateRange] = useState(DEFAULT_DATE_RANGE);
   const [openDetails, setOpenDetails] = useState(false);
-  const [currentRequestSelected, setCurrentSupplierSelected] = useState({});
+  const [currentRequestSelected, setCurrentBuyerSelected] = useState({});
   const [status, setStatus] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (supplierPagingError || supplierPagingData) {
+    if (buyerPagingError || buyerPagingData) {
       setLoading(false);
     }
-  }, [supplierPagingError, supplierPagingData]);
+  }, [buyerPagingError, buyerPagingData]);
 
   function handleChange(value) {
     setStatus(value);
   }
-  const getSupplierTable = (supplierData = []) => {
-    return supplierData
-      ? supplierData.map((supplier = {}) => ({
-          key: supplier.id,
-          email: supplier.email,
-          fullName: `${supplier.firstName} ${supplier.lastName}`,
-          companyName: supplier.companyName,
-          phoneNumber: supplier.phoneNumber,
+  const getBuyerTable = (buyerData = []) => {
+    return buyerData
+      ? buyerData.map((buyer = {}) => ({
+          key: buyer.id,
+          email: buyer.email,
+          fullName: `${buyer.firstName} ${buyer.lastName}`,
+          companyName: buyer.companyName,
+          phoneNumber: buyer.phoneNumber,
           status: <RequestStatusComponent status={null} />,
           actions: (
             <Space>
@@ -137,7 +133,7 @@ const SupplierManagementComponent = ({
               </Button>
               <Button
                 onClick={() => {
-                  setCurrentSupplierSelected(supplier);
+                  setCurrentBuyerSelected(buyer);
                   setOpenDetails(true);
                 }}
                 size="small"
@@ -151,18 +147,18 @@ const SupplierManagementComponent = ({
       : [];
   };
 
-  let supplierData = [],
+  let buyerData = [],
     totalCount = 0;
-  if (!!supplierPagingData && !supplierPagingError) {
-    supplierData = supplierPagingData.data;
-    totalCount = supplierPagingData.total;
+  if (!!buyerPagingData && !buyerPagingError) {
+    buyerData = buyerPagingData.data;
+    totalCount = buyerPagingData.total;
   }
   return (
     <div>
       <Row justify="space-between">
         <Drawer
           width={640}
-          title="Supplier Details"
+          title="Buyer Details"
           placement={"right"}
           closable={true}
           onClose={() => setOpenDetails(false)}
@@ -176,12 +172,12 @@ const SupplierManagementComponent = ({
             />
           ) : null}
         </Drawer>
-        <Title level={4}>Supplier Management</Title>
+        <Title level={4}>Buyer Management</Title>
       </Row>
       <ReactTableLayout
         totalCount={totalCount}
         loading={loading}
-        dispatchAction={getSupplierPaging}
+        dispatchAction={getBuyerPaging}
         searchProps={{
           placeholder: "Search by email",
           searchMessage,
@@ -212,11 +208,11 @@ const SupplierManagementComponent = ({
           dateRange,
           setDateRange,
         }}
-        data={getSupplierTable(supplierData || [])}
+        data={getBuyerTable(buyerData || [])}
         columns={columns}
       />
     </div>
   );
 };
 
-export default connectToRedux(SupplierManagementComponent);
+export default connectToRedux(BuyerManagementComponent);

@@ -1,5 +1,5 @@
 import { Button, Select, Drawer } from "antd";
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import {
   R_BIDDING,
   R_GROUPED,
@@ -20,12 +20,12 @@ import {
   getRequestPaging,
   GetRequestPagingData,
   GetRequestPagingError,
+  GetRequestPagingResetter,
 } from "../stores/RequestState";
 import Moment from "react-moment";
 import { get } from "lodash/fp";
 import AllCategoryComponent from "./AllCategoryComponent";
 import { createLink } from "../libs";
-const { Option, OptGroup } = Select;
 const connectToRedux = connect(
   createStructuredSelector({
     requestPagingData: GetRequestPagingData,
@@ -44,6 +44,7 @@ const connectToRedux = connect(
         })
       );
     },
+    resetData: () => dispatch(GetRequestPagingResetter),
   })
 );
 
@@ -81,21 +82,25 @@ const columns = [
   },
 ];
 
-function handleChange(value) {
-  console.log(`selected ${value}`);
-}
-
 const statusFilter = [R_GROUPED, R_BIDDING, R_WAIT_FOR_AUCTION, R_NEGOTIATING];
 const AdminRequestProcessingComponent = ({
   requestPagingData,
   requestPagingError,
   getRequest,
+  resetData,
 }) => {
   const [searchMessage, setSearchMessage] = useState("");
   const [dateRange, setDateRange] = useState(DEFAULT_DATE_RANGE);
   const [openDetails, setOpenDetails] = useState(false);
   const [currentRequestSelected, setCurrentRequestSelected] = useState({});
   const [category, setCategory] = useState("1");
+
+  useEffect(() => {
+    return () => {
+      resetData();
+    };
+  }, [resetData]);
+
   const getRequestTable = (requestData = []) => {
     return (
       requestData &&
@@ -125,77 +130,6 @@ const AdminRequestProcessingComponent = ({
       }))
     );
   };
-  const dataSource = [
-    {
-      key: "4",
-      price: displayCurrency(1200000),
-      name: "IR Night Vision Hidden Camera Watch Sport Wear Watch Camera WIFI",
-      quantity: 50,
-      createdBy: "User 2",
-      group: (
-        <a
-          rel="noreferrer"
-          target="_blank"
-          href={createLink(["aggregator", "group", "details?id=1"])}
-        >
-          Group IR Night Vision Hidden Camera Watch Sport - 02/10/2020
-        </a>
-      ),
-      status: <RequestStatusComponent status={R_GROUPED} />,
-      dateCreated: "30/09/2020 02:07:26 PM",
-      actions: (
-        <Button onClick={() => setOpenDetails(true)} size="small" type="link">
-          View
-        </Button>
-      ),
-    },
-    {
-      key: "5",
-      price: displayCurrency(1190000),
-      name: "IR Night Vision Hidden Camera Watch Sport Wear Watch Camera WIFI",
-      category: "Mobile Phone",
-      quantity: 30,
-      group: (
-        <a
-          rel="noreferrer"
-          target="_blank"
-          href={createLink(["aggregator", "group", "details?id=1"])}
-        >
-          Group IR Night Vision Hidden Camera Watch Sport - 02/10/2020
-        </a>
-      ),
-      status: <RequestStatusComponent status={R_GROUPED} />,
-      dateCreated: "30/09/2020 02:07:26 PM",
-      actions: (
-        <Button onClick={() => setOpenDetails(true)} size="small" type="link">
-          View
-        </Button>
-      ),
-    },
-    {
-      key: "5",
-      price: displayCurrency(1180000),
-      name: "IR Night Vision Hidden Camera Watch Sport Wear Watch Camera WIFI",
-      category: "Mobile Phone",
-      quantity: 140,
-      group: (
-        <a
-          rel="noreferrer"
-          target="_blank"
-          href={createLink(["aggregator", "group", "details?id=1"])}
-        >
-          Group IR Night Vision Hidden Camera Watch Sport - 02/10/2020
-        </a>
-      ),
-      status: <RequestStatusComponent status={R_GROUPED} />,
-      dateCreated: "30/09/2020 02:07:26 PM",
-      actions: (
-        <Button onClick={() => setOpenDetails(true)} size="small" type="link">
-          View
-        </Button>
-      ),
-    },
-  ];
 
   let requestData = [],
     totalCount = 0;

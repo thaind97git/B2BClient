@@ -1,5 +1,5 @@
 import { Button, Select, Drawer } from "antd";
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import ReactTableLayout from "../layouts/ReactTableLayout";
 import {
   DATE_TIME_FORMAT,
@@ -20,6 +20,7 @@ import {
   getRequestPaging,
   GetRequestPagingData,
   GetRequestPagingError,
+  GetRequestPagingResetter,
 } from "../stores/RequestState";
 import Moment from "react-moment";
 import { get } from "lodash/fp";
@@ -44,6 +45,7 @@ const connectToRedux = connect(
         })
       );
     },
+    resetData: () => dispatch(GetRequestPagingResetter),
   })
 );
 
@@ -85,11 +87,18 @@ const AdminRequestProcessedComponent = ({
   getRequest,
   requestPagingData,
   requestPagingError,
+  resetData,
 }) => {
   const [searchMessage, setSearchMessage] = useState("");
   const [dateRange, setDateRange] = useState(DEFAULT_DATE_RANGE);
   const [openDetails, setOpenDetails] = useState(false);
   const [currentRequestSelected, setCurrentRequestSelected] = useState({});
+
+  useEffect(() => {
+    return () => {
+      resetData();
+    };
+  }, [resetData]);
 
   const getRequestTable = (requestData = []) => {
     return (

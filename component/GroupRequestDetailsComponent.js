@@ -15,7 +15,7 @@ import { CloseCircleOutlined } from "@ant-design/icons";
 import Router from "next/router";
 import React, { Fragment, useEffect, useState } from "react";
 import ListingRequestForGroupComponent from "./ListingRequestForGroupComponent";
-import ListingSupplierByCategoryComponent from "./ListingSupplierByCategoryComponent";
+import ListingSupplierByProductComponent from "./ListingSupplierByProductComponent";
 import RequestDetailsComponent from "./RequestDetailsComponent";
 import UserProfileComponent from "./UserProfileComponent";
 import GroupStatusComponent from "./Utils/GroupStatusComponent";
@@ -483,7 +483,9 @@ const GroupRequestDetailsComponent = ({
         visible={isOpenContact}
         okText="Add"
       >
-        {isOpenContact ? <ListingSupplierByCategoryComponent /> : null}
+        {isOpenContact ? (
+          <ListingSupplierByProductComponent productId={productId} />
+        ) : null}
       </Modal>
       <Modal
         width={800}
