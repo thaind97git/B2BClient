@@ -65,9 +65,9 @@ const columns = [
     key: "quantity",
   },
   {
-    title: "Group",
-    dataIndex: "group",
-    key: "group",
+    title: "Due Date",
+    dataIndex: "dueDate",
+    key: "dueDate",
   },
   {
     title: "Status",

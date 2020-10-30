@@ -11,7 +11,10 @@ import {
   Empty,
   Skeleton,
 } from "antd";
-import { CloseCircleOutlined } from "@ant-design/icons";
+import {
+  CloseCircleOutlined,
+  ExclamationCircleOutlined,
+} from "@ant-design/icons";
 import Router from "next/router";
 import React, { Fragment, useEffect, useState } from "react";
 import ListingRequestForGroupComponent from "./ListingRequestForGroupComponent";
@@ -19,7 +22,12 @@ import ListingSupplierByProductComponent from "./ListingSupplierByProductCompone
 import RequestDetailsComponent from "./RequestDetailsComponent";
 import UserProfileComponent from "./UserProfileComponent";
 import GroupStatusComponent from "./Utils/GroupStatusComponent";
-import { DATE_TIME_FORMAT, displayCurrency } from "../utils";
+import {
+  DATE_TIME_FORMAT,
+  DEFAULT_DATE_RANGE,
+  DEFAULT_PAGING_INFO,
+  displayCurrency,
+} from "../utils";
 import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
 import {
@@ -27,6 +35,7 @@ import {
   getGroupDetails,
   GetGroupDetailsResetter,
   GetGroupDetailsError,
+  removeRequestFromGroup,
 } from "../stores/GroupState";
 import {
   getRequestByGroupId,
@@ -41,6 +50,7 @@ import {
   GetSupplierByGroupIdError,
 } from "../stores/SupplierState";
 import ReactTableLayout from "../layouts/ReactTableLayout";
+import { G_PENDING } from "../enums/groupStatus";
 
 const { Title } = Typography;
 const groupRequestColumns = [
@@ -74,6 +84,8 @@ const connectToRedux = connect(
       dispatch(getRequestByGroupId({ pageIndex, pageSize, groupId })),
     getSupplierByGroupId: ({ groupId, pageIndex, pageSize }) =>
       dispatch(getSupplierByGroupId({ groupId, pageIndex, pageSize })),
+    removeRequestFromGroup: ({ groupId, requestId, callback }) =>
+      dispatch(removeRequestFromGroup({ groupId, requestId, callback })),
     resetData: () => dispatch(GetGroupDetailsResetter),
   })
 );
@@ -87,7 +99,7 @@ const GroupRequestDetailsComponent = ({
   requestByGroupIdData,
   getSupplierByGroupId,
   supplierByGroupIdData,
-  supplierByGroupIdError,
+  removeRequestFromGroup,
 }) => {
   const [isOpenContact, setIsOpenContact] = useState(false);
   const [isOpenAddRequest, setIsOpenAddRequest] = useState(false);
@@ -283,16 +295,46 @@ const GroupRequestDetailsComponent = ({
       ),
       status: <RequestStatusComponent status={request.requestStatus.id} />,
       actions: (
-        <Button
-          onClick={() => {
-            setCurrentRequestSelected(request);
-            setOpenRequestDetail(true);
-          }}
-          size="small"
-          type="link"
-        >
-          View
-        </Button>
+        <Space>
+          {status === G_PENDING && (
+            <Button
+              onClick={() => {
+                Modal.confirm({
+                  title: "Do you want remove this request?",
+                  icon: <ExclamationCircleOutlined />,
+                  // content: 'Bla bla ...',
+                  okText: "Remove",
+                  cancelText: "Cancel",
+                  onOk: removeRequestFromGroup({
+                    groupId,
+                    requestId: request.id,
+                    callback: () => {
+                      getRequestByGroupId(
+                        DEFAULT_PAGING_INFO.page,
+                        DEFAULT_PAGING_INFO.pageSize,
+                        groupId
+                      );
+                    },
+                  }),
+                });
+              }}
+              size="small"
+              danger
+            >
+              Remove
+            </Button>
+          )}
+          <Button
+            onClick={() => {
+              setCurrentRequestSelected(request);
+              setOpenRequestDetail(true);
+            }}
+            size="small"
+            type="link"
+          >
+            View
+          </Button>
+        </Space>
       ),
     }));
 

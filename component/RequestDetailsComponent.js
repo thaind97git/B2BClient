@@ -125,6 +125,7 @@ const RequestDetailsComponent = ({
     cancelReason,
     buyer = {},
     otherRequirements,
+    group = {},
   } = requestDetailsData || {};
   const getButtonActionsByStatus = (status) => {
     let result = [];
@@ -212,6 +213,20 @@ const RequestDetailsComponent = ({
           <RequestRejectComponent requestId={(requestDetailsData || {}).id} />
         ) : null}
       </Modal>
+      {!isSupplier && !!group && (
+        <DescriptionItem
+          title="Group Name"
+          content={
+            <a
+              href={`/aggregator/group/details?id=${group.id}`}
+              target="_blank"
+              rel="noreferrer"
+            >
+              {group.description}
+            </a>
+          }
+        />
+      )}
       <Col style={{ padding: "12px 0px" }} span={24}>
         Status: <RequestStatusComponent status={requestStatus.id} />
       </Col>
