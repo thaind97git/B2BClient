@@ -7,8 +7,10 @@ import Router from "next/router";
 import { openNotification } from "../utils";
 
 const GET_PRODUCT_BY_CATEGORY = "GetProductByCategoryAPI";
+const GET_PRODUCT_PAGING = "GetProductPagingAPI";
 const GET_PRODUCT_DETAILS = "GetProductDetailsAPI";
 const CREATE_PRODUCT = "CreateProductAPI";
+const UPDATE_PRODUCT = "UpdateProductAPI";
 
 const GetProductByCategoryAPI = makeFetchAction(
   GET_PRODUCT_BY_CATEGORY,
@@ -33,6 +35,29 @@ export const GetProductByCategoryResetter = getResetter(
   GetProductByCategoryAPI
 );
 
+//Get Product paging
+const GetProductPagingAPI = makeFetchAction(
+  GET_PRODUCT_PAGING,
+  ({ productName, categoryID, pageSize, pageIndex }) => {
+    return nfetch({
+      endpoint: `/api/Product/Filter?${productName ? "name=" + productName + "&" : ""}${categoryID ? (categoryID != "all" ? "categoryId=" + categoryID + "&" : "") : ""}${pageIndex ? "pageIndex=" + pageIndex + "&" : ""}${pageSize ? "pageSize=" + pageSize + "&" : ""}`,
+      method: "GET",
+    })()
+  }
+);
+
+export const getProductPaging = ({ productName, categoryID, pageSize, pageIndex }) =>
+  respondToSuccess(
+    GetProductPagingAPI.actionCreator({ productName, categoryID, pageSize, pageIndex }),
+    () => { }
+  );
+
+export const GetProductPagingData = GetProductPagingAPI.dataSelector;
+export const GetProductPagingError = GetProductPagingAPI.errorSelector;
+export const getProductPagingResetter = getResetter(
+  GetProductPagingAPI
+);
+
 // Product Details
 const GetProductDetailsAPI = makeFetchAction(GET_PRODUCT_DETAILS, (id) =>
   nfetch({
@@ -44,9 +69,7 @@ const GetProductDetailsAPI = makeFetchAction(GET_PRODUCT_DETAILS, (id) =>
 export const getProductDetails = (id, pageSize, pageIndex) =>
   respondToSuccess(
     GetProductDetailsAPI.actionCreator(id, pageSize, pageIndex),
-    (resp) => {
-      console.log({ resp });
-    }
+    () => {}
   );
 
 export const GetProductDetailsData = GetProductDetailsAPI.dataSelector;
@@ -95,3 +118,22 @@ export const createNewProduct = (product, fileList) =>
 export const CreateNewProductData = CreateProductAPI.dataSelector;
 export const CreateNewProductError = CreateProductAPI.errorSelector;
 export const CreateNewProductResetter = getResetter(CreateProductAPI);
+
+// Update Product
+const UpdateProductAPI = makeFetchAction(UPDATE_PRODUCT, (object) =>
+  nfetch({
+    endpoint: "/api/Product",
+    method: "PUT",
+  })(object)
+);
+
+export const updateProduct = (object) =>
+  respondToSuccess(UpdateProductAPI.actionCreator(object), (resp) => {
+    if (resp) {
+      openNotification("success", { message: "Update product success!" });
+      Router.push("/admin/product");
+    }
+  });
+export const UpdateProductData = UpdateProductAPI.dataSelector;
+export const UpdateProductError = UpdateProductAPI.errorSelector;
+export const UpdateProductResetter = getResetter(UpdateProductAPI);
