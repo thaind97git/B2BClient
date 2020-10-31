@@ -8,6 +8,7 @@ import { R_PENDING } from "../enums/requestStatus";
 
 export const CREATE_NEW_GROUP = "CreateNewGroupAPI";
 export const ADD_REQUEST_TO_GROUP = "AddRequestToGroupAPI";
+export const REMOVE_REQUEST_FROM_GROUP = "RemoveRequestFromGroupAPI";
 const GET_GROUP_BY_PRODUCT_ID = "GetGroupByProductIdAPI";
 const GET_GROUP_PAGING = "GetGroupPagingAPI";
 const GET_GROUP_DETAILS = "GetGroupDetailsAPI";
@@ -151,3 +152,31 @@ export const getGroupDetails = (id) =>
 export const GetGroupDetailsData = GetGroupDetailsAPI.dataSelector;
 export const GetGroupDetailsError = GetGroupDetailsAPI.errorSelector;
 export const GetGroupDetailsResetter = getResetter(GetGroupDetailsAPI);
+
+// Remove request to group
+const RemoveRequestFromGroupAPI = makeFetchAction(
+  REMOVE_REQUEST_FROM_GROUP,
+  ({ groupId, requestId }) =>
+    nfetch({
+      endpoint: "/api/Group/Requests",
+      method: "DELETE",
+    })({ groupId, requestId })
+);
+
+export const removeRequestFromGroup = ({ groupId, requestId, callback }) =>
+  respondToSuccess(
+    RemoveRequestFromGroupAPI.actionCreator({ groupId, requestId }),
+    (resp) => {
+      if (resp) {
+        typeof callback === "function" && callback();
+      }
+    }
+  );
+
+export const RemoveRequestFromGroupData =
+  RemoveRequestFromGroupAPI.dataSelector;
+export const RemoveRequestFromGroupError =
+  RemoveRequestFromGroupAPI.errorSelector;
+export const RemoveRequestFromGroupResetter = getResetter(
+  RemoveRequestFromGroupAPI
+);

@@ -18,6 +18,7 @@ import {
   getRequestPaging,
   GetRequestPagingData,
   GetRequestPagingError,
+  GetRequestPagingResetter,
 } from "../stores/RequestState";
 import Moment from "react-moment";
 import { get } from "lodash/fp";
@@ -62,6 +63,7 @@ const connectToRedux = connect(
 
     addRequest: (groupId, requestIds) =>
       dispatch(addRequestToGroup({ groupId, requestIds })),
+    resetData: () => dispatch(GetRequestPagingResetter),
   })
 );
 
@@ -103,6 +105,7 @@ const AdminRequestManagement = ({
   addRequest,
   addRequestData,
   createNewGroupData,
+  resetData,
 }) => {
   const [searchMessage, setSearchMessage] = useState("");
   const [dateRange, setDateRange] = useState(DEFAULT_DATE_RANGE);
@@ -139,6 +142,12 @@ const AdminRequestManagement = ({
       setLoading(false);
     }
   }, [requestPagingError, requestPagingData]);
+
+  useEffect(() => {
+    return () => {
+      resetData();
+    };
+  }, [resetData]);
 
   const getRequestTable = (requestData = []) => {
     return (

@@ -19,6 +19,7 @@ import {
   GetProductDetailsError,
 } from "../stores/ProductState";
 import { get } from "lodash/fp";
+import { getDefaultProductImage, getProductImage } from "../utils";
 
 const { Title } = Typography;
 
@@ -121,13 +122,13 @@ const BuyerProductDetailsComponent = ({
               items={
                 productDetailData.images
                   ? productDetailData.images.map((image) => ({
-                      original: `${process.env.API_SERVER_URL}/api/Product/ProductImage/${image}`,
-                      thumbnail: `${process.env.API_SERVER_URL}/api/Product/ProductImage/${image}`,
+                      original: `${getProductImage(image)}`,
+                      thumbnail: `${getProductImage(image)}`,
                     }))
                   : [
                       {
-                        original: `/static/images/default_product_img.jpg`,
-                        thumbnail: `/static/images/default_product_img.jpg`,
+                        original: getDefaultProductImage(),
+                        thumbnail: getDefaultProductImage(),
                       },
                     ]
               }

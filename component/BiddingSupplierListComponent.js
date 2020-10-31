@@ -7,7 +7,7 @@ import {
   ClockCircleOutlined,
 } from "@ant-design/icons";
 import Modal from "antd/lib/modal/Modal";
-import ListingSupplierByCategoryComponent from "./ListingSupplierByCategoryComponent";
+import ListingSupplierByProductComponent from "./ListingSupplierByProductComponent";
 const columns = [
   {
     title: "Supplier",
@@ -91,7 +91,7 @@ const BiddingSupplierListComponent = () => {
         visible={isOpenContact}
         okText="Add"
       >
-        <ListingSupplierByCategoryComponent />
+        <ListingSupplierByProductComponent />
       </Modal>
       <Row justify="end" style={{ marginBottom: 32, width: "100%" }}>
         <Button onClick={() => setIsOpenContact(true)} type="primary">

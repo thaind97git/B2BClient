@@ -2,22 +2,21 @@ import React, { useState } from "react";
 
 import { Layout, Menu, Row, Dropdown } from "antd";
 import {
-  CreditCardOutlined,
   DownOutlined,
   LoginOutlined,
   MenuUnfoldOutlined,
   MenuFoldOutlined,
-  ExperimentOutlined,
   OrderedListOutlined,
-  FallOutlined,
-  WechatOutlined,
   FormOutlined,
   BulbOutlined,
   SolutionOutlined,
+  TeamOutlined,
 } from "@ant-design/icons";
 import MemberNavComponent from "../component/MemberNavComponent";
 import { currentPath } from "../utils";
 import Link from "next/link";
+import { removeToken } from "../libs/localStorage";
+import Router from "next/router";
 
 const { Header, Content, Sider } = Layout;
 
@@ -44,9 +43,15 @@ const ADMIN_MENU = [
   },
   {
     key: "2",
-    icon: <SolutionOutlined />,
+    icon: <TeamOutlined />,
     label: "Supplier",
     link: "/admin/supplier",
+  },
+  {
+    key: "3",
+    icon: <SolutionOutlined />,
+    label: "Buyer",
+    link: "/admin/buyer",
   },
 ];
 
@@ -60,7 +65,13 @@ const PROFILE_MENU = (
     <Menu.Item>
       <a href="#">Company Profile</a>
     </Menu.Item>
-    <Menu.Item danger>
+    <Menu.Item
+      onClick={() => {
+        removeToken();
+        Router.push("/login");
+      }}
+      danger
+    >
       <LoginOutlined /> Sign out
     </Menu.Item>
   </Menu>
@@ -93,12 +104,6 @@ const AdminLayout = ({ children }) => {
                   }}
                 >
                   B2B Market
-                  {/* <img
-                    alt="B2BMarket"
-                    src="/static/images/logo.png"
-                    height={collapsed ? 16 : 32}
-                    style={{ margin: "16px 0px" }}
-                  /> */}
                 </a>
               </Link>
             </Row>

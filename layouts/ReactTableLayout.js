@@ -3,7 +3,7 @@ import { doDispatchAction } from "../utils";
 import SearchTableComponent from "../component/SearchTableComponent";
 
 import DateRangePickerComponent from "../component/DateRangePickerComponent";
-import { Pagination, Row, Space, Table } from "antd";
+import { Col, Pagination, Row, Space, Table } from "antd";
 
 const PAGE_SIZE_DEFAULT = 10,
   PAGE_DEFAULT = 1;
@@ -23,7 +23,6 @@ const ReactTableLayout = ({
   dispatchAction,
   totalCount,
   pageSize = PAGE_SIZE_DEFAULT,
-  t,
   page = PAGE_DEFAULT,
   style = {},
   options = {},
@@ -46,9 +45,6 @@ const ReactTableLayout = ({
   const { dateRange, setDateRange } = dateRangeProps;
   const [pageSizeTable, setPageSizeTable] = useState(pageSize);
   const [pageIndex, setPageIndex] = useState(page);
-  // const [isFetchPaging, setIsFetchPaging] = useState(true);
-  // const [visible, setVisible] = useState(false);
-  // const [conditions, setConditions] = useState(exCondition);
 
   useEffect(() => {
     if (hasPaging && !hasAction) {
@@ -94,7 +90,7 @@ const ReactTableLayout = ({
     <div style={{ width: "100%" }}>
       {hasAction && (
         <Row justify="space-between" style={{ padding: "6px 4px" }}>
-          <Row xs={24} sm={12} lg={14}>
+          <Col xs={24} sm={12} lg={12}>
             <SearchTableComponent
               searchMessage={searchMessage}
               setSearchMessage={setSearchMessage}
@@ -103,17 +99,13 @@ const ReactTableLayout = ({
               dateRange={dateRange}
               setDateRange={setDateRange}
             />
-          </Row>
-          <Row item xs={24} sm={12} lg={10}>
+          </Col>
+          <Col xs={24} sm={12} lg={10}>
             <Space>
               {exElement}
-              <DateRangePickerComponent
-                t={t}
-                small
-                setDateRange={setDateRange}
-              />
+              <DateRangePickerComponent small setDateRange={setDateRange} />
             </Space>
-          </Row>
+          </Col>
         </Row>
       )}
       <Table

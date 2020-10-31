@@ -21,6 +21,7 @@ import {
   GetProductByCategoryError,
 } from "../stores/ProductState";
 import CategoryHomePageComponent from "./CategoryHomePageComponent";
+import { getDefaultProductImage, getProductImage } from "../utils";
 const { Meta } = Card;
 
 const connectToRedux = connect(
@@ -65,13 +66,11 @@ const ProductCard = ({ product }) => {
               margin: "auto",
             }}
             alt="example"
-            src={
+            src={getProductImage(
               !!product.images && product.images.length > 0
-                ? process.env.API_SERVER_URL +
-                  "/api/Product/ProductImage/" +
-                  product.images[0]
-                : "/static/images/default_product_img.png"
-            }
+                ? product.images[0]
+                : getDefaultProductImage()
+            )}
           />
         }
       >
