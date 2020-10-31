@@ -71,7 +71,7 @@ const columns = [
 
 const GroupRequestComponent = ({ getGroupPaging, groupPagingData }) => {
   const [searchMessage, setSearchMessage] = useState("");
-  const [category, setCategory] = useState("1");
+  const [category, setCategory] = useState("");
   const [dateRange, setDateRange] = useState(DEFAULT_DATE_RANGE);
 
   const getGroupTable = (groupData = []) => {
