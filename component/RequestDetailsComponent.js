@@ -65,6 +65,7 @@ const RequestDetailsComponent = ({
   cancelRequestData,
   rejectRequestData,
   setOpenDetails,
+  isRemove = true,
 }) => {
   const [loading, setLoading] = useState(true);
   const [openCancel, setOpenCancel] = useState(false);
@@ -166,17 +167,20 @@ const RequestDetailsComponent = ({
         break;
       case R_GROUPED:
         if (!isSupplier) {
-          result = [
-            {
-              label: "Remove",
-              buttonProps: {
-                danger: true,
-              },
-              action: () => {
-                // setOpenReject(true);
-              },
-            },
-          ];
+          if (isRemove) {
+            // result = [
+            //   {
+            //     label: "Remove",
+            //     buttonProps: {
+            //       danger: true,
+            //     },
+            //     action: () => {
+            //       // setOpenReject(true);
+            //     },
+            //   },
+            // ];
+            result = [];
+          }
         } else {
           result = [];
         }
@@ -334,6 +338,10 @@ const RequestDetailsComponent = ({
           />
           <DescriptionItem title="Email" content={(buyer || {}).email} />
           <DescriptionItem title="Phone" content={(buyer || {}).phoneNumber} />
+          <DescriptionItem
+            title="Company Name"
+            content={(buyer || {}).companyName}
+          />
         </Fragment>
       )}
 

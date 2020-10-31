@@ -36,6 +36,9 @@ import {
   GetGroupDetailsResetter,
   GetGroupDetailsError,
   removeRequestFromGroup,
+  addRequestToGroup,
+  AddRequestToGroupData,
+  AddRequestToGroupError,
 } from "../stores/GroupState";
 import {
   getRequestByGroupId,
@@ -77,6 +80,8 @@ const connectToRedux = connect(
     requestByGroupIdError: getRequestByGroupIdError,
     supplierByGroupIdData: GetSupplierByGroupIdData,
     supplierByGroupIdError: GetSupplierByGroupIdError,
+    addRequestToGroupData: AddRequestToGroupData,
+    addRequestToGroupError: AddRequestToGroupError,
   }),
   (dispatch) => ({
     getGroupDetails: (id) => dispatch(getGroupDetails(id)),
@@ -86,9 +91,105 @@ const connectToRedux = connect(
       dispatch(getSupplierByGroupId({ groupId, pageIndex, pageSize })),
     removeRequestFromGroup: ({ groupId, requestId, callback }) =>
       dispatch(removeRequestFromGroup({ groupId, requestId, callback })),
-    resetData: () => dispatch(GetGroupDetailsResetter),
+    addRequestToGroup: ({ groupId, requestIds, callback }) =>
+      dispatch(addRequestToGroup({ groupId, requestIds, callback })),
+    resetData: () => {
+      dispatch(GetGroupDetailsResetter);
+    },
   })
 );
+
+const getRequestTable = ({
+  requestData = [],
+  isCanRemove,
+  status,
+  groupId,
+  setCurrentRequestSelected,
+  setOpenRequestDetail,
+  callbackGetRequestList,
+  removeRequestFromGroup,
+}) => {
+  return (
+    requestData &&
+    requestData.length > 0 &&
+    requestData.map((request = {}) => ({
+      key: request.id,
+      price: displayCurrency(+request.preferredUnitPrice),
+      name: request.product.description,
+      quantity: +request.quantity || 0,
+      dueDate: (
+        <Moment format={DATE_TIME_FORMAT}>{new Date(request.dueDate)}</Moment>
+      ),
+      status: <RequestStatusComponent status={request.requestStatus.id} />,
+      actions: (
+        <Space>
+          {status === G_PENDING && isCanRemove && (
+            <Button
+              onClick={() => {
+                Modal.confirm({
+                  title: "Do you want remove this request?",
+                  icon: <ExclamationCircleOutlined />,
+                  okText: "Remove",
+                  cancelText: "Cancel",
+                  onOk: () => {
+                    removeRequestFromGroup({
+                      groupId,
+                      requestId: request.id,
+                      callback: callbackGetRequestList,
+                    });
+                  },
+                });
+              }}
+              size="small"
+              danger
+            >
+              Remove
+            </Button>
+          )}
+          <Button
+            onClick={() => {
+              setCurrentRequestSelected(request);
+              setOpenRequestDetail(true);
+            }}
+            size="small"
+            type="link"
+          >
+            View
+          </Button>
+        </Space>
+      ),
+    }))
+  );
+};
+const getSupplierTable = ({
+  supplierData = [],
+  setCurrentRequestSelected,
+  setOpenSupplierDetail,
+}) =>
+  supplierData &&
+  supplierData.length > 0 &&
+  supplierData.map((supplier = {}) => ({
+    key: supplier.id,
+    price: displayCurrency(+supplier.preferredUnitPrice),
+    name: supplier.product.description,
+    quantity: +supplier.quantity || 0,
+    dueDate: (
+      <Moment format={DATE_TIME_FORMAT}>{new Date(supplier.dueDate)}</Moment>
+    ),
+    status: <RequestStatusComponent status={supplier.supplierStatus.id} />,
+    actions: (
+      <Button
+        onClick={() => {
+          setCurrentRequestSelected(supplier);
+          setOpenSupplierDetail(true);
+        }}
+        size="small"
+        type="link"
+      >
+        View
+      </Button>
+    ),
+  }));
 
 const GroupRequestDetailsComponent = ({
   getGroupDetails,
@@ -100,15 +201,26 @@ const GroupRequestDetailsComponent = ({
   getSupplierByGroupId,
   supplierByGroupIdData,
   removeRequestFromGroup,
+  addRequestToGroup,
+  addRequestToGroupData,
+  addRequestToGroupError,
 }) => {
   const [isOpenContact, setIsOpenContact] = useState(false);
   const [isOpenAddRequest, setIsOpenAddRequest] = useState(false);
   const [openRequestDetail, setOpenRequestDetail] = useState(false);
   const [openSupplierDetail, setOpenSupplierDetail] = useState(false);
   const [currentRequestSelected, setCurrentRequestSelected] = useState({});
+  const [requestIdSelected, setRequestIdSelected] = useState([]);
 
   const [loading, setLoading] = useState(true);
   const groupId = Router.query.id;
+  const callbackGetRequestList = () => {
+    getRequestByGroupId(
+      DEFAULT_PAGING_INFO.page,
+      DEFAULT_PAGING_INFO.pageSize,
+      groupId
+    );
+  };
 
   useEffect(() => {
     if (!!groupId) {
@@ -122,6 +234,12 @@ const GroupRequestDetailsComponent = ({
       setLoading(false);
     }
   }, [groupDetailsData, groupDetailsError]);
+
+  useEffect(() => {
+    if (addRequestToGroupData) {
+      setIsOpenAddRequest(false);
+    }
+  }, [addRequestToGroupData]);
 
   useEffect(() => {
     return () => {
@@ -282,86 +400,6 @@ const GroupRequestDetailsComponent = ({
   const { id: status } = groupStatus || {};
   const { productName, id: productId, unitOfMeasure } = product || {};
   const { description: unit } = unitOfMeasure || {};
-  const getRequestTable = (requestData = []) =>
-    requestData &&
-    requestData.length > 0 &&
-    requestData.map((request = {}) => ({
-      key: request.id,
-      price: displayCurrency(+request.preferredUnitPrice),
-      name: request.product.description,
-      quantity: +request.quantity || 0,
-      dueDate: (
-        <Moment format={DATE_TIME_FORMAT}>{new Date(request.dueDate)}</Moment>
-      ),
-      status: <RequestStatusComponent status={request.requestStatus.id} />,
-      actions: (
-        <Space>
-          {status === G_PENDING && requestData.length > 1 && (
-            <Button
-              onClick={() => {
-                Modal.confirm({
-                  title: "Do you want remove this request?",
-                  icon: <ExclamationCircleOutlined />,
-                  okText: "Remove",
-                  cancelText: "Cancel",
-                  onOk: removeRequestFromGroup({
-                    groupId,
-                    requestId: request.id,
-                    callback: () => {
-                      getRequestByGroupId(
-                        DEFAULT_PAGING_INFO.page,
-                        DEFAULT_PAGING_INFO.pageSize,
-                        groupId
-                      );
-                    },
-                  }),
-                });
-              }}
-              size="small"
-              danger
-            >
-              Remove
-            </Button>
-          )}
-          <Button
-            onClick={() => {
-              setCurrentRequestSelected(request);
-              setOpenRequestDetail(true);
-            }}
-            size="small"
-            type="link"
-          >
-            View
-          </Button>
-        </Space>
-      ),
-    }));
-
-  const getSupplierTable = (supplierData = []) =>
-    supplierData &&
-    supplierData.length > 0 &&
-    supplierData.map((supplier = {}) => ({
-      key: supplier.id,
-      price: displayCurrency(+supplier.preferredUnitPrice),
-      name: supplier.product.description,
-      quantity: +supplier.quantity || 0,
-      dueDate: (
-        <Moment format={DATE_TIME_FORMAT}>{new Date(supplier.dueDate)}</Moment>
-      ),
-      status: <RequestStatusComponent status={supplier.supplierStatus.id} />,
-      actions: (
-        <Button
-          onClick={() => {
-            setCurrentRequestSelected(supplier);
-            setOpenRequestDetail(true);
-          }}
-          size="small"
-          type="link"
-        >
-          View
-        </Button>
-      ),
-    }));
 
   let requestData = [],
     totalRequest = 0,
@@ -376,6 +414,8 @@ const GroupRequestDetailsComponent = ({
     totalRequest = requestByGroupIdData.total;
   }
 
+  const isCanRemove = requestData.length > 1;
+
   return (
     <Fragment>
       <Drawer
@@ -388,6 +428,7 @@ const GroupRequestDetailsComponent = ({
         key={"rfq-details"}
       >
         <RequestDetailsComponent
+          isRemove={isCanRemove ? true : false}
           isSupplier={false}
           requestId={currentRequestSelected.id}
         />
@@ -467,7 +508,16 @@ const GroupRequestDetailsComponent = ({
               searchProps={{
                 exCondition: [groupId],
               }}
-              data={getRequestTable(requestData || [])}
+              data={getRequestTable({
+                requestData: requestData || [],
+                status,
+                isCanRemove,
+                setOpenRequestDetail,
+                setCurrentRequestSelected,
+                groupId,
+                callbackGetRequestList,
+                removeRequestFromGroup,
+              })}
               columns={groupRequestColumns}
               totalCount={totalRequest}
               footer={() => (
@@ -479,20 +529,6 @@ const GroupRequestDetailsComponent = ({
                 </Button>
               )}
             />
-            {/* <Table
-              bordered
-              footer={() => (
-                <Button
-                  type="primary"
-                  onClick={() => setIsOpenAddRequest(true)}
-                >
-                  Add Requests
-                </Button>
-              )}
-              columns={groupRequestColumns}
-              dataSource={getRequestTable(requestData || [])}
-              rowKey="id"
-            /> */}
           </div>
         </Card>
         <Card
@@ -531,7 +567,15 @@ const GroupRequestDetailsComponent = ({
       <Modal
         width={800}
         onCancel={() => setIsOpenAddRequest(false)}
-        onOk={() => setIsOpenAddRequest(false)}
+        onOk={() => {
+          if (requestIdSelected && requestIdSelected.length > 0) {
+            addRequestToGroup({
+              groupId,
+              requestIds: requestIdSelected,
+              callback: callbackGetRequestList,
+            });
+          }
+        }}
         title={
           <div>
             Add Requests created inside <i>{productName}</i>
@@ -541,7 +585,13 @@ const GroupRequestDetailsComponent = ({
         okText="Add"
       >
         {isOpenAddRequest ? (
-          <ListingRequestForGroupComponent productId={productId} />
+          <ListingRequestForGroupComponent
+            setRequestIdSelected={(arrayId = []) => {
+              console.log({ arrayId });
+              setRequestIdSelected(arrayId);
+            }}
+            productId={productId}
+          />
         ) : null}
       </Modal>
     </Fragment>

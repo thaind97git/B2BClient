@@ -1,4 +1,4 @@
-import { Button, Select, Drawer } from "antd";
+import { Button, Drawer } from "antd";
 import React, { Fragment, useEffect, useState } from "react";
 import ReactTableLayout from "../layouts/ReactTableLayout";
 import {
@@ -24,7 +24,7 @@ import {
 } from "../stores/RequestState";
 import Moment from "react-moment";
 import { get } from "lodash/fp";
-const { Option, OptGroup } = Select;
+import AllCategoryComponent from "./AllCategoryComponent";
 
 const connectToRedux = connect(
   createStructuredSelector({
@@ -32,8 +32,15 @@ const connectToRedux = connect(
     requestPagingError: GetRequestPagingError,
   }),
   (dispatch) => ({
-    getRequest: (pageIndex, pageSize, searchMessage, dateRange, status, xy) => {
-      console.log({ status, xy });
+    getRequest: (
+      pageIndex,
+      pageSize,
+      searchMessage,
+      dateRange,
+      status,
+      category
+    ) => {
+      console.log({ category });
       dispatch(
         getRequestPaging({
           pageSize,
@@ -42,6 +49,7 @@ const connectToRedux = connect(
           toDate: dateRange.toDate,
           productTitle: searchMessage,
           status,
+          category,
         })
       );
     },
@@ -77,22 +85,19 @@ const columns = [
     key: "actions",
   },
 ];
-function handleChange(value) {
-  console.log(`selected ${value}`);
-}
 
 const statusFilter = [R_CANCELED, R_DONE, R_REJECTED, R_ORDERED];
 
 const AdminRequestProcessedComponent = ({
   getRequest,
   requestPagingData,
-  requestPagingError,
   resetData,
 }) => {
   const [searchMessage, setSearchMessage] = useState("");
   const [dateRange, setDateRange] = useState(DEFAULT_DATE_RANGE);
   const [openDetails, setOpenDetails] = useState(false);
   const [currentRequestSelected, setCurrentRequestSelected] = useState({});
+  const [category, setCategory] = useState("");
 
   useEffect(() => {
     return () => {
@@ -146,23 +151,16 @@ const AdminRequestProcessedComponent = ({
           setSearchMessage,
           exElement: (
             <Fragment>
-              <Select
+              <AllCategoryComponent
+                onGetLastValue={(value) => {
+                  setCategory(value);
+                }}
                 size="large"
-                placeholder="Filter by category"
-                style={{ width: 200 }}
-                onChange={handleChange}
-              >
-                <OptGroup label="Category 1">
-                  <Option value="jack">Sub-1 Category 1</Option>
-                  <Option value="lucy">Sub-2 Category 1</Option>
-                </OptGroup>
-                <OptGroup label="Category 2">
-                  <Option value="Yiminghe">Sub-1 Category 1</Option>
-                </OptGroup>
-              </Select>
+                isSearchStyle={false}
+              />
             </Fragment>
           ),
-          exCondition: [statusFilter],
+          exCondition: [statusFilter, category],
         }}
         dateRangeProps={{
           dateRange,
@@ -172,7 +170,6 @@ const AdminRequestProcessedComponent = ({
         columns={columns}
         totalCount={totalCount}
       />
-      {/* <Table dataSource={dataSource} columns={columns} /> */}
       <Drawer
         width={640}
         title="RFQ details"
