@@ -1,7 +1,11 @@
 import { get } from "lodash/fp";
 import { ACTIONS } from "redux-api-call";
 import { openNotification } from "../utils";
-import { ADD_REQUEST_TO_GROUP, CREATE_NEW_GROUP } from "./GroupState";
+import {
+  ADD_REQUEST_TO_GROUP,
+  CREATE_NEW_GROUP,
+  REMOVE_REQUEST_FROM_GROUP,
+} from "./GroupState";
 import { CANCEL_REQUEST, REJECT_REQUEST } from "./RequestState";
 import { USER_LOGIN, USER_REGISTER } from "./UserState";
 const hasErrors = get("json.errors");
@@ -30,6 +34,9 @@ export default {
         case REJECT_REQUEST:
           msgNotify = "Reject Request success";
           break;
+        case REMOVE_REQUEST_FROM_GROUP:
+          msgNotify = "Remove Request from Group success";
+          break;
         default:
           break;
       }
@@ -37,9 +44,9 @@ export default {
       return payload;
     } else if (type === ACTIONS.FAILURE) {
       switch (name) {
-        case USER_LOGIN:
-          msgNotify = "Login fail";
-          break;
+        // case USER_LOGIN:
+        //   msgNotify = "Login fail";
+        //   break;
         case USER_REGISTER:
           msgNotify = "Register fail";
           break;
@@ -54,6 +61,9 @@ export default {
           break;
         case REJECT_REQUEST:
           msgNotify = "Reject Request fail";
+          break;
+        case REMOVE_REQUEST_FROM_GROUP:
+          msgNotify = "Remove Request from Group fail";
           break;
         default:
           break;

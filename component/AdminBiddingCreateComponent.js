@@ -4,7 +4,7 @@ import Router from "next/router";
 import React, { useState } from "react";
 import TabsLayout from "../layouts/TabsLayout";
 import BiddingSettingComponent from "./BiddingSettingComponent";
-import ListingSupplierByCategoryComponent from "./ListingSupplierByCategoryComponent";
+import ListingSupplierByProductComponent from "./ListingSupplierByProductComponent";
 const { Title } = Typography;
 const plainOptions = [
   { id: 1, label: "Supplier 1 (supplier1@gmail.com)" },
@@ -86,7 +86,7 @@ const AdminBiddingCreateComponent = () => {
           </Checkbox>
         </div>
         <br /> */}
-        <ListingSupplierByCategoryComponent />
+        <ListingSupplierByProductComponent />
         {/* <Checkbox.Group style={{ width: "100%" }} onChange={onChange}>
           <Row>
             {plainOptions.map((option, index) => {

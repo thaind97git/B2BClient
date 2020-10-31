@@ -2,15 +2,13 @@ import { makeFetchAction } from "redux-api-call";
 
 import { respondToSuccess } from "../middlewares/api-reaction";
 import nfetch from "../libs/nfetch";
-import { getResetter } from "../libs";
+import { generateQuery, getResetter } from "../libs";
 import { getRequestPaging } from "./RequestState";
 import { R_PENDING } from "../enums/requestStatus";
-import { compact, concat, flow } from "lodash/fp";
-import { join } from "lodash";
-import { GetCurrentUserAPI } from "./UserState";
 
 export const CREATE_NEW_GROUP = "CreateNewGroupAPI";
 export const ADD_REQUEST_TO_GROUP = "AddRequestToGroupAPI";
+export const REMOVE_REQUEST_FROM_GROUP = "RemoveRequestFromGroupAPI";
 const GET_GROUP_BY_PRODUCT_ID = "GetGroupByProductIdAPI";
 const GET_GROUP_PAGING = "GetGroupPagingAPI";
 const GET_GROUP_DETAILS = "GetGroupDetailsAPI";
@@ -103,13 +101,15 @@ const GetGroupPagingAPI = makeFetchAction(
   GET_GROUP_PAGING,
   ({ categoryId, productName, fromDate, toDate, pageIndex, pageSize }) => {
     return nfetch({
-      endpoint: `/api/Group/Filter?${
-        categoryId ? "categoryId=" + categoryId + "&" : ""
-      }${productName && "productName=" + productName + "&"}${
-        fromDate ? "fromDate=" + fromDate + "&" : ""
-      }${
-        toDate ? "toDate=" + toDate + "&" : ""
-      }pageIndex=${pageIndex}&pageSize=${pageSize}&dateDescending=true`,
+      endpoint: `/api/Group/Filter${generateQuery({
+        categoryId,
+        productName,
+        fromDate,
+        toDate,
+        pageSize,
+        pageIndex,
+        dateDescending: true,
+      })}`,
       method: "GET",
     })();
   }
@@ -152,3 +152,31 @@ export const getGroupDetails = (id) =>
 export const GetGroupDetailsData = GetGroupDetailsAPI.dataSelector;
 export const GetGroupDetailsError = GetGroupDetailsAPI.errorSelector;
 export const GetGroupDetailsResetter = getResetter(GetGroupDetailsAPI);
+
+// Remove request to group
+const RemoveRequestFromGroupAPI = makeFetchAction(
+  REMOVE_REQUEST_FROM_GROUP,
+  ({ groupId, requestId }) =>
+    nfetch({
+      endpoint: "/api/Group/Requests",
+      method: "DELETE",
+    })({ groupId, requestId })
+);
+
+export const removeRequestFromGroup = ({ groupId, requestId, callback }) =>
+  respondToSuccess(
+    RemoveRequestFromGroupAPI.actionCreator({ groupId, requestId }),
+    (resp) => {
+      if (resp) {
+        typeof callback === "function" && callback();
+      }
+    }
+  );
+
+export const RemoveRequestFromGroupData =
+  RemoveRequestFromGroupAPI.dataSelector;
+export const RemoveRequestFromGroupError =
+  RemoveRequestFromGroupAPI.errorSelector;
+export const RemoveRequestFromGroupResetter = getResetter(
+  RemoveRequestFromGroupAPI
+);

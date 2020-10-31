@@ -1,16 +1,15 @@
 import React, { useState, useCallback } from "react";
 import { debounce } from "lodash";
 import { SearchOutlined } from "@ant-design/icons";
-import { Divider, Input, Row } from "antd";
+import { Divider, Input } from "antd";
 
 const emptyFunction = () => {};
 
 function SearchTableComponent({
-  placeholder = "Search by something",
+  placeholder = "",
   searchMessage,
   setSearchMessage = emptyFunction,
 }) {
-  // const [openAdvanceSearch, setOpenAdvanceSearch] = useState(false);
   const [value, setValue] = useState(searchMessage);
   const debounceLoadData = useCallback(debounce(setSearchMessage, 1000), []);
 
@@ -23,8 +22,6 @@ function SearchTableComponent({
 
   return (
     <div
-      // justify="space-between"
-      // align="middle"
       style={{ display: "flex", flexDirection: "row", alignItems: "center" }}
     >
       <Input
@@ -35,25 +32,6 @@ function SearchTableComponent({
         prefix={<SearchOutlined />}
       />
       <Divider type="vertical" />
-      {/* <IconButton
-        onClick={() => setOpenAdvanceSearch(false)}
-        color="primary"
-        className={classes.iconButton}
-      >
-        <FilterList />
-      </IconButton>
-      <AlertDialog
-        fullWidth
-        size="sm"
-        isFooter={false}
-        isOpenDialog={openAdvanceSearch}
-        setIsOpenDialog={setOpenAdvanceSearch}
-        content={
-          <Grid container justify="center" alignItems="center">
-            Advance filter here (without date range)
-          </Grid>
-        }
-      /> */}
     </div>
   );
 }

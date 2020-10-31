@@ -1,7 +1,7 @@
 import { makeFetchAction } from "redux-api-call";
 import { respondToSuccess } from "../middlewares/api-reaction";
 import nfetch from "../libs/nfetch";
-import { getResetter } from "../libs";
+import { getResetter, generateQuery } from "../libs";
 import Router from "next/router";
 import { R_PENDING } from "../enums/requestStatus";
 import { openNotification } from "../utils";
@@ -13,6 +13,7 @@ export const CANCEL_REQUEST = "CancelRequestAPI";
 export const REJECT_REQUEST = "RejectRequestAPI";
 const UPDATE_REQUEST = "UpdateRequestAPI";
 const GET_REQUEST_BY_GROUP_ID = "GetRequestByGroupIdAPI";
+const GET_REQUEST_SUGGEST_BY_PRODUCT_ID = "GetRequestSuggestByProductIdAPI";
 
 // Create new Request
 const CreateRequestAPI = makeFetchAction(CREATE_REQUEST, (object) =>
@@ -36,13 +37,15 @@ const GetRequestPagingAPI = makeFetchAction(
   GET_REQUEST_PAGING,
   ({ status = [], productTitle, fromDate, toDate, pageIndex, pageSize }) => {
     return nfetch({
-      endpoint: `/api/Request/Filter?${
-        status && status.length > 0 ? "statuses=" + status.join(",") + "&" : ""
-      }${productTitle && "productName=" + productTitle + "&"}${
-        fromDate ? "fromDate=" + fromDate + "&" : ""
-      }${
-        toDate ? "toDate=" + toDate + "&" : ""
-      }pageIndex=${pageIndex}&pageSize=${pageSize}&dateDescending=true`,
+      endpoint: `/api/Request/Filter${generateQuery({
+        statuses: status,
+        productName: productTitle,
+        fromDate,
+        toDate,
+        pageIndex,
+        pageSize,
+        dateDescending: true,
+      })}`,
       method: "GET",
     })();
   }
@@ -173,15 +176,56 @@ export const UpdateRequestResetter = getResetter(UpdateRequestAPI);
 // Get Request By Group Id
 const GetRequestByGroupIdAPI = makeFetchAction(
   GET_REQUEST_BY_GROUP_ID,
-  (groupId) =>
+  ({ pageIndex, pageSize, groupId }) =>
     nfetch({
-      endpoint: `/api/Group/Requests?groupId=${groupId}`,
+      endpoint: `/api/Group/Requests${generateQuery({
+        groupId,
+        pageIndex,
+        pageSize,
+      })}`,
       method: "GET",
     })()
 );
 
-export const getRequestByGroupId = (groupId) =>
-  respondToSuccess(GetRequestByGroupIdAPI.actionCreator(groupId));
+export const getRequestByGroupId = ({ pageIndex, pageSize, groupId }) =>
+  respondToSuccess(
+    GetRequestByGroupIdAPI.actionCreator({ pageIndex, pageSize, groupId })
+  );
 export const getRequestByGroupIdData = GetRequestByGroupIdAPI.dataSelector;
 export const getRequestByGroupIdError = GetRequestByGroupIdAPI.errorSelector;
 export const getRequestByGroupIdResetter = getResetter(GetRequestByGroupIdAPI);
+
+// Get Request By Product Id
+const GetRequestSuggestByProductIdAPI = makeFetchAction(
+  GET_REQUEST_SUGGEST_BY_PRODUCT_ID,
+  ({ statuses = [R_PENDING], productId, pageIndex, pageSize }) =>
+    nfetch({
+      endpoint: `/api/Request/Filter${generateQuery({
+        statuses,
+        productId,
+        pageIndex,
+        pageSize,
+      })}`,
+      method: "GET",
+    })()
+);
+
+export const getRequestSuggestByProductId = ({
+  productId,
+  pageIndex,
+  pageSize,
+}) =>
+  respondToSuccess(
+    GetRequestSuggestByProductIdAPI.actionCreator({
+      productId,
+      pageIndex,
+      pageSize,
+    })
+  );
+export const getRequestSuggestByProductIdData =
+  GetRequestSuggestByProductIdAPI.dataSelector;
+export const getRequestSuggestByProductIdError =
+  GetRequestSuggestByProductIdAPI.errorSelector;
+export const getRequestSuggestByProductIdResetter = getResetter(
+  GetRequestSuggestByProductIdAPI
+);

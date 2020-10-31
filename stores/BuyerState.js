@@ -2,11 +2,10 @@ import { makeFetchAction } from "redux-api-call";
 
 import { respondToSuccess } from "../middlewares/api-reaction";
 import nfetch from "../libs/nfetch";
-import { getResetter } from "../libs";
+import { generateQuery, getResetter } from "../libs";
 
 const CREATE_REQUEST = "CreateRequestAPI";
-const GET_REQUEST_PAGING = "GetRequestPagingAPI";
-
+const GET_BUYER_PAGING = "GetBuyerPagingAPI";
 // Get Sourcing Type
 const CreateRequestAPI = makeFetchAction(CREATE_REQUEST, (object) =>
   nfetch({
@@ -21,16 +20,30 @@ export const CreateRequestData = CreateRequestAPI.dataSelector;
 export const CreateRequestError = CreateRequestAPI.errorSelector;
 export const CreateRequestResetter = getResetter(CreateRequestAPI);
 
-// Get Sourcing Type
-// const GetRequestPagingAPI = makeFetchAction(CREATE_REQUEST, ({pageIndex, pageSize, }) =>
-//   nfetch({
-//     endpoint: "/api/Request",
-//   })(object)
-// );
+// Get Buyer Paging
+const GetBuyerPagingAPI = makeFetchAction(
+  GET_BUYER_PAGING,
+  ({ pageIndex, pageSize, statusId, email }) =>
+    nfetch({
+      endpoint: `/api/Buyer/Filter${generateQuery({
+        statusId,
+        email,
+        pageIndex,
+        pageSize,
+      })}`,
+      method: "GET",
+    })()
+);
 
-// export const getRequestPaging = () =>
-//   respondToSuccess(GetRequestPagingAPI.actionCreator());
-
-// export const GetRequestPagingData = GetRequestPagingAPI.dataSelector;
-// export const GetRequestPagingError = GetRequestPagingAPI.errorSelector;
-// export const GetRequestPagingResetter = getResetter(GetRequestPagingAPI);
+export const getBuyerPaging = ({
+  statusId,
+  email,
+  pageIndex = 1,
+  pageSize = 10,
+}) =>
+  respondToSuccess(
+    GetBuyerPagingAPI.actionCreator({ statusId, email, pageIndex, pageSize })
+  );
+export const GetBuyerPagingData = GetBuyerPagingAPI.dataSelector;
+export const GetBuyerPagingError = GetBuyerPagingAPI.errorSelector;
+export const GetBuyerPagingResetter = getResetter(GetBuyerPagingAPI);
