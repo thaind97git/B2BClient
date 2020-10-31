@@ -304,7 +304,9 @@ const BuyerRequestCreateComponent = ({
   createRequestError,
   resetData,
   isUpdate = false,
+  isLoggedIn,
 }) => {
+  console.log({ isLoggedIn });
   const [price, setPrice] = useState(0);
   const router = useRouter();
   const [loadingRFQ, setLoadingRFQ] = useState(false);
@@ -373,7 +375,7 @@ const BuyerRequestCreateComponent = ({
     values.preferredUnitPrice = get("preferredUnitPrice.price")(values) + "";
     values.quantity = values.quantity.number + "";
     values.dueDate = moment.utc(new Date(values.dueDate)).format();
-    values.currencyId = (currencyData || [])[0].id;
+    values.currencyId = get("[0].id")(currencyData);
     values.certifications = values.certifications || [];
     values.leadTime = values.leadTime.number;
     createRequest(values);
@@ -409,44 +411,11 @@ const BuyerRequestCreateComponent = ({
       </Fragment>
     );
   }
-  // else if (isUpdate && (requestDetailsError || !requestDetailsData)) {
-  //   return (
-  //     <Fragment>
-  //       <Empty description="Can not find any request !" />
-  //       <div style={{ textAlign: "center", paddingTop: 32 }}>
-  //         <Button onClick={() => Router.push("/buyer/rfq")} type="primary">
-  //           <LeftOutlined /> Back to RFQ list
-  //         </Button>
-  //       </div>
-  //     </Fragment>
-  //   );
-  // }
+
   let initForm = {};
   if (!isUpdate) {
     initForm.productName = productDetailsData.productName;
-  } else {
-    // initForm.productName = get("product.description")(requestDetailsData);
-    // initForm.sourcingPurposeId = get("sourcingPurpose.id")(requestDetailsData);
-    // initForm.sourcingTypeId = get("sourcingType.description")(
-    //   requestDetailsData
-    // );
-    // initForm.quantity = get("quantity")(requestDetailsData);
-    // initForm.preferredUnitPrice = get("preferredUnitPrice")(requestDetailsData);
-    // initForm.tradeTermId = get("tradeTerm.id")(requestDetailsData);
-    // initForm.dueDate =
-    //   get("dueDate")(requestDetailsData) &&
-    //   moment(get("dueDate")(requestDetailsData));
-    // initForm.description = get("description")(requestDetailsData);
-    // initForm.certifications = get("certifications")(requestDetailsData) || [];
-    // initForm.otherRequirements = get("otherRequirements")(requestDetailsData);
-    // initForm.shippingMethodId = get("shippingMethod.id")(requestDetailsData);
-    // initForm.provinceId = get("province.id")(requestDetailsData);
-    // // getWard(initForm.provinceId);
-    // // initForm.wardId = get("ward.id")(requestDetailsData);
-    // // initForm.districtId = get("district.id")(requestDetailsData);
-    // initForm.address = get("address")(requestDetailsData);
-    // initForm.leadTime = get("leadTime")(requestDetailsData);
-    // initForm.paymentTermId = get("paymentTerm.id")(requestDetailsData);
+    initForm.tradeTermId = 2;
   }
 
   return (
@@ -605,6 +574,7 @@ const BuyerRequestCreateComponent = ({
                       <Select
                         placeholder="Please select"
                         style={{ width: "50%" }}
+                        disabled
                       >
                         {!!tradeTermData &&
                           tradeTermData.map((type) => (

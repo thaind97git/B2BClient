@@ -23,7 +23,6 @@ const ReactTableLayout = ({
   dispatchAction,
   totalCount,
   pageSize = PAGE_SIZE_DEFAULT,
-  t,
   page = PAGE_DEFAULT,
   style = {},
   options = {},
@@ -46,9 +45,6 @@ const ReactTableLayout = ({
   const { dateRange, setDateRange } = dateRangeProps;
   const [pageSizeTable, setPageSizeTable] = useState(pageSize);
   const [pageIndex, setPageIndex] = useState(page);
-  // const [isFetchPaging, setIsFetchPaging] = useState(true);
-  // const [visible, setVisible] = useState(false);
-  // const [conditions, setConditions] = useState(exCondition);
 
   useEffect(() => {
     if (hasPaging && !hasAction) {
@@ -104,14 +100,10 @@ const ReactTableLayout = ({
               setDateRange={setDateRange}
             />
           </Col>
-          <Col item xs={24} sm={12} lg={10}>
+          <Col xs={24} sm={12} lg={10}>
             <Space>
               {exElement}
-              <DateRangePickerComponent
-                t={t}
-                small
-                setDateRange={setDateRange}
-              />
+              <DateRangePickerComponent small setDateRange={setDateRange} />
             </Space>
           </Col>
         </Row>

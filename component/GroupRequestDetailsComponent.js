@@ -296,13 +296,12 @@ const GroupRequestDetailsComponent = ({
       status: <RequestStatusComponent status={request.requestStatus.id} />,
       actions: (
         <Space>
-          {status === G_PENDING && (
+          {status === G_PENDING && requestData.length > 1 && (
             <Button
               onClick={() => {
                 Modal.confirm({
                   title: "Do you want remove this request?",
                   icon: <ExclamationCircleOutlined />,
-                  // content: 'Bla bla ...',
                   okText: "Remove",
                   cancelText: "Cancel",
                   onOk: removeRequestFromGroup({

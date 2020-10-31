@@ -12,7 +12,7 @@ import {
   GetProductPagingData,
   GetProductPagingError,
 } from "../stores/ProductState";
-import AdminProductDetailsComponent from "./AdminProductDetailsComponent"
+import AdminProductDetailsComponent from "./AdminProductDetailsComponent";
 import { get } from "lodash/fp";
 const { Option, OptGroup } = Select;
 const { Title } = Typography;
@@ -23,19 +23,13 @@ const connectToRedux = connect(
     productPagingError: GetProductPagingError,
   }),
   (dispatch) => ({
-    getProduct: (
-      pageIndex,
-      pageSize,
-      searchMessage,
-      dateRange,
-      category
-    ) => {
+    getProduct: (pageIndex, pageSize, searchMessage, dateRange, category) => {
       dispatch(
         getProductPaging({
           pageIndex,
           pageSize,
           categoryID: category,
-          productName: searchMessage
+          productName: searchMessage,
         })
       );
     },
@@ -75,19 +69,14 @@ function handleChange(value) {
 const AdminProductManagementComponent = ({
   productPagingData,
   productPagingError,
-  getProduct
-}
-) => {
+  getProduct,
+}) => {
   const [searchMessage, setSearchMessage] = useState("");
   const [dateRange, setDateRange] = useState(DEFAULT_DATE_RANGE);
   const [openDetails, setOpenDetails] = useState(false);
   const [loading, setLoading] = useState(true);
   const [category, setCategory] = useState("");
   const [currentProductSelected, setCurrentProductSelected] = useState({});
-
-  function handleChange(value) {
-    setCategory(value);
-  }
 
   useEffect(() => {
     if (productPagingError || productPagingData) {
@@ -105,7 +94,7 @@ const AdminProductManagementComponent = ({
         category: get("category.description")(product),
         unit: get("unitOfMeasure.description")(product),
         dateCreated: "30/09/2020 02:07:26 PM",
-        actions:
+        actions: (
           <Button
             onClick={() => {
               setCurrentProductSelected(product);
@@ -115,8 +104,8 @@ const AdminProductManagementComponent = ({
             type="link"
           >
             View
-        </Button>
-        ,
+          </Button>
+        ),
       }))
     );
   };
@@ -127,59 +116,17 @@ const AdminProductManagementComponent = ({
     productData = productPagingData.data;
     totalCount = productPagingData.total;
   }
-  getProductPaging({});
-  // const dataSource = [
-  //   {
-  //     key: "1",
-  //     name: "Apple Watch Sport Band (44mm) - Cyprus Green - Regular",
-  //     category: "Mobile Phone",
-  //     unit: "units",
-  //     dateCreated: "30/09/2020 02:07:26 PM",
-  //     actions: <Link href="#">View</Link>,
-  //   },
-  //   {
-  //     key: "2",
-  //     name: "Sally Hansen Xtreme Wear Daycream",
-  //     category: "Cords",
-  //     unit: "Chains",
-  //     dateCreated: "30/09/2020 02:07:26 PM",
-  //     actions: <Link href="#">View</Link>,
-  //   },
-  //   {
-  //     key: "3",
-  //     name: "BEST PENTIUM PRO GOLD CERAMIC CPU SCRAP / HIGH GRADE CPU SCRAP",
-  //     category: "CPUs",
-  //     unit: "units",
-  //     dateCreated: "30/09/2020 02:07:26 PM",
-  //     actions: <Link href="#">View</Link>,
-  //   },
-  //   {
-  //     key: "4",
-  //     name: "Factory price is high quality and cheap Single Head Cutting Saw",
-  //     category: "Building Material Making Machinery Parts",
-  //     unit: "units",
-  //     dateCreated: "30/09/2020 02:07:26 PM",
-  //     actions: <Link href="#">View</Link>,
-  //   },
-  //   {
-  //     key: "5",
-  //     name:
-  //       "7Inch 2 din touch screen Car Multimedia MP5 player with Bluetooth functions",
-  //     category: "Auto Electrical Systems",
-  //     unit: "Pieces",
-  //     dateCreated: "30/09/2020 02:07:26 PM",
-  //     actions: <Link href="#">View</Link>,
-  //   },
-  // ];
+
   return (
     <div>
       <Row justify="space-between">
         <Title level={4}>Product List</Title>
-        <Button onClick={() => { }} type="primary">
+        <Button onClick={() => {}} type="primary">
           <a href="/admin/product/create">Create new product</a>
         </Button>
       </Row>
       <ReactTableLayout
+        loading={loading}
         dispatchAction={getProduct}
         searchProps={{
           placeholder: "Search by product name",
@@ -190,7 +137,8 @@ const AdminProductManagementComponent = ({
               <AllCategoryComponent
                 onGetLastValue={(value) => setCategory(value)}
                 size="large"
-                isSearchStyle={false} />
+                isSearchStyle={false}
+              />
             </Fragment>
           ),
           exCondition: [category],

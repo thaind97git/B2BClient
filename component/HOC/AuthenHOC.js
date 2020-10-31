@@ -31,16 +31,21 @@ function withAuth(AuthComponent) {
     };
 
     componentDidMount() {
-      console.log(this.props.currentUserError);
-      console.log(this.props.currentUser);
       if (!isServer) {
         const scope = getScopeByUrl(Router.pathname);
         this.props.dispatch(getCurrentUser({ scope }));
+        if (this.props.currentUserError) {
+          Router.push(
+            `/login?returnUrl=${Router.pathname}${window.location.search}`
+          );
+        }
       }
     }
 
+    componentWillUnmount() {}
+
     render() {
-      const { currentUser } = this.props;
+      const { currentUser, currentUserError } = this.props;
       const scope = isServer ? null : getScopeByUrl(Router.pathname);
       return (
         <div>

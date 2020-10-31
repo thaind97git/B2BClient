@@ -3,12 +3,14 @@ import { generateQuery, getResetter } from "../libs";
 import nfetch from "../libs/nfetch";
 import { respondToSuccess } from "../middlewares/api-reaction";
 import { DEFAULT_PAGING_INFO } from "../utils";
+import { getBuyerPaging } from "./BuyerState";
 
 const GET_SUPPLIER_BY_GROUP_ID = "GetSupplierByGroupIdAPI";
 const GET_SUPPLIER_PAGING = "GetSupplierPagingAPI";
-const BAN_USER = "BanUserAPI";
-const UN_BAN_USER = "UnBanUserAPI";
+export const BAN_USER = "BanUserAPI";
+export const UN_BAN_USER = "UnBanUserAPI";
 const GET_SUPPLIER_BY_PRODUCT_ID = "GetSupplierByProductIdAPI";
+const GET_USER_DETAILS = "GetUserDetailsAPI";
 
 // Get Supplier By Group Id
 const GetSupplierByGroupIdAPI = makeFetchAction(
@@ -40,7 +42,7 @@ export const GetSupplierByGroupIdResetter = getResetter(
 
 // Get Supplier By Product Id
 const GetSupplierByProductIdAPI = makeFetchAction(
-  GET_SUPPLIER_BY_GROUP_ID,
+  GET_SUPPLIER_BY_PRODUCT_ID,
   ({ productId, pageIndex, pageSize }) =>
     nfetch({
       endpoint: `/api/Supplier/Product${generateQuery({
@@ -104,16 +106,21 @@ const BanUserAPI = makeFetchAction(BAN_USER, ({ id, description }) =>
   })({ id, description })
 );
 
-export const banUser = ({ id, description }) =>
+export const banUser = ({ id, description, isSupplier = true }) =>
   respondToSuccess(
     BanUserAPI.actionCreator({ id, description }),
     (resp, _, store) => {
       if (resp) {
         store.dispatch(
-          getSupplierPaging({
-            pageIndex: DEFAULT_PAGING_INFO.page,
-            pageSize: DEFAULT_PAGING_INFO.pageSize,
-          })
+          isSupplier
+            ? getSupplierPaging({
+                pageIndex: DEFAULT_PAGING_INFO.page,
+                pageSize: DEFAULT_PAGING_INFO.pageSize,
+              })
+            : getBuyerPaging({
+                pageIndex: DEFAULT_PAGING_INFO.page,
+                pageSize: DEFAULT_PAGING_INFO.pageSize,
+              })
         );
       }
     }
@@ -130,17 +137,29 @@ const UnBanUserAPI = makeFetchAction(UN_BAN_USER, ({ id }) =>
   })()
 );
 
-export const unBanUser = ({ id }) =>
+export const unBanUser = ({ id, isSupplier = true }) =>
   respondToSuccess(UnBanUserAPI.actionCreator({ id }), (resp, _, store) => {
     if (resp) {
       store.dispatch(
-        getSupplierPaging({
-          pageIndex: DEFAULT_PAGING_INFO.page,
-          pageSize: DEFAULT_PAGING_INFO.pageSize,
-        })
+        isSupplier
+          ? getSupplierPaging({
+              pageIndex: DEFAULT_PAGING_INFO.page,
+              pageSize: DEFAULT_PAGING_INFO.pageSize,
+            })
+          : getBuyerPaging({
+              pageIndex: DEFAULT_PAGING_INFO.page,
+              pageSize: DEFAULT_PAGING_INFO.pageSize,
+            })
       );
     }
   });
 export const UnBanUserData = UnBanUserAPI.dataSelector;
 export const UnBanUserError = UnBanUserAPI.errorSelector;
 export const UnBanUserResetter = getResetter(UnBanUserAPI);
+
+// Get User details
+const GetUserDetailsAPI = makeFetchAction(GET_USER_DETAILS, (id) =>
+  nfetch({
+    endpoint: "/api",
+  })()
+);

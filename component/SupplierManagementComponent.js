@@ -1,4 +1,5 @@
 import { Button, Drawer, Popover, Row, Select, Space, Typography } from "antd";
+import { ExclamationCircleOutlined } from "@ant-design/icons";
 import React, { useEffect, useState } from "react";
 import ReactTableLayout from "../layouts/ReactTableLayout";
 import {
@@ -31,6 +32,9 @@ import {
   GetSupplierPagingError,
   unBanUser,
 } from "../stores/SupplierState";
+import UserStatusComponent from "./Utils/UserStatusComponent";
+import { U_ACTIVE, U_BANNED } from "../enums/accountStatus";
+import Modal from "antd/lib/modal/Modal";
 const { Option } = Select;
 const { Title } = Typography;
 
@@ -58,7 +62,7 @@ const connectToRedux = connect(
     },
     banSupplier: ({ id, description }) =>
       dispatch(banUser({ id, description })),
-    unBanSupplier: (id) => dispatch(unBanUser({ id })),
+    unBanSupplier: ({ id }) => dispatch(unBanUser({ id })),
   })
 );
 
@@ -120,34 +124,60 @@ const SupplierManagementComponent = ({
   }
   const getSupplierTable = (supplierData = []) => {
     return supplierData
-      ? supplierData.map((supplier = {}) => ({
-          key: supplier.id,
-          email: supplier.email,
-          fullName: `${supplier.firstName} ${supplier.lastName}`,
-          companyName: supplier.companyName,
-          phoneNumber: supplier.phoneNumber,
-          status: <RequestStatusComponent status={null} />,
-          actions: (
-            <Space>
-              <Button type="primary" danger onClick={() => {}} size="small">
-                Ban
-              </Button>
-              <Button type="primary" onClick={() => {}} size="small">
-                UnBan
-              </Button>
-              <Button
-                onClick={() => {
-                  setCurrentSupplierSelected(supplier);
-                  setOpenDetails(true);
-                }}
-                size="small"
-                type="link"
-              >
-                View
-              </Button>
-            </Space>
-          ),
-        }))
+      ? supplierData.map((supplier = {}) => {
+          const supplierStatus = get("userStatus.id")(supplier);
+          return {
+            key: supplier.id,
+            email: supplier.email,
+            fullName: `${supplier.firstName} ${supplier.lastName}`,
+            companyName: supplier.companyName,
+            phoneNumber: supplier.phoneNumber,
+            status: <UserStatusComponent status={supplierStatus} />,
+            actions: (
+              <Space>
+                {+supplierStatus === U_ACTIVE && (
+                  <Button
+                    type="primary"
+                    danger
+                    onClick={() => {
+                      Modal.confirm({
+                        title: "Do you want ban this account?",
+                        icon: <ExclamationCircleOutlined />,
+                        okText: "Ban",
+                        cancelText: "Cancel",
+                        onOk: () => {
+                          banSupplier({ id: supplier.id });
+                        },
+                      });
+                    }}
+                    size="small"
+                  >
+                    Ban
+                  </Button>
+                )}
+                {+supplierStatus === U_BANNED && (
+                  <Button
+                    type="primary"
+                    onClick={() => {
+                      Modal.confirm({
+                        title: "Do you want active this account?",
+                        icon: <ExclamationCircleOutlined />,
+                        okText: "Active",
+                        cancelText: "Cancel",
+                        onOk: () => {
+                          unBanSupplier({ id: supplier.id });
+                        },
+                      });
+                    }}
+                    size="small"
+                  >
+                    Active
+                  </Button>
+                )}
+              </Space>
+            ),
+          };
+        })
       : [];
   };
 

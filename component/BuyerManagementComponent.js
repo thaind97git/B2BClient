@@ -1,12 +1,8 @@
-import { Button, Drawer, Popover, Row, Select, Space, Typography } from "antd";
+import { Button, Drawer, Row, Select, Space, Typography } from "antd";
+import { ExclamationCircleOutlined } from "@ant-design/icons";
 import React, { useEffect, useState } from "react";
 import ReactTableLayout from "../layouts/ReactTableLayout";
-import {
-  DATE_TIME_FORMAT,
-  DEFAULT_DATE_RANGE,
-  displayCurrency,
-} from "../utils";
-import RequestStatusComponent from "./Utils/RequestStatusComponent";
+import { DEFAULT_DATE_RANGE } from "../utils";
 import {
   R_BIDDING,
   R_CANCELED,
@@ -21,12 +17,7 @@ import {
 import RequestDetailsComponent from "./RequestDetailsComponent";
 import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
-import {
-  getRequestPaging,
-  GetRequestPagingData,
-  GetRequestPagingError,
-} from "../stores/RequestState";
-import Moment from "react-moment";
+
 import { get } from "lodash/fp";
 import {
   getBuyerPaging,
@@ -34,6 +25,9 @@ import {
   GetBuyerPagingError,
 } from "../stores/BuyerState";
 import { banUser, unBanUser } from "../stores/SupplierState";
+import UserStatusComponent from "./Utils/UserStatusComponent";
+import { U_ACTIVE, U_BANNED } from "../enums/accountStatus";
+import Modal from "antd/lib/modal/Modal";
 const { Option } = Select;
 const { Title } = Typography;
 
@@ -53,8 +47,9 @@ const connectToRedux = connect(
         })
       );
     },
-    banBuyer: ({ id, description }) => dispatch(banUser({ id, description })),
-    unBanBuyer: (id) => dispatch(unBanUser({ id })),
+    banBuyer: ({ id, description }) =>
+      dispatch(banUser({ id, description, isSupplier: false })),
+    unBanBuyer: ({ id }) => dispatch(unBanUser({ id, isSupplier: false })),
   })
 );
 
@@ -116,21 +111,11 @@ const BuyerManagementComponent = ({
   }
   const getBuyerTable = (buyerData = []) => {
     return buyerData
-      ? buyerData.map((buyer = {}) => ({
-          key: buyer.id,
-          email: buyer.email,
-          fullName: `${buyer.firstName} ${buyer.lastName}`,
-          companyName: buyer.companyName,
-          phoneNumber: buyer.phoneNumber,
-          status: <RequestStatusComponent status={null} />,
-          actions: (
-            <Space>
-              <Button type="primary" danger onClick={() => {}} size="small">
-                Ban
-              </Button>
-              <Button type="primary" onClick={() => {}} size="small">
-                UnBan
-              </Button>
+      ? buyerData.map((buyer = {}) => {
+          const buyerStatus = get("userStatus.id")(buyer);
+          return {
+            key: buyer.id,
+            email: (
               <Button
                 onClick={() => {
                   setCurrentBuyerSelected(buyer);
@@ -139,11 +124,58 @@ const BuyerManagementComponent = ({
                 size="small"
                 type="link"
               >
-                View
+                {buyer.email}
               </Button>
-            </Space>
-          ),
-        }))
+            ),
+            fullName: `${buyer.firstName} ${buyer.lastName}`,
+            companyName: buyer.companyName,
+            phoneNumber: buyer.phoneNumber,
+            status: <UserStatusComponent status={buyerStatus} />,
+            actions: (
+              <Space>
+                {+buyerStatus === U_ACTIVE && (
+                  <Button
+                    type="primary"
+                    danger
+                    onClick={() => {
+                      Modal.confirm({
+                        title: "Do you want ban this account?",
+                        icon: <ExclamationCircleOutlined />,
+                        okText: "Ban",
+                        cancelText: "Cancel",
+                        onOk: () => {
+                          banBuyer({ id: buyer.id });
+                        },
+                      });
+                    }}
+                    size="small"
+                  >
+                    Ban
+                  </Button>
+                )}
+                {+buyerStatus === U_BANNED && (
+                  <Button
+                    type="primary"
+                    onClick={() => {
+                      Modal.confirm({
+                        title: "Do you want active this account?",
+                        icon: <ExclamationCircleOutlined />,
+                        okText: "Active",
+                        cancelText: "Cancel",
+                        onOk: () => {
+                          unBanBuyer({ id: buyer.id });
+                        },
+                      });
+                    }}
+                    size="small"
+                  >
+                    Active
+                  </Button>
+                )}
+              </Space>
+            ),
+          };
+        })
       : [];
   };
 
