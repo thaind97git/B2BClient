@@ -7,6 +7,7 @@ import {
   getCurrentUser,
   verifyScopeAndRole,
   CurrentUserError,
+  CurrentUserResetter,
 } from "../../stores/UserState";
 import { isServer } from "../../utils";
 import { Row, Spin } from "antd";
@@ -17,6 +18,10 @@ const connectWithRedux = connect(
   createStructuredSelector({
     currentUser: CurrentUserData,
     currentUserError: CurrentUserError,
+  }),
+  (dispatch) => ({
+    resetData: () => dispatch(CurrentUserResetter),
+    getCurrentUser: ({ scope }) => dispatch(getCurrentUser({ scope })),
   })
 );
 
@@ -33,19 +38,23 @@ function withAuth(AuthComponent) {
     componentDidMount() {
       if (!isServer) {
         const scope = getScopeByUrl(Router.pathname);
-        this.props.dispatch(getCurrentUser({ scope }));
-        if (this.props.currentUserError) {
-          Router.push(
-            `/login?returnUrl=${Router.pathname}${window.location.search}`
-          );
-        }
+        this.props.getCurrentUser({ scope });
+      }
+      if (this.props.currentUserError) {
+        Router.push(
+          `/login?returnUrl=${Router.pathname}${window.location.search}`
+        );
       }
     }
 
-    componentWillUnmount() {}
+    componentWillUnmount() {
+      if (this.props.currentUserError) {
+        this.props.resetData();
+      }
+    }
 
     render() {
-      const { currentUser, currentUserError } = this.props;
+      const { currentUser } = this.props;
       const scope = isServer ? null : getScopeByUrl(Router.pathname);
       return (
         <div>
