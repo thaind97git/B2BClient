@@ -40,23 +40,41 @@ const GetProductPagingAPI = makeFetchAction(
   GET_PRODUCT_PAGING,
   ({ productName, categoryID, pageSize, pageIndex }) => {
     return nfetch({
-      endpoint: `/api/Product/Filter?${productName ? "name=" + productName + "&" : ""}${categoryID ? (categoryID != "all" ? "categoryId=" + categoryID + "&" : "") : ""}${pageIndex ? "pageIndex=" + pageIndex + "&" : ""}${pageSize ? "pageSize=" + pageSize + "&" : ""}`,
+      endpoint: `/api/Product/Filter?${
+        productName ? "name=" + productName + "&" : ""
+      }${
+        categoryID
+          ? categoryID != "all"
+            ? "categoryId=" + categoryID + "&"
+            : ""
+          : ""
+      }${pageIndex ? "pageIndex=" + pageIndex + "&" : ""}${
+        pageSize ? "pageSize=" + pageSize + "&" : ""
+      }`,
       method: "GET",
-    })()
+    })();
   }
 );
 
-export const getProductPaging = ({ productName, categoryID, pageSize, pageIndex }) =>
+export const getProductPaging = ({
+  productName,
+  categoryID,
+  pageSize,
+  pageIndex,
+}) =>
   respondToSuccess(
-    GetProductPagingAPI.actionCreator({ productName, categoryID, pageSize, pageIndex }),
-    () => { }
+    GetProductPagingAPI.actionCreator({
+      productName,
+      categoryID,
+      pageSize,
+      pageIndex,
+    }),
+    () => {}
   );
 
 export const GetProductPagingData = GetProductPagingAPI.dataSelector;
 export const GetProductPagingError = GetProductPagingAPI.errorSelector;
-export const getProductPagingResetter = getResetter(
-  GetProductPagingAPI
-);
+export const getProductPagingResetter = getResetter(GetProductPagingAPI);
 
 // Product Details
 const GetProductDetailsAPI = makeFetchAction(GET_PRODUCT_DETAILS, (id) =>
@@ -93,7 +111,7 @@ const onUploadImage = (productId, fileList) => {
   };
 
   fetch(
-    `http://103.92.29.179:1234/api/Product/ProductImage/${productId}`,
+    `${process.env.API_SERVER_URL}/api/Product/ProductImage/${productId}`,
     requestOptions
   );
 };

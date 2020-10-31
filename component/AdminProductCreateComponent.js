@@ -83,7 +83,6 @@ const AdminProductCreateComponent = ({
     } else if (!fileList || fileList.length === 0) {
       openNotification("error", { message: "Please upload product image" });
     } else {
-      console.log(values);
       values.categoryId = categorySelected[categorySelected.length - 1].id;
       values.description = values.description.value;
       createNewProduct(values, fileList);
@@ -92,7 +91,6 @@ const AdminProductCreateComponent = ({
   };
 
   const checkDescription = (rule, value = {}) => {
-    console.log({ value });
     if (value.value) {
       return Promise.resolve();
     }
@@ -101,7 +99,6 @@ const AdminProductCreateComponent = ({
   };
 
   const onChange = ({ fileList: newFileList }) => {
-    console.log({ newFileList });
     setFileList(newFileList);
   };
 
@@ -111,8 +108,6 @@ const AdminProductCreateComponent = ({
     if (!file.url && !file.preview) {
       file.preview = await getBase64(file.originFileObj);
     }
-    console.log(file.url);
-    console.log(file);
     setPreview({
       previewImage: file.url || file.preview,
       previewVisible: true,
@@ -234,7 +229,6 @@ const AdminProductCreateComponent = ({
                         </Option>
                       ))}
                   </Select>
-                  {/* <QuantityInput unitData={unitData} /> */}
                 </FormItem>
               </Col>
             </Row>

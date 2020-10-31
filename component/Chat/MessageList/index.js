@@ -8,8 +8,7 @@ import { HubConnectionBuilder } from "@microsoft/signalr";
 import { getToken } from "../../../libs/localStorage";
 const MY_USER_ID = "apple";
 
-const API_SERVER_URL =
-  process.env.API_SERVER_URL || "http://103.92.29.179:1234";
+const API_SERVER_URL = process.env.API_SERVER_URL || "http://34.87.135.69:5555";
 
 export default function MessageList({ props }) {
   const [messages, setMessages] = useState([]);
