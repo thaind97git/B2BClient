@@ -200,7 +200,7 @@ class SupplierProductOptionComponent extends React.Component {
             marginBottom: 16,
           }}
         >
-          Add an option
+          Add an quotation
         </Button>
         <Table
           components={components}

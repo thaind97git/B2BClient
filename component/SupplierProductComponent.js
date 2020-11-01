@@ -3,8 +3,10 @@ import {
   Button,
   Col,
   Drawer,
+  Image,
   List,
   Modal,
+  Pagination,
   Row,
   Skeleton,
   Typography,
@@ -15,20 +17,30 @@ import ProductDetailComponent from "./ProductDetailComponent";
 import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
 import {
-  getProductByCategory,
-  GetProductByCategoryData,
-  GetProductByCategoryError,
+  getProductPaging,
+  GetProductPagingData,
+  GetProductPagingError,
 } from "../stores/ProductState";
 import SupplierProductOptionComponent from "./SupplierProductOptionComponent";
+import { DEFAULT_PAGING_INFO, fallbackImage } from "../utils";
+import { get } from "lodash/fp";
+import AdminProductDetailsComponent from "./AdminProductDetailsComponent";
 const { Title } = Typography;
 const connectToRedux = connect(
   createStructuredSelector({
-    getProductByCategoryData: GetProductByCategoryData,
-    getProductByCategoryError: GetProductByCategoryError,
+    getProductPagingData: GetProductPagingData,
+    getProductPagingError: GetProductPagingError,
   }),
   (dispatch) => ({
-    getProductByCategory: (id, pageSize, pageIndex) =>
-      dispatch(getProductByCategory(id, pageSize, pageIndex)),
+    getProductPaging: ({ categoryID, productName, pageSize, pageIndex }) =>
+      dispatch(
+        getProductPaging({
+          categoryID,
+          productName,
+          pageIndex,
+          pageSize,
+        })
+      ),
   })
 );
 const LIST_PRODUCT = [
@@ -101,67 +113,65 @@ const LIST_PRODUCT = [
 const recordInOnePage = 10;
 
 const SupplierProductComponent = ({
-  getProductByCategory,
-  getProductByCategoryData,
-  getProductByCategoryError,
+  getProductPaging,
+  getProductPagingData,
+  getProductPagingError,
 }) => {
   const [currentCateSelected, setCurrentCateSelected] = useState("");
   const [openDetails, setOpenDetails] = useState(false);
   const [category, setCategory] = useState("all");
   const [searchMessage, setSearchMessage] = useState("");
-  const [pageSize, setPageSize] = useState(recordInOnePage);
-  const pageIndex = 1;
+  const [pageIndex, setPageIndex] = useState(DEFAULT_PAGING_INFO.page);
+  const pageSize = DEFAULT_PAGING_INFO.pageSize;
+  const [firstLoad, setFirstLoad] = useState(true);
+  const [currentProductIdSelected, setCurrentProductIdSelected] = useState(
+    null
+  );
 
   const [loading, setLoading] = useState(false);
-  const [data, setData] = useState([]);
-  const [list, setList] = useState([]);
 
   const [openOption, setOpenOption] = useState(false);
 
   useEffect(() => {
-    if (getProductByCategoryData) {
-      const newData = data.concat(getProductByCategoryData.data);
-      setLoading(false);
-      setData(newData);
-      setList(newData);
-      window.dispatchEvent(new Event("resize"));
-    }
-  }, [getProductByCategoryData]);
-
-  const onLoadMore = () => {
-    if (searchMessage) {
+    if (firstLoad) {
       setLoading(true);
-      setList(
-        data.concat(
-          [...new Array(recordInOnePage)].map(() => ({
-            loading: true,
-            name: {},
-          }))
-        )
-      );
-      getProductByCategory(category, pageSize, pageIndex);
+      getProductPaging({
+        categoryID: "",
+        productName: "",
+        pageIndex,
+        pageSize,
+      });
+      setFirstLoad(false);
     }
-  };
-  let totalCount = 0;
-  if (getProductByCategoryData) {
-    totalCount = getProductByCategoryData.total;
+  }, []);
+
+  useEffect(() => {
+    setLoading(true);
+    getProductPaging({
+      categoryID: category,
+      productName: searchMessage,
+      pageSize,
+      pageIndex,
+    });
+  }, [pageIndex]);
+
+  useEffect(() => {
+    if (getProductPagingData || getProductPagingError) {
+      setLoading(false);
+    }
+  }, [getProductPagingData, getProductPagingError]);
+
+  let productData = [],
+    totalCount = 0;
+  if (getProductPagingData) {
+    productData = getProductPagingData.data;
+    totalCount = getProductPagingData.total;
   }
 
-  const loadMore =
-    list.length < totalCount && !loading ? (
-      <div
-        style={{
-          textAlign: "center",
-          marginTop: 12,
-          height: 32,
-          lineHeight: "32px",
-        }}
-      >
-        <Button type="primary" onClick={onLoadMore}>
-          Loading more
-        </Button>
-      </div>
-    ) : null;
+  if (loading) {
+    return <Skeleton active />;
+  }
+
   return (
     <div>
       <Modal
@@ -181,14 +191,19 @@ const SupplierProductComponent = ({
         closable={true}
         onClose={() => setOpenDetails(false)}
         visible={openDetails}
-        key={"right"}
+        key={"product-details"}
       >
-        <ProductDetailComponent />
+        {openDetails ? (
+          <AdminProductDetailsComponent
+            isSupplier
+            productID={currentProductIdSelected}
+          />
+        ) : null}
       </Drawer>
       <Row>
         <Col span={24}>
           <Row style={{ marginBottom: 32 }} justify="center">
-            <Col span={18} id="search-product">
+            <Col span={22} id="search-product">
               <Title level={5}>Search product inside system</Title>
               <Search
                 value={searchMessage}
@@ -208,7 +223,12 @@ const SupplierProductComponent = ({
                 onSearch={(value) => {
                   if (value) {
                     setLoading(true);
-                    getProductByCategory(category, pageSize, pageIndex);
+                    getProductPaging({
+                      categoryID: category,
+                      productName: searchMessage,
+                      pageSize,
+                      pageIndex,
+                    });
                   }
                   setSearchMessage(value);
                 }}
@@ -219,26 +239,28 @@ const SupplierProductComponent = ({
         </Col>
         <Col span={24}>
           <Row justify="center">
-            <Col id="list-product-supplier" span={18}>
+            <Col id="list-product-supplier" span={22}>
               <List
                 className="demo-loadmore-list"
                 itemLayout="horizontal"
-                loadMore={loadMore}
-                dataSource={LIST_PRODUCT}
+                dataSource={productData || []}
                 renderItem={(item, index) => (
                   <List.Item
                     key={index}
-                    actions={
-                      !item.loading && [
-                        <Button
-                          onClick={() => setOpenOption(true)}
-                          size="small"
-                          type="primary"
-                        >
-                          Register Sell product
-                        </Button>,
-                      ]
-                    }
+                    actions={[
+                      <div>
+                        Unit: <b>{get("unitOfMeasure.description")(item)}</b>
+                      </div>,
+                      <Button
+                        onClick={() => {
+                          setOpenOption(true);
+                        }}
+                        size="small"
+                        type="primary"
+                      >
+                        Register Sell product
+                      </Button>,
+                    ]}
                   >
                     <Skeleton
                       avatar
@@ -248,15 +270,21 @@ const SupplierProductComponent = ({
                     >
                       <List.Item.Meta
                         avatar={
-                          <img
-                            style={{ padding: 8 }}
-                            alt="example"
-                            src={item.image}
+                          <Image
+                            width={200}
+                            height={200}
+                            src={item.images[0]}
+                            fallback={fallbackImage}
                           />
                         }
                         title={
-                          <b onClick={() => setOpenDetails(true)}>
-                            <a href="#">{item.title}</a>
+                          <b
+                            onClick={() => {
+                              setCurrentProductIdSelected(item.id);
+                              setOpenDetails(true);
+                            }}
+                          >
+                            <a>{item.productName}</a>
                           </b>
                         }
                         description={
@@ -267,25 +295,21 @@ const SupplierProductComponent = ({
                           />
                         }
                       />
-                      <div>
-                        Unit: <b>{item.unit}</b>
-                      </div>
                     </Skeleton>
                   </List.Item>
                 )}
               />
-              {/* <Row justify="center">
-                <Button
-                  style={{ marginTop: 40 }}
-                  type="primary"
-                  onClick={() => {
-                    setPageSize((prev) => prev + recordInOnePage);
-                  }}
-                >
-                  Load more
-                </Button>
-              </Row> */}
             </Col>
+          </Row>
+        </Col>
+        <Col span={22}>
+          <Row style={{ marginTop: 24 }} justify="center">
+            <Pagination
+              current={pageIndex}
+              total={totalCount}
+              pageSize={DEFAULT_PAGING_INFO.pageSize}
+              onChange={(page) => setPageIndex(page)}
+            />
           </Row>
         </Col>
       </Row>

@@ -156,10 +156,3 @@ export const unBanUser = ({ id, isSupplier = true }) =>
 export const UnBanUserData = UnBanUserAPI.dataSelector;
 export const UnBanUserError = UnBanUserAPI.errorSelector;
 export const UnBanUserResetter = getResetter(UnBanUserAPI);
-
-// Get User details
-const GetUserDetailsAPI = makeFetchAction(GET_USER_DETAILS, (id) =>
-  nfetch({
-    endpoint: "/api",
-  })()
-);

@@ -118,7 +118,7 @@ const AdminRequestManagement = ({
   const [openDetails, setOpenDetails] = useState(false);
   const [currentRequestSelected, setCurrentRequestSelected] = useState({});
 
-  const [category, setCategory] = useState("");
+  const [category, setCategory] = useState("all");
   const [loading, setLoading] = useState(true);
 
   const [currentGroupId, setCurrentGroupId] = useState(null);

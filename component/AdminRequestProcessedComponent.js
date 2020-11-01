@@ -97,7 +97,7 @@ const AdminRequestProcessedComponent = ({
   const [dateRange, setDateRange] = useState(DEFAULT_DATE_RANGE);
   const [openDetails, setOpenDetails] = useState(false);
   const [currentRequestSelected, setCurrentRequestSelected] = useState({});
-  const [category, setCategory] = useState("");
+  const [category, setCategory] = useState("all");
 
   useEffect(() => {
     return () => {

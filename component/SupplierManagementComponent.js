@@ -33,7 +33,12 @@ import {
   unBanUser,
 } from "../stores/SupplierState";
 import UserStatusComponent from "./Utils/UserStatusComponent";
-import { U_ACTIVE, U_BANNED } from "../enums/accountStatus";
+import {
+  U_ACTIVE,
+  U_BANNED,
+  U_PENDING,
+  U_REJECT,
+} from "../enums/accountStatus";
 import Modal from "antd/lib/modal/Modal";
 const { Option } = Select;
 const { Title } = Typography;
@@ -56,7 +61,7 @@ const connectToRedux = connect(
           pageSize,
           pageIndex,
           email: searchMessage,
-          status: [status],
+          statusId: status,
         })
       );
     },
@@ -109,7 +114,7 @@ const SupplierManagementComponent = ({
   const [searchMessage, setSearchMessage] = useState("");
   const [dateRange, setDateRange] = useState(DEFAULT_DATE_RANGE);
   const [openDetails, setOpenDetails] = useState(false);
-  const [currentRequestSelected, setCurrentSupplierSelected] = useState({});
+  const [currentSupplierSelected, setCurrentSupplierSelected] = useState({});
   const [status, setStatus] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -128,7 +133,18 @@ const SupplierManagementComponent = ({
           const supplierStatus = get("userStatus.id")(supplier);
           return {
             key: supplier.id,
-            email: supplier.email,
+            email: (
+              <Button
+                onClick={() => {
+                  setCurrentSupplierSelected(supplier);
+                  setOpenDetails(true);
+                }}
+                size="small"
+                type="link"
+              >
+                {supplier.email}
+              </Button>
+            ),
             fullName: `${supplier.firstName} ${supplier.lastName}`,
             companyName: supplier.companyName,
             phoneNumber: supplier.phoneNumber,
@@ -199,12 +215,7 @@ const SupplierManagementComponent = ({
           visible={openDetails}
           key={"right"}
         >
-          {openDetails ? (
-            <RequestDetailsComponent
-              setOpenDetails={setOpenDetails}
-              requestId={currentRequestSelected.id}
-            />
-          ) : null}
+          null
         </Drawer>
         <Title level={4}>Supplier Management</Title>
       </Row>
@@ -222,21 +233,17 @@ const SupplierManagementComponent = ({
               placeholder="Filter by status"
               style={{ width: 200 }}
               onChange={handleChange}
-              defaultValue=""
+              defaultValue="all"
             >
-              <Option value="">All Status</Option>
-              <Option value={R_PENDING}>Pending</Option>
-              <Option value={R_DONE}>Done</Option>
-              <Option value={R_REJECTED}>Rejected</Option>
-              <Option value={R_CANCELED}>Canceled</Option>
-              <Option value={R_ORDERED}>Ordered</Option>
-              <Option value={R_BIDDING}>Bidding</Option>
-              <Option value={R_WAIT_FOR_AUCTION}>Wait for Auction</Option>
-              <Option value={R_GROUPED}>Grouping</Option>
-              <Option value={R_NEGOTIATING}>Negotiating</Option>
+              <Option value="all">All Status</Option>
+              <Option value={U_PENDING}>Pending</Option>
+              <Option value={U_ACTIVE}>Activating</Option>
+              <Option value={U_BANNED}>Banned</Option>
+              <Option value={U_REJECT}>Rejected</Option>
             </Select>
           ),
           exCondition: [status],
+          isDateRange: false,
         }}
         dateRangeProps={{
           dateRange,

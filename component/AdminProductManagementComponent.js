@@ -1,9 +1,7 @@
-import { Button, Select, Drawer, Row, Typography } from "antd";
-import Link from "next/link";
+import { Button, Drawer, Row, Typography } from "antd";
 import React, { Fragment, useState, useEffect } from "react";
 import ReactTableLayout from "../layouts/ReactTableLayout";
-import { DEFAULT_DATE_RANGE, displayCurrency } from "../utils";
-import { createLink } from "../libs";
+import { DEFAULT_DATE_RANGE } from "../utils";
 import AllCategoryComponent from "./AllCategoryComponent";
 import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
@@ -14,7 +12,6 @@ import {
 } from "../stores/ProductState";
 import AdminProductDetailsComponent from "./AdminProductDetailsComponent";
 import { get } from "lodash/fp";
-const { Option, OptGroup } = Select;
 const { Title } = Typography;
 
 const connectToRedux = connect(
@@ -52,20 +49,18 @@ const columns = [
     dataIndex: "unit",
     key: "unit",
   },
-  {
-    title: "Date Created",
-    dataIndex: "dateCreated",
-    key: "dateCreated",
-  },
+  // {
+  //   title: "Date Created",
+  //   dataIndex: "dateCreated",
+  //   key: "dateCreated",
+  // },
   {
     title: "Actions",
     dataIndex: "actions",
     key: "actions",
   },
 ];
-function handleChange(value) {
-  console.log(`selected ${value}`);
-}
+
 const AdminProductManagementComponent = ({
   productPagingData,
   productPagingError,
@@ -75,7 +70,7 @@ const AdminProductManagementComponent = ({
   const [dateRange, setDateRange] = useState(DEFAULT_DATE_RANGE);
   const [openDetails, setOpenDetails] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [category, setCategory] = useState("");
+  const [category, setCategory] = useState("all");
   const [currentProductSelected, setCurrentProductSelected] = useState({});
 
   useEffect(() => {
@@ -93,7 +88,6 @@ const AdminProductManagementComponent = ({
         name: product.productName,
         category: get("category.description")(product),
         unit: get("unitOfMeasure.description")(product),
-        dateCreated: "30/09/2020 02:07:26 PM",
         actions: (
           <Button
             onClick={() => {
@@ -135,6 +129,7 @@ const AdminProductManagementComponent = ({
           exElement: (
             <Fragment>
               <AllCategoryComponent
+                changeOnSelect={true}
                 onGetLastValue={(value) => setCategory(value)}
                 size="large"
                 isSearchStyle={false}
@@ -142,6 +137,7 @@ const AdminProductManagementComponent = ({
             </Fragment>
           ),
           exCondition: [category],
+          isDateRange: false,
         }}
         dateRangeProps={{
           dateRange,
