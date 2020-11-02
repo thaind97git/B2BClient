@@ -15,10 +15,11 @@ const GET_PRODUCT_BY_SUPPLIER = "GetProductBySupplierAPI";
 
 const GetProductByCategoryAPI = makeFetchAction(
   GET_PRODUCT_BY_CATEGORY,
-  (categoryId, pageSize, pageIndex) =>
+  (categoryId, pageSize, pageIndex, name) =>
     nfetch({
       endpoint: `/api/Product/Filter${generateQuery({
-        id: categoryId,
+        name,
+        categoryId,
         pageIndex,
         pageSize,
       })}`,
@@ -26,9 +27,9 @@ const GetProductByCategoryAPI = makeFetchAction(
     })()
 );
 
-export const getProductByCategory = (id, pageSize, pageIndex) =>
+export const getProductByCategory = (id, pageSize, pageIndex, name) =>
   respondToSuccess(
-    GetProductByCategoryAPI.actionCreator(id, pageSize, pageIndex),
+    GetProductByCategoryAPI.actionCreator(id, pageSize, pageIndex, name),
     (resp) => {
       console.log({ resp });
     }

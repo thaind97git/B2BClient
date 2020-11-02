@@ -21,7 +21,11 @@ import {
   GetProductByCategoryError,
 } from "../stores/ProductState";
 import CategoryHomePageComponent from "./CategoryHomePageComponent";
-import { getDefaultProductImage, getProductImage } from "../utils";
+import {
+  DEFAULT_PAGING_INFO,
+  getDefaultProductImage,
+  getProductImage,
+} from "../utils";
 const { Meta } = Card;
 
 const connectToRedux = connect(
@@ -30,8 +34,8 @@ const connectToRedux = connect(
     getProductByCategoryError: GetProductByCategoryError,
   }),
   (dispatch) => ({
-    getProductByCategory: (id, pageSize, pageIndex) =>
-      dispatch(getProductByCategory(id, pageSize, pageIndex)),
+    getProductByCategory: (id, pageSize, pageIndex, name) =>
+      dispatch(getProductByCategory(id, pageSize, pageIndex, name)),
   })
 );
 
@@ -115,7 +119,7 @@ const ProductListHomePageComponent = ({
       name: info.node.title,
       id: info.node.key,
     });
-    getProductByCategory(info.node.key, pageSize, 1);
+    getProductByCategory(info.node.key, pageSize, 1, searchValue);
     setLoading(true);
   };
 
@@ -150,7 +154,8 @@ const ProductListHomePageComponent = ({
     getProductByCategory(
       (currentCategorySelected || {}).id,
       pageSize,
-      pageNumber
+      pageNumber,
+      searchValue
     );
     setLoading(true);
   };
@@ -190,14 +195,16 @@ const ProductListHomePageComponent = ({
                   <Search
                     value={searchValue || ""}
                     onChange={(event) => setSearchValue(event.target.value)}
-                    // onSearch={(value) =>
-                    //   getProductByCategory(
-                    //     (currentCategorySelected || {}).id,
-                    //     pageSize,
-                    //     pageIndex,
-                    //     value
-                    //   )
-                    // }
+                    onSearch={(value) => {
+                      setPageIndex(DEFAULT_PAGING_INFO.page);
+                      !!value &&
+                        getProductByCategory(
+                          (currentCategorySelected || {}).id,
+                          pageSize,
+                          pageIndex,
+                          value
+                        );
+                    }}
                     placeholder={`Search in ${
                       (currentCategorySelected || {}).name
                     }`}

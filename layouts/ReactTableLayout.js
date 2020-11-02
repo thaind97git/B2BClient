@@ -65,6 +65,7 @@ const ReactTableLayout = ({
 
   useEffect(() => {
     if (hasAction && hasPaging) {
+      console.log({ dateRange });
       typeof dispatchAction === "function" &&
         doDispatchAction(
           dispatchAction(
