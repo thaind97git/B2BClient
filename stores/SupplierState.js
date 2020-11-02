@@ -4,6 +4,7 @@ import nfetch from "../libs/nfetch";
 import { respondToSuccess } from "../middlewares/api-reaction";
 import { DEFAULT_PAGING_INFO } from "../utils";
 import { getBuyerPaging } from "./BuyerState";
+import { getProductBySupplier } from "./ProductState";
 
 const GET_SUPPLIER_BY_GROUP_ID = "GetSupplierByGroupIdAPI";
 const GET_SUPPLIER_PAGING = "GetSupplierPagingAPI";
@@ -13,6 +14,7 @@ const GET_SUPPLIER_BY_PRODUCT_ID = "GetSupplierByProductIdAPI";
 const GET_USER_DETAILS = "GetUserDetailsAPI";
 export const SUPPLIER_REGISTER_PRODUCT = "SupplierRegisterProductAPI";
 export const SUPPLIER_UPDATE_QUOTATION = "SupplierUpdateQuotationAPI";
+export const DELETE_SUPPLIER_PRODUCT = "DeleteSupplierProductAPI";
 
 // Get Supplier By Group Id
 const GetSupplierByGroupIdAPI = makeFetchAction(
@@ -205,4 +207,35 @@ export const SupplierUpdateQuotationError =
   SupplierUpdateQuotationAPI.errorSelector;
 export const SupplierUpdateQuotationResetter = getResetter(
   SupplierUpdateQuotationAPI
+);
+
+// Delete Supplier Product
+const DeleteSupplierProductAPI = makeFetchAction(
+  DELETE_SUPPLIER_PRODUCT,
+  (id) =>
+    nfetch({
+      endpoint: `/api/Supplier/Product/${id}`,
+      method: "DELETE",
+    })()
+);
+
+export const deleteSupplierProduct = (id) =>
+  respondToSuccess(
+    DeleteSupplierProductAPI.actionCreator(id),
+    (_, __, store) => {
+      store.dispatch(
+        getProductBySupplier({
+          pageIndex: DEFAULT_PAGING_INFO.page,
+          pageSize: DEFAULT_PAGING_INFO.pageSize,
+          productName: "",
+          category: "",
+        })
+      );
+    }
+  );
+export const DeleteSupplierProductData = DeleteSupplierProductAPI.dataSelector;
+export const DeleteSupplierProductError =
+  DeleteSupplierProductAPI.errorSelector;
+export const DeleteSupplierProductResetter = getResetter(
+  DeleteSupplierProductAPI
 );

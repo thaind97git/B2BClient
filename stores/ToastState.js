@@ -8,6 +8,7 @@ import {
 import { CANCEL_REQUEST, REJECT_REQUEST } from "./RequestState";
 import {
   BAN_USER,
+  DELETE_SUPPLIER_PRODUCT,
   SUPPLIER_REGISTER_PRODUCT,
   SUPPLIER_UPDATE_QUOTATION,
   UN_BAN_USER,
@@ -47,12 +48,14 @@ export default {
         case UN_BAN_USER:
           msgNotify = "Active User success";
           break;
-
         case SUPPLIER_REGISTER_PRODUCT:
           msgNotify = "Register Product success";
           break;
         case SUPPLIER_UPDATE_QUOTATION:
           msgNotify = "Update Product Quotation success";
+          break;
+        case DELETE_SUPPLIER_PRODUCT:
+          msgNotify = "Deactive product success";
           break;
         default:
           break;
@@ -90,6 +93,9 @@ export default {
           break;
         case SUPPLIER_UPDATE_QUOTATION:
           msgNotify = "Update Product Quotation fail";
+          break;
+        case DELETE_SUPPLIER_PRODUCT:
+          msgNotify = "Deactive product fail";
           break;
         default:
           break;

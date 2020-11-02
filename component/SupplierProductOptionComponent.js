@@ -94,8 +94,8 @@ const formatQuotation = (arrayQuotation = []) => {
   let result = [];
   if (arrayQuotation.length > 0) {
     result = arrayQuotation.map((quotation) => ({
-      quantity: +quotation.quantity,
-      price: +quotation.price,
+      quantity: quotation.quantity,
+      price: quotation.price,
     }));
   }
   return result;
@@ -145,8 +145,8 @@ const SupplierProductOptionComponent = ({ onGetQuotation, unitLabel }) => {
   const handleAdd = () => {
     const newData = {
       key: new Date().getTime() + "",
-      quantity: 1,
-      price: 0,
+      quantity: "1",
+      price: "0",
     };
     setDataSource([...dataSource, newData]);
     typeof onGetQuotation === "function" &&
@@ -159,7 +159,7 @@ const SupplierProductOptionComponent = ({ onGetQuotation, unitLabel }) => {
     newData.splice(index, 1, { ...item, ...row });
     setDataSource(newData);
     typeof onGetQuotation === "function" &&
-      onGetQuotation(formatQuotation(dataSource));
+      onGetQuotation(formatQuotation(newData));
   };
 
   const components = {

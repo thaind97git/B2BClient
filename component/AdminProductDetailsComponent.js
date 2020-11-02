@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Fragment } from "react";
 import {
   Button,
   Col,
@@ -8,27 +8,39 @@ import {
   Space,
   Typography,
   Image,
+  Divider,
 } from "antd";
 import {
   getProductDetails,
   GetProductDetailsData,
   GetProductDetailsError,
   GetProductDetailsResetter,
+  getSupplierProductDetails,
+  GetSupplierProductDetailsData,
+  GetSupplierProductDetailsError,
+  GetSupplierProductDetailsResetter,
 } from "../stores/ProductState";
 import { get } from "lodash/fp";
 import { connect } from "react-redux";
 import Router from "next/router";
 import { createStructuredSelector } from "reselect";
 import { fallbackImage, getProductImage } from "../utils";
+import QuotationDisplayComponent from "./Utils/QuotationDisplayComponent";
 const { Title } = Typography;
 const connectToRedux = connect(
   createStructuredSelector({
     productDetailData: GetProductDetailsData,
     productDetailError: GetProductDetailsError,
+    supplierProductDetailData: GetSupplierProductDetailsData,
+    supplierProductDetailError: GetSupplierProductDetailsError,
   }),
   (dispatch) => ({
     getProduct: (id) => dispatch(getProductDetails(id)),
-    resetData: () => dispatch(GetProductDetailsResetter),
+    getSupplierProductDetails: (id) => dispatch(getSupplierProductDetails(id)),
+    resetData: () => {
+      dispatch(GetProductDetailsResetter);
+      dispatch(GetSupplierProductDetailsResetter);
+    },
   })
 );
 const DescriptionItem = ({ title, content }) => (
@@ -50,7 +62,11 @@ const AdminProductDetailsComponent = ({
   productID,
   resetData,
   isSupplier = false,
+  getSupplierProductDetails,
+  supplierProductDetailData,
+  supplierProductDetailError,
 }) => {
+  console.log({ productID });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -60,10 +76,16 @@ const AdminProductDetailsComponent = ({
   }, [resetData]);
 
   useEffect(() => {
-    if (productID) {
+    if (productID && !isSupplier) {
       getProduct(productID);
     }
-  }, [productID, getProduct]);
+  }, [productID, getProduct, isSupplier]);
+
+  useEffect(() => {
+    if (productID && isSupplier) {
+      getSupplierProductDetails(productID);
+    }
+  }, [productID, getSupplierProductDetails, isSupplier]);
 
   useEffect(() => {
     if (productDetailError || productDetailData) {
@@ -71,10 +93,16 @@ const AdminProductDetailsComponent = ({
     }
   }, [productDetailData, productDetailError]);
 
+  useEffect(() => {
+    if (supplierProductDetailError || supplierProductDetailData) {
+      setLoading(false);
+    }
+  }, [supplierProductDetailError, supplierProductDetailData]);
+
   if (loading) {
     return <Skeleton active />;
   }
-  if (!productDetailData) {
+  if (!productDetailData || !supplierProductDetailData) {
     return (
       <Empty
         style={{ padding: "180px 0px" }}
@@ -82,6 +110,13 @@ const AdminProductDetailsComponent = ({
       />
     );
   }
+
+  const detailsData = !isSupplier
+    ? productDetailData
+    : supplierProductDetailData.product;
+
+  const quotations = JSON.parse(supplierProductDetailData.description) || [];
+
   return (
     <Row style={{ width: "100%" }}>
       <link
@@ -104,33 +139,52 @@ const AdminProductDetailsComponent = ({
           </Space>
         </Col>
       )}
+      {isSupplier && quotations.length > 0 && (
+        <Fragment>
+          <Col span={24}>
+            <Title level={5}>Product Quotation</Title>
+          </Col>
+          <DescriptionItem
+            title="Quotation"
+            content={quotations.map((quotation, index) => (
+              <QuotationDisplayComponent
+                key={index}
+                quotation={quotation}
+                unitLabel={get("unitOfMeasure.description")(detailsData)}
+              />
+            ))}
+          />
+          <Divider />
+        </Fragment>
+      )}
       <Col span={24}>
         <Title level={5}>Product Basic Information</Title>
       </Col>
       <DescriptionItem
         title="Product Name"
-        content={(productDetailData || {}).productName}
+        content={(detailsData || {}).productName}
       />
       <DescriptionItem
         title="Unit of measure"
-        content={get("unitOfMeasure.description")(productDetailData)}
+        content={get("unitOfMeasure.description")(detailsData)}
       />
       <DescriptionItem
         title="Description"
         content={
           <div
             dangerouslySetInnerHTML={{
-              __html: (productDetailData || {}).description,
+              __html: (detailsData || {}).description,
             }}
           />
         }
       />
+      <Divider />
       <Col span={24}>
         <Title level={5}>Product Image</Title>
       </Col>
       <Col span={24} justify="space-between">
-        {productDetailData.images ? (
-          productDetailData.images.map((image) => (
+        {detailsData.images ? (
+          detailsData.images.map((image) => (
             <Col span={8}>
               <Image src={getProductImage(image)} fallback={fallbackImage} />
             </Col>

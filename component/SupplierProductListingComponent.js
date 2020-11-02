@@ -1,7 +1,10 @@
-import { Button, Row, Typography, Tag, Col } from "antd";
-import { ShoppingCartOutlined } from "@ant-design/icons";
+import { Button, Row, Typography, Tag, Col, Drawer, Modal } from "antd";
+import {
+  ShoppingCartOutlined,
+  ExclamationCircleOutlined,
+} from "@ant-design/icons";
 import Router from "next/router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ReactTableLayout from "../layouts/ReactTableLayout";
 import { DATE_TIME_FORMAT, DEFAULT_DATE_RANGE } from "../utils";
 import AllCategoryComponent from "./AllCategoryComponent";
@@ -14,12 +17,18 @@ import {
 } from "../stores/ProductState";
 import Moment from "react-moment";
 import { get } from "lodash/fp";
+import AdminProductDetailsComponent from "./AdminProductDetailsComponent";
+import {
+  deleteSupplierProduct,
+  DeleteSupplierProductData,
+} from "../stores/SupplierState";
 const { Title } = Typography;
 
 const connectToRedux = connect(
   createStructuredSelector({
     productBySupplierData: GetProductBySupplierData,
     productBySupplierError: GetProductBySupplierError,
+    deleteSupplierProductData: DeleteSupplierProductData,
   }),
   (dispatch) => ({
     getProductBySupplier: (
@@ -39,18 +48,21 @@ const connectToRedux = connect(
           category,
         })
       ),
+    deleteSupplierProduct: (id) => dispatch(deleteSupplierProduct(id)),
   })
 );
 
 const ProductStatus = ({ isDelete }) =>
-  isDelete ? (
-    <Tag color="error">De-Active</Tag>
+  !isDelete ? (
+    <Tag color="error">Deactivated</Tag>
   ) : (
-    <Tag color="success">Active</Tag>
+    <Tag color="success">Activated</Tag>
   );
 const SupplierProductListingComponent = ({
   getProductBySupplier,
   productBySupplierData,
+  deleteSupplierProductData,
+  deleteSupplierProduct,
 }) => {
   const [searchMessage, setSearchMessage] = useState("");
   const [dateRange, setDateRange] = useState(DEFAULT_DATE_RANGE);
@@ -81,6 +93,11 @@ const SupplierProductListingComponent = ({
     },
   ];
 
+  // useEffect(() => {
+  //   if (deleteSupplierProductData) {
+  //   }
+  // }, [deleteSupplierProductData]);
+
   const getProductTable = (productData = []) => {
     return (
       productData &&
@@ -96,7 +113,6 @@ const SupplierProductListingComponent = ({
           >
             <a>{get("product.description")(product)}</a>
           </b>
-          // <Button type="link">{get("product.description")(product)}</Button>
         ),
         dateCreated: (
           <Moment format={DATE_TIME_FORMAT}>
@@ -104,28 +120,42 @@ const SupplierProductListingComponent = ({
           </Moment>
         ),
         status: <ProductStatus isDelete={product.isDelete} />,
-        action: product.isDelete ? (
+        action: product.isDeleted ? (
           <Button
             onClick={() => {
-              setCurrentProductSelected(product.product);
-              setOpenDetails(true);
+              Modal.confirm({
+                title: "Do you want active this product?",
+                icon: <ExclamationCircleOutlined />,
+                okText: "Active",
+                cancelText: "Cancel",
+                onOk: () => {
+                  deleteSupplierProduct((product.product || {}).id);
+                },
+              });
             }}
             size="small"
             type="primary"
           >
-            Enable
+            Active
           </Button>
         ) : (
           <Button
             onClick={() => {
-              setCurrentProductSelected(product.product);
-              setOpenDetails(true);
+              Modal.confirm({
+                title: "Do you want deactive this product?",
+                icon: <ExclamationCircleOutlined />,
+                okText: "Deactive",
+                cancelText: "Cancel",
+                onOk: () => {
+                  deleteSupplierProduct((product.product || {}).id);
+                },
+              });
             }}
             size="small"
             type="primary"
             danger
           >
-            Disable
+            Deactive
           </Button>
         ),
       }))
@@ -141,6 +171,22 @@ const SupplierProductListingComponent = ({
 
   return (
     <Row>
+      <Row justify="space-between">
+        <Drawer
+          width={640}
+          title="Product Details"
+          placement={"right"}
+          closable={true}
+          onClose={() => setOpenDetails(false)}
+          visible={openDetails}
+          key={"product-details"}
+        >
+          <AdminProductDetailsComponent
+            isSupplier
+            productID={(currentProductSelected || {}).id}
+          />
+        </Drawer>
+      </Row>
       <Col span={24}>
         <Row justify="space-between">
           <Title level={4}>Product Company Management</Title>
@@ -161,6 +207,7 @@ const SupplierProductListingComponent = ({
           setSearchMessage,
           exElement: (
             <AllCategoryComponent
+              changeOnSelect
               onGetLastValue={(value) => setCategory(value)}
               size="large"
               isSearchStyle={false}
