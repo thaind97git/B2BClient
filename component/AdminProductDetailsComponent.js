@@ -51,7 +51,6 @@ const AdminProductDetailsComponent = ({
   resetData,
   isSupplier = false,
 }) => {
-  console.log({ productID });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -59,16 +58,19 @@ const AdminProductDetailsComponent = ({
       resetData();
     };
   }, [resetData]);
+
   useEffect(() => {
     if (productID) {
       getProduct(productID);
     }
   }, [productID, getProduct]);
+
   useEffect(() => {
     if (productDetailError || productDetailData) {
       setLoading(false);
     }
   }, [productDetailData, productDetailError]);
+
   if (loading) {
     return <Skeleton active />;
   }
