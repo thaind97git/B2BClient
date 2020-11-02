@@ -1,7 +1,7 @@
 import { makeFetchAction } from "redux-api-call";
 import { respondToSuccess } from "../middlewares/api-reaction";
 import nfetch from "../libs/nfetch";
-import { getResetter } from "../libs";
+import { generateQuery, getResetter } from "../libs";
 import { getToken } from "../libs/localStorage";
 import Router from "next/router";
 import { openNotification } from "../utils";
@@ -11,12 +11,17 @@ const GET_PRODUCT_PAGING = "GetProductPagingAPI";
 const GET_PRODUCT_DETAILS = "GetProductDetailsAPI";
 const CREATE_PRODUCT = "CreateProductAPI";
 const UPDATE_PRODUCT = "UpdateProductAPI";
+const GET_PRODUCT_BY_SUPPLIER = "GetProductBySupplierAPI";
 
 const GetProductByCategoryAPI = makeFetchAction(
   GET_PRODUCT_BY_CATEGORY,
   (categoryId, pageSize, pageIndex) =>
     nfetch({
-      endpoint: `/api/Product/Category?id=${categoryId}&pageIndex=${pageIndex}&pageSize=${pageSize}`,
+      endpoint: `/api/Product/Filter${generateQuery({
+        id: categoryId,
+        pageIndex,
+        pageSize,
+      })}`,
       method: "GET",
     })()
 );
@@ -40,17 +45,12 @@ const GetProductPagingAPI = makeFetchAction(
   GET_PRODUCT_PAGING,
   ({ productName, categoryID, pageSize, pageIndex }) => {
     return nfetch({
-      endpoint: `/api/Product/Filter?${
-        productName ? "name=" + productName + "&" : ""
-      }${
-        categoryID
-          ? categoryID != "all"
-            ? "categoryId=" + categoryID + "&"
-            : ""
-          : ""
-      }${pageIndex ? "pageIndex=" + pageIndex + "&" : ""}${
-        pageSize ? "pageSize=" + pageSize + "&" : ""
-      }`,
+      endpoint: `/api/Product/Filter${generateQuery({
+        categoryId: categoryID,
+        name: productName,
+        pageSize,
+        pageIndex,
+      })}`,
       method: "GET",
     })();
   }
@@ -155,3 +155,45 @@ export const updateProduct = (object) =>
 export const UpdateProductData = UpdateProductAPI.dataSelector;
 export const UpdateProductError = UpdateProductAPI.errorSelector;
 export const UpdateProductResetter = getResetter(UpdateProductAPI);
+
+// Get Product By Supplier
+const GetProductBySupplierAPI = makeFetchAction(
+  GET_PRODUCT_BY_SUPPLIER,
+  ({ productName, pageSize, pageIndex, category, fromDate, toDate }) =>
+    nfetch({
+      endpoint: `/api/Supplier/Product/Filter${generateQuery({
+        productName,
+        categoryId: category,
+        fromDate,
+        toDate,
+        pageIndex,
+        pageSize,
+      })}`,
+      method: "GET",
+    })()
+);
+
+export const getProductBySupplier = ({
+  productName,
+  pageSize,
+  pageIndex,
+  category,
+  fromDate,
+  toDate,
+}) =>
+  respondToSuccess(
+    GetProductBySupplierAPI.actionCreator({
+      productName,
+      pageSize,
+      pageIndex,
+      category,
+      fromDate,
+      toDate,
+    })
+  );
+
+export const GetProductBySupplierData = GetProductBySupplierAPI.dataSelector;
+export const GetProductBySupplierError = GetProductBySupplierAPI.errorSelector;
+export const GetProductBySupplierResetter = getResetter(
+  GetProductBySupplierAPI
+);

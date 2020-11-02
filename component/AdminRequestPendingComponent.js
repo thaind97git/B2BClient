@@ -57,6 +57,7 @@ const connectToRedux = connect(
           toDate: dateRange.toDate,
           productTitle: searchMessage,
           status,
+          category,
         })
       );
     },
@@ -117,7 +118,7 @@ const AdminRequestManagement = ({
   const [openDetails, setOpenDetails] = useState(false);
   const [currentRequestSelected, setCurrentRequestSelected] = useState({});
 
-  const [category, setCategory] = useState("1");
+  const [category, setCategory] = useState("all");
   const [loading, setLoading] = useState(true);
 
   const [currentGroupId, setCurrentGroupId] = useState(null);

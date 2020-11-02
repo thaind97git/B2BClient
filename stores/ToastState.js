@@ -6,7 +6,12 @@ import {
   REMOVE_REQUEST_FROM_GROUP,
 } from "./GroupState";
 import { CANCEL_REQUEST, REJECT_REQUEST } from "./RequestState";
-import { BAN_USER, UN_BAN_USER } from "./SupplierState";
+import {
+  BAN_USER,
+  SUPPLIER_REGISTER_PRODUCT,
+  SUPPLIER_UPDATE_QUOTATION,
+  UN_BAN_USER,
+} from "./SupplierState";
 import { USER_LOGIN, USER_REGISTER } from "./UserState";
 
 export default {
@@ -42,6 +47,13 @@ export default {
         case UN_BAN_USER:
           msgNotify = "Active User success";
           break;
+
+        case SUPPLIER_REGISTER_PRODUCT:
+          msgNotify = "Register Product success";
+          break;
+        case SUPPLIER_UPDATE_QUOTATION:
+          msgNotify = "Update Product Quotation success";
+          break;
         default:
           break;
       }
@@ -72,6 +84,12 @@ export default {
           break;
         case UN_BAN_USER:
           msgNotify = "Active User fail";
+          break;
+        case SUPPLIER_REGISTER_PRODUCT:
+          msgNotify = "Register Product fail";
+          break;
+        case SUPPLIER_UPDATE_QUOTATION:
+          msgNotify = "Update Product Quotation fail";
           break;
         default:
           break;

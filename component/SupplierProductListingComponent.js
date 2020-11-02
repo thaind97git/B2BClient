@@ -3,8 +3,17 @@ import { ShoppingCartOutlined } from "@ant-design/icons";
 import Router from "next/router";
 import React, { useState } from "react";
 import ReactTableLayout from "../layouts/ReactTableLayout";
-import { DEFAULT_DATE_RANGE } from "../utils";
+import { DATE_TIME_FORMAT, DEFAULT_DATE_RANGE } from "../utils";
 import AllCategoryComponent from "./AllCategoryComponent";
+import { connect } from "react-redux";
+import { createStructuredSelector } from "reselect";
+import {
+  getProductBySupplier,
+  GetProductBySupplierData,
+  GetProductBySupplierError,
+} from "../stores/ProductState";
+import Moment from "react-moment";
+import { get } from "lodash/fp";
 const { Option } = Select;
 const { Title } = Typography;
 const LIST_PRODUCT = [
@@ -73,9 +82,42 @@ const LIST_PRODUCT = [
       "https://salt.tikicdn.com/cache/280x280/ts/product/9f/1f/1b/10e76ca677c4d8d080bb4be1e8491119.jpg",
   },
 ];
-const SupplierProductListingComponent = () => {
+
+const connectToRedux = connect(
+  createStructuredSelector({
+    productBySupplierData: GetProductBySupplierData,
+    productBySupplierError: GetProductBySupplierError,
+  }),
+  (dispatch) => ({
+    getProductBySupplier: (
+      pageIndex,
+      pageSize,
+      searchMessage,
+      dateRange,
+      category
+    ) =>
+      dispatch(
+        getProductBySupplier({
+          pageIndex,
+          pageSize,
+          productName: searchMessage,
+          fromDate: dateRange.fromDate,
+          toDate: dateRange.toDate,
+          category,
+        })
+      ),
+  })
+);
+const SupplierProductListingComponent = ({
+  getProductBySupplier,
+  productBySupplierData,
+  productBySupplierError,
+}) => {
   const [searchMessage, setSearchMessage] = useState("");
   const [dateRange, setDateRange] = useState(DEFAULT_DATE_RANGE);
+  const [category, setCategory] = useState("all");
+  const [openDetails, setOpenDetails] = useState(false);
+  const [currentProductSelected, setCurrentProductSelected] = useState({});
   const columns = [
     {
       title: "Product Name",
@@ -109,6 +151,43 @@ const SupplierProductListingComponent = () => {
     };
   });
 
+  const getProductTable = (productData = []) => {
+    return (
+      productData &&
+      productData.length > 0 &&
+      productData.map((product = {}) => ({
+        productId: get("product.id")(product),
+        key: product.id,
+        productName: product.name,
+        quantity:
+          +product.quantity || 0 + " " + get("product.unitType")(product),
+        dueDate: (
+          <Moment format={DATE_TIME_FORMAT}>{new Date(product.dueDate)}</Moment>
+        ),
+        status: <productStatusComponent status={product.productStatus.id} />,
+        actions: (
+          <Button
+            onClick={() => {
+              setCurrentProductSelected(product);
+              setOpenDetails(true);
+            }}
+            size="small"
+            type="link"
+          >
+            View
+          </Button>
+        ),
+      }))
+    );
+  };
+
+  let productData = [],
+    totalCount = 0;
+  if (productBySupplierData) {
+    productData = productBySupplierData.data;
+    totalCount = productBySupplierData.total;
+  }
+
   return (
     <Row>
       <Col span={24}>
@@ -124,14 +203,19 @@ const SupplierProductListingComponent = () => {
         </Row>
       </Col>
       <ReactTableLayout
-        dispatchAction={() => {}}
+        dispatchAction={getProductBySupplier}
         searchProps={{
           placeholder: "Search by product name",
           searchMessage,
           setSearchMessage,
           exElement: (
-            <AllCategoryComponent size="large" isSearchStyle={false} />
+            <AllCategoryComponent
+              onGetLastValue={(value) => setCategory(value)}
+              size="large"
+              isSearchStyle={false}
+            />
           ),
+          exCondition: [category],
         }}
         dateRangeProps={{
           dateRange,
@@ -144,4 +228,4 @@ const SupplierProductListingComponent = () => {
   );
 };
 
-export default SupplierProductListingComponent;
+export default connectToRedux(SupplierProductListingComponent);

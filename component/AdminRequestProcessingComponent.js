@@ -32,7 +32,14 @@ const connectToRedux = connect(
     requestPagingError: GetRequestPagingError,
   }),
   (dispatch) => ({
-    getRequest: (pageIndex, pageSize, searchMessage, dateRange, status) => {
+    getRequest: (
+      pageIndex,
+      pageSize,
+      searchMessage,
+      dateRange,
+      status,
+      category
+    ) => {
       dispatch(
         getRequestPaging({
           pageSize,
@@ -41,6 +48,7 @@ const connectToRedux = connect(
           toDate: dateRange.toDate,
           productTitle: searchMessage,
           status,
+          category,
         })
       );
     },
@@ -93,7 +101,7 @@ const AdminRequestProcessingComponent = ({
   const [dateRange, setDateRange] = useState(DEFAULT_DATE_RANGE);
   const [openDetails, setOpenDetails] = useState(false);
   const [currentRequestSelected, setCurrentRequestSelected] = useState({});
-  const [category, setCategory] = useState("1");
+  const [category, setCategory] = useState("all");
 
   useEffect(() => {
     return () => {

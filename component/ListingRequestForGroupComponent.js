@@ -15,6 +15,7 @@ import {
 import ReactTableLayout from "../layouts/ReactTableLayout";
 import { get } from "lodash/fp";
 import Moment from "react-moment";
+import { AddRequestToGroupResetter } from "../stores/GroupState";
 
 const connectToRedux = connect(
   createStructuredSelector({
@@ -27,6 +28,7 @@ const connectToRedux = connect(
       ),
     resetData: () => {
       dispatch(getRequestSuggestByProductIdResetter);
+      dispatch(AddRequestToGroupResetter);
     },
   })
 );
@@ -59,6 +61,7 @@ const ListingRequestForGroupComponent = ({
   requestByProductIdData,
   resetData,
   productId,
+  setRequestIdSelected,
 }) => {
   const [recordSelected, setRecordSelected] = useState([]);
 
@@ -96,6 +99,9 @@ const ListingRequestForGroupComponent = ({
   const rowSelection = {
     onChange: (selectedRowKeys, selectedRows) => {
       setRecordSelected(selectedRows);
+      const arrayRequestId = (selectedRows || []).map((row) => row.key);
+      typeof setRequestIdSelected === "function" &&
+        setRequestIdSelected(arrayRequestId);
     },
     getCheckboxProps: (record) => ({
       name: record.name,

@@ -23,23 +23,9 @@ const { Header, Content, Sider } = Layout;
 const ADMIN_MENU = [
   {
     key: "1",
-    icon: <BulbOutlined />,
+    icon: <OrderedListOutlined />,
     label: "Product",
-    link: undefined,
-    subMenu: [
-      {
-        subKey: "1.1",
-        subLink: "/admin/product",
-        subIcon: <OrderedListOutlined />,
-        subLabel: "Product List",
-      },
-      {
-        subKey: "1.2",
-        subLink: "/admin/product/create",
-        subIcon: <FormOutlined />,
-        subLabel: "Create New Product",
-      },
-    ],
+    link: "/admin/product",
   },
   {
     key: "2",

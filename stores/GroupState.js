@@ -55,21 +55,12 @@ const AddRequestToGroupAPI = makeFetchAction(
     })({ groupId, requestIds })
 );
 
-export const addRequestToGroup = ({ groupId, requestIds }) =>
+export const addRequestToGroup = ({ groupId, requestIds, callback }) =>
   respondToSuccess(
     AddRequestToGroupAPI.actionCreator({ groupId, requestIds }),
-    (resp, _, store) => {
+    (resp) => {
       if (resp) {
-        store.dispatch(
-          getRequestPaging({
-            status: [R_PENDING],
-            productTitle: "",
-            fromDate: null,
-            toDate: null,
-            pageIndex: 1,
-            pageSize: 10,
-          })
-        );
+        typeof callback === "function" && callback();
       }
     }
   );
@@ -103,7 +94,7 @@ const GetGroupPagingAPI = makeFetchAction(
     return nfetch({
       endpoint: `/api/Group/Filter${generateQuery({
         categoryId,
-        productName,
+        groupNameOrProductName: productName,
         fromDate,
         toDate,
         pageSize,

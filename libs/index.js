@@ -12,7 +12,13 @@ export const generateQuery = (objectParams = {}) => {
   let arrayQuery = [];
   for (let i in objectParams) {
     const value = objectParams[i];
-    if (!!value || (Array.isArray(value) && value.length > 0)) {
+    if (value === "all") {
+      continue;
+    } else if (
+      !!value ||
+      value === 0 ||
+      (Array.isArray(value) && value.length > 0)
+    ) {
       arrayQuery.push(`${i}=${value}`);
     }
   }

@@ -49,6 +49,7 @@ const AdminProductDetailsComponent = ({
   productDetailError,
   productID,
   resetData,
+  isSupplier = false,
 }) => {
   const [loading, setLoading] = useState(true);
 
@@ -57,16 +58,19 @@ const AdminProductDetailsComponent = ({
       resetData();
     };
   }, [resetData]);
+
   useEffect(() => {
     if (productID) {
       getProduct(productID);
     }
   }, [productID, getProduct]);
+
   useEffect(() => {
     if (productDetailError || productDetailData) {
       setLoading(false);
     }
   }, [productDetailData, productDetailError]);
+
   if (loading) {
     return <Skeleton active />;
   }
@@ -85,19 +89,21 @@ const AdminProductDetailsComponent = ({
         type="text/css"
         href="/static/assets/image-gallery.css"
       />
-      <Col span={24} style={{ marginBottom: 12 }}>
-        <Space>
-          <Button
-            onClick={() => {
-              Router.push(`/admin/product/update?id=${productID}`);
-            }}
-            size="small"
-            label="Edit"
-          >
-            Edit
-          </Button>
-        </Space>
-      </Col>
+      {!isSupplier && (
+        <Col span={24} style={{ marginBottom: 12 }}>
+          <Space>
+            <Button
+              onClick={() => {
+                Router.push(`/admin/product/update?id=${productID}`);
+              }}
+              size="small"
+              label="Edit"
+            >
+              Edit
+            </Button>
+          </Space>
+        </Col>
+      )}
       <Col span={24}>
         <Title level={5}>Product Basic Information</Title>
       </Col>

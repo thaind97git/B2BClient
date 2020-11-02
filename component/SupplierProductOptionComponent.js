@@ -1,15 +1,13 @@
-import React, { useContext, useState, useEffect, useRef } from "react";
-import {
-  Table,
-  Input,
-  Button,
-  Popconfirm,
-  Form,
-  InputNumber,
-  Row,
-  Tag,
-} from "antd";
+import React, {
+  useContext,
+  useState,
+  useEffect,
+  useRef,
+  Fragment,
+} from "react";
+import { Table, Input, Button, Popconfirm, Form, Row } from "antd";
 import { displayCurrency } from "../utils";
+import QuotationDisplayComponent from "./Utils/QuotationDisplayComponent";
 const EditableContext = React.createContext();
 
 const EditableRow = ({ index, ...props }) => {
@@ -74,7 +72,7 @@ const EditableCell = ({
           },
         ]}
       >
-        <Input ref={inputRef} onPressEnter={save} onBlur={save} />
+        <Input type="number" ref={inputRef} onPressEnter={save} onBlur={save} />
       </Form.Item>
     ) : (
       <div
@@ -92,140 +90,136 @@ const EditableCell = ({
   return <td {...restProps}>{childNode}</td>;
 };
 
-class SupplierProductOptionComponent extends React.Component {
-  constructor(props) {
-    super(props);
-    this.columns = [
-      {
-        title: "Quantity",
-        dataIndex: "quantity",
-        editable: true,
-        width: "40%",
-        render: (text) => {
-          return text + " Units";
-        },
-      },
-      {
-        title: "Price",
-        dataIndex: "price",
-        editable: true,
-        width: "40%",
-        render: (text) => {
-          return displayCurrency(text);
-        },
-      },
-      {
-        title: "Operation",
-        dataIndex: "operation",
-        render: (text, record) =>
-          this.state.dataSource.length >= 1 ? (
-            <Popconfirm
-              title="Sure to delete?"
-              onConfirm={() => this.handleDelete(record.key)}
-            >
-              <a>Delete</a>
-            </Popconfirm>
-          ) : null,
-      },
-    ];
-    this.state = {
-      dataSource: [
-        {
-          key: "0",
-          quantity: 32,
-          price: 10000,
-        },
-      ],
-    };
+const formatQuotation = (arrayQuotation = []) => {
+  let result = [];
+  if (arrayQuotation.length > 0) {
+    result = arrayQuotation.map((quotation) => ({
+      quantity: +quotation.quantity,
+      price: +quotation.price,
+    }));
   }
+  return result;
+};
 
-  handleDelete = (key) => {
-    const dataSource = [...this.state.dataSource];
-    this.setState({
-      dataSource: dataSource.filter((item) => item.key !== key),
-    });
+const SupplierProductOptionComponent = ({ onGetQuotation, unitLabel }) => {
+  const [dataSource, setDataSource] = useState([]);
+
+  const columns = [
+    {
+      title: "Quantity",
+      dataIndex: "quantity",
+      editable: true,
+      width: "40%",
+      render: (text) => {
+        return text + ` ${unitLabel || ""}`;
+      },
+    },
+    {
+      title: "Price",
+      dataIndex: "price",
+      editable: true,
+      width: "40%",
+      render: (text) => {
+        return displayCurrency(text);
+      },
+    },
+    {
+      title: "Operation",
+      dataIndex: "operation",
+      render: (text, record) =>
+        dataSource.length >= 1 ? (
+          <Popconfirm
+            title="Sure to delete?"
+            onConfirm={() => handleDelete(record.key)}
+          >
+            <a>Delete</a>
+          </Popconfirm>
+        ) : null,
+    },
+  ];
+
+  const handleDelete = (key) => {
+    const newDataSource = [...dataSource];
+    setDataSource(newDataSource.filter((item) => item.key !== key));
   };
-  handleAdd = () => {
-    const { dataSource } = this.state;
+  const handleAdd = () => {
     const newData = {
       key: new Date().getTime() + "",
       quantity: 1,
       price: 0,
     };
-    console.log({ newData });
-    this.setState({
-      dataSource: [...dataSource, newData],
-    });
+    setDataSource([...dataSource, newData]);
+    typeof onGetQuotation === "function" &&
+      onGetQuotation(formatQuotation(dataSource));
   };
-  handleSave = (row) => {
-    const newData = [...this.state.dataSource];
+  const handleSave = (row) => {
+    const newData = [...dataSource];
     const index = newData.findIndex((item) => row.key === item.key);
     const item = newData[index];
     newData.splice(index, 1, { ...item, ...row });
-    this.setState({
-      dataSource: newData,
-    });
+    setDataSource(newData);
+    typeof onGetQuotation === "function" &&
+      onGetQuotation(formatQuotation(dataSource));
   };
 
-  render() {
-    const { dataSource } = this.state;
-    const components = {
-      body: {
-        row: EditableRow,
-        cell: EditableCell,
-      },
-    };
-    const columns = this.columns.map((col) => {
-      if (!col.editable) {
-        return col;
-      }
+  const components = {
+    body: {
+      row: EditableRow,
+      cell: EditableCell,
+    },
+  };
+  const columnsTable = columns.map((col) => {
+    if (!col.editable) {
+      return col;
+    }
 
-      return {
-        ...col,
-        onCell: (record) => ({
-          record,
-          editable: col.editable,
-          dataIndex: col.dataIndex,
-          title: col.title,
-          handleSave: this.handleSave,
-        }),
-      };
-    });
-    return (
-      <div>
-        <Button
-          onClick={this.handleAdd}
-          type="primary"
-          style={{
-            marginBottom: 16,
-          }}
-        >
-          Add an option
-        </Button>
-        <Table
-          components={components}
-          rowClassName={() => "editable-row"}
-          bordered
-          dataSource={dataSource}
-          columns={columns}
-          pagination={false}
-        />
-        Display for Aggregator:
-        <Row dir="row" style={{ marginTop: 12 }}>
-          {this.state.dataSource.map((data) => {
-            return (
-              <Tag style={{ fontSize: 16, padding: 6 }}>
-                <div style={{ minWidth: 160 }}>
-                  {">="} {data.quantity} Units -{" "}
-                  <b>{displayCurrency(data.price)} / Unit</b>
-                </div>
-              </Tag>
-            );
-          })}
-        </Row>
-      </div>
-    );
-  }
-}
+    return {
+      ...col,
+      onCell: (record) => ({
+        record,
+        editable: col.editable,
+        dataIndex: col.dataIndex,
+        title: col.title,
+        handleSave: handleSave,
+      }),
+    };
+  });
+  return (
+    <div>
+      <Button
+        onClick={handleAdd}
+        type="primary"
+        style={{
+          marginBottom: 16,
+        }}
+      >
+        Add an quotation
+      </Button>
+      <Table
+        components={components}
+        rowClassName={() => "editable-row"}
+        bordered
+        dataSource={dataSource}
+        columns={columnsTable}
+        pagination={false}
+      />
+      {!!dataSource && (
+        <Fragment>
+          Display for Aggregator:
+          <Row dir="row" style={{ marginTop: 12 }}>
+            {dataSource.map((data) => {
+              return (
+                <QuotationDisplayComponent
+                  quotation={data}
+                  unitLabel={unitLabel}
+                />
+              );
+            })}
+          </Row>
+        </Fragment>
+      )}
+    </div>
+  );
+};
 
 export default SupplierProductOptionComponent;

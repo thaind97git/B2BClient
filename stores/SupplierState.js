@@ -11,6 +11,8 @@ export const BAN_USER = "BanUserAPI";
 export const UN_BAN_USER = "UnBanUserAPI";
 const GET_SUPPLIER_BY_PRODUCT_ID = "GetSupplierByProductIdAPI";
 const GET_USER_DETAILS = "GetUserDetailsAPI";
+export const SUPPLIER_REGISTER_PRODUCT = "SupplierRegisterProductAPI";
+export const SUPPLIER_UPDATE_QUOTATION = "SupplierUpdateQuotationAPI";
 
 // Get Supplier By Group Id
 const GetSupplierByGroupIdAPI = makeFetchAction(
@@ -157,9 +159,50 @@ export const UnBanUserData = UnBanUserAPI.dataSelector;
 export const UnBanUserError = UnBanUserAPI.errorSelector;
 export const UnBanUserResetter = getResetter(UnBanUserAPI);
 
-// Get User details
-const GetUserDetailsAPI = makeFetchAction(GET_USER_DETAILS, (id) =>
-  nfetch({
-    endpoint: "/api",
-  })()
+// Register Product
+const SupplierRegisterProductAPI = makeFetchAction(
+  SUPPLIER_REGISTER_PRODUCT,
+  ({ productId, description }) =>
+    nfetch({
+      endpoint: "/api/Supplier/Product",
+    })({
+      productId,
+      description,
+    })
+);
+
+export const supplierRegisterProduct = ({ productId, description }) =>
+  respondToSuccess(
+    SupplierRegisterProductAPI.actionCreator({ productId, description })
+  );
+export const SupplierRegisterProductData =
+  SupplierRegisterProductAPI.dataSelector;
+export const SupplierRegisterProductError =
+  SupplierRegisterProductAPI.errorSelector;
+export const SupplierRegisterProductResetter = getResetter(
+  SupplierRegisterProductAPI
+);
+
+// Update Quotation
+const SupplierUpdateQuotationAPI = makeFetchAction(
+  SUPPLIER_UPDATE_QUOTATION,
+  ({ id, description }) =>
+    nfetch({
+      endpoint: "/api/Supplier/Product",
+    })({
+      id,
+      description,
+    })
+);
+
+export const supplierUpdateQuotation = ({ id, description }) =>
+  respondToSuccess(
+    SupplierUpdateQuotationAPI.actionCreator({ id, description })
+  );
+export const SupplierUpdateQuotationData =
+  SupplierUpdateQuotationAPI.dataSelector;
+export const SupplierUpdateQuotationError =
+  SupplierUpdateQuotationAPI.errorSelector;
+export const SupplierUpdateQuotationResetter = getResetter(
+  SupplierUpdateQuotationAPI
 );

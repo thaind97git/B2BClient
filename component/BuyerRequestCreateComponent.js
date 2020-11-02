@@ -320,7 +320,7 @@ const BuyerRequestCreateComponent = ({
     getCurrency();
     getTradeTerm();
     getShippingMethod();
-    getPaymentTerm();
+    // getPaymentTerm();
     getSupCertification();
     getProvince();
   }, [
@@ -330,7 +330,7 @@ const BuyerRequestCreateComponent = ({
     getCurrency,
     getTradeTerm,
     getShippingMethod,
-    getPaymentTerm,
+    // getPaymentTerm,
     getSupCertification,
     getProvince,
   ]);
@@ -589,6 +589,7 @@ const BuyerRequestCreateComponent = ({
                       </Select>
                     </FormItem>
                   </Col>
+
                   <Col style={styles.colStyle} span={24}>
                     <FormItem
                       label="Due date"
@@ -624,6 +625,14 @@ const BuyerRequestCreateComponent = ({
                     >
                       <Input.TextArea autoSize={{ minRows: 3 }} />
                     </FormItem>
+                  </Col>
+                  <Col>
+                    <small>
+                      <i>
+                        EXW: Seller makes a product available at a specific
+                        location, but the Buyer has to pay the transport costs.
+                      </i>
+                    </small>
                   </Col>
                 </Row>
               </Card>
@@ -829,7 +838,7 @@ const BuyerRequestCreateComponent = ({
                       <LeadTimeInput />
                     </FormItem>
                   </Col>
-                  <Col style={styles.colStyle} span={24}>
+                  {/* <Col style={styles.colStyle} span={24}>
                     <FormItem
                       label="Payment Term"
                       name="paymentTermId"
@@ -856,7 +865,7 @@ const BuyerRequestCreateComponent = ({
                           ))}
                       </Select>
                     </FormItem>
-                  </Col>
+                  </Col> */}
                 </Row>
               </Card>
               <Row justify="center" align="middle">
