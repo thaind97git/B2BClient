@@ -1,8 +1,5 @@
-import React, { useState } from "react";
-import { Form, Button } from "antd";
+import React, { useState, useRef } from "react";
 import { connect } from "react-redux";
-/*import { createStructuredSelector } from "reselect";
-import { userLogin, userLoginDataSelector } from "../stores/UserState";*/
 import { compose } from "redux";
 import {
   Descriptions,
@@ -12,10 +9,18 @@ import {
   Divider,
   Modal,
   Typography,
+  Upload,
+  Form,
+  Button,
+  Skeleton,
+  Input
 } from "antd";
-
-import UserProfileEditComponent from "./UserProfileEditComponent";
-import { render } from "less";
+import { UploadOutlined, LockOutlined } from "@ant-design/icons";
+// import UserProfileEditComponent from "./UserProfileEditComponent";
+import { createStructuredSelector } from "reselect";
+import { CurrentUserData, userUploadAvatar, userUpdatePassword } from "../stores/UserState";
+import { acceptFileMimes, acceptFileTypes, openNotification, fallbackImage, getCurrentUserImage } from "../utils";
+import ImgCrop from 'antd-img-crop';
 const { Title } = Typography;
 const DescriptionItem = ({ title, content }) => (
   <Col span={24}>
@@ -32,16 +37,26 @@ const DescriptionItem = ({ title, content }) => (
 
 const FormItem = Form.Item;
 
-const connectToRedux = connect();
-/*createStructuredSelector({
-      userLoginData: userLoginDataSelector,
+function getBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = (error) => reject(error);
+  });
+}
+
+const connectToRedux = connect(
+  createStructuredSelector({
+    currentUser: CurrentUserData
   }),
   (dispatch) => ({
-      loginUser: ({ email, password }) =>
-          dispatch(userLogin({ email, password })),
-  })*/
-
-const enhance = compose(connectToRedux);
+    uploadAvatar: (fileList) =>
+      dispatch(userUploadAvatar(fileList)),
+    updatePassword: ({oldPassword,newPassword}) =>
+      dispatch(userUpdatePassword({oldPassword,newPassword})),
+  })
+);
 
 const USER_PROFILE = {
   email: "duyquanghoang27@gmail.com",
@@ -57,23 +72,113 @@ const USER_PROFILE = {
   tradeTerms: "FOB",
   certifi: "ISO/TS16949",
 };
-const UserProfileComponent = ({ isDrawer, userId }) => {
-  const [visible, setVisible] = useState(false);
-
-  const showModal = () => {
-    console.log("show");
-    setVisible(true);
+const UserProfileComponent = ({ isDrawer, userId, currentUser, uploadAvatar, updatePassword }) => {
+  const [changePasswordVisible, setChangePasswordVisible] = useState(false);
+  const [imageUrl, setImageUrl] = useState(getCurrentUserImage(currentUser.avatar ? currentUser.avatar : fallbackImage));
+  const [loading, setLoading] = useState(false);
+  const [preview, setPreview] = useState({
+    previewVisible: false,
+    previewImage: "",
+  });
+  const updatePasswordRef = useRef();
+  const [fileList, setList] = useState([
+    {
+      uid: "-1",
+      name: "image.png",
+      status: "done",
+      url: imageUrl
+    }
+  ]);
+  const showChangePasswordModal = () => {
+    setChangePasswordVisible(true);
   };
 
-  const handleOk = (e) => {
-    console.log("ok");
-    setVisible(false);
+  const handleChangePasswordOk = (e) => {
+    updatePasswordRef.current.submit();
+  };
+  //handle User Profile Edit Cancel
+  const handleChangePasswordCancel = (e) => {
+    setChangePasswordVisible(false);
   };
 
-  const handleCancel = (e) => {
-    console.log("cancel");
-    setVisible(false);
+  //Finish Update Password form
+  const onUpdatePasswordFinish = (values) => {
+    updatePassword({ oldPassword: values[`old-password`], newPassword: values[`new-password`] });
+    setChangePasswordVisible(false);
+  }
+
+  // const checkPassword = (rule, value = {}) => {
+  //   if (value.value) {
+  //     return Promise.resolve();
+  //   }
+
+  //   return Promise.reject("Please enter the password !");
+  // };
+
+  const checkNewPassword = (rule, value = {}) => {
+    const form = updatePasswordRef.current;
+    if (!value || form.getFieldValue("new-password") === value) {
+      return Promise.resolve();
+    }
+    return Promise.reject("Confirm password not match !");
   };
+
+  //handle After upload avatar
+  const handleAvatarChange = (info) => {
+
+    // if (info.file.status === 'uploading') {
+    //   setLoading(true)
+    //   return;
+    // }
+    // if (info.file.status === 'done') {
+    //   // Get this url from response in real world.
+    //   getBase64(info.file.originFileObj, imageUrl => {
+    //     setImageUrl(imageUrl);
+    //     setLoading(false);
+    //   }
+    //   );
+    // }
+
+    let fileList = [...info.fileList];
+    fileList = fileList.slice(-1);
+    // 2. Read from response and show file link
+    // fileList = fileList.map((file) => {
+    //   if (file.response) {
+    //     // Component will show file.url as link
+    //     file.url = file.response.url;
+    //   }
+    //   return file;
+    // });
+    uploadAvatar(fileList);
+    setList(fileList);
+  };
+
+  if (loading) {
+    return <Skeleton active />;
+  }
+
+  //Handle Picture Preview
+  const handlePreviewCancel = () => setPreview({ previewVisible: false });
+
+  const handlePreview = async (file) => {
+    if (!file.url && !file.preview) {
+      file.preview = await getBase64(file.originFileObj);
+    }
+    setPreview({
+      previewImage: file.url || file.preview,
+      previewVisible: true,
+      previewTitle:
+        file.name || file.url.substring(file.url.lastIndexOf("/") + 1),
+    });
+  };
+
+  // const uploadButton = (
+  //   <div>
+  //     {loading ? <LoadingOutlined /> : <PlusOutlined />}
+  //     <div style={{ marginTop: 8 }}>Upload</div>
+  //   </div>
+  // );
+
   if (isDrawer) {
     return (
       <Row span={24}>
@@ -164,33 +269,56 @@ const UserProfileComponent = ({ isDrawer, userId }) => {
     return (
       <Form>
         <Row span={24}>
-          <Col span={4}>
+          <Col span={4} align="left">
             <div>
-              <Avatar size={120} src="/static/images/avatar.png" />
+              {/* <Avatar size={120} src={getCurrentUserImage(currentUser.avatar)} fallback={fallbackImage} /> */}
+              <ImgCrop>
+                <Upload
+                  name="avatar"
+                  accept=".png, .jpg, .jpeg"
+                  listType="picture-card"
+                  className="avatar-uploader"
+                  beforeUpload={(file) => {
+                    if (acceptFileMimes.includes(file.type)) {
+                      return true;
+                    }
+                    openNotification("error", {
+                      message: `We just accept file type for ${acceptFileTypes}`,
+                    });
+                    return false;
+                  }}
+                  onChange={handleAvatarChange}
+                  fileList={fileList}
+                  onPreview={handlePreview}
+                  action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+                >
+                  <Button icon={<UploadOutlined />}>Update</Button>
+                </Upload>
+              </ImgCrop>
             </div>
           </Col>
           <Col span={20}>
             <Descriptions
-              title={USER_PROFILE.firstName + " " + USER_PROFILE.lastName}
+              title={currentUser.firstName + " " + currentUser.lastName}
               extra={
-                <Button type="primary" onClick={showModal}>
-                  Edit
+                <Button type="primary" onClick={showChangePasswordModal}>
+                  Change Password
                 </Button>
               }
               column={1}
             >
               <Descriptions.Item label="at">
-                {USER_PROFILE.companyName}
+                {currentUser.companyName ? currentUser.companyName : "None"}
               </Descriptions.Item>
               <Descriptions.Item label="Email">
-                {USER_PROFILE.email}
-                {(() => {
+                {currentUser.email ? currentUser.email : "None"}
+                {/* {(() => {
                   if (USER_PROFILE.isEmailVerified) {
                     return <font color="green"> [Verified]</font>;
                   } else {
                     return <font color="red"> [Unverified]</font>;
                   }
-                })()}
+                })()} */}
               </Descriptions.Item>
             </Descriptions>
           </Col>
@@ -198,24 +326,26 @@ const UserProfileComponent = ({ isDrawer, userId }) => {
         <Divider dashed />
         <Descriptions title="Contact Information">
           <Descriptions.Item label="Email">
-            {USER_PROFILE.email}
+            {currentUser.email ? currentUser.email : "None"}
           </Descriptions.Item>
           <Descriptions.Item label="Alternative Email">
-            {USER_PROFILE.alternativeEmail}
+            {currentUser.alternativeEmail ? currentUser.alternativeEmail : "None"}
           </Descriptions.Item>
-          <Descriptions.Item label="Fax">{USER_PROFILE.fax}</Descriptions.Item>
+          <Descriptions.Item label="Fax">
+            {currentUser.fax ? currentUser.fax : "None"}
+          </Descriptions.Item>
           <Descriptions.Item label="Mobile">
-            {USER_PROFILE.mobile}
+            {currentUser.phoneNumber ? currentUser.phoneNumber : "None"}
           </Descriptions.Item>
           <Descriptions.Item label="Telephone">
-            {USER_PROFILE.telephone}
+            {currentUser.telephone ? currentUser.telephone : "None"}
           </Descriptions.Item>
           <Descriptions.Item label="Address">
-            {USER_PROFILE.address}
+            {currentUser.address ? currentUser.address : "None"}
           </Descriptions.Item>
         </Descriptions>
         <Divider dashed />
-        <Descriptions title="Company Information">
+        {/* <Descriptions title="Company Information">
           <Descriptions.Item label="Email">
             {USER_PROFILE.email}
           </Descriptions.Item>
@@ -225,16 +355,113 @@ const UserProfileComponent = ({ isDrawer, userId }) => {
           <Descriptions.Item label="Address">
             {USER_PROFILE.address}
           </Descriptions.Item>
-        </Descriptions>
+        </Descriptions> */}
         <Modal
-          title="Basic Information"
-          visible={visible}
-          onOk={handleOk}
-          onCancel={handleCancel}
+          title="Change Password"
+          visible={changePasswordVisible}
+          onOk={handleChangePasswordOk}
+          onCancel={handleChangePasswordCancel}
         >
-          <UserProfileEditComponent />
+          <Form
+            autoComplete="new-password"
+            className="register-form"
+            ref={updatePasswordRef}
+            onFinish={onUpdatePasswordFinish}
+          // initialValues={{
+          //   isBuyer: role,
+          // }}
+          >
+            <Row align="middle">
+              <Col span={24}>
+                <div className="label">Old Password:</div>
+                <FormItem
+                  name="old-password"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please enter your old login password",
+                    },
+                  ]}
+                >
+                  <Input
+                    autoComplete="old-password"
+                    size="large"
+                    prefix={<LockOutlined className="site-form-item-icon" />}
+                    type="password"
+                    placeholder="Please enter your old login password"
+                  />
+                </FormItem>
+              </Col>
+              <Col span={24}>
+                <div className="label">New Password:</div>
+                <FormItem
+                  name="new-password"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please set your new login password",
+                    },
+                  ]}
+                >
+                  <Input
+                    autoComplete="new-password"
+                    size="large"
+                    prefix={<LockOutlined className="site-form-item-icon" />}
+                    type="password"
+                    placeholder="Please set your new login password"
+                  />
+                </FormItem>
+              </Col>
+              <Col span={24}>
+                <div className="label">Confirm New Password:</div>
+                <FormItem
+                  name="re-password"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Your confirm login password not match",
+                      validator: checkNewPassword
+                    },
+                  ]}
+                >
+                  <Input
+                    autoComplete="re-password"
+                    size="large"
+                    prefix={<LockOutlined className="site-form-item-icon" />}
+                    type="password"
+                    placeholder="Please confirm your new login password"
+                  />
+                </FormItem>
+              </Col>
+            </Row>
+          </Form>
         </Modal>
+        <Modal
+          visible={preview.previewVisible}
+          title={"Your Avatar"}
+          footer={null}
+          onCancel={handlePreviewCancel}
+        >
+          <img
+            alt="example"
+            style={{ width: "100%" }}
+            src={preview.previewImage}
+          />
+        </Modal>
+        <style jsx global>{`
+          .avatar-uploader .ant-upload-list-picture-card {
+            display: flex;
+            flex-direction: column;
+          }
+          .avatar-uploader .ant-upload .ant-btn{
+            top: -35px;
+            visibility: visible;
+          }
+          .avatar-uploader .ant-upload-select-picture-card {
+            visibility: hidden;
+          }
+        `}</style>
       </Form>
     );
 };
-export default enhance(UserProfileComponent);
+export default connectToRedux(UserProfileComponent);
