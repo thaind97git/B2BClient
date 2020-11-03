@@ -94,7 +94,7 @@ const columns = [
 const AdminBiddingManagementComponent = () => {
   return (
     <div>
-      <Row justify="end">
+      {/* <Row justify="end">
         <Button
           onClick={() => {
             Router.push("/aggregator/bidding/create");
@@ -104,7 +104,7 @@ const AdminBiddingManagementComponent = () => {
         >
           Create New Event
         </Button>
-      </Row>
+      </Row> */}
       <Tabs defaultActiveKey="1" onChange={callback}>
         <TabPane tab="Current Event" key="1">
           <Table dataSource={dataSource} columns={columns} />

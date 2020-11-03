@@ -54,6 +54,7 @@ import {
 } from "../stores/SupplierState";
 import ReactTableLayout from "../layouts/ReactTableLayout";
 import { G_PENDING } from "../enums/groupStatus";
+import { createLink } from "../libs";
 
 const { Title } = Typography;
 const groupRequestColumns = [
@@ -450,7 +451,15 @@ const GroupRequestDetailsComponent = ({
           <Button
             danger
             type="primary"
-            onClick={() => Router.push("/aggregator/bidding/create")}
+            onClick={() =>
+              Router.push(
+                createLink([
+                  "aggregator",
+                  "bidding",
+                  `create?groupId=${groupId}`,
+                ])
+              )
+            }
           >
             Create Reverse Auction
           </Button>

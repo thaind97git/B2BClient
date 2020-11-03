@@ -101,8 +101,12 @@ const formatQuotation = (arrayQuotation = []) => {
   return result;
 };
 
-const SupplierProductOptionComponent = ({ onGetQuotation, unitLabel }) => {
-  const [dataSource, setDataSource] = useState([]);
+const SupplierProductOptionComponent = ({
+  onGetQuotation,
+  unitLabel,
+  defaultQuotation = [],
+}) => {
+  const [dataSource, setDataSource] = useState(defaultQuotation);
 
   const columns = [
     {

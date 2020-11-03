@@ -9,6 +9,7 @@ import {
   Select,
   Typography,
   Form,
+  Empty,
 } from "antd";
 import React, { useEffect, useState } from "react";
 import moment from "moment";
@@ -19,8 +20,27 @@ import {
   currencyParser,
   currencyValue,
 } from "../libs/currencyFormatter";
+import { useRouter } from "next/router";
+import { connect } from "react-redux";
+import { createStructuredSelector } from "reselect";
+import {
+  getGroupDetails,
+  GetGroupDetailsData,
+  GetGroupDetailsError,
+} from "../stores/GroupState";
 const { Title } = Typography;
 const { Option } = Select;
+
+const connectToRedux = connect(
+  createStructuredSelector({
+    groupDetailsData: GetGroupDetailsData,
+    groupDetailsError: GetGroupDetailsError,
+  }),
+  (dispatch) => ({
+    getGroupDetails: (id) => dispatch(getGroupDetails(id)),
+  })
+);
+
 function handleChange(value) {
   console.log(`Selected: ${value}`);
 }
@@ -47,13 +67,28 @@ const styles = {
     padding: "0px 8px",
   },
 };
-const BiddingSettingComponent = ({ setIsDoneSetting, setDefaultTab }) => {
+const BiddingSettingComponent = ({
+  setIsDoneSetting,
+  setDefaultTab,
+  getGroupDetails,
+  groupDetailsData,
+  groupDetailsError,
+}) => {
   const [brief, setBrief] = useState(null);
   const [currentPrice, setCurrentPrice] = useState(0);
   const [currentValue, setCurrentValue] = useState(0);
   const [qualificationValue, setQualificationValue] = useState(0);
   const [qualificationPrice, setQualificationPrice] = useState(0);
   const [quantity, setQuantity] = useState(220);
+  const router = useRouter();
+  const { groupId } = router.query;
+
+  useEffect(() => {
+    if (groupId) {
+      getGroupDetails(groupId);
+    }
+  }, [groupId, getGroupDetails]);
+
   const onFinish = (values) => {
     console.log("Received values of form: ", values);
     setIsDoneSetting(true);
@@ -69,6 +104,11 @@ const BiddingSettingComponent = ({ setIsDoneSetting, setDefaultTab }) => {
   useEffect(() => {
     console.log({ currentValue });
   }, [currentValue]);
+
+  if (!groupDetailsData || groupDetailsError) {
+    return <Empty description="Can not find any group!" />;
+  }
+
   return (
     <div>
       <Form
@@ -395,4 +435,4 @@ const BiddingSettingComponent = ({ setIsDoneSetting, setDefaultTab }) => {
   );
 };
 
-export default BiddingSettingComponent;
+export default connectToRedux(BiddingSettingComponent);

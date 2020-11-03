@@ -9,6 +9,7 @@ import {
   Typography,
   Image,
   Divider,
+  Tag,
 } from "antd";
 import {
   getProductDetails,
@@ -26,6 +27,12 @@ import Router from "next/router";
 import { createStructuredSelector } from "reselect";
 import { fallbackImage, getProductImage } from "../utils";
 import QuotationDisplayComponent from "./Utils/QuotationDisplayComponent";
+import Modal from "antd/lib/modal/Modal";
+import SupplierProductOptionComponent from "./SupplierProductOptionComponent";
+import {
+  supplierUpdateQuotation,
+  SupplierUpdateQuotationData,
+} from "../stores/SupplierState";
 const { Title } = Typography;
 const connectToRedux = connect(
   createStructuredSelector({
@@ -33,10 +40,13 @@ const connectToRedux = connect(
     productDetailError: GetProductDetailsError,
     supplierProductDetailData: GetSupplierProductDetailsData,
     supplierProductDetailError: GetSupplierProductDetailsError,
+    updateQuotationData: SupplierUpdateQuotationData,
   }),
   (dispatch) => ({
     getProduct: (id) => dispatch(getProductDetails(id)),
     getSupplierProductDetails: (id) => dispatch(getSupplierProductDetails(id)),
+    supplierUpdateQuotation: ({ productId, description, callback }) =>
+      dispatch(supplierUpdateQuotation({ productId, description, callback })),
     resetData: () => {
       dispatch(GetProductDetailsResetter);
       dispatch(GetSupplierProductDetailsResetter);
@@ -65,15 +75,24 @@ const AdminProductDetailsComponent = ({
   getSupplierProductDetails,
   supplierProductDetailData,
   supplierProductDetailError,
+  supplierUpdateQuotation,
+  updateQuotationData,
 }) => {
-  console.log({ productID });
   const [loading, setLoading] = useState(true);
+  const [openQuotation, setOpenQuotation] = useState(false);
+  const [quotationsUpdate, setQuotationsUpdate] = useState([]);
 
   useEffect(() => {
     return () => {
       resetData();
     };
   }, [resetData]);
+
+  useEffect(() => {
+    if (updateQuotationData) {
+      setOpenQuotation(false);
+    }
+  }, [updateQuotationData]);
 
   useEffect(() => {
     if (productID && !isSupplier) {
@@ -124,6 +143,30 @@ const AdminProductDetailsComponent = ({
         type="text/css"
         href="/static/assets/image-gallery.css"
       />
+      <Modal
+        title="Update Quotations"
+        centered
+        visible={openQuotation}
+        onOk={() => {
+          supplierUpdateQuotation({
+            productId: productID,
+            description: quotationsUpdate,
+            callback: () => getSupplierProductDetails(productID),
+          });
+        }}
+        onCancel={() => setOpenQuotation(false)}
+        width={1000}
+      >
+        {openQuotation ? (
+          <SupplierProductOptionComponent
+            defaultQuotation={quotations}
+            unitLabel={get("unitOfMeasure.description")(detailsData)}
+            onGetQuotation={(quotations) => {
+              setQuotationsUpdate(quotations);
+            }}
+          />
+        ) : null}
+      </Modal>
       {!isSupplier && (
         <Col span={24} style={{ marginBottom: 12 }}>
           <Space>
@@ -142,7 +185,18 @@ const AdminProductDetailsComponent = ({
       {isSupplier && quotations.length > 0 && (
         <Fragment>
           <Col span={24}>
+            {/* <Space> */}
             <Title level={5}>Product Quotation</Title>
+            <Button
+              onClick={() => {
+                setOpenQuotation(true);
+              }}
+              size="small"
+              type="primary"
+            >
+              Update Quotation
+            </Button>
+            {/* </Space> */}
           </Col>
           <DescriptionItem
             title="Quotation"
@@ -166,7 +220,11 @@ const AdminProductDetailsComponent = ({
       />
       <DescriptionItem
         title="Unit of measure"
-        content={get("unitOfMeasure.description")(detailsData)}
+        content={
+          <Tag color="processing">
+            {get("unitOfMeasure.description")(detailsData)}
+          </Tag>
+        }
       />
       <DescriptionItem
         title="Description"

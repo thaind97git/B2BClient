@@ -1,5 +1,5 @@
 import { Tag } from "antd";
-import React from "react";
+import React, { Fragment } from "react";
 import { displayCurrency } from "../../utils";
 
 const QuotationDisplayComponent = ({ quotation = {}, unitLabel }) => {
@@ -7,12 +7,15 @@ const QuotationDisplayComponent = ({ quotation = {}, unitLabel }) => {
     return null;
   }
   return (
-    <Tag style={{ fontSize: 14, padding: 6, textAlign: "center", margin: 4 }}>
-      <div style={{ minWidth: 160 }}>
-        {">="} {quotation.quantity} {unitLabel || ""} -{" "}
-        <b>{displayCurrency(quotation.price)}</b>
-      </div>
-    </Tag>
+    <Fragment>
+      <Tag style={{ fontSize: 14, padding: 6, textAlign: "center", margin: 4 }}>
+        <div style={{ minWidth: 160 }}>
+          {">="} {quotation.quantity} {unitLabel || ""} -{" "}
+          <b>{displayCurrency(quotation.price)}</b>
+        </div>
+      </Tag>
+      <br />
+    </Fragment>
   );
 };
 

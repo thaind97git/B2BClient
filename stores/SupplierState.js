@@ -11,10 +11,10 @@ const GET_SUPPLIER_PAGING = "GetSupplierPagingAPI";
 export const BAN_USER = "BanUserAPI";
 export const UN_BAN_USER = "UnBanUserAPI";
 const GET_SUPPLIER_BY_PRODUCT_ID = "GetSupplierByProductIdAPI";
-const GET_USER_DETAILS = "GetUserDetailsAPI";
 export const SUPPLIER_REGISTER_PRODUCT = "SupplierRegisterProductAPI";
 export const SUPPLIER_UPDATE_QUOTATION = "SupplierUpdateQuotationAPI";
 export const DELETE_SUPPLIER_PRODUCT = "DeleteSupplierProductAPI";
+export const ACTIVE_SUPPLIER_PRODUCT = "ActiveSupplierProductAPI";
 
 // Get Supplier By Group Id
 const GetSupplierByGroupIdAPI = makeFetchAction(
@@ -188,18 +188,22 @@ export const SupplierRegisterProductResetter = getResetter(
 // Update Quotation
 const SupplierUpdateQuotationAPI = makeFetchAction(
   SUPPLIER_UPDATE_QUOTATION,
-  ({ id, description }) =>
+  ({ productId, description }) =>
     nfetch({
       endpoint: "/api/Supplier/Product",
+      method: "PUT",
     })({
-      id,
+      productId,
       description,
     })
 );
 
-export const supplierUpdateQuotation = ({ id, description }) =>
+export const supplierUpdateQuotation = ({ productId, description, callback }) =>
   respondToSuccess(
-    SupplierUpdateQuotationAPI.actionCreator({ id, description })
+    SupplierUpdateQuotationAPI.actionCreator({ productId, description }),
+    () => {
+      typeof callback === "function" && callback();
+    }
   );
 export const SupplierUpdateQuotationData =
   SupplierUpdateQuotationAPI.dataSelector;
@@ -238,4 +242,35 @@ export const DeleteSupplierProductError =
   DeleteSupplierProductAPI.errorSelector;
 export const DeleteSupplierProductResetter = getResetter(
   DeleteSupplierProductAPI
+);
+
+// Active Supplier Product
+const ActiveSupplierProductAPI = makeFetchAction(
+  ACTIVE_SUPPLIER_PRODUCT,
+  (id) =>
+    nfetch({
+      endpoint: `/api/Supplier/Product/Active/${id}`,
+      method: "PUT",
+    })()
+);
+
+export const activeSupplierProduct = (id) =>
+  respondToSuccess(
+    ActiveSupplierProductAPI.actionCreator(id),
+    (_, __, store) => {
+      store.dispatch(
+        getProductBySupplier({
+          pageIndex: DEFAULT_PAGING_INFO.page,
+          pageSize: DEFAULT_PAGING_INFO.pageSize,
+          productName: "",
+          category: "",
+        })
+      );
+    }
+  );
+export const ActiveSupplierProductData = ActiveSupplierProductAPI.dataSelector;
+export const ActiveSupplierProductError =
+  ActiveSupplierProductAPI.errorSelector;
+export const ActiveSupplierProductResetter = getResetter(
+  ActiveSupplierProductAPI
 );

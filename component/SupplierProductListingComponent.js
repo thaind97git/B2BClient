@@ -19,6 +19,7 @@ import Moment from "react-moment";
 import { get } from "lodash/fp";
 import AdminProductDetailsComponent from "./AdminProductDetailsComponent";
 import {
+  activeSupplierProduct,
   deleteSupplierProduct,
   DeleteSupplierProductData,
 } from "../stores/SupplierState";
@@ -49,6 +50,7 @@ const connectToRedux = connect(
         })
       ),
     deleteSupplierProduct: (id) => dispatch(deleteSupplierProduct(id)),
+    activeSupplierProduct: (id) => dispatch(activeSupplierProduct(id)),
   })
 );
 
@@ -61,8 +63,8 @@ const ProductStatus = ({ isDelete }) =>
 const SupplierProductListingComponent = ({
   getProductBySupplier,
   productBySupplierData,
-  deleteSupplierProductData,
   deleteSupplierProduct,
+  activeSupplierProduct,
 }) => {
   const [searchMessage, setSearchMessage] = useState("");
   const [dateRange, setDateRange] = useState(DEFAULT_DATE_RANGE);
@@ -92,11 +94,6 @@ const SupplierProductListingComponent = ({
       key: "action",
     },
   ];
-
-  // useEffect(() => {
-  //   if (deleteSupplierProductData) {
-  //   }
-  // }, [deleteSupplierProductData]);
 
   const getProductTable = (productData = []) => {
     return (
@@ -129,7 +126,7 @@ const SupplierProductListingComponent = ({
                 okText: "Active",
                 cancelText: "Cancel",
                 onOk: () => {
-                  deleteSupplierProduct((product.product || {}).id);
+                  activeSupplierProduct((product.product || {}).id);
                 },
               });
             }}
