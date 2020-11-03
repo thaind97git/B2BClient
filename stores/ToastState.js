@@ -1,5 +1,6 @@
 import { ACTIONS } from "redux-api-call";
 import { openNotification } from "../utils";
+import { CREATE_REVERSE_AUCTION } from "./AuctionState";
 import {
   ADD_REQUEST_TO_GROUP,
   CREATE_NEW_GROUP,
@@ -7,7 +8,9 @@ import {
 } from "./GroupState";
 import { CANCEL_REQUEST, REJECT_REQUEST } from "./RequestState";
 import {
+  ACTIVE_SUPPLIER_PRODUCT,
   BAN_USER,
+  DELETE_SUPPLIER_PRODUCT,
   SUPPLIER_REGISTER_PRODUCT,
   SUPPLIER_UPDATE_QUOTATION,
   UN_BAN_USER,
@@ -47,12 +50,20 @@ export default {
         case UN_BAN_USER:
           msgNotify = "Active User success";
           break;
-
         case SUPPLIER_REGISTER_PRODUCT:
           msgNotify = "Register Product success";
           break;
         case SUPPLIER_UPDATE_QUOTATION:
           msgNotify = "Update Product Quotation success";
+          break;
+        case DELETE_SUPPLIER_PRODUCT:
+          msgNotify = "Deactive product success";
+          break;
+        case ACTIVE_SUPPLIER_PRODUCT:
+          msgNotify = "Active product success";
+          break;
+        case CREATE_REVERSE_AUCTION:
+          msgNotify = "Create new reverse auction success";
           break;
         default:
           break;
@@ -90,6 +101,15 @@ export default {
           break;
         case SUPPLIER_UPDATE_QUOTATION:
           msgNotify = "Update Product Quotation fail";
+          break;
+        case DELETE_SUPPLIER_PRODUCT:
+          msgNotify = "Deactive product fail";
+          break;
+        case ACTIVE_SUPPLIER_PRODUCT:
+          msgNotify = "Active product fail";
+          break;
+        case CREATE_REVERSE_AUCTION:
+          msgNotify = "Create new reverse auction fail";
           break;
         default:
           break;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Fragment } from "react";
 import {
   Button,
   Col,
@@ -8,27 +8,49 @@ import {
   Space,
   Typography,
   Image,
+  Divider,
+  Tag,
 } from "antd";
 import {
   getProductDetails,
   GetProductDetailsData,
   GetProductDetailsError,
   GetProductDetailsResetter,
+  getSupplierProductDetails,
+  GetSupplierProductDetailsData,
+  GetSupplierProductDetailsError,
+  GetSupplierProductDetailsResetter,
 } from "../stores/ProductState";
 import { get } from "lodash/fp";
 import { connect } from "react-redux";
 import Router from "next/router";
 import { createStructuredSelector } from "reselect";
 import { fallbackImage, getProductImage } from "../utils";
+import QuotationDisplayComponent from "./Utils/QuotationDisplayComponent";
+import Modal from "antd/lib/modal/Modal";
+import SupplierProductOptionComponent from "./SupplierProductOptionComponent";
+import {
+  supplierUpdateQuotation,
+  SupplierUpdateQuotationData,
+} from "../stores/SupplierState";
 const { Title } = Typography;
 const connectToRedux = connect(
   createStructuredSelector({
     productDetailData: GetProductDetailsData,
     productDetailError: GetProductDetailsError,
+    supplierProductDetailData: GetSupplierProductDetailsData,
+    supplierProductDetailError: GetSupplierProductDetailsError,
+    updateQuotationData: SupplierUpdateQuotationData,
   }),
   (dispatch) => ({
     getProduct: (id) => dispatch(getProductDetails(id)),
-    resetData: () => dispatch(GetProductDetailsResetter),
+    getSupplierProductDetails: (id) => dispatch(getSupplierProductDetails(id)),
+    supplierUpdateQuotation: ({ productId, description, callback }) =>
+      dispatch(supplierUpdateQuotation({ productId, description, callback })),
+    resetData: () => {
+      dispatch(GetProductDetailsResetter);
+      dispatch(GetSupplierProductDetailsResetter);
+    },
   })
 );
 const DescriptionItem = ({ title, content }) => (
@@ -50,8 +72,15 @@ const AdminProductDetailsComponent = ({
   productID,
   resetData,
   isSupplier = false,
+  getSupplierProductDetails,
+  supplierProductDetailData,
+  supplierProductDetailError,
+  supplierUpdateQuotation,
+  updateQuotationData,
 }) => {
   const [loading, setLoading] = useState(true);
+  const [openQuotation, setOpenQuotation] = useState(false);
+  const [quotationsUpdate, setQuotationsUpdate] = useState([]);
 
   useEffect(() => {
     return () => {
@@ -60,10 +89,22 @@ const AdminProductDetailsComponent = ({
   }, [resetData]);
 
   useEffect(() => {
-    if (productID) {
+    if (updateQuotationData) {
+      setOpenQuotation(false);
+    }
+  }, [updateQuotationData]);
+
+  useEffect(() => {
+    if (productID && !isSupplier) {
       getProduct(productID);
     }
-  }, [productID, getProduct]);
+  }, [productID, getProduct, isSupplier]);
+
+  useEffect(() => {
+    if (productID && isSupplier) {
+      getSupplierProductDetails(productID);
+    }
+  }, [productID, getSupplierProductDetails, isSupplier]);
 
   useEffect(() => {
     if (productDetailError || productDetailData) {
@@ -71,10 +112,16 @@ const AdminProductDetailsComponent = ({
     }
   }, [productDetailData, productDetailError]);
 
+  useEffect(() => {
+    if (supplierProductDetailError || supplierProductDetailData) {
+      setLoading(false);
+    }
+  }, [supplierProductDetailError, supplierProductDetailData]);
+
   if (loading) {
     return <Skeleton active />;
   }
-  if (!productDetailData) {
+  if (!productDetailData || !supplierProductDetailData) {
     return (
       <Empty
         style={{ padding: "180px 0px" }}
@@ -82,6 +129,13 @@ const AdminProductDetailsComponent = ({
       />
     );
   }
+
+  const detailsData = !isSupplier
+    ? productDetailData
+    : supplierProductDetailData.product;
+
+  const quotations = supplierProductDetailData.description || [];
+
   return (
     <Row style={{ width: "100%" }}>
       <link
@@ -89,6 +143,30 @@ const AdminProductDetailsComponent = ({
         type="text/css"
         href="/static/assets/image-gallery.css"
       />
+      <Modal
+        title="Update Quotations"
+        centered
+        visible={openQuotation}
+        onOk={() => {
+          supplierUpdateQuotation({
+            productId: productID,
+            description: quotationsUpdate,
+            callback: () => getSupplierProductDetails(productID),
+          });
+        }}
+        onCancel={() => setOpenQuotation(false)}
+        width={1000}
+      >
+        {openQuotation ? (
+          <SupplierProductOptionComponent
+            defaultQuotation={quotations}
+            unitLabel={get("unitOfMeasure.description")(detailsData)}
+            onGetQuotation={(quotations) => {
+              setQuotationsUpdate(quotations);
+            }}
+          />
+        ) : null}
+      </Modal>
       {!isSupplier && (
         <Col span={24} style={{ marginBottom: 12 }}>
           <Space>
@@ -104,33 +182,67 @@ const AdminProductDetailsComponent = ({
           </Space>
         </Col>
       )}
+      {isSupplier && quotations.length > 0 && (
+        <Fragment>
+          <Col span={24}>
+            {/* <Space> */}
+            <Title level={5}>Product Quotation</Title>
+            <Button
+              onClick={() => {
+                setOpenQuotation(true);
+              }}
+              size="small"
+              type="primary"
+            >
+              Update Quotation
+            </Button>
+            {/* </Space> */}
+          </Col>
+          <DescriptionItem
+            title="Quotation"
+            content={quotations.map((quotation, index) => (
+              <QuotationDisplayComponent
+                key={index}
+                quotation={quotation}
+                unitLabel={get("unitOfMeasure.description")(detailsData)}
+              />
+            ))}
+          />
+          <Divider />
+        </Fragment>
+      )}
       <Col span={24}>
         <Title level={5}>Product Basic Information</Title>
       </Col>
       <DescriptionItem
         title="Product Name"
-        content={(productDetailData || {}).productName}
+        content={(detailsData || {}).productName}
       />
       <DescriptionItem
         title="Unit of measure"
-        content={get("unitOfMeasure.description")(productDetailData)}
+        content={
+          <Tag color="processing">
+            {get("unitOfMeasure.description")(detailsData)}
+          </Tag>
+        }
       />
       <DescriptionItem
         title="Description"
         content={
           <div
             dangerouslySetInnerHTML={{
-              __html: (productDetailData || {}).description,
+              __html: (detailsData || {}).description,
             }}
           />
         }
       />
+      <Divider />
       <Col span={24}>
         <Title level={5}>Product Image</Title>
       </Col>
       <Col span={24} justify="space-between">
-        {productDetailData.images ? (
-          productDetailData.images.map((image) => (
+        {detailsData.images ? (
+          detailsData.images.map((image) => (
             <Col span={8}>
               <Image src={getProductImage(image)} fallback={fallbackImage} />
             </Col>

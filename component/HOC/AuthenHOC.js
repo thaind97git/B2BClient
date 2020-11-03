@@ -40,6 +40,9 @@ function withAuth(AuthComponent) {
         const scope = getScopeByUrl(Router.pathname);
         this.props.getCurrentUser({ scope });
       }
+    }
+
+    componentDidUpdate() {
       if (this.props.currentUserError) {
         Router.push(
           `/login?returnUrl=${Router.pathname}${window.location.search}`

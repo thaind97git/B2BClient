@@ -9,16 +9,18 @@ import { openNotification } from "../utils";
 const GET_PRODUCT_BY_CATEGORY = "GetProductByCategoryAPI";
 const GET_PRODUCT_PAGING = "GetProductPagingAPI";
 const GET_PRODUCT_DETAILS = "GetProductDetailsAPI";
+const GET_SUPPLIER_PRODUCT_DETAILS = "GetSupplierProductDetailsAPI";
 const CREATE_PRODUCT = "CreateProductAPI";
 const UPDATE_PRODUCT = "UpdateProductAPI";
 const GET_PRODUCT_BY_SUPPLIER = "GetProductBySupplierAPI";
 
 const GetProductByCategoryAPI = makeFetchAction(
   GET_PRODUCT_BY_CATEGORY,
-  (categoryId, pageSize, pageIndex) =>
+  (categoryId, pageSize, pageIndex, name) =>
     nfetch({
       endpoint: `/api/Product/Filter${generateQuery({
-        id: categoryId,
+        name,
+        categoryId,
         pageIndex,
         pageSize,
       })}`,
@@ -26,9 +28,9 @@ const GetProductByCategoryAPI = makeFetchAction(
     })()
 );
 
-export const getProductByCategory = (id, pageSize, pageIndex) =>
+export const getProductByCategory = (id, pageSize, pageIndex, name) =>
   respondToSuccess(
-    GetProductByCategoryAPI.actionCreator(id, pageSize, pageIndex),
+    GetProductByCategoryAPI.actionCreator(id, pageSize, pageIndex, name),
     (resp) => {
       console.log({ resp });
     }
@@ -84,15 +86,33 @@ const GetProductDetailsAPI = makeFetchAction(GET_PRODUCT_DETAILS, (id) =>
   })()
 );
 
-export const getProductDetails = (id, pageSize, pageIndex) =>
-  respondToSuccess(
-    GetProductDetailsAPI.actionCreator(id, pageSize, pageIndex),
-    () => {}
-  );
+export const getProductDetails = (id) =>
+  respondToSuccess(GetProductDetailsAPI.actionCreator(id), () => {});
 
 export const GetProductDetailsData = GetProductDetailsAPI.dataSelector;
 export const GetProductDetailsError = GetProductDetailsAPI.errorSelector;
 export const GetProductDetailsResetter = getResetter(GetProductDetailsAPI);
+
+//Supplier Product Details
+const GetSupplierProductDetailsAPI = makeFetchAction(
+  GET_PRODUCT_DETAILS,
+  (id) =>
+    nfetch({
+      endpoint: `/api/Supplier/Product/${id}`,
+      method: "GET",
+    })()
+);
+
+export const getSupplierProductDetails = (id) =>
+  respondToSuccess(GetSupplierProductDetailsAPI.actionCreator(id), () => {});
+
+export const GetSupplierProductDetailsData =
+  GetSupplierProductDetailsAPI.dataSelector;
+export const GetSupplierProductDetailsError =
+  GetSupplierProductDetailsAPI.errorSelector;
+export const GetSupplierProductDetailsResetter = getResetter(
+  GetSupplierProductDetailsAPI
+);
 
 // Create product
 const onUploadImage = (productId, fileList) => {

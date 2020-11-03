@@ -101,8 +101,12 @@ const formatQuotation = (arrayQuotation = []) => {
   return result;
 };
 
-const SupplierProductOptionComponent = ({ onGetQuotation, unitLabel }) => {
-  const [dataSource, setDataSource] = useState([]);
+const SupplierProductOptionComponent = ({
+  onGetQuotation,
+  unitLabel,
+  defaultQuotation = [],
+}) => {
+  const [dataSource, setDataSource] = useState(defaultQuotation);
 
   const columns = [
     {
@@ -145,8 +149,8 @@ const SupplierProductOptionComponent = ({ onGetQuotation, unitLabel }) => {
   const handleAdd = () => {
     const newData = {
       key: new Date().getTime() + "",
-      quantity: 1,
-      price: 0,
+      quantity: "1",
+      price: "0",
     };
     setDataSource([...dataSource, newData]);
     typeof onGetQuotation === "function" &&
@@ -159,7 +163,7 @@ const SupplierProductOptionComponent = ({ onGetQuotation, unitLabel }) => {
     newData.splice(index, 1, { ...item, ...row });
     setDataSource(newData);
     typeof onGetQuotation === "function" &&
-      onGetQuotation(formatQuotation(dataSource));
+      onGetQuotation(formatQuotation(newData));
   };
 
   const components = {

@@ -40,7 +40,7 @@ function DateRangePicker({ setDateRange }) {
       <RangePicker
         size="large"
         onChange={(date) => {
-          handleDateChange(date);
+          handleDateChange(date || []);
         }}
         format={dateFormat}
         value={selectedDate}

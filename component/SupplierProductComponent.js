@@ -25,8 +25,9 @@ import {
   DEFAULT_PAGING_INFO,
   doFunctionWithEnter,
   fallbackImage,
+  getProductImage,
 } from "../utils";
-import { get } from "lodash/fp";
+import { get, toString } from "lodash/fp";
 import AdminProductDetailsComponent from "./AdminProductDetailsComponent";
 import {
   supplierRegisterProduct,
@@ -99,6 +100,16 @@ const SupplierProductComponent = ({
   }, []);
 
   useEffect(() => {
+    setLoading(true);
+    getProductPaging({
+      categoryID: category,
+      productName: searchMessage,
+      pageIndex,
+      pageSize,
+    });
+  }, [category]);
+
+  useEffect(() => {
     if (getProductPagingData || getProductPagingError) {
       setLoading(false);
     }
@@ -120,7 +131,7 @@ const SupplierProductComponent = ({
         onOk={() => {
           supplierRegisterProduct({
             productId: (currentProductSelected || {}).id,
-            description: JSON.stringify(quotations),
+            description: quotations,
           });
         }}
         onCancel={() => setOpenOption(false)}
@@ -161,6 +172,7 @@ const SupplierProductComponent = ({
                 value={searchMessage}
                 addonBefore={
                   <AllCategoryComponent
+                    changeOnSelect
                     onGetLastValue={(value) => {
                       setCategory(value);
                     }}
@@ -237,7 +249,7 @@ const SupplierProductComponent = ({
                               <Image
                                 width={200}
                                 height={200}
-                                src={item.images[0]}
+                                src={getProductImage(item.images[0])}
                                 fallback={fallbackImage}
                               />
                             }

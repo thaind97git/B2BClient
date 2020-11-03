@@ -118,7 +118,6 @@ const RequestDetailsComponent = ({
     certifications = [],
     leadTime,
     requestStatus = {},
-    paymentTerm = {},
     district = {},
     ward = {},
     province = {},
@@ -325,7 +324,6 @@ const RequestDetailsComponent = ({
         } - ${(province || {}).description}`}
       />
       <DescriptionItem title="Lead Time" content={leadTimeDisplay} />
-      <DescriptionItem title="Payment Term" content={paymentTerm.description} />
       {!isSupplier && (
         <Fragment>
           <Divider />
