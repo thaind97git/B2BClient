@@ -55,7 +55,7 @@ export default {
           msgNotify = "Update Product Quotation success";
           break;
         case DELETE_SUPPLIER_PRODUCT:
-          msgNotify = "Deactive product success";
+          msgNotify = "Update product status success";
           break;
         default:
           break;
@@ -95,7 +95,7 @@ export default {
           msgNotify = "Update Product Quotation fail";
           break;
         case DELETE_SUPPLIER_PRODUCT:
-          msgNotify = "Deactive product fail";
+          msgNotify = "Update product status fail";
           break;
         default:
           break;

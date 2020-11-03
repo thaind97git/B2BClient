@@ -115,7 +115,7 @@ const AdminProductDetailsComponent = ({
     ? productDetailData
     : supplierProductDetailData.product;
 
-  const quotations = JSON.parse(supplierProductDetailData.description) || [];
+  const quotations = supplierProductDetailData.description || [];
 
   return (
     <Row style={{ width: "100%" }}>

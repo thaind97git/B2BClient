@@ -94,8 +94,8 @@ const formatQuotation = (arrayQuotation = []) => {
   let result = [];
   if (arrayQuotation.length > 0) {
     result = arrayQuotation.map((quotation) => ({
-      quantity: quotation.quantity,
-      price: quotation.price,
+      quantity: +quotation.quantity,
+      price: +quotation.price,
     }));
   }
   return result;

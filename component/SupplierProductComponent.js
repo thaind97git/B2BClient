@@ -129,10 +129,9 @@ const SupplierProductComponent = ({
         centered
         visible={openOption}
         onOk={() => {
-          console.log({ json: toString(quotations) });
           supplierRegisterProduct({
             productId: (currentProductSelected || {}).id,
-            description: JSON.stringify(quotations),
+            description: quotations,
           });
         }}
         onCancel={() => setOpenOption(false)}

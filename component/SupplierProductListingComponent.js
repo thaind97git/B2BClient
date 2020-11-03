@@ -53,7 +53,7 @@ const connectToRedux = connect(
 );
 
 const ProductStatus = ({ isDelete }) =>
-  !isDelete ? (
+  isDelete ? (
     <Tag color="error">Deactivated</Tag>
   ) : (
     <Tag color="success">Activated</Tag>
@@ -119,7 +119,7 @@ const SupplierProductListingComponent = ({
             {new Date(product.dateCreated)}
           </Moment>
         ),
-        status: <ProductStatus isDelete={product.isDelete} />,
+        status: <ProductStatus isDelete={product.isDeleted} />,
         action: product.isDeleted ? (
           <Button
             onClick={() => {

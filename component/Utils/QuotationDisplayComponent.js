@@ -7,7 +7,7 @@ const QuotationDisplayComponent = ({ quotation = {}, unitLabel }) => {
     return null;
   }
   return (
-    <Tag style={{ fontSize: 16, padding: 6, textAlign: "center" }}>
+    <Tag style={{ fontSize: 14, padding: 6, textAlign: "center", margin: 4 }}>
       <div style={{ minWidth: 160 }}>
         {">="} {quotation.quantity} {unitLabel || ""} -{" "}
         <b>{displayCurrency(quotation.price)}</b>
