@@ -1,20 +1,20 @@
-import { makeFetchAction } from "redux-api-call";
-import { generateQuery, getResetter } from "../libs";
-import nfetch from "../libs/nfetch";
-import { respondToSuccess } from "../middlewares/api-reaction";
-import { DEFAULT_PAGING_INFO } from "../utils";
-import { getBuyerPaging } from "./BuyerState";
-import { getProductBySupplier } from "./ProductState";
+import { makeFetchAction } from 'redux-api-call';
+import { generateQuery, getResetter } from '../libs';
+import nfetch from '../libs/nfetch';
+import { respondToSuccess } from '../middlewares/api-reaction';
+import { DEFAULT_PAGING_INFO } from '../utils';
+import { getBuyerPaging } from './BuyerState';
+import { getProductBySupplier, getProductForSupplier } from './ProductState';
 
-const GET_SUPPLIER_BY_GROUP_ID = "GetSupplierByGroupIdAPI";
-const GET_SUPPLIER_PAGING = "GetSupplierPagingAPI";
-export const BAN_USER = "BanUserAPI";
-export const UN_BAN_USER = "UnBanUserAPI";
-const GET_SUPPLIER_BY_PRODUCT_ID = "GetSupplierByProductIdAPI";
-export const SUPPLIER_REGISTER_PRODUCT = "SupplierRegisterProductAPI";
-export const SUPPLIER_UPDATE_QUOTATION = "SupplierUpdateQuotationAPI";
-export const DELETE_SUPPLIER_PRODUCT = "DeleteSupplierProductAPI";
-export const ACTIVE_SUPPLIER_PRODUCT = "ActiveSupplierProductAPI";
+const GET_SUPPLIER_BY_GROUP_ID = 'GetSupplierByGroupIdAPI';
+const GET_SUPPLIER_PAGING = 'GetSupplierPagingAPI';
+export const BAN_USER = 'BanUserAPI';
+export const UN_BAN_USER = 'UnBanUserAPI';
+const GET_SUPPLIER_BY_PRODUCT_ID = 'GetSupplierByProductIdAPI';
+export const SUPPLIER_REGISTER_PRODUCT = 'SupplierRegisterProductAPI';
+export const SUPPLIER_UPDATE_QUOTATION = 'SupplierUpdateQuotationAPI';
+export const DELETE_SUPPLIER_PRODUCT = 'DeleteSupplierProductAPI';
+export const ACTIVE_SUPPLIER_PRODUCT = 'ActiveSupplierProductAPI';
 
 // Get Supplier By Group Id
 const GetSupplierByGroupIdAPI = makeFetchAction(
@@ -24,16 +24,16 @@ const GetSupplierByGroupIdAPI = makeFetchAction(
       endpoint: `/api/Group/Suppliers${generateQuery({
         groupId,
         pageIndex,
-        pageSize,
+        pageSize
       })}`,
-      method: "GET",
+      method: 'GET'
     })()
 );
 
 export const getSupplierByGroupId = ({
   groupId,
   pageIndex = 1,
-  pageSize = 10,
+  pageSize = 10
 }) =>
   respondToSuccess(
     GetSupplierByGroupIdAPI.actionCreator({ groupId, pageIndex, pageSize })
@@ -52,16 +52,16 @@ const GetSupplierByProductIdAPI = makeFetchAction(
       endpoint: `/api/Supplier/Product${generateQuery({
         productId,
         pageIndex,
-        pageSize,
+        pageSize
       })}`,
-      method: "GET",
+      method: 'GET'
     })()
 );
 
 export const getSupplierByProductId = ({
   productId,
   pageIndex = 1,
-  pageSize = 10,
+  pageSize = 10
 }) =>
   respondToSuccess(
     GetSupplierByProductIdAPI.actionCreator({ productId, pageIndex, pageSize })
@@ -83,9 +83,9 @@ const GetSupplierPagingAPI = makeFetchAction(
         statusId,
         email,
         pageIndex,
-        pageSize,
+        pageSize
       })}`,
-      method: "GET",
+      method: 'GET'
     })()
 );
 
@@ -93,7 +93,7 @@ export const getSupplierPaging = ({
   statusId,
   email,
   pageIndex = 1,
-  pageSize = 10,
+  pageSize = 10
 }) =>
   respondToSuccess(
     GetSupplierPagingAPI.actionCreator({ statusId, email, pageIndex, pageSize })
@@ -106,7 +106,7 @@ export const GetSupplierPagingResetter = getResetter(GetSupplierPagingAPI);
 const BanUserAPI = makeFetchAction(BAN_USER, ({ id, description }) =>
   nfetch({
     endpoint: `/api/Supplier/BanUser`,
-    method: "PUT",
+    method: 'PUT'
   })({ id, description })
 );
 
@@ -119,11 +119,11 @@ export const banUser = ({ id, description, isSupplier = true }) =>
           isSupplier
             ? getSupplierPaging({
                 pageIndex: DEFAULT_PAGING_INFO.page,
-                pageSize: DEFAULT_PAGING_INFO.pageSize,
+                pageSize: DEFAULT_PAGING_INFO.pageSize
               })
             : getBuyerPaging({
                 pageIndex: DEFAULT_PAGING_INFO.page,
-                pageSize: DEFAULT_PAGING_INFO.pageSize,
+                pageSize: DEFAULT_PAGING_INFO.pageSize
               })
         );
       }
@@ -137,7 +137,7 @@ export const BanUserResetter = getResetter(BanUserAPI);
 const UnBanUserAPI = makeFetchAction(UN_BAN_USER, ({ id }) =>
   nfetch({
     endpoint: `/api/Supplier/UnBanUser/${id}`,
-    method: "PUT",
+    method: 'PUT'
   })()
 );
 
@@ -148,11 +148,11 @@ export const unBanUser = ({ id, isSupplier = true }) =>
         isSupplier
           ? getSupplierPaging({
               pageIndex: DEFAULT_PAGING_INFO.page,
-              pageSize: DEFAULT_PAGING_INFO.pageSize,
+              pageSize: DEFAULT_PAGING_INFO.pageSize
             })
           : getBuyerPaging({
               pageIndex: DEFAULT_PAGING_INFO.page,
-              pageSize: DEFAULT_PAGING_INFO.pageSize,
+              pageSize: DEFAULT_PAGING_INFO.pageSize
             })
       );
     }
@@ -166,16 +166,26 @@ const SupplierRegisterProductAPI = makeFetchAction(
   SUPPLIER_REGISTER_PRODUCT,
   ({ productId, description }) =>
     nfetch({
-      endpoint: "/api/Supplier/Product",
+      endpoint: '/api/Supplier/Product'
     })({
       productId,
-      description,
+      description
     })
 );
 
 export const supplierRegisterProduct = ({ productId, description }) =>
   respondToSuccess(
-    SupplierRegisterProductAPI.actionCreator({ productId, description })
+    SupplierRegisterProductAPI.actionCreator({ productId, description }),
+    (_, __, store) => {
+      store.dispatch(
+        getProductForSupplier({
+          pageIndex: DEFAULT_PAGING_INFO.page,
+          pageSize: DEFAULT_PAGING_INFO.pageSize,
+          productName: '',
+          category: ''
+        })
+      );
+    }
   );
 export const SupplierRegisterProductData =
   SupplierRegisterProductAPI.dataSelector;
@@ -190,11 +200,11 @@ const SupplierUpdateQuotationAPI = makeFetchAction(
   SUPPLIER_UPDATE_QUOTATION,
   ({ productId, description }) =>
     nfetch({
-      endpoint: "/api/Supplier/Product",
-      method: "PUT",
+      endpoint: '/api/Supplier/Product',
+      method: 'PUT'
     })({
       productId,
-      description,
+      description
     })
 );
 
@@ -202,7 +212,7 @@ export const supplierUpdateQuotation = ({ productId, description, callback }) =>
   respondToSuccess(
     SupplierUpdateQuotationAPI.actionCreator({ productId, description }),
     () => {
-      typeof callback === "function" && callback();
+      typeof callback === 'function' && callback();
     }
   );
 export const SupplierUpdateQuotationData =
@@ -219,7 +229,7 @@ const DeleteSupplierProductAPI = makeFetchAction(
   (id) =>
     nfetch({
       endpoint: `/api/Supplier/Product/${id}`,
-      method: "DELETE",
+      method: 'DELETE'
     })()
 );
 
@@ -231,8 +241,8 @@ export const deleteSupplierProduct = (id) =>
         getProductBySupplier({
           pageIndex: DEFAULT_PAGING_INFO.page,
           pageSize: DEFAULT_PAGING_INFO.pageSize,
-          productName: "",
-          category: "",
+          productName: '',
+          category: ''
         })
       );
     }
@@ -250,7 +260,7 @@ const ActiveSupplierProductAPI = makeFetchAction(
   (id) =>
     nfetch({
       endpoint: `/api/Supplier/Product/Active/${id}`,
-      method: "PUT",
+      method: 'PUT'
     })()
 );
 
@@ -262,8 +272,8 @@ export const activeSupplierProduct = (id) =>
         getProductBySupplier({
           pageIndex: DEFAULT_PAGING_INFO.page,
           pageSize: DEFAULT_PAGING_INFO.pageSize,
-          productName: "",
-          category: "",
+          productName: '',
+          category: ''
         })
       );
     }

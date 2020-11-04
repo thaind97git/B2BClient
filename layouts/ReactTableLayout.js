@@ -51,7 +51,7 @@ const ReactTableLayout = ({
     if (hasPaging && !hasAction) {
       typeof dispatchAction === "function" &&
         doDispatchAction(
-          dispatchAction(pageIndex, pageSizeTable, ...exCondition)
+          dispatchAction(pageIndex, pageSizeTable, ...otherCondition.split('~'))
         );
     }
   }, [

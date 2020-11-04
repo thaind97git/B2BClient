@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState } from 'react';
 import {
   Button,
   Col,
@@ -9,68 +9,66 @@ import {
   Pagination,
   Row,
   Skeleton,
-  Typography,
-} from "antd";
-import AllCategoryComponent from "./AllCategoryComponent";
-import Search from "antd/lib/input/Search";
-import { connect } from "react-redux";
-import { createStructuredSelector } from "reselect";
+  Typography
+} from 'antd';
+import AllCategoryComponent from './AllCategoryComponent';
+import Search from 'antd/lib/input/Search';
+import { connect } from 'react-redux';
+import { createStructuredSelector } from 'reselect';
 import {
-  getProductPaging,
-  GetProductPagingData,
-  GetProductPagingError,
-} from "../stores/ProductState";
-import SupplierProductOptionComponent from "./SupplierProductOptionComponent";
+  getProductForSupplier,
+  GetProductForSupplierData,
+  GetProductForSupplierError
+} from '../stores/ProductState';
+import SupplierProductOptionComponent from './SupplierProductOptionComponent';
 import {
   DEFAULT_PAGING_INFO,
   doFunctionWithEnter,
   fallbackImage,
-  getProductImage,
-} from "../utils";
-import { get, toString } from "lodash/fp";
-import AdminProductDetailsComponent from "./AdminProductDetailsComponent";
+  getProductImage
+} from '../utils';
+import { get } from 'lodash/fp';
+import AdminProductDetailsComponent from './AdminProductDetailsComponent';
 import {
   supplierRegisterProduct,
   SupplierRegisterProductData,
   supplierUpdateQuotation,
-  SupplierUpdateQuotationData,
-} from "../stores/SupplierState";
+  SupplierUpdateQuotationData
+} from '../stores/SupplierState';
 const { Title } = Typography;
 const connectToRedux = connect(
   createStructuredSelector({
-    getProductPagingData: GetProductPagingData,
-    getProductPagingError: GetProductPagingError,
+    getProductForSupplierData: GetProductForSupplierData,
+    getProductForSupplierError: GetProductForSupplierError,
     registerProductData: SupplierRegisterProductData,
-    updateQuotationData: SupplierUpdateQuotationData,
+    updateQuotationData: SupplierUpdateQuotationData
   }),
   (dispatch) => ({
-    getProductPaging: ({ categoryID, productName, pageSize, pageIndex }) =>
+    getProductForSupplier: ({ category, productName, pageSize, pageIndex }) =>
       dispatch(
-        getProductPaging({
-          categoryID,
+        getProductForSupplier({
+          category,
           productName,
           pageIndex,
-          pageSize,
+          pageSize
         })
       ),
     supplierRegisterProduct: ({ productId, description }) =>
       dispatch(supplierRegisterProduct({ productId, description })),
     supplierUpdateQuotation: ({ id, description }) =>
-      dispatch(supplierUpdateQuotation({ id, description })),
+      dispatch(supplierUpdateQuotation({ id, description }))
   })
 );
 const SupplierProductComponent = ({
-  getProductPaging,
-  getProductPagingData,
-  getProductPagingError,
+  getProductForSupplier,
+  getProductForSupplierData,
+  getProductForSupplierError,
   registerProductData,
-  supplierRegisterProduct,
-  updateQuotationData,
-  supplierUpdateQuotation,
+  supplierRegisterProduct
 }) => {
   const [openDetails, setOpenDetails] = useState(false);
-  const [category, setCategory] = useState("all");
-  const [searchMessage, setSearchMessage] = useState("");
+  const [category, setCategory] = useState('all');
+  const [searchMessage, setSearchMessage] = useState('');
   const [pageIndex, setPageIndex] = useState(DEFAULT_PAGING_INFO.page);
   const pageSize = DEFAULT_PAGING_INFO.pageSize;
   const [firstLoad, setFirstLoad] = useState(true);
@@ -89,11 +87,11 @@ const SupplierProductComponent = ({
   useEffect(() => {
     if (firstLoad) {
       setLoading(true);
-      getProductPaging({
-        categoryID: "",
-        productName: "",
+      getProductForSupplier({
+        category: '',
+        productName: '',
         pageIndex,
-        pageSize,
+        pageSize
       });
       setFirstLoad(false);
     }
@@ -101,25 +99,25 @@ const SupplierProductComponent = ({
 
   useEffect(() => {
     setLoading(true);
-    getProductPaging({
-      categoryID: category,
+    getProductForSupplier({
+      category: category,
       productName: searchMessage,
       pageIndex,
-      pageSize,
+      pageSize
     });
   }, [category]);
 
   useEffect(() => {
-    if (getProductPagingData || getProductPagingError) {
+    if (getProductForSupplierData || getProductForSupplierError) {
       setLoading(false);
     }
-  }, [getProductPagingData, getProductPagingError]);
+  }, [getProductForSupplierData, getProductForSupplierError]);
 
   let productData = [],
     totalCount = 0;
-  if (getProductPagingData) {
-    productData = getProductPagingData.data;
-    totalCount = getProductPagingData.total;
+  if (getProductForSupplierData) {
+    productData = getProductForSupplierData.data;
+    totalCount = getProductForSupplierData.total;
   }
 
   return (
@@ -131,7 +129,7 @@ const SupplierProductComponent = ({
         onOk={() => {
           supplierRegisterProduct({
             productId: (currentProductSelected || {}).id,
-            description: quotations,
+            description: quotations
           });
         }}
         onCancel={() => setOpenOption(false)}
@@ -139,7 +137,7 @@ const SupplierProductComponent = ({
       >
         {openOption ? (
           <SupplierProductOptionComponent
-            unitLabel={get("unitOfMeasure.description")(currentProductSelected)}
+            unitLabel={get('unitOfMeasure.description')(currentProductSelected)}
             onGetQuotation={(quotations) => {
               setQuotations(quotations);
             }}
@@ -149,11 +147,11 @@ const SupplierProductComponent = ({
       <Drawer
         width={640}
         title="Product details"
-        placement={"right"}
+        placement={'right'}
         closable={true}
         onClose={() => setOpenDetails(false)}
         visible={openDetails}
-        key={"product-details"}
+        key={'product-details'}
       >
         {openDetails ? (
           <AdminProductDetailsComponent
@@ -184,22 +182,22 @@ const SupplierProductComponent = ({
                 onKeyPress={(event) =>
                   doFunctionWithEnter(event, () => {
                     setLoading(true);
-                    getProductPaging({
-                      categoryID: category,
+                    getProductForSupplier({
+                      category: category,
                       productName: searchMessage,
                       pageSize,
-                      pageIndex,
+                      pageIndex
                     });
                   })
                 }
                 onSearch={(value) => {
                   if (value) {
                     setLoading(true);
-                    getProductPaging({
-                      categoryID: category,
+                    getProductForSupplier({
+                      category: category,
                       productName: searchMessage,
                       pageSize,
-                      pageIndex,
+                      pageIndex
                     });
                   }
                   setSearchMessage(value);
@@ -224,7 +222,7 @@ const SupplierProductComponent = ({
                         key={index}
                         actions={[
                           <div>
-                            <b>{get("unitOfMeasure.description")(item)}</b>
+                            <b>{get('unitOfMeasure.description')(item)}</b>
                           </div>,
                           <Button
                             onClick={() => {
@@ -235,7 +233,7 @@ const SupplierProductComponent = ({
                             type="primary"
                           >
                             Register Sell product
-                          </Button>,
+                          </Button>
                         ]}
                       >
                         <Skeleton
@@ -266,7 +264,7 @@ const SupplierProductComponent = ({
                             description={
                               <div
                                 dangerouslySetInnerHTML={{
-                                  __html: item.description,
+                                  __html: item.description
                                 }}
                               />
                             }
@@ -286,11 +284,11 @@ const SupplierProductComponent = ({
                   pageSize={DEFAULT_PAGING_INFO.pageSize}
                   onChange={(page) => {
                     setLoading(true);
-                    getProductPaging({
-                      categoryID: category,
+                    getProductForSupplier({
+                      category: category,
                       productName: searchMessage,
                       pageSize,
-                      pageIndex: page,
+                      pageIndex: page
                     });
                     setPageIndex(page);
                   }}
