@@ -53,8 +53,8 @@ const connectToRedux = connect(
           pageSize
         })
       ),
-    supplierRegisterProduct: ({ productId, description }) =>
-      dispatch(supplierRegisterProduct({ productId, description })),
+    supplierRegisterProduct: ({ productId, description, callback }) =>
+      dispatch(supplierRegisterProduct({ productId, description, callback })),
     supplierUpdateQuotation: ({ id, description }) =>
       dispatch(supplierUpdateQuotation({ id, description }))
   })
@@ -129,7 +129,14 @@ const SupplierProductComponent = ({
         onOk={() => {
           supplierRegisterProduct({
             productId: (currentProductSelected || {}).id,
-            description: quotations
+            description: quotations,
+            callback: () =>
+              getProductForSupplier({
+                category: category,
+                productName: searchMessage,
+                pageIndex,
+                pageSize
+              })
           });
         }}
         onCancel={() => setOpenOption(false)}

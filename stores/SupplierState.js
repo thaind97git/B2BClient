@@ -173,18 +173,11 @@ const SupplierRegisterProductAPI = makeFetchAction(
     })
 );
 
-export const supplierRegisterProduct = ({ productId, description }) =>
+export const supplierRegisterProduct = ({ productId, description, callback }) =>
   respondToSuccess(
     SupplierRegisterProductAPI.actionCreator({ productId, description }),
-    (_, __, store) => {
-      store.dispatch(
-        getProductForSupplier({
-          pageIndex: DEFAULT_PAGING_INFO.page,
-          pageSize: DEFAULT_PAGING_INFO.pageSize,
-          productName: '',
-          category: ''
-        })
-      );
+    () => {
+      typeof callback === 'function' && callback();
     }
   );
 export const SupplierRegisterProductData =
