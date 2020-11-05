@@ -1,18 +1,19 @@
-import { makeFetchAction } from "redux-api-call";
-import { respondToSuccess } from "../middlewares/api-reaction";
-import nfetch from "../libs/nfetch";
-import { generateQuery, getResetter } from "../libs";
-import { getToken } from "../libs/localStorage";
-import Router from "next/router";
-import { openNotification } from "../utils";
+import { makeFetchAction } from 'redux-api-call';
+import { respondToSuccess } from '../middlewares/api-reaction';
+import nfetch from '../libs/nfetch';
+import { generateQuery, getResetter } from '../libs';
+import { getToken } from '../libs/localStorage';
+import Router from 'next/router';
+import { openNotification } from '../utils';
 
-const GET_PRODUCT_BY_CATEGORY = "GetProductByCategoryAPI";
-const GET_PRODUCT_PAGING = "GetProductPagingAPI";
-const GET_PRODUCT_DETAILS = "GetProductDetailsAPI";
-const GET_SUPPLIER_PRODUCT_DETAILS = "GetSupplierProductDetailsAPI";
-const CREATE_PRODUCT = "CreateProductAPI";
-const UPDATE_PRODUCT = "UpdateProductAPI";
-const GET_PRODUCT_BY_SUPPLIER = "GetProductBySupplierAPI";
+const GET_PRODUCT_BY_CATEGORY = 'GetProductByCategoryAPI';
+const GET_PRODUCT_PAGING = 'GetProductPagingAPI';
+const GET_PRODUCT_DETAILS = 'GetProductDetailsAPI';
+const GET_SUPPLIER_PRODUCT_DETAILS = 'GetSupplierProductDetailsAPI';
+const CREATE_PRODUCT = 'CreateProductAPI';
+const UPDATE_PRODUCT = 'UpdateProductAPI';
+const GET_PRODUCT_BY_SUPPLIER = 'GetProductBySupplierAPI';
+const GET_PRODUCT_FOR_SUPPLIER = 'GetProductForSupplierAPI';
 
 const GetProductByCategoryAPI = makeFetchAction(
   GET_PRODUCT_BY_CATEGORY,
@@ -22,9 +23,9 @@ const GetProductByCategoryAPI = makeFetchAction(
         name,
         categoryId,
         pageIndex,
-        pageSize,
+        pageSize
       })}`,
-      method: "GET",
+      method: 'GET'
     })()
 );
 
@@ -51,9 +52,9 @@ const GetProductPagingAPI = makeFetchAction(
         categoryId: categoryID,
         name: productName,
         pageSize,
-        pageIndex,
+        pageIndex
       })}`,
-      method: "GET",
+      method: 'GET'
     })();
   }
 );
@@ -62,14 +63,14 @@ export const getProductPaging = ({
   productName,
   categoryID,
   pageSize,
-  pageIndex,
+  pageIndex
 }) =>
   respondToSuccess(
     GetProductPagingAPI.actionCreator({
       productName,
       categoryID,
       pageSize,
-      pageIndex,
+      pageIndex
     }),
     () => {}
   );
@@ -82,7 +83,7 @@ export const getProductPagingResetter = getResetter(GetProductPagingAPI);
 const GetProductDetailsAPI = makeFetchAction(GET_PRODUCT_DETAILS, (id) =>
   nfetch({
     endpoint: `/api/Product/${id}`,
-    method: "GET",
+    method: 'GET'
   })()
 );
 
@@ -99,7 +100,7 @@ const GetSupplierProductDetailsAPI = makeFetchAction(
   (id) =>
     nfetch({
       endpoint: `/api/Supplier/Product/${id}`,
-      method: "GET",
+      method: 'GET'
     })()
 );
 
@@ -119,15 +120,15 @@ const onUploadImage = (productId, fileList) => {
   const listFileOrigin = fileList.map((file) => file.originFileObj);
   const formData = new FormData();
   for (let file of listFileOrigin) {
-    formData.append("files", file);
+    formData.append('files', file);
   }
 
   var myHeaders = new Headers();
-  myHeaders.append("Authorization", `Bearer ${getToken()}`);
+  myHeaders.append('Authorization', `Bearer ${getToken()}`);
   var requestOptions = {
-    method: "PUT",
+    method: 'PUT',
     headers: myHeaders,
-    body: formData,
+    body: formData
   };
 
   fetch(
@@ -138,18 +139,18 @@ const onUploadImage = (productId, fileList) => {
 
 const CreateProductAPI = makeFetchAction(CREATE_PRODUCT, (product) =>
   nfetch({
-    endpoint: "/api/Product",
+    endpoint: '/api/Product'
   })(product)
 );
 
 export const createNewProduct = (product, fileList) =>
   respondToSuccess(CreateProductAPI.actionCreator(product), (resp) => {
     if (resp) {
-      openNotification("success", {
-        message: "Create new product success !",
+      openNotification('success', {
+        message: 'Create new product success !'
       });
       onUploadImage(resp, fileList);
-      Router.push("/admin/product");
+      Router.push('/admin/product');
     }
   });
 
@@ -160,23 +161,23 @@ export const CreateNewProductResetter = getResetter(CreateProductAPI);
 // Update Product
 const UpdateProductAPI = makeFetchAction(UPDATE_PRODUCT, (object) =>
   nfetch({
-    endpoint: "/api/Product",
-    method: "PUT",
+    endpoint: '/api/Product',
+    method: 'PUT'
   })(object)
 );
 
 export const updateProduct = (object) =>
   respondToSuccess(UpdateProductAPI.actionCreator(object), (resp) => {
     if (resp) {
-      openNotification("success", { message: "Update product success!" });
-      Router.push("/admin/product");
+      openNotification('success', { message: 'Update product success!' });
+      Router.push('/admin/product');
     }
   });
 export const UpdateProductData = UpdateProductAPI.dataSelector;
 export const UpdateProductError = UpdateProductAPI.errorSelector;
 export const UpdateProductResetter = getResetter(UpdateProductAPI);
 
-// Get Product By Supplier
+// Get Product By Supplier Paging table
 const GetProductBySupplierAPI = makeFetchAction(
   GET_PRODUCT_BY_SUPPLIER,
   ({ productName, pageSize, pageIndex, category, fromDate, toDate }) =>
@@ -187,9 +188,9 @@ const GetProductBySupplierAPI = makeFetchAction(
         fromDate,
         toDate,
         pageIndex,
-        pageSize,
+        pageSize
       })}`,
-      method: "GET",
+      method: 'GET'
     })()
 );
 
@@ -199,7 +200,7 @@ export const getProductBySupplier = ({
   pageIndex,
   category,
   fromDate,
-  toDate,
+  toDate
 }) =>
   respondToSuccess(
     GetProductBySupplierAPI.actionCreator({
@@ -208,7 +209,7 @@ export const getProductBySupplier = ({
       pageIndex,
       category,
       fromDate,
-      toDate,
+      toDate
     })
   );
 
@@ -216,4 +217,41 @@ export const GetProductBySupplierData = GetProductBySupplierAPI.dataSelector;
 export const GetProductBySupplierError = GetProductBySupplierAPI.errorSelector;
 export const GetProductBySupplierResetter = getResetter(
   GetProductBySupplierAPI
+);
+
+// Get Product For Supplier Register Sell
+const GetProductForSupplierAPI = makeFetchAction(
+  GET_PRODUCT_FOR_SUPPLIER,
+  ({ productName, pageSize, pageIndex, category }) =>
+    nfetch({
+      endpoint: `/api/Product/SearchBySupplier${generateQuery({
+        name: productName,
+        categoryId: category,
+        pageIndex,
+        pageSize
+      })}`,
+      method: 'GET'
+    })()
+);
+
+export const getProductForSupplier = ({
+  productName,
+  pageSize,
+  pageIndex,
+  category
+}) =>
+  respondToSuccess(
+    GetProductForSupplierAPI.actionCreator({
+      productName,
+      pageSize,
+      pageIndex,
+      category
+    })
+  );
+
+export const GetProductForSupplierData = GetProductForSupplierAPI.dataSelector;
+export const GetProductForSupplierError =
+  GetProductForSupplierAPI.errorSelector;
+export const GetProductForSupplierResetter = getResetter(
+  GetProductForSupplierAPI
 );

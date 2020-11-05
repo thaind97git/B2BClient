@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Fragment } from "react";
+import React, { useState, useEffect, Fragment } from 'react';
 import {
   Button,
   Col,
@@ -9,8 +9,8 @@ import {
   Typography,
   Image,
   Divider,
-  Tag,
-} from "antd";
+  Tag
+} from 'antd';
 import {
   getProductDetails,
   GetProductDetailsData,
@@ -19,20 +19,20 @@ import {
   getSupplierProductDetails,
   GetSupplierProductDetailsData,
   GetSupplierProductDetailsError,
-  GetSupplierProductDetailsResetter,
-} from "../stores/ProductState";
-import { get } from "lodash/fp";
-import { connect } from "react-redux";
-import Router from "next/router";
-import { createStructuredSelector } from "reselect";
-import { fallbackImage, getProductImage } from "../utils";
-import QuotationDisplayComponent from "./Utils/QuotationDisplayComponent";
-import Modal from "antd/lib/modal/Modal";
-import SupplierProductOptionComponent from "./SupplierProductOptionComponent";
+  GetSupplierProductDetailsResetter
+} from '../stores/ProductState';
+import { get } from 'lodash/fp';
+import { connect } from 'react-redux';
+import Router from 'next/router';
+import { createStructuredSelector } from 'reselect';
+import { fallbackImage, getProductImage } from '../utils';
+import QuotationDisplayComponent from './Utils/QuotationDisplayComponent';
+import Modal from 'antd/lib/modal/Modal';
+import SupplierProductOptionComponent from './SupplierProductOptionComponent';
 import {
   supplierUpdateQuotation,
-  SupplierUpdateQuotationData,
-} from "../stores/SupplierState";
+  SupplierUpdateQuotationData
+} from '../stores/SupplierState';
 const { Title } = Typography;
 const connectToRedux = connect(
   createStructuredSelector({
@@ -40,7 +40,7 @@ const connectToRedux = connect(
     productDetailError: GetProductDetailsError,
     supplierProductDetailData: GetSupplierProductDetailsData,
     supplierProductDetailError: GetSupplierProductDetailsError,
-    updateQuotationData: SupplierUpdateQuotationData,
+    updateQuotationData: SupplierUpdateQuotationData
   }),
   (dispatch) => ({
     getProduct: (id) => dispatch(getProductDetails(id)),
@@ -50,7 +50,7 @@ const connectToRedux = connect(
     resetData: () => {
       dispatch(GetProductDetailsResetter);
       dispatch(GetSupplierProductDetailsResetter);
-    },
+    }
   })
 );
 const DescriptionItem = ({ title, content }) => (
@@ -76,7 +76,7 @@ const AdminProductDetailsComponent = ({
   supplierProductDetailData,
   supplierProductDetailError,
   supplierUpdateQuotation,
-  updateQuotationData,
+  updateQuotationData
 }) => {
   const [loading, setLoading] = useState(true);
   const [openQuotation, setOpenQuotation] = useState(false);
@@ -90,6 +90,7 @@ const AdminProductDetailsComponent = ({
 
   useEffect(() => {
     if (updateQuotationData) {
+      setQuotationsUpdate([]);
       setOpenQuotation(false);
     }
   }, [updateQuotationData]);
@@ -124,7 +125,7 @@ const AdminProductDetailsComponent = ({
   if (!productDetailData || !supplierProductDetailData) {
     return (
       <Empty
-        style={{ padding: "180px 0px" }}
+        style={{ padding: '180px 0px' }}
         description="Can not find any product !"
       />
     );
@@ -134,10 +135,9 @@ const AdminProductDetailsComponent = ({
     ? productDetailData
     : supplierProductDetailData.product;
 
-  const quotations = supplierProductDetailData.description || [];
-
+  let quotations = supplierProductDetailData.description || [];
   return (
-    <Row style={{ width: "100%" }}>
+    <Row style={{ width: '100%' }}>
       <link
         rel="stylesheet"
         type="text/css"
@@ -151,7 +151,7 @@ const AdminProductDetailsComponent = ({
           supplierUpdateQuotation({
             productId: productID,
             description: quotationsUpdate,
-            callback: () => getSupplierProductDetails(productID),
+            callback: () => getSupplierProductDetails(productID)
           });
         }}
         onCancel={() => setOpenQuotation(false)}
@@ -160,7 +160,7 @@ const AdminProductDetailsComponent = ({
         {openQuotation ? (
           <SupplierProductOptionComponent
             defaultQuotation={quotations}
-            unitLabel={get("unitOfMeasure.description")(detailsData)}
+            unitLabel={get('unitOfMeasure.description')(detailsData)}
             onGetQuotation={(quotations) => {
               setQuotationsUpdate(quotations);
             }}
@@ -182,35 +182,46 @@ const AdminProductDetailsComponent = ({
           </Space>
         </Col>
       )}
-      {isSupplier && quotations.length > 0 && (
-        <Fragment>
-          <Col span={24}>
-            {/* <Space> */}
-            <Title level={5}>Product Quotation</Title>
-            <Button
-              onClick={() => {
-                setOpenQuotation(true);
-              }}
-              size="small"
-              type="primary"
-            >
-              Update Quotation
-            </Button>
-            {/* </Space> */}
-          </Col>
-          <DescriptionItem
-            title="Quotation"
-            content={quotations.map((quotation, index) => (
-              <QuotationDisplayComponent
-                key={index}
-                quotation={quotation}
-                unitLabel={get("unitOfMeasure.description")(detailsData)}
-              />
-            ))}
-          />
-          <Divider />
-        </Fragment>
-      )}
+      {isSupplier &&
+        (quotations.length > 0 ? (
+          <Fragment>
+            <Col span={24}>
+              <Title level={5}>Product Quotation</Title>
+              <Button
+                onClick={() => {
+                  setOpenQuotation(true);
+                }}
+                size="small"
+                type="primary"
+                style={{ marginBottom: 16 }}
+              >
+                Update Quotation
+              </Button>
+            </Col>
+            <DescriptionItem
+              title="Quotation"
+              content={quotations.map((quotation, index) => (
+                <QuotationDisplayComponent
+                  key={index}
+                  quotation={quotation}
+                  unitLabel={get('unitOfMeasure.description')(detailsData)}
+                />
+              ))}
+            />
+            <Divider />
+          </Fragment>
+        ) : (
+          <Button
+            onClick={() => {
+              setOpenQuotation(true);
+            }}
+            size="small"
+            type="primary"
+            style={{ marginBottom: 16 }}
+          >
+            Add new quotation
+          </Button>
+        ))}
       <Col span={24}>
         <Title level={5}>Product Basic Information</Title>
       </Col>
@@ -222,7 +233,7 @@ const AdminProductDetailsComponent = ({
         title="Unit of measure"
         content={
           <Tag color="processing">
-            {get("unitOfMeasure.description")(detailsData)}
+            {get('unitOfMeasure.description')(detailsData)}
           </Tag>
         }
       />
@@ -231,7 +242,7 @@ const AdminProductDetailsComponent = ({
         content={
           <div
             dangerouslySetInnerHTML={{
-              __html: (detailsData || {}).description,
+              __html: (detailsData || {}).description
             }}
           />
         }
@@ -242,8 +253,8 @@ const AdminProductDetailsComponent = ({
       </Col>
       <Col span={24} justify="space-between">
         {detailsData.images ? (
-          detailsData.images.map((image) => (
-            <Col span={8}>
+          detailsData.images.map((image, index) => (
+            <Col key={index} span={8}>
               <Image src={getProductImage(image)} fallback={fallbackImage} />
             </Col>
           ))
@@ -264,7 +275,7 @@ const AdminProductDetailsComponent = ({
           line-height: 1.5715;
         }
 
-        [data-theme="compact"] .site-description-item-profile-wrapper {
+        [data-theme='compact'] .site-description-item-profile-wrapper {
           font-size: 24px;
           line-height: 1.66667;
         }
@@ -277,7 +288,7 @@ const AdminProductDetailsComponent = ({
           line-height: 1.5715;
         }
 
-        [data-theme="compact"]
+        [data-theme='compact']
           .ant-drawer-body
           p.site-description-item-profile-p {
           font-size: 14px;
