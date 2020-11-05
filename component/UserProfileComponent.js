@@ -53,8 +53,8 @@ const connectToRedux = connect(
   (dispatch) => ({
     uploadAvatar: (fileList) =>
       dispatch(userUploadAvatar(fileList)),
-    updatePassword: ({oldPassword,newPassword}) =>
-      dispatch(userUpdatePassword({oldPassword,newPassword})),
+    updatePassword: ({ oldPassword, newPassword }) =>
+      dispatch(userUpdatePassword({ oldPassword, newPassword })),
   })
 );
 
@@ -86,7 +86,7 @@ const UserProfileComponent = ({ isDrawer, userId, currentUser, uploadAvatar, upd
       uid: "-1",
       name: "image.png",
       status: "done",
-      url: imageUrl
+      url: imageUrl ? imageUrl : "/static/images/avatar.png"
     }
   ]);
   const showChangePasswordModal = () => {
@@ -291,6 +291,7 @@ const UserProfileComponent = ({ isDrawer, userId, currentUser, uploadAvatar, upd
                   fileList={fileList}
                   onPreview={handlePreview}
                   action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+                  showUploadList={{ showRemoveIcon: false }}
                 >
                   <Button icon={<UploadOutlined />}>Update</Button>
                 </Upload>
