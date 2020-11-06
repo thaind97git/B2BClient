@@ -1,5 +1,5 @@
-import { Tabs } from "antd";
-import React, { useEffect } from "react";
+import { Tabs } from 'antd';
+import React, { useEffect } from 'react';
 
 const { TabPane } = Tabs;
 
@@ -16,7 +16,7 @@ const TabsLayout = ({
 
   const callback = (key) => {
     setValue(key);
-    typeof setDefaultTab === "function" && setDefaultTab(key);
+    typeof setDefaultTab === 'function' && setDefaultTab(key);
   };
   return (
     <Tabs
