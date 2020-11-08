@@ -129,30 +129,31 @@ const GroupChatComponent = ({
 
   useEffect(() => {
     const groupTabs =
-      GetAggregatorGroupChatData &&
-      GetAggregatorGroupChatData.map((group) => {
-        return {
-          title: (
-            <GroupTile
-              productImage={group.avatar}
-              groupName={group.groupName}
-            />
-          ),
-          key: group.id,
-          content: (
-            <TabsLayout
-              onTabClick={(supplierId) => {
-                setCurrentSupplierIdSelected(supplierId);
-              }}
-              id="scrollbar"
-              className="list-chat"
-              tabPosition={'left'}
-              style={{ height: '66vh', margin: '8px 0px' }}
-              tabs={messengerTabs}
-            />
-          )
-        };
-      });
+      (GetAggregatorGroupChatData &&
+        GetAggregatorGroupChatData.map((group) => {
+          return {
+            title: (
+              <GroupTile
+                productImage={group.avatar}
+                groupName={group.groupName}
+              />
+            ),
+            key: group.id,
+            content: (
+              <TabsLayout
+                onTabClick={(supplierId) => {
+                  setCurrentSupplierIdSelected(supplierId);
+                }}
+                id="scrollbar"
+                className="list-chat"
+                tabPosition={'left'}
+                style={{ height: '66vh', margin: '8px 0px' }}
+                tabs={messengerTabs}
+              />
+            )
+          };
+        })) ||
+      [];
     setGroupTabs(groupTabs);
   }, [GetAggregatorGroupChatData, messengerTabs]);
 
