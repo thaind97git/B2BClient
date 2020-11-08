@@ -1,11 +1,6 @@
-import React, { useEffect } from 'react';
-import shave from 'shave';
+import React from 'react';
 
 export default function ConversationListItem(props) {
-  useEffect(() => {
-    shave('.conversation-snippet', 20);
-  })
-
   const { photo, name, text } = props.data;
 
   return (
@@ -16,10 +11,15 @@ export default function ConversationListItem(props) {
         href="/static/assets/chat/ConversationListItem.css"
       />
       <div className="conversation-list-item">
-        <img className="conversation-photo" src={photo} alt="conversation" />
-        <div className="conversation-info">
+        <img className="conversation-photo" src={photo} alt="" />
+        <div className="conversation-info" style={{ textAlign: 'left' }}>
           <h1 className="conversation-title">{name}</h1>
-          <p className="conversation-snippet">{text}</p>
+          <p
+            className="conversation-snippet"
+            style={{ color: 'rgba(153, 153, 153, 1)', fontSize: 11 }}
+          >
+            {text}
+          </p>
         </div>
       </div>
     </div>

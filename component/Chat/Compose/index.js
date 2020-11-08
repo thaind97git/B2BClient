@@ -1,7 +1,7 @@
-import React, { Fragment, useState } from "react";
-import { doFunctionWithEnter } from "../../../utils";
+import React, { Fragment, useState } from 'react';
+import { doFunctionWithEnter } from '../../../utils';
 export default function Compose({ sendMessage }) {
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState('');
   return (
     <Fragment>
       <link
@@ -18,8 +18,8 @@ export default function Compose({ sendMessage }) {
           placeholder="Type a message, @name"
           onKeyPress={(event) =>
             doFunctionWithEnter(event, () => {
-              console.log({ message });
               !!message && sendMessage(message);
+              setMessage('');
             })
           }
         />

@@ -25,13 +25,14 @@ const TabsLayout = ({
       onChange={callback}
       {...others}
     >
-      {tabs.map((tab) => {
-        return (
-          <TabPane tab={tab.title} key={tab.key} {...tab.props}>
-            {defaultTab === tab.key ? tab.content : null}
-          </TabPane>
-        );
-      })}
+      {tabs &&
+        tabs.map((tab) => {
+          return (
+            <TabPane tab={tab.title} key={tab.key} {...tab.props}>
+              {defaultTab === tab.key ? tab.content : (tabs[0] || {}).content}
+            </TabPane>
+          );
+        })}
     </Tabs>
   );
 };
