@@ -147,7 +147,7 @@ const GroupChatComponent = ({
                 id="scrollbar"
                 className="list-chat"
                 tabPosition={'left'}
-                style={{ height: '66vh', margin: '8px 0px' }}
+                style={{ height: '75vh', margin: '8px 0px' }}
                 tabs={messengerTabs}
               />
             )
@@ -180,7 +180,7 @@ const GroupChatComponent = ({
           id="scrollbar"
           className="aggregator-chat"
           tabPosition={'left'}
-          style={{ height: '66vh' }}
+          style={{ height: '75vh' }}
           tabs={groupTabs}
         />
       )
