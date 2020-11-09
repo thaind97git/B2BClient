@@ -1,27 +1,32 @@
 import React from 'react';
+import { AudioMutedOutlined } from '@ant-design/icons';
+import moment from 'moment';
 
-export default function ConversationListItem(props) {
-  const { photo, name, text } = props.data;
-
+export default function ConversationListItem({ data, isIgnore = true }) {
+  const { photo, name, text = '', lastMessageTime } = data;
   return (
-    <div>
-      <link
-        rel="stylesheet"
-        type="text/css"
-        href="/static/assets/chat/ConversationListItem.css"
-      />
-      <div className="conversation-list-item">
+    <div
+      className="conversation-list-item"
+      style={isIgnore ? { fontStyle: 'italic', opacity: 0.5 } : {}}
+    >
+      <div style={{ display: 'flex', alignItems: 'center' }}>
         <img className="conversation-photo" src={photo} alt="" />
         <div className="conversation-info" style={{ textAlign: 'left' }}>
           <h1 className="conversation-title">{name}</h1>
-          <p
-            className="conversation-snippet"
-            style={{ color: 'rgba(153, 153, 153, 1)', fontSize: 11 }}
-          >
-            {text}
-          </p>
+          <span>
+            <p className="conversation-snippet">
+              {!!text && text.trim() ? text : 'N/A'}{' '}
+              <span>&nbsp;&nbsp;&nbsp;</span>
+              {lastMessageTime && moment(lastMessageTime).fromNow()}
+            </p>
+          </span>
         </div>
       </div>
+      {!isIgnore && (
+        <div className="mute">
+          <AudioMutedOutlined />
+        </div>
+      )}
     </div>
   );
 }

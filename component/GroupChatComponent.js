@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Row, Col, Button, Empty, Space } from 'antd';
+import { Row, Col, Button, Empty, Space, Tooltip } from 'antd';
 import MessageList from './Chat/MessageList';
 import Avatar from 'antd/lib/avatar/avatar';
 import {
@@ -20,6 +20,7 @@ import {
   GetSupplierChatByGroupData
 } from '../stores/ConversationState';
 import Router, { useRouter } from 'next/router';
+import { createLink } from '../libs';
 
 const connectToRedux = connect(
   createStructuredSelector({
@@ -36,15 +37,11 @@ const connectToRedux = connect(
 
 const GroupTile = ({ productImage, groupName }) => (
   <Row justify="start">
-    <Col span={3}>
-      <Row style={{ height: '100%' }} align="middle">
-        <Avatar size="small" src={getProductImage(productImage)} />
-      </Row>
+    <Col span={4}>
+      <Avatar size="small" src={getProductImage(productImage)} />
     </Col>
-    <Col span={21}>
-      <Col span={24} style={{ textAlign: 'left' }}>
-        <b>{getShortContent(groupName)}</b>
-      </Col>
+    <Col span={20}>
+      <b>{getShortContent(groupName)}</b>
     </Col>
   </Row>
 );
@@ -57,6 +54,9 @@ const GroupChatComponent = ({
 }) => {
   const [isNegotiating, setIsNegotiating] = useState('1');
   const [currentGroupIdSelected, setCurrentGroupIdSelected] = useState(null);
+  const [currentGroupNameSelected, setCurrentGroupNameSelected] = useState(
+    null
+  );
   const [currentSupplierIdSelected, setCurrentSupplierIdSelected] = useState(
     null
   );
@@ -96,10 +96,12 @@ const GroupChatComponent = ({
         return {
           title: (
             <ConversationListItem
+              isIgnore={isIgnore}
               data={{
                 name: supplierName,
                 text: contentLabel,
-                photo: getCurrentUserImage(supplierAvatar) || fallbackImage
+                photo: getCurrentUserImage(supplierAvatar) || fallbackImage,
+                lastMessageTime
               }}
             />
           ),
@@ -108,7 +110,7 @@ const GroupChatComponent = ({
             <MessageList
               conversationId={currentSupplierIdSelected}
               titleProps={{
-                leftTitle: 'Title',
+                leftTitle: currentGroupNameSelected,
                 rightTitle: (
                   <Space>
                     <Button
@@ -116,15 +118,21 @@ const GroupChatComponent = ({
                       style={{ color: 'green' }}
                       onClick={() => {
                         Router.push(
-                          `/aggregator/order/confirmation?groupID=${1}&isNegotiating=true`
+                          createLink([
+                            'aggregator',
+                            'order',
+                            `confirmation?groupID=${currentGroupIdSelected}&isNegotiating=true`
+                          ])
                         );
                       }}
                     >
                       Closing deal
                     </Button>
-                    <Button size="small" danger>
-                      Ignore
-                    </Button>
+                    {!isIgnore && (
+                      <Button size="small" danger>
+                        Ignore
+                      </Button>
+                    )}
                   </Space>
                 )
               }}
@@ -145,8 +153,9 @@ const GroupChatComponent = ({
   useEffect(() => {
     const groupTabs =
       (GetAggregatorGroupChatData &&
-        GetAggregatorGroupChatData.map((group) => {
+        GetAggregatorGroupChatData.map((group = {}) => {
           return {
+            tooltipTitle: group.groupName,
             title: (
               <GroupTile
                 productImage={group.avatar}
@@ -157,9 +166,9 @@ const GroupChatComponent = ({
             content: (
               <TabsLayout
                 onTabClick={(supplierId) => {
+                  setCurrentGroupNameSelected(group.groupName);
                   setCurrentSupplierIdSelected(supplierId);
                 }}
-                id="scrollbar"
                 className="list-chat"
                 tabPosition={'left'}
                 style={{ height: '100%' }}
@@ -226,12 +235,17 @@ const GroupChatComponent = ({
             height: 100%;
           }
 
+          .list-chat .ant-tabs-tab-btn {
+            width: 100%;
+          }
+
           .aggregator-chat .ant-tabs-content.ant-tabs-content-left,
           .ant-tabs-content,
           .ant-tabs-content ant-tabs-content-top {
             height: 100%;
           }
-          .list-chat
+          .list-chat,
+          .aggregator-chat
             .ant-tabs-content-holder
             > .ant-tabs-content
             > .ant-tabs-tabpane {
@@ -247,7 +261,7 @@ const GroupChatComponent = ({
 
           .aggregator-chat .ant-tabs-nav-list {
             overflow-x: hidden;
-            overflow-y: hidden;
+            overflow-y: auto;
           }
           .aggregator-chat .ant-tabs-nav-list:hover {
             overflow-y: auto;
@@ -265,7 +279,7 @@ const GroupChatComponent = ({
           }
 
           .list-chat .ant-tabs-nav-list {
-            width: 212px;
+            width: 320px;
           }
         `}
       </style>

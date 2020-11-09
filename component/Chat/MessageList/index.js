@@ -69,7 +69,6 @@ function MessageList({
       connection
         .start()
         .then(() => {
-          console.log('Connected!');
           connection.on('ReceiveMessage', (message) => {
             console.log({ message });
             scrollToBottom();
@@ -182,8 +181,8 @@ function MessageList({
       </Col>
       <Col
         span={24}
+        className="message-list-chat"
         style={{
-          overflowY: 'scroll',
           padding: 10,
           height: 'calc(100% - 94px)'
         }}
@@ -194,6 +193,28 @@ function MessageList({
       <Col span={24} style={{ height: 52 }}>
         <Compose sendMessage={sendMessage} />
       </Col>
+      <style jsx global>
+        {`
+          .message-list-chat {
+            overflow-x: hidden;
+            overflow-y: auto;
+          }
+          .message-list-chat:hover {
+            overflow-y: auto;
+          }
+          .message-list-chat::-webkit-scrollbar-track {
+            -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+            background-color: #f5f5f5;
+          }
+          .message-list-chat::-webkit-scrollbar {
+            width: 4px;
+            background-color: #f5f5f5;
+          }
+          .message-list-chat::-webkit-scrollbar-thumb {
+            background-color: #949494;
+          }
+        `}
+      </style>
     </Row>
   );
 }

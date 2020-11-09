@@ -65,6 +65,11 @@ export default class MyDocument extends Document {
             type="text/css"
             href="/static/assets/chat/Messenger.css"
           />
+          <link
+            rel="stylesheet"
+            type="text/css"
+            href="/static/assets/chat/ConversationListItem.css"
+          />
         </Head>
         <body className="">
           <Main {...rootProps} />
