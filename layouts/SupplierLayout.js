@@ -99,7 +99,7 @@ const menu = (
     <Menu.Item key="3">Message 03</Menu.Item>
   </Menu>
 );
-const SupplierLayout = ({ children }) => {
+const SupplierLayout = ({ children, isChat }) => {
   const [collapsed, setCollapsed] = useState(true);
   const [openMessage, setOpenMessage] = useState(false);
   return (
@@ -184,6 +184,7 @@ const SupplierLayout = ({ children }) => {
                 margin: '24px 16px',
                 padding: 24,
                 minHeight: 280,
+                height: isChat ? 'calc(100vh - 64px - 48px)' : 'auto',
                 background: '#fff'
               }}
             >

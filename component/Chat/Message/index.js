@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import moment from 'moment';
 
 export default function Message(props) {
@@ -7,11 +7,6 @@ export default function Message(props) {
   const friendlyTimestamp = moment(data.dateCreated).format('LLLL');
   return (
     <div style={{ width: '100%' }}>
-      <link
-        rel="stylesheet"
-        type="text/css"
-        href="/static/assets/chat/Message.css"
-      />
       <div
         className={[
           'message',

@@ -1,11 +1,11 @@
-import React from "react";
-import AggregatorLayout from "../../../layouts/AggregatorLayout";
-import GroupChatComponent from "../../../component/GroupChatComponent";
-import withAuth from "../../../component/HOC/AuthenHOC";
+import React from 'react';
+import AggregatorLayout from '../../../layouts/AggregatorLayout';
+import GroupChatComponent from '../../../component/GroupChatComponent';
+import withAuth from '../../../component/HOC/AuthenHOC';
 
 function Chat() {
   return (
-    <AggregatorLayout>
+    <AggregatorLayout isChat>
       <GroupChatComponent />
     </AggregatorLayout>
   );

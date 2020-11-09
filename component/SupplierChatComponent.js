@@ -141,7 +141,7 @@ const SupplierChatComponent = ({
           onTabClick={(key) => setCurrentGroupIdSelected(key)}
           className="supplier-chat"
           tabPosition={'left'}
-          style={{ height: '66vh' }}
+          style={{ height: '100%' }}
           tabs={GROUP_NEGOTIATING_TABS}
         />
       )
@@ -156,11 +156,8 @@ const SupplierChatComponent = ({
   return (
     <div
       id="supplier-chat"
-      style={{ height: '76vh', overflowY: 'hidden', position: 'relative' }}
+      style={{ height: '100%', overflowY: 'hidden', position: 'relative' }}
     >
-      {/* <Row justify="space-between" align="middle">
-        <Title level={5}>Supplier Group Chat</Title>
-      </Row> */}
       <TabsLayout
         onTabClick={(key) => {
           setIsNegotiating(parseBoolean(key));
@@ -172,10 +169,18 @@ const SupplierChatComponent = ({
       />
       <style global jsx>
         {`
-          #supplier-chat .ant-tabs-nav {
+          #supplier-chat .ant-tabs-nav-list {
             width: 320px;
           }
-          .supplier-chat .ant-tabs-content.ant-tabs-content-left {
+          #supplier-chat
+            .ant-tabs-content-holder
+            > .ant-tabs-content
+            > .ant-tabs-tabpane {
+            padding-left: 0px;
+          }
+          .supplier-chat .ant-tabs-content.ant-tabs-content-left,
+          .ant-tabs-content,
+          .ant-tabs-content ant-tabs-content-top {
             height: 100%;
           }
           .supplier-chat .ant-tabs-nav-list {
