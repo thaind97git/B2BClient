@@ -9,6 +9,7 @@ import {
   OrderedListOutlined,
   FormOutlined,
   BulbOutlined,
+  MessageOutlined ,
   SolutionOutlined,
   TeamOutlined,
 } from "@ant-design/icons";
@@ -22,23 +23,29 @@ const { Header, Content, Sider } = Layout;
 
 const ADMIN_MENU = [
   {
-    key: "1",
+    key: '1',
     icon: <OrderedListOutlined />,
-    label: "Product",
-    link: "/admin/product",
+    label: 'Product',
+    link: '/admin/product'
   },
   {
-    key: "2",
+    key: '2',
     icon: <TeamOutlined />,
-    label: "Supplier",
-    link: "/admin/supplier",
+    label: 'Supplier',
+    link: '/admin/supplier'
   },
   {
-    key: "3",
+    key: '3',
     icon: <SolutionOutlined />,
-    label: "Buyer",
-    link: "/admin/buyer",
+    label: 'Buyer',
+    link: '/admin/buyer'
   },
+  {
+    key: '4',
+    icon: <MessageOutlined />,
+    label: 'Feedback',
+    link: '/admin/feedback'
+  }
 ];
 
 const PROFILE_MENU = (
