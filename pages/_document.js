@@ -1,5 +1,5 @@
-import Document, { Head, Main, NextScript, Html } from "next/document";
-import React from "react";
+import Document, { Head, Main, NextScript, Html } from 'next/document';
+import React from 'react';
 
 export default class MyDocument extends Document {
   static async getInitialProps(ctx) {
@@ -39,6 +39,36 @@ export default class MyDocument extends Document {
             rel="stylesheet"
             type="text/css"
             href="/static/assets/nprogress.css"
+          />
+          <link
+            rel="stylesheet"
+            type="text/css"
+            href="/static/assets/chat/Message.css"
+          />
+          <link
+            rel="stylesheet"
+            type="text/css"
+            href="/static/assets/chat/MessageList.css"
+          />
+          <link
+            rel="stylesheet"
+            type="text/css"
+            href="/static/assets/chat/Toolbar.css"
+          />
+          <link
+            rel="stylesheet"
+            type="text/css"
+            href="/static/assets/chat/Compose.css"
+          />
+          <link
+            rel="stylesheet"
+            type="text/css"
+            href="/static/assets/chat/Messenger.css"
+          />
+          <link
+            rel="stylesheet"
+            type="text/css"
+            href="/static/assets/chat/ConversationListItem.css"
           />
         </Head>
         <body className="">

@@ -1,9 +1,9 @@
 .message-list {
-  height: 64vh;
+  /* height: 64vh; */
 }
 .message-list-container {
   padding: 10px;
   overflow-y: scroll;
   /* height: 324px; */
-  height: 90%;
+  /* height: 90%; */
 }

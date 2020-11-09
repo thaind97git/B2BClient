@@ -1,4 +1,4 @@
-import { Tabs } from 'antd';
+import { Tabs, Tooltip } from 'antd';
 import React, { useEffect } from 'react';
 
 const { TabPane } = Tabs;
@@ -27,9 +27,18 @@ const TabsLayout = ({
     >
       {tabs &&
         tabs.map((tab) => {
-          return (
-            <TabPane tab={tab.title} key={tab.key} {...tab.props}>
-              {defaultTab === tab.key ? tab.content : (tabs[0] || {}).content}
+          const { title, tooltipTitle, key, content, ...props } = tab || {};
+          return !!tooltipTitle ? (
+            <TabPane
+              tab={<Tooltip title={tooltipTitle}>{title}</Tooltip>}
+              key={key}
+              {...props}
+            >
+              {defaultTab === key ? content : (tabs[0] || {}).content}
+            </TabPane>
+          ) : (
+            <TabPane tab={title} key={key} {...props}>
+              {defaultTab === key ? content : (tabs[0] || {}).content}
             </TabPane>
           );
         })}

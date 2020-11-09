@@ -1,9 +1,7 @@
-import React, { Fragment, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Compose from '../Compose';
-import Toolbar from '../Toolbar';
 import Message from '../Message';
 import moment from 'moment';
-import { HubConnectionBuilder } from '@microsoft/signalr';
 import { getToken } from '../../../libs/localStorage';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
@@ -13,6 +11,7 @@ import {
 } from '../../../stores/ConversationState';
 import { DEFAULT_PAGING_INFO } from '../../../utils';
 import useHub from '../../HOOK/useHub';
+import { Col, Row } from 'antd';
 
 const connectToRedux = connect(
   createStructuredSelector({
@@ -70,7 +69,6 @@ function MessageList({
       connection
         .start()
         .then(() => {
-          console.log('Connected!');
           connection.on('ReceiveMessage', (message) => {
             console.log({ message });
             scrollToBottom();
@@ -173,33 +171,51 @@ function MessageList({
   const { title, leftTitle, rightTitle } = titleProps;
 
   return (
-    <Fragment>
-      <link
-        rel="stylesheet"
-        type="text/css"
-        href="/static/assets/chat/MessageList.css"
-      />
-      <div className="message-list">
-        <Toolbar leftItems={leftTitle} title={title} rightItems={rightTitle} />
-
-        <div className="message-list-container">
-          {!!messages ? renderMessages(messages) : null}{' '}
-          <div ref={messagesEndRef} />
+    <Row style={{ height: '100%' }}>
+      <Col span={24} style={{ height: 42 }}>
+        <div className="toolbar">
+          <div className="left-items">{leftTitle}</div>
+          <h1 className="toolbar-title">{title}</h1>
+          <div className="right-items">{rightTitle}</div>
         </div>
-
-        <Compose
-          sendMessage={sendMessage}
-          // rightItems={[
-          //   <ToolbarButton key="photo" icon="ion-ios-camera" />,
-          //   <ToolbarButton key="image" icon="ion-ios-image" />,
-          //   <ToolbarButton key="audio" icon="ion-ios-mic" />,
-          //   <ToolbarButton key="money" icon="ion-ios-card" />,
-          //   <ToolbarButton key="games" icon="ion-logo-game-controller-b" />,
-          //   <ToolbarButton key="emoji" icon="ion-ios-happy" />,
-          // ]}
-        />
-      </div>
-    </Fragment>
+      </Col>
+      <Col
+        span={24}
+        className="message-list-chat"
+        style={{
+          padding: 10,
+          height: 'calc(100% - 94px)'
+        }}
+      >
+        {!!messages ? renderMessages(messages) : null}{' '}
+        <div ref={messagesEndRef} />
+      </Col>
+      <Col span={24} style={{ height: 52 }}>
+        <Compose sendMessage={sendMessage} />
+      </Col>
+      <style jsx global>
+        {`
+          .message-list-chat {
+            overflow-x: hidden;
+            overflow-y: auto;
+          }
+          .message-list-chat:hover {
+            overflow-y: auto;
+          }
+          .message-list-chat::-webkit-scrollbar-track {
+            -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+            background-color: #f5f5f5;
+          }
+          .message-list-chat::-webkit-scrollbar {
+            width: 4px;
+            background-color: #f5f5f5;
+          }
+          .message-list-chat::-webkit-scrollbar-thumb {
+            background-color: #949494;
+          }
+        `}
+      </style>
+    </Row>
   );
 }
 
