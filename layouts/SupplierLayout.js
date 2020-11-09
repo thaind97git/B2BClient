@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 
-import { Layout, Menu, Row, Dropdown, Divider, Badge, Space } from "antd";
+import { Layout, Menu, Row, Dropdown, Divider, Badge, Space } from 'antd';
 import {
   DownOutlined,
   LoginOutlined,
@@ -11,13 +11,13 @@ import {
   PicLeftOutlined,
   WechatOutlined,
   BellOutlined,
-  ShoppingCartOutlined,
-} from "@ant-design/icons";
-import MemberNavComponent from "../component/MemberNavComponent";
-import { currentPath } from "../utils";
-import Link from "next/link";
-import { removeToken } from "../libs/localStorage";
-import Router from "next/router";
+  ShoppingCartOutlined
+} from '@ant-design/icons';
+import MemberNavComponent from '../component/MemberNavComponent';
+import { currentPath } from '../utils';
+import Link from 'next/link';
+import { removeToken } from '../libs/localStorage';
+import Router from 'next/router';
 
 const { Header, Content, Sider } = Layout;
 
@@ -30,17 +30,17 @@ const SUPPLIER_MENU = [
   //   subMenu: [],
   // },
   {
-    key: "4",
+    key: '4',
     icon: <WechatOutlined />,
-    label: "Chat",
-    link: "/supplier/chat",
-    subMenu: [],
+    label: 'Chat',
+    link: '/supplier/chat',
+    subMenu: []
   },
   {
-    key: "2",
+    key: '2',
     icon: <PicLeftOutlined />,
-    label: "Product Listing",
-    link: "/supplier/product/listing",
+    label: 'Product Listing',
+    link: '/supplier/product/listing'
     // subMenu: [
     //   {
     //     subKey: "2.1",
@@ -57,12 +57,12 @@ const SUPPLIER_MENU = [
     // ],
   },
   {
-    key: "3",
+    key: '3',
     icon: <ExperimentOutlined />,
-    label: "Available Bidding",
-    link: "/supplier/bidding",
-    subMenu: [],
-  },
+    label: 'Available Bidding',
+    link: '/supplier/bidding',
+    subMenu: []
+  }
 ];
 
 const PROFILE_MENU = (
@@ -79,7 +79,7 @@ const PROFILE_MENU = (
       danger
       onClick={() => {
         removeToken();
-        Router.push("/login");
+        Router.push('/login');
       }}
     >
       <LoginOutlined /> Sign out
@@ -105,15 +105,15 @@ const SupplierLayout = ({ children }) => {
   return (
     <div
       style={{
-        background: "#f8f8f8",
-        minHeight: "100vh",
-        position: "relative",
+        background: '#f8f8f8',
+        minHeight: '100vh',
+        position: 'relative'
       }}
     >
       <div className="">
         <Layout>
           <Sider
-            style={{ minHeight: "100vh" }}
+            style={{ minHeight: '100vh' }}
             trigger={null}
             collapsible
             collapsed={collapsed}
@@ -123,15 +123,15 @@ const SupplierLayout = ({ children }) => {
                 <a
                   style={{
                     fontSize: 13,
-                    transform: `scale(${collapsed ? 1 : 1.5})`,
+                    transform: `scale(${collapsed ? 1 : 1.5})`
                   }}
                 >
                   B2B Market
                   {/* <img
                     alt="B2BMarket"
                     src="/static/images/logo.png"
-                    height={collapsed ? 16 : 32}
-                    style={{ margin: "16px 0px" }}
+                    height={collapsed ? 32 : 32}
+                    style={{ margin: '16px 0px' }}
                   /> */}
                 </a>
               </Link>
@@ -139,7 +139,7 @@ const SupplierLayout = ({ children }) => {
             <MemberNavComponent path={currentPath()} menus={SUPPLIER_MENU} />
           </Sider>
 
-          <Layout style={{ background: "#f8f8f8" }} className="site-layout">
+          <Layout style={{ background: '#f8f8f8' }} className="site-layout">
             <Header className="site-layout-background" style={{ padding: 0 }}>
               <Row justify="space-between" align="middle">
                 {collapsed ? (
@@ -160,9 +160,9 @@ const SupplierLayout = ({ children }) => {
                     overlay={menu}
                     onVisibleChange={setOpenMessage}
                     visible={openMessage}
-                    trigger={["click"]}
+                    trigger={['click']}
                   >
-                    <Badge style={{ cursor: "pointer" }} count={3}>
+                    <Badge style={{ cursor: 'pointer' }} count={3}>
                       <BellOutlined />
                     </Badge>
                   </Dropdown>
@@ -181,10 +181,10 @@ const SupplierLayout = ({ children }) => {
             <Content
               className="site-layout-background"
               style={{
-                margin: "24px 16px",
+                margin: '24px 16px',
                 padding: 24,
                 minHeight: 280,
-                background: "#fff",
+                background: '#fff'
               }}
             >
               {children}

@@ -1,13 +1,12 @@
 .compose {
   padding: 10px;
-  display: flex;
+  /* display: flex; */
   align-items: center;
   background: white;
   border-top: 1px solid #eeeef1;
-  position: fixed;
+  position: sticky;
   /* width: calc(100% - 20px); */
-  width: calc(41%);
-  bottom: 50px;
+  width: calc(100%);
 }
 
 @supports (backdrop-filter: blur(20px)) {
@@ -26,6 +25,7 @@
   height: 40px;
   background: #f4f4f8;
   border-radius: 10px;
+  width: 100%;
 }
 
 .compose-input::placeholder {

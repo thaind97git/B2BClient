@@ -9,27 +9,27 @@ import {
   Typography,
   Modal,
   Empty,
-  Skeleton,
-} from "antd";
+  Skeleton
+} from 'antd';
 import {
   CloseCircleOutlined,
-  ExclamationCircleOutlined,
-} from "@ant-design/icons";
-import Router from "next/router";
-import React, { Fragment, useEffect, useState } from "react";
-import ListingRequestForGroupComponent from "./ListingRequestForGroupComponent";
-import ListingSupplierByProductComponent from "./ListingSupplierByProductComponent";
-import RequestDetailsComponent from "./RequestDetailsComponent";
-import UserProfileComponent from "./UserProfileComponent";
-import GroupStatusComponent from "./Utils/GroupStatusComponent";
+  ExclamationCircleOutlined
+} from '@ant-design/icons';
+import Router from 'next/router';
+import React, { Fragment, useEffect, useState } from 'react';
+import ListingRequestForGroupComponent from './ListingRequestForGroupComponent';
+import ListingSupplierByProductComponent from './ListingSupplierByProductComponent';
+import RequestDetailsComponent from './RequestDetailsComponent';
+import UserProfileComponent from './UserProfileComponent';
+import GroupStatusComponent from './Utils/GroupStatusComponent';
 import {
   DATE_TIME_FORMAT,
   DEFAULT_DATE_RANGE,
   DEFAULT_PAGING_INFO,
-  displayCurrency,
-} from "../utils";
-import { connect } from "react-redux";
-import { createStructuredSelector } from "reselect";
+  displayCurrency
+} from '../utils';
+import { connect } from 'react-redux';
+import { createStructuredSelector } from 'reselect';
 import {
   GetGroupDetailsData,
   getGroupDetails,
@@ -39,38 +39,42 @@ import {
   addRequestToGroup,
   AddRequestToGroupData,
   AddRequestToGroupError,
-} from "../stores/GroupState";
+  addSupplierToGroup,
+  AddSupplierToGroupData,
+  AddSupplierToGroupError
+} from '../stores/GroupState';
 import {
   getRequestByGroupId,
   getRequestByGroupIdData,
-  getRequestByGroupIdError,
-} from "../stores/RequestState";
-import Moment from "react-moment";
-import RequestStatusComponent from "./Utils/RequestStatusComponent";
+  getRequestByGroupIdError
+} from '../stores/RequestState';
+import Moment from 'react-moment';
+import RequestStatusComponent from './Utils/RequestStatusComponent';
 import {
   getSupplierByGroupId,
   GetSupplierByGroupIdData,
   GetSupplierByGroupIdError,
-} from "../stores/SupplierState";
-import ReactTableLayout from "../layouts/ReactTableLayout";
-import { G_PENDING } from "../enums/groupStatus";
-import { createLink } from "../libs";
+  getSupplierByProductId
+} from '../stores/SupplierState';
+import ReactTableLayout from '../layouts/ReactTableLayout';
+import { G_PENDING } from '../enums/groupStatus';
+import { createLink } from '../libs';
 
 const { Title } = Typography;
 const groupRequestColumns = [
   // { title: "Product Name", dataIndex: "category", key: "category" },
-  { title: "Preferred Unit Price", dataIndex: "price", key: "price" },
-  { title: "Quantity", dataIndex: "quantity", key: "quantity" },
-  { title: "Due Date", dataIndex: "dueDate", key: "dueDate" },
-  { title: "Actions", dataIndex: "actions", key: "actions" },
+  { title: 'Preferred Unit Price', dataIndex: 'price', key: 'price' },
+  { title: 'Quantity', dataIndex: 'quantity', key: 'quantity' },
+  { title: 'Due Date', dataIndex: 'dueDate', key: 'dueDate' },
+  { title: 'Actions', dataIndex: 'actions', key: 'actions' }
 ];
 const SUPPLIER_CONTACT = [
-  { title: "Name", dataIndex: "name", key: "name" },
-  { title: "Email", dataIndex: "email", key: "email" },
-  { title: "Phone", dataIndex: "phone", key: "phone" },
-  { title: "Is Ignore", dataIndex: "isIgnore", key: "isIgnore" },
-  { title: "Actions", dataIndex: "actions", key: "actions" },
-  { title: "", dataIndex: "remove", key: "remove" },
+  { title: 'Name', dataIndex: 'name', key: 'name' },
+  { title: 'Email', dataIndex: 'email', key: 'email' },
+  { title: 'Phone', dataIndex: 'phone', key: 'phone' },
+  { title: 'Is Ignore', dataIndex: 'isIgnore', key: 'isIgnore' },
+  { title: 'Actions', dataIndex: 'actions', key: 'actions' },
+  { title: '', dataIndex: 'remove', key: 'remove' }
 ];
 
 const connectToRedux = connect(
@@ -83,6 +87,8 @@ const connectToRedux = connect(
     supplierByGroupIdError: GetSupplierByGroupIdError,
     addRequestToGroupData: AddRequestToGroupData,
     addRequestToGroupError: AddRequestToGroupError,
+    addSupplierToGroupData: AddSupplierToGroupData,
+    addSupplierToGroupError: AddSupplierToGroupError
   }),
   (dispatch) => ({
     getGroupDetails: (id) => dispatch(getGroupDetails(id)),
@@ -94,9 +100,11 @@ const connectToRedux = connect(
       dispatch(removeRequestFromGroup({ groupId, requestId, callback })),
     addRequestToGroup: ({ groupId, requestIds, callback }) =>
       dispatch(addRequestToGroup({ groupId, requestIds, callback })),
+    addSupplierToGroup: ({ groupId, supplierIds, callback }) =>
+      dispatch(addSupplierToGroup({ groupId, supplierIds, callback })),
     resetData: () => {
       dispatch(GetGroupDetailsResetter);
-    },
+    }
   })
 );
 
@@ -108,7 +116,7 @@ const getRequestTable = ({
   setCurrentRequestSelected,
   setOpenRequestDetail,
   callbackGetRequestList,
-  removeRequestFromGroup,
+  removeRequestFromGroup
 }) => {
   return (
     requestData &&
@@ -128,17 +136,17 @@ const getRequestTable = ({
             <Button
               onClick={() => {
                 Modal.confirm({
-                  title: "Do you want remove this request?",
+                  title: 'Do you want remove this request?',
                   icon: <ExclamationCircleOutlined />,
-                  okText: "Remove",
-                  cancelText: "Cancel",
+                  okText: 'Remove',
+                  cancelText: 'Cancel',
                   onOk: () => {
                     removeRequestFromGroup({
                       groupId,
                       requestId: request.id,
-                      callback: callbackGetRequestList,
+                      callback: callbackGetRequestList
                     });
-                  },
+                  }
                 });
               }}
               size="small"
@@ -158,38 +166,80 @@ const getRequestTable = ({
             View
           </Button>
         </Space>
-      ),
+      )
     }))
   );
 };
 const getSupplierTable = ({
   supplierData = [],
-  setCurrentRequestSelected,
   setOpenSupplierDetail,
+  groupId
 }) =>
   supplierData &&
   supplierData.length > 0 &&
   supplierData.map((supplier = {}) => ({
     key: supplier.id,
-    price: displayCurrency(+supplier.preferredUnitPrice),
-    name: supplier.product.description,
-    quantity: +supplier.quantity || 0,
-    dueDate: (
-      <Moment format={DATE_TIME_FORMAT}>{new Date(supplier.dueDate)}</Moment>
-    ),
-    status: <RequestStatusComponent status={supplier.supplierStatus.id} />,
-    actions: (
+    name: (
       <Button
+        type="link"
         onClick={() => {
-          setCurrentRequestSelected(supplier);
           setOpenSupplierDetail(true);
         }}
-        size="small"
-        type="link"
       >
-        View
+        {supplier.firstName + supplier.lastName}
       </Button>
     ),
+    phone: supplier.phoneNumber,
+    email: supplier.email,
+    isIgnore: supplier.flag ? (
+      <span style={{ color: 'green' }}>Negotiating</span>
+    ) : (
+      <Space style={{ color: 'red' }}>
+        <CloseCircleOutlined />
+        Ignored
+      </Space>
+    ),
+    remove: (
+      <Button size="small" danger>
+        Remove
+      </Button>
+    ),
+    actions: (
+      <Space>
+        <Button size="small" type="dashed">
+          <a
+            href={createLink([
+              'aggregator',
+              'group',
+              `chat?groupId=${groupId}`
+            ])}
+            target="_blank"
+          >
+            Chat
+          </a>
+        </Button>
+        <Button
+          size="small"
+          style={{ color: 'green' }}
+          onClick={() => {
+            Router.push(
+              `/aggregator/order/confirmation?groupID=${1}&isNegotiating=true`
+            );
+          }}
+        >
+          Closing deal
+        </Button>
+
+        <Button
+          type="link"
+          onClick={() => {
+            setOpenSupplierDetail(true);
+          }}
+        >
+          Details
+        </Button>
+      </Space>
+    )
   }));
 
 const GroupRequestDetailsComponent = ({
@@ -205,6 +255,9 @@ const GroupRequestDetailsComponent = ({
   addRequestToGroup,
   addRequestToGroupData,
   addRequestToGroupError,
+  addSupplierToGroup,
+  addSupplierToGroupData,
+  addSupplierToGroupError
 }) => {
   const [isOpenContact, setIsOpenContact] = useState(false);
   const [isOpenAddRequest, setIsOpenAddRequest] = useState(false);
@@ -212,11 +265,20 @@ const GroupRequestDetailsComponent = ({
   const [openSupplierDetail, setOpenSupplierDetail] = useState(false);
   const [currentRequestSelected, setCurrentRequestSelected] = useState({});
   const [requestIdSelected, setRequestIdSelected] = useState([]);
+  const [supplierIdSelected, setSupplierIdSelected] = useState([]);
 
   const [loading, setLoading] = useState(true);
   const groupId = Router.query.id;
   const callbackGetRequestList = () => {
     getRequestByGroupId(
+      DEFAULT_PAGING_INFO.page,
+      DEFAULT_PAGING_INFO.pageSize,
+      groupId
+    );
+  };
+
+  const callbackGetSupplierList = () => {
+    getSupplierByProductId(
       DEFAULT_PAGING_INFO.page,
       DEFAULT_PAGING_INFO.pageSize,
       groupId
@@ -243,6 +305,12 @@ const GroupRequestDetailsComponent = ({
   }, [addRequestToGroupData]);
 
   useEffect(() => {
+    if (addSupplierToGroup) {
+      setIsOpenAddRequest(false);
+    }
+  }, [addSupplierToGroup]);
+
+  useEffect(() => {
     return () => {
       resetData();
     };
@@ -250,11 +318,11 @@ const GroupRequestDetailsComponent = ({
 
   const SUPPLIER_CONTACT_DATA = [
     {
-      name: "Supplier 1",
-      email: "thaindse62642@fpt.edu.vn",
-      phone: "0397471442",
+      name: 'Supplier 1',
+      email: 'thaindse62642@fpt.edu.vn',
+      phone: '0397471442',
       isIgnore: (
-        <Space style={{ color: "red" }}>
+        <Space style={{ color: 'red' }}>
           <CloseCircleOutlined />
           Ignored
         </Space>
@@ -268,7 +336,7 @@ const GroupRequestDetailsComponent = ({
           </Button>
           <Button
             size="small"
-            style={{ color: "green" }}
+            style={{ color: 'green' }}
             onClick={() => {
               Router.push(
                 `/aggregator/order/confirmation?groupID=${1}&isNegotiating=true`
@@ -292,14 +360,14 @@ const GroupRequestDetailsComponent = ({
         <Button size="small" danger>
           Remove
         </Button>
-      ),
+      )
     },
     {
-      name: "Supplier 2",
-      email: "thaind97.dev@gmail.com",
-      phone: "0397471441",
+      name: 'Supplier 2',
+      email: 'thaind97.dev@gmail.com',
+      phone: '0397471441',
       isIgnore: (
-        <Space style={{ color: "red" }}>
+        <Space style={{ color: 'red' }}>
           <CloseCircleOutlined />
           Ignored
         </Space>
@@ -313,7 +381,7 @@ const GroupRequestDetailsComponent = ({
           </Button>
           <Button
             size="small"
-            style={{ color: "green" }}
+            style={{ color: 'green' }}
             onClick={() => {
               Router.push(
                 `/aggregator/order/confirmation?groupID=${1}&isNegotiating=true`
@@ -336,13 +404,13 @@ const GroupRequestDetailsComponent = ({
         <Button size="small" danger>
           Remove
         </Button>
-      ),
+      )
     },
     {
-      name: "Supplier 3",
-      email: "thaind97.info@gmail.com",
-      phone: "0397471440",
-      isIgnore: <span style={{ color: "green" }}>Negotiating</span>,
+      name: 'Supplier 3',
+      email: 'thaind97.info@gmail.com',
+      phone: '0397471440',
+      isIgnore: <span style={{ color: 'green' }}>Negotiating</span>,
       actions: (
         <Space>
           <Button size="small" type="dashed">
@@ -352,7 +420,7 @@ const GroupRequestDetailsComponent = ({
           </Button>
           <Button
             size="small"
-            style={{ color: "green" }}
+            style={{ color: 'green' }}
             onClick={() => {
               Router.push(
                 `/aggregator/order/confirmation?groupID=${1}&isNegotiating=true`
@@ -375,8 +443,8 @@ const GroupRequestDetailsComponent = ({
         <Button size="small" danger>
           Remove
         </Button>
-      ),
-    },
+      )
+    }
   ];
 
   if (loading) {
@@ -395,7 +463,7 @@ const GroupRequestDetailsComponent = ({
     maxPrice,
     quantity,
     averagePrice,
-    product,
+    product
   } = groupDetailsData;
 
   const { id: status } = groupStatus || {};
@@ -422,11 +490,11 @@ const GroupRequestDetailsComponent = ({
       <Drawer
         width={640}
         title="RFQ details"
-        placement={"right"}
+        placement={'right'}
         closable={true}
         onClose={() => setOpenRequestDetail(false)}
         visible={openRequestDetail}
-        key={"rfq-details"}
+        key={'rfq-details'}
       >
         <RequestDetailsComponent
           isRemove={isCanRemove ? true : false}
@@ -437,11 +505,11 @@ const GroupRequestDetailsComponent = ({
       <Drawer
         width={640}
         title="Supplier details"
-        placement={"right"}
+        placement={'right'}
         closable={true}
         onClose={() => setOpenSupplierDetail(false)}
         visible={openSupplierDetail}
-        key={"supplier-details"}
+        key={'supplier-details'}
       >
         <UserProfileComponent isDrawer={true} />
       </Drawer>
@@ -454,9 +522,9 @@ const GroupRequestDetailsComponent = ({
             onClick={() =>
               Router.push(
                 createLink([
-                  "aggregator",
-                  "bidding",
-                  `create?groupId=${groupId}`,
+                  'aggregator',
+                  'bidding',
+                  `create?groupId=${groupId}`
                 ])
               )
             }
@@ -468,7 +536,7 @@ const GroupRequestDetailsComponent = ({
       <Space direction="vertical">
         <Card
           title={<Title level={5}>Group Details</Title>}
-          style={{ width: "100%" }}
+          style={{ width: '100%' }}
         >
           <Descriptions>
             <Descriptions.Item label="Product Name" span={3}>
@@ -508,14 +576,14 @@ const GroupRequestDetailsComponent = ({
         </Card>
         <Card
           title={<Title level={5}>Request List</Title>}
-          style={{ width: "100%" }}
+          style={{ width: '100%' }}
         >
           <div>
             <ReactTableLayout
               hasAction={false}
               dispatchAction={getRequestByGroupId}
               searchProps={{
-                exCondition: [groupId],
+                exCondition: [groupId]
               }}
               data={getRequestTable({
                 requestData: requestData || [],
@@ -525,10 +593,10 @@ const GroupRequestDetailsComponent = ({
                 setCurrentRequestSelected,
                 groupId,
                 callbackGetRequestList,
-                removeRequestFromGroup,
+                removeRequestFromGroup
               })}
               columns={groupRequestColumns}
-              totalCount={totalRequest}
+              totalCount={totalSupplier}
               footer={() => (
                 <Button
                   type="primary"
@@ -542,21 +610,28 @@ const GroupRequestDetailsComponent = ({
         </Card>
         <Card
           title={<Title level={5}>Suppliers Contact</Title>}
-          style={{ width: "100%" }}
+          style={{ width: '100%' }}
         >
           <div>
-            <Table
-              footer={() => {
-                return (
-                  <Button type="primary" onClick={() => setIsOpenContact(true)}>
-                    Add Suppliers
-                  </Button>
-                );
+            <ReactTableLayout
+              hasAction={false}
+              dispatchAction={getSupplierByProductId}
+              searchProps={{
+                exCondition: [groupId]
               }}
-              bordered
+              data={getSupplierTable({
+                supplierData: supplierData || [],
+                status,
+                setOpenSupplierDetail,
+                groupId
+              })}
               columns={SUPPLIER_CONTACT}
-              dataSource={SUPPLIER_CONTACT_DATA}
-              rowKey="id"
+              totalCount={totalRequest}
+              footer={() => (
+                <Button type="primary" onClick={() => setIsOpenContact(true)}>
+                  Add Suppliers
+                </Button>
+              )}
             />
           </div>
         </Card>
@@ -564,13 +639,26 @@ const GroupRequestDetailsComponent = ({
       <Modal
         width={1000}
         onCancel={() => setIsOpenContact(false)}
-        onOk={() => setIsOpenContact(false)}
+        onOk={() => {
+          if (supplierIdSelected && supplierIdSelected.length > 0) {
+            addSupplierToGroup({
+              groupId,
+              supplierIds: requestIdSelected,
+              callback: callbackGetSupplierList
+            });
+          }
+        }}
         title="Find Supplier"
         visible={isOpenContact}
         okText="Add"
       >
         {isOpenContact ? (
-          <ListingSupplierByProductComponent productId={productId} />
+          <ListingSupplierByProductComponent
+            setSupplierIdSelected={(arrayId = []) => {
+              setSupplierIdSelected(arrayId);
+            }}
+            productId={productId}
+          />
         ) : null}
       </Modal>
       <Modal
@@ -581,7 +669,7 @@ const GroupRequestDetailsComponent = ({
             addRequestToGroup({
               groupId,
               requestIds: requestIdSelected,
-              callback: callbackGetRequestList,
+              callback: callbackGetRequestList
             });
           }
         }}
@@ -596,7 +684,6 @@ const GroupRequestDetailsComponent = ({
         {isOpenAddRequest ? (
           <ListingRequestForGroupComponent
             setRequestIdSelected={(arrayId = []) => {
-              console.log({ arrayId });
               setRequestIdSelected(arrayId);
             }}
             productId={productId}
