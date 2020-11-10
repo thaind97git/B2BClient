@@ -74,7 +74,7 @@ const USER_PROFILE = {
 };
 const UserProfileComponent = ({ isDrawer, userId, currentUser, uploadAvatar, updatePassword }) => {
   const [changePasswordVisible, setChangePasswordVisible] = useState(false);
-  const [imageUrl, setImageUrl] = useState(getCurrentUserImage(currentUser.avatar ? currentUser.avatar : fallbackImage));
+  const [imageUrl, setImageUrl] = useState(currentUser.avatar ? getCurrentUserImage(  currentUser.avatar) : "/static/images/avatar.png");
   const [loading, setLoading] = useState(false);
   const [preview, setPreview] = useState({
     previewVisible: false,
@@ -86,7 +86,7 @@ const UserProfileComponent = ({ isDrawer, userId, currentUser, uploadAvatar, upd
       uid: "-1",
       name: "image.png",
       status: "done",
-      url: imageUrl ? imageUrl : "/static/images/avatar.png"
+      url: imageUrl 
     }
   ]);
   const showChangePasswordModal = () => {

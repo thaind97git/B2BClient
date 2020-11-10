@@ -86,7 +86,7 @@ const LoginComponent = ({ loginUser, userLoginError, resetData }) => {
           <Checkbox>Remember me</Checkbox>
         </FormItem>
 
-        <a className="login-form-forgot" href="">
+        <a className="login-form-forgot" href="/forgot-password">
           Forgot password?
         </a>
       </FormItem>

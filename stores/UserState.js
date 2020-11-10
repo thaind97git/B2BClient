@@ -12,6 +12,8 @@ export const USER_LOGIN = "UserLoginAPI";
 export const USER_REGISTER = "UserRegisterAPI";
 export const USER_UPLOAD_AVATAR = "UserUploadAvatarAPI";
 export const USER_UPDATE_PASSWORD = "UserUpdatePasswordAPI"
+export const USER_ACTIVE_CODE = "UserActiveCodeAPI";
+export const USER_UPDATE_PASSWORD_BY_CODE = "UserUpdatePasswordByCodeAPI";
 
 //Login
 export const UserLoginAPI = makeFetchAction(USER_LOGIN, ({ email, password }) =>
@@ -206,3 +208,39 @@ export const userUpdatePassword = ({ oldPassword, newPassword }) =>
 export const UserUpdatePasswordData = UserUpdatePasswordAPI.dataSelector;
 export const UserUpdatePasswordError = UserUpdatePasswordAPI.errorSelector;
 export const UserUpdatePasswordResetter = getResetter(UserUpdatePasswordAPI);
+
+//Get Activate Code
+const UserActiveCodeAPI = makeFetchAction(USER_ACTIVE_CODE, (email) =>
+  nfetch({
+    endpoint: `/api/Account/ActiveCode/${email}`,
+    method: 'GET'
+  })()
+);
+
+export const userActiveCode = (email) =>
+  respondToSuccess(UserActiveCodeAPI.actionCreator(email), (resp) => {
+    if (resp) {
+      Router.push(`/refresh-password?email=${email}`);
+    }
+  });
+export const userActiveCodeData = UserActiveCodeAPI.dataSelector;
+export const userActiveCodeError = UserActiveCodeAPI.errorSelector;
+export const userActiveCodeResetter = getResetter(UserActiveCodeAPI);
+
+//Update password by Code
+const UserUpdatePasswordByCodeAPI = makeFetchAction(USER_UPDATE_PASSWORD_BY_CODE, ({ email, password, code }) =>
+  nfetch({
+    endpoint: "/api/Account/UpdatePasswordByCode",
+    method: "PUT"
+  })({ email, password, code })
+);
+
+export const userUpdatePasswordByCode = ({ email, password, code }) =>
+  respondToSuccess(UserUpdatePasswordByCodeAPI.actionCreator({ email, password, code }), (resp) => {
+    if (resp) {
+      Router.push("/login");
+    }
+  });
+export const userUpdatePasswordByCodeData = UserUpdatePasswordByCodeAPI.dataSelector;
+export const userUpdatePasswordByCodeError = UserUpdatePasswordByCodeAPI.errorSelector;
+export const userUpdatePasswordByCodeResetter = getResetter(UserUpdatePasswordByCodeAPI);
