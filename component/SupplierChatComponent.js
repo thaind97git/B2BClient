@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Tabs, Row, Typography, Divider, Col, Image } from 'antd';
+import { Row, Col, Tooltip } from 'antd';
 import MessageList from './Chat/MessageList';
 import TabsLayout from '../layouts/TabsLayout';
 import {
@@ -15,6 +15,7 @@ import {
   getSupplierGroupChat,
   GetSupplierGroupChatData
 } from '../stores/ConversationState';
+import moment from 'moment';
 
 const connectToRedux = connect(
   createStructuredSelector({
@@ -59,7 +60,8 @@ const GroupTile = ({
           >
             {contentLabel}
           </small>{' '}
-          <span>&nbsp;</span> <small>8:00</small>
+          <span>&nbsp;</span>{' '}
+          <small>{lastMessageTime && moment(lastMessageTime).fromNow()}</small>
         </div>
       </Col>
     </Col>
@@ -72,9 +74,16 @@ const SupplierChatComponent = ({
 }) => {
   const [isNegotiating, setIsNegotiating] = useState('1');
   const [currentGroupIdSelected, setCurrentGroupIdSelected] = useState(null);
+  const [lastMesTime, setLastMesTime] = useState(null);
+
+  const [newMessage, setNewMessage] = useState({});
   useEffect(() => {
     getSupplierGroupChat(isNegotiating);
   }, [getSupplierGroupChat, isNegotiating]);
+
+  useEffect(() => {
+    console.log({ newMessage });
+  }, [newMessage]);
 
   let GROUP_NEGOTIATING_TABS = [];
 
@@ -93,13 +102,14 @@ const SupplierChatComponent = ({
         totalRFQ,
         unit
       } = group;
+      setLastMesTime(lastMessageTime);
       const contentLabel = `${yourMessage ? 'You: ' : ''} ${getShortContent(
-        lastMessage,
-        12
+        lastMessage
       )}`;
       return {
         title: (
           <GroupTile
+            lastMessageTime={lastMesTime || lastMessageTime}
             productImage={productImage}
             groupName={groupname}
             contentLabel={contentLabel}
@@ -108,20 +118,24 @@ const SupplierChatComponent = ({
         key: id,
         content: (
           <MessageList
+            getNewMessage={(message) => setNewMessage(message)}
             conversationId={currentGroupIdSelected}
             titleProps={{
               leftTitle: (
                 <div style={{ textAlign: 'center' }}>
-                  <span>{getShortContent(productName, 40)}</span>
-                  <div style={{ fontStyle: 'normal', fontWeight: 400 }}>
-                    {/* {totalQuantity} {unit} / {totalRFQ} Buyers */}
-                  </div>
+                  <Tooltip title={productName}>
+                    <span style={{ fontWeight: 600 }}>
+                      {getShortContent(productName, 100)}
+                    </span>
+                  </Tooltip>
+                  <div style={{ fontStyle: 'normal', fontWeight: 400 }}></div>
                 </div>
               ),
               rightTitle: (
                 <div>
                   <div>
-                    {totalQuantity} {unit} / {totalRFQ} Buyers
+                    <b>{totalQuantity}</b> {unit} / <b>{totalRFQ}</b>{' '}
+                    {parseInt(totalRFQ) === 1 ? 'Buyer' : 'Buyers'}
                   </div>
                 </div>
               )

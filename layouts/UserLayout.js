@@ -1,12 +1,15 @@
-import React, { Fragment } from "react";
-import Link from "next/link";
+import React, { Fragment } from 'react';
+import Link from 'next/link';
 
 class UserLayout extends React.PureComponent {
   render() {
     const { children } = this.props;
     return (
       <div className="user-layout-container">
-        <div className="content">
+        <div
+          className="content"
+          style={{ background: 'transparent', marginTop: 140 }}
+        >
           <div className="top">
             <div className="header">
               <Link href="/">

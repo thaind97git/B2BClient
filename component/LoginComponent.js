@@ -1,26 +1,26 @@
-import React, { useEffect } from "react";
-import { Checkbox, Form, Input, Button } from "antd";
-import { LockOutlined, MailOutlined } from "@ant-design/icons";
-import Link from "next/link";
-import { connect } from "react-redux";
-import { createStructuredSelector } from "reselect";
+import React, { useEffect } from 'react';
+import { Checkbox, Form, Input, Button } from 'antd';
+import { LockOutlined, MailOutlined } from '@ant-design/icons';
+import Link from 'next/link';
+import { connect } from 'react-redux';
+import { createStructuredSelector } from 'reselect';
 import {
   userLogin,
   userLoginDataErrorSelector,
-  userLoginResetter,
-} from "../stores/UserState";
-import { compose } from "redux";
-import { openNotification } from "../utils";
+  userLoginResetter
+} from '../stores/UserState';
+import { compose } from 'redux';
+import { openNotification } from '../utils';
 const FormItem = Form.Item;
 
 const connectToRedux = connect(
   createStructuredSelector({
-    userLoginError: userLoginDataErrorSelector,
+    userLoginError: userLoginDataErrorSelector
   }),
   (dispatch) => ({
     loginUser: ({ email, password }) =>
       dispatch(userLogin({ email, password })),
-    resetData: () => dispatch(userLoginResetter),
+    resetData: () => dispatch(userLoginResetter)
   })
 );
 
@@ -36,18 +36,18 @@ const LoginComponent = ({ loginUser, userLoginError, resetData }) => {
     };
   }, [resetData]);
 
-  useEffect(() => {
-    if (userLoginError) {
-      openNotification("error", { message: userLoginError });
-    }
-  }, [userLoginError]);
+  // useEffect(() => {
+  //   if (userLoginError) {
+  //     openNotification("error", { message: userLoginError });
+  //   }
+  // }, [userLoginError]);
 
   return (
     <Form
       name="normal_login"
       className="login-form"
       initialValues={{
-        remember: true,
+        remember: true
       }}
       autoComplete="new-password"
       onFinish={onFinish}
@@ -57,8 +57,8 @@ const LoginComponent = ({ loginUser, userLoginError, resetData }) => {
         rules={[
           {
             required: true,
-            message: "Please enter your Email",
-          },
+            message: 'Please enter your Email'
+          }
         ]}
       >
         <Input size="large" prefix={<MailOutlined />} placeholder="Email" />
@@ -69,8 +69,8 @@ const LoginComponent = ({ loginUser, userLoginError, resetData }) => {
         rules={[
           {
             required: true,
-            message: "Please enter your Password",
-          },
+            message: 'Please enter your Password'
+          }
         ]}
       >
         <Input

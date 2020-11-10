@@ -7,7 +7,8 @@ import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 import {
   getMessages,
-  GetMessagesData
+  GetMessagesData,
+  GetMessagesResetter
 } from '../../../stores/ConversationState';
 import { DEFAULT_PAGING_INFO } from '../../../utils';
 import useHub from '../../HOOK/useHub';
@@ -19,7 +20,8 @@ const connectToRedux = connect(
   }),
   (dispatch) => ({
     getMessages: ({ conversationId, pageIndex, pageSize }) =>
-      dispatch(getMessages({ conversationId, pageIndex, pageSize }))
+      dispatch(getMessages({ conversationId, pageIndex, pageSize })),
+    resetData: () => dispatch(GetMessagesResetter)
   })
 );
 
@@ -47,7 +49,9 @@ function MessageList({
   titleProps = {},
   messagesData,
   getMessages,
-  conversationId
+  conversationId,
+  getNewMessage,
+  resetData
 }) {
   const [messages, setMessages] = useState([]);
   const { connection } = useHub();
@@ -56,8 +60,15 @@ function MessageList({
   const [newMessage, setNewMessage] = useState({});
 
   const scrollToBottom = () => {
-    // messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current &&
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
   };
+
+  useEffect(() => {
+    return () => {
+      resetData();
+    };
+  }, [resetData]);
   useEffect(() => {
     if (messagesData) {
       setMessages(messagesData);
@@ -71,27 +82,29 @@ function MessageList({
         .then(() => {
           connection.on('ReceiveMessage', (message) => {
             console.log({ message });
-            scrollToBottom();
+            !!message &&
+              typeof getNewMessage === 'function' &&
+              getNewMessage(message);
+
             setNewMessage(message);
           });
         })
         .catch((e) => console.log('Connection failed: ', e));
     }
-  }, [connection]);
+  }, [connection, getNewMessage]);
 
   useEffect(() => {
     if (!!newMessage) {
       const messagesCopy = [...messages];
       messagesCopy.push(newMessage);
-      setMessages(messagesCopy);
       setNewMessage(null);
+      setMessages(messagesCopy);
     }
   }, [newMessage]);
 
   const sendMessage = async (message) => {
     if (connection.connectionStarted) {
       try {
-        // await connection.send('SendMessage', chatMessage);
         await onSendMessage(conversationId, message);
       } catch (e) {
         console.log(e);
@@ -164,16 +177,16 @@ function MessageList({
       // Proceed to the next message.
       i += 1;
     }
-
+    scrollToBottom();
     return tempMessages;
   };
 
   const { title, leftTitle, rightTitle } = titleProps;
 
   return (
-    <Row style={{ height: '100%' }}>
+    <Row style={{ height: '98%' }}>
       <Col span={24} style={{ height: 42 }}>
-        <div className="toolbar">
+        <div className="toolbar ">
           <div className="left-items">{leftTitle}</div>
           <h1 className="toolbar-title">{title}</h1>
           <div className="right-items">{rightTitle}</div>
@@ -188,7 +201,10 @@ function MessageList({
         }}
       >
         {!!messages ? renderMessages(messages) : null}{' '}
-        <div ref={messagesEndRef} />
+        {/* <div
+          style={{ height: 1, position: 'relative', top: -30 }}
+          ref={messagesEndRef}
+        /> */}
       </Col>
       <Col span={24} style={{ height: 52 }}>
         <Compose sendMessage={sendMessage} />

@@ -86,7 +86,7 @@ const GetMessagesAPI = makeFetchAction(
       method: 'GET'
     })()
 );
-export const getMessages = ({ conversationId, pageIndex, pageSize = 10 }) =>
+export const getMessages = ({ conversationId, pageIndex, pageSize = 20 }) =>
   respondToSuccess(
     GetMessagesAPI.actionCreator({ conversationId, pageIndex, pageSize })
   );
