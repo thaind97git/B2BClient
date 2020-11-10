@@ -2,12 +2,12 @@ import React from 'react';
 import { AudioMutedOutlined } from '@ant-design/icons';
 import moment from 'moment';
 
-export default function ConversationListItem({ data, isIgnore = true }) {
+export default function ConversationListItem({ data, isIgnored }) {
   const { photo, name, text = '', lastMessageTime } = data;
   return (
     <div
       className="conversation-list-item"
-      style={isIgnore ? { fontStyle: 'italic', opacity: 0.5 } : {}}
+      style={isIgnored ? { fontStyle: 'italic', opacity: 0.5 } : {}}
     >
       <div style={{ display: 'flex', alignItems: 'center' }}>
         <img className="conversation-photo" src={photo} alt="" />
@@ -22,7 +22,7 @@ export default function ConversationListItem({ data, isIgnore = true }) {
           </span>
         </div>
       </div>
-      {!isIgnore && (
+      {isIgnored && (
         <div className="mute">
           <AudioMutedOutlined />
         </div>

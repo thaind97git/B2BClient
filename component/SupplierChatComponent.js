@@ -81,10 +81,6 @@ const SupplierChatComponent = ({
     getSupplierGroupChat(isNegotiating);
   }, [getSupplierGroupChat, isNegotiating]);
 
-  useEffect(() => {
-    console.log({ newMessage });
-  }, [newMessage]);
-
   let GROUP_NEGOTIATING_TABS = [];
 
   if (supplierGroupChatData) {
@@ -102,7 +98,6 @@ const SupplierChatComponent = ({
         totalRFQ,
         unit
       } = group;
-      setLastMesTime(lastMessageTime);
       const contentLabel = `${yourMessage ? 'You: ' : ''} ${getShortContent(
         lastMessage
       )}`;

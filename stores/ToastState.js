@@ -3,6 +3,7 @@ import { openNotification } from '../utils';
 import { CREATE_REVERSE_AUCTION } from './AuctionState';
 import {
   ADD_REQUEST_TO_GROUP,
+  ADD_SUPPLIER_TO_GROUP,
   CREATE_NEW_GROUP,
   REMOVE_REQUEST_FROM_GROUP
 } from './GroupState';
@@ -31,6 +32,9 @@ export default {
           break;
         case ADD_REQUEST_TO_GROUP:
           msgNotify = 'Add Request to Group success';
+          break;
+        case ADD_SUPPLIER_TO_GROUP:
+          msgNotify = 'Add Supplier to Group success';
           break;
         case CREATE_NEW_GROUP:
           msgNotify = 'Create new Group success';
@@ -80,6 +84,9 @@ export default {
           break;
         case ADD_REQUEST_TO_GROUP:
           msgNotify = 'Add Request to Group fail';
+          break;
+        case ADD_SUPPLIER_TO_GROUP:
+          msgNotify = 'Add Supplier to Group fail';
           break;
         case CREATE_NEW_GROUP:
           msgNotify = 'Create new Group fail';

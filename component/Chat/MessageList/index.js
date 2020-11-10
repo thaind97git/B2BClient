@@ -185,7 +185,7 @@ function MessageList({
 
   return (
     <Row style={{ height: '98%' }}>
-      <Col span={24} style={{ height: 42 }}>
+      <Col span={24} style={{ height: 42, zIndex: 1 }}>
         <div className="toolbar ">
           <div className="left-items">{leftTitle}</div>
           <h1 className="toolbar-title">{title}</h1>

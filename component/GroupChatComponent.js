@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Row, Col, Button, Empty, Space, Tooltip } from 'antd';
+import { FileProtectOutlined, FlagOutlined } from '@ant-design/icons';
+import { Row, Col, Button, Empty, Space, Avatar } from 'antd';
 import MessageList from './Chat/MessageList';
-import Avatar from 'antd/lib/avatar/avatar';
 import {
   fallbackImage,
   getProductImage,
@@ -75,78 +75,74 @@ const GroupChatComponent = ({
   }, [groupId, isFirstCall, getSupplierChatByGroup]);
 
   useEffect(() => {
-    let mesTabs = [];
-    if (GetSupplierChatByGroupData && GetSupplierChatByGroupData.length > 0) {
-      mesTabs = GetSupplierChatByGroupData.map((supplier = {}) => {
-        const {
-          id,
-          supplierName,
-          supplierAvatar,
-          lastMessage,
-          yourMessage,
-          flag: isIgnore,
-          lastMessageTime,
-          seen
-        } = supplier;
+    const mesTabs =
+      (GetSupplierChatByGroupData &&
+        GetSupplierChatByGroupData.map((supplier = {}) => {
+          const {
+            id,
+            supplierName,
+            supplierAvatar,
+            lastMessage,
+            yourMessage,
+            flag: isIgnored,
+            lastMessageTime,
+            seen
+          } = supplier;
 
-        const contentLabel = `${yourMessage ? 'You: ' : ''} ${getShortContent(
-          lastMessage,
-          12
-        )}`;
-        return {
-          title: (
-            <ConversationListItem
-              isIgnore={isIgnore}
-              data={{
-                name: supplierName,
-                text: contentLabel,
-                photo: getCurrentUserImage(supplierAvatar) || fallbackImage,
-                lastMessageTime
-              }}
-            />
-          ),
-          key: id,
-          content: (
-            <MessageList
-              conversationId={currentSupplierIdSelected}
-              titleProps={{
-                leftTitle: currentGroupNameSelected,
-                rightTitle: (
-                  <Space>
-                    <Button
-                      size="small"
-                      style={{ color: 'green' }}
-                      onClick={() => {
-                        Router.push(
-                          createLink([
-                            'aggregator',
-                            'order',
-                            `confirmation?groupID=${currentGroupIdSelected}&isNegotiating=true`
-                          ])
-                        );
-                      }}
-                    >
-                      Closing deal
-                    </Button>
-                    {!isIgnore && (
-                      <Button size="small" danger>
-                        Ignore
+          const contentLabel = `${yourMessage ? 'You: ' : ''} ${getShortContent(
+            lastMessage,
+            12
+          )}`;
+          return {
+            title: (
+              <ConversationListItem
+                isIgnored={isIgnored}
+                data={{
+                  name: supplierName,
+                  text: contentLabel,
+                  photo: getCurrentUserImage(supplierAvatar) || fallbackImage,
+                  lastMessageTime
+                }}
+              />
+            ),
+            key: id,
+            content: (
+              <MessageList
+                conversationId={currentSupplierIdSelected}
+                titleProps={{
+                  leftTitle: currentGroupNameSelected,
+                  rightTitle: (
+                    <Space>
+                      <Button
+                        icon={<FileProtectOutlined />}
+                        size="small"
+                        style={{ color: 'green' }}
+                        onClick={() => {
+                          Router.push(
+                            createLink([
+                              'aggregator',
+                              'order',
+                              `confirmation?groupID=${currentGroupIdSelected}&isNegotiating=true`
+                            ])
+                          );
+                        }}
+                      >
+                        Closing deal
                       </Button>
-                    )}
-                  </Space>
-                )
-              }}
-            />
-          )
-        };
-      });
-    } else {
-      mesTabs = [
-        {
-          title: <Empty description="No suppliers in this group" />
-        }
-      ];
-    }
+                      {!isIgnored && (
+                        <Button icon={<FlagOutlined />} size="small" danger>
+                          Ignore
+                        </Button>
+                      )}
+                    </Space>
+                  )
+                }}
+              />
+            )
+          };
+        })) ||
+      [];
+
     setMessengerTabs(mesTabs);
   }, [GetSupplierChatByGroupData, currentSupplierIdSelected]);
 
@@ -163,21 +159,26 @@ const GroupChatComponent = ({
               />
             ),
             key: group.id,
-            content: (
-              <TabsLayout
-                onTabClick={(supplierId) => {
-                  setCurrentGroupNameSelected(group.groupName);
-                  setCurrentSupplierIdSelected(supplierId);
-                }}
-                className="list-chat"
-                tabPosition={'left'}
-                style={{ height: '100%' }}
-                tabs={messengerTabs}
-              />
-            )
+            content:
+              GetSupplierChatByGroupData &&
+              GetSupplierChatByGroupData.length > 0 ? (
+                <TabsLayout
+                  onTabClick={(supplierId) => {
+                    setCurrentGroupNameSelected(group.groupName);
+                    setCurrentSupplierIdSelected(supplierId);
+                  }}
+                  className="list-chat"
+                  tabPosition={'left'}
+                  style={{ height: '100%' }}
+                  tabs={messengerTabs}
+                />
+              ) : (
+                <Empty description="No suppliers in this group" />
+              )
           };
         })) ||
       [];
+
     setGroupTabs(groupTabs);
   }, [GetAggregatorGroupChatData, messengerTabs]);
 
@@ -195,23 +196,40 @@ const GroupChatComponent = ({
     {
       title: 'Negotiating',
       key: '1',
-      content: (
-        <TabsLayout
-          onTabClick={(groupId) => {
-            setCurrentGroupIdSelected(groupId);
-          }}
-          defaultTab={groupId || (groupTabs[0] || {}).id}
-          className="aggregator-chat"
-          tabPosition={'left'}
-          style={{ height: '100%' }}
-          tabs={groupTabs}
-        />
-      )
+      content:
+        GetAggregatorGroupChatData && GetAggregatorGroupChatData.length > 0 ? (
+          <TabsLayout
+            onTabClick={(groupId) => {
+              setCurrentGroupIdSelected(groupId);
+            }}
+            defaultTab={groupId || (groupTabs[0] || {}).id}
+            className="aggregator-chat"
+            tabPosition={'left'}
+            style={{ height: '100%' }}
+            tabs={groupTabs}
+          />
+        ) : (
+          <Empty description="Not found any group" />
+        )
     },
     {
-      title: 'Processed',
+      title: 'Others',
       key: '0',
-      content: 'processed'
+      content:
+        GetAggregatorGroupChatData && GetAggregatorGroupChatData.length > 0 ? (
+          <TabsLayout
+            onTabClick={(groupId) => {
+              setCurrentGroupIdSelected(groupId);
+            }}
+            defaultTab={groupId || (groupTabs[0] || {}).id}
+            className="aggregator-chat"
+            tabPosition={'left'}
+            style={{ height: '100%' }}
+            tabs={groupTabs}
+          />
+        ) : (
+          <Empty description="Not found any group" />
+        )
     }
   ];
   return (

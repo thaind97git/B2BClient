@@ -72,7 +72,7 @@ export const AddRequestToGroupResetter = getResetter(AddRequestToGroupAPI);
 
 // Add supplier to group
 const AddSupplierToGroupAPI = makeFetchAction(
-  ADD_REQUEST_TO_GROUP,
+  ADD_SUPPLIER_TO_GROUP,
   ({ groupId, supplierIds }) =>
     nfetch({
       endpoint: '/api/Group/Suppliers',
