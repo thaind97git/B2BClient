@@ -11,7 +11,8 @@ import {
   PicLeftOutlined,
   WechatOutlined,
   BellOutlined,
-  ShoppingCartOutlined
+  ShoppingCartOutlined,
+  FileDoneOutlined
 } from '@ant-design/icons';
 import MemberNavComponent from '../component/MemberNavComponent';
 import { currentPath } from '../utils';
@@ -62,6 +63,12 @@ const SUPPLIER_MENU = [
     label: 'Available Bidding',
     link: '/supplier/bidding',
     subMenu: []
+  },
+  {
+    key: '5',
+    icon: <FileDoneOutlined />,
+    label: 'Order',
+    link: '/supplier/order'
   }
 ];
 

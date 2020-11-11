@@ -55,7 +55,7 @@ const feedbackUser = {
   dateUpdated:'October 22, 2020 17:00 GTM',
   description:
     'We supply a series of design principles, practical patterns and high quality design resources (Sketch and Axure), to help people create their product prototypes beautifully and efficiently.We supply a series of design principles, practical patterns and high quality design resources (Sketch and Axure), to help people create their product prototypes beautifully and efficiently.',
-  avatar: 'e0452b3a-6988-41de-9839-11402c4ea799',
+  //avatar: 'e0452b3a-6988-41de-9839-11402c4ea799',
   status:'Opening'
 };
 

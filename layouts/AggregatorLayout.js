@@ -8,7 +8,7 @@ import {
   MenuUnfoldOutlined,
   MenuFoldOutlined,
   ExperimentOutlined,
-  OrderedListOutlined,
+  FileDoneOutlined,
   FallOutlined,
   WechatOutlined
 } from '@ant-design/icons';
@@ -53,6 +53,12 @@ const ADMIN_MENU = [
     label: 'Chats',
     link: '/aggregator/group/chat',
     subMenu: []
+  },
+  {
+    key: '6',
+    icon: <FileDoneOutlined />,
+    label: 'Order',
+    link: '/aggregator/order'
   }
 ];
 
