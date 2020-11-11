@@ -74,11 +74,6 @@ const columns = [
     key: "dateCreated",
   },
   {
-    title: "Date updated",
-    dataIndex: "dateUpdated",
-    key: "dateUpdated",
-  },
-  {
     title: "Status",
     dataIndex: "status",
     key: "status",
@@ -120,7 +115,6 @@ const AdminFeedbackManagementComponent = ({
         key: feedback.id,
         title: feedback.title,
         dateCreated: feedback.dateCreated,
-        dateUpdated: feedback.dateUpdated,
         user: feedback.user,
         status: (<FeedbackStatusComponent status={feedback.status}></FeedbackStatusComponent>),
         actions: (
@@ -138,7 +132,7 @@ const AdminFeedbackManagementComponent = ({
     );
   };
 
-  let feedbackData = [{ title: "123", id: "1", user: "quanghnd@gmail.com", dateCreated: "October 22, 2020 17:00 GTM", dateUpdated: "October 22, 2020 17:00 GTM", status: 0 }, { title: "123", id: "2", user: "duyquanghoang@gmail.com", dateCreated: "October 22, 2020 17:00 GTM", dateUpdated: "October 22, 2020 17:00 GTM", status: 1 }],
+  let feedbackData = [{ title: "About current auction", id: "1", user: "quanghnd@gmail.com", dateCreated: "October 22, 2020 17:00 GTM", dateUpdated: "October 22, 2020 17:00 GTM", status: 0 }, { title: "About supplier ABC", id: "2", user: "duyquanghoang@gmail.com", dateCreated: "October 22, 2020 17:00 GTM", dateUpdated: "October 22, 2020 17:00 GTM", status: 1 }],
     totalCount = 0;
   //   if (productPagingData) {
   //     productData = productPagingData.data;
