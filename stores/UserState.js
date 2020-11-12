@@ -3,12 +3,17 @@ import { respondToSuccess } from "../middlewares/api-reaction";
 import nfetch from "../libs/nfetch";
 import { saveToken } from "../libs/localStorage";
 import { ADMIN, BUYER, MODERATOR, SUPPLIER } from "../enums/accountRoles";
+import { getToken } from "../libs/localStorage";
 import { getResetter } from "../libs";
 import Router from "next/router";
 import { openNotification } from "../utils";
 const GET_CURRENT_USER = "GetCurrentUserAPI";
 export const USER_LOGIN = "UserLoginAPI";
 export const USER_REGISTER = "UserRegisterAPI";
+export const USER_UPLOAD_AVATAR = "UserUploadAvatarAPI";
+export const USER_UPDATE_PASSWORD = "UserUpdatePasswordAPI"
+export const USER_ACTIVE_CODE = "UserActiveCodeAPI";
+export const USER_UPDATE_PASSWORD_BY_CODE = "UserUpdatePasswordByCodeAPI";
 
 //Login
 export const UserLoginAPI = makeFetchAction(USER_LOGIN, ({ email, password }) =>
@@ -146,3 +151,96 @@ export const userRegisterErrorSelector = UserRegisterAPI.errorSelector;
 export const userRegisterResetter = getResetter(UserRegisterAPI);
 
 export default {};
+
+//Update Avatar
+export const UserUploadAvatarAPI = makeFetchAction(USER_UPLOAD_AVATAR, (object) => {
+  const listFileOrigin = object.map((file) => file.originFileObj);
+  const formData = new FormData();
+  for (let file of listFileOrigin) {
+    formData.append("file", file);
+  }
+
+  var myHeaders = new Headers();
+  myHeaders.append("Authorization", `Bearer ${getToken()}`);
+  var requestOptions = {
+    method: "PUT",
+    headers: myHeaders,
+    body: formData,
+  };
+
+  fetch(
+    `${process.env.API_SERVER_URL}/api/Account/Avatar`,
+    requestOptions
+  );
+});
+export const userUploadAvatar = (object) =>
+  respondToSuccess(UserUploadAvatarAPI.actionCreator(object), (resp) => {
+    if (resp) {
+      openNotification("success", { message: "Upload Avatar success" });
+    }
+  });
+//Update Password
+const UserUpdatePasswordAPI = makeFetchAction(USER_UPDATE_PASSWORD, ({ oldPassword, newPassword }) => {
+  var myHeaders = new Headers();
+  myHeaders.append("Authorization", `Bearer ${getToken()}`);
+  myHeaders.append("Content-Type", `application/json`);
+  console.log(oldPassword + " " + newPassword);
+  const formData = { oldPassword: oldPassword, newPassword: newPassword };
+  var requestOptions = {
+    method: "PUT",
+    headers: myHeaders,
+    body: JSON.stringify(formData),
+  };
+  fetch(
+    `${process.env.API_SERVER_URL}/api/Account/Password`,
+    requestOptions
+  )
+}
+);
+
+export const userUpdatePassword = ({ oldPassword, newPassword }) =>
+  respondToSuccess(UserUpdatePasswordAPI.actionCreator({ oldPassword, newPassword }), (resp) => {
+    if (resp) {
+      openNotification("success", { message: "Update password success!" });
+    }
+  })
+  ;
+export const UserUpdatePasswordData = UserUpdatePasswordAPI.dataSelector;
+export const UserUpdatePasswordError = UserUpdatePasswordAPI.errorSelector;
+export const UserUpdatePasswordResetter = getResetter(UserUpdatePasswordAPI);
+
+//Get Activate Code
+const UserActiveCodeAPI = makeFetchAction(USER_ACTIVE_CODE, (email) =>
+  nfetch({
+    endpoint: `/api/Account/ActiveCode/${email}`,
+    method: 'GET'
+  })()
+);
+
+export const userActiveCode = (email) =>
+  respondToSuccess(UserActiveCodeAPI.actionCreator(email), (resp) => {
+    if (resp) {
+      Router.push(`/refresh-password?email=${email}`);
+    }
+  });
+export const userActiveCodeData = UserActiveCodeAPI.dataSelector;
+export const userActiveCodeError = UserActiveCodeAPI.errorSelector;
+export const userActiveCodeResetter = getResetter(UserActiveCodeAPI);
+
+//Update password by Code
+const UserUpdatePasswordByCodeAPI = makeFetchAction(USER_UPDATE_PASSWORD_BY_CODE, ({ email, password, code }) =>
+  nfetch({
+    endpoint: "/api/Account/UpdatePasswordByCode",
+    method: "PUT"
+  })({ email, password, code })
+);
+
+export const userUpdatePasswordByCode = ({ email, password, code }) =>
+  respondToSuccess(UserUpdatePasswordByCodeAPI.actionCreator({ email, password, code }), (resp) => {
+    if (resp) {
+      Router.push("/login");
+    }
+  });
+export const userUpdatePasswordByCodeData = UserUpdatePasswordByCodeAPI.dataSelector;
+export const userUpdatePasswordByCodeError = UserUpdatePasswordByCodeAPI.errorSelector;
+export const userUpdatePasswordByCodeResetter = getResetter(UserUpdatePasswordByCodeAPI);

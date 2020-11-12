@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 
-import { Layout, Menu, Row, Dropdown } from "antd";
+import { Layout, Menu, Row, Dropdown } from 'antd';
 import {
   UserOutlined,
   DownOutlined,
@@ -8,15 +8,15 @@ import {
   MenuUnfoldOutlined,
   MenuFoldOutlined,
   ExperimentOutlined,
-  OrderedListOutlined,
+  FileDoneOutlined,
   FallOutlined,
-  WechatOutlined,
-} from "@ant-design/icons";
-import MemberNavComponent from "../component/MemberNavComponent";
-import { currentPath } from "../utils";
-import Link from "next/link";
-import { removeToken } from "../libs/localStorage";
-import Router from "next/router";
+  WechatOutlined
+} from '@ant-design/icons';
+import MemberNavComponent from '../component/MemberNavComponent';
+import { currentPath } from '../utils';
+import Link from 'next/link';
+import { removeToken } from '../libs/localStorage';
+import Router from 'next/router';
 
 const { Header, Content, Sider } = Layout;
 
@@ -29,31 +29,37 @@ const ADMIN_MENU = [
   //   subMenu: [],
   // },
   {
-    key: "2",
+    key: '2',
     icon: <FallOutlined />,
-    label: "Requests",
-    link: "/aggregator/request",
+    label: 'Requests',
+    link: '/aggregator/request'
   },
   {
-    key: "3",
+    key: '3',
     icon: <ExperimentOutlined />,
-    label: "Biddings",
-    link: "/aggregator/bidding",
+    label: 'Biddings',
+    link: '/aggregator/bidding'
   },
   {
-    key: "4",
+    key: '4',
     icon: <UserOutlined />,
-    label: "Groups",
-    link: "/aggregator/group",
-    subMenu: [],
+    label: 'Groups',
+    link: '/aggregator/group',
+    subMenu: []
   },
   {
-    key: "5",
+    key: '5',
     icon: <WechatOutlined />,
-    label: "Chats",
-    link: "/aggregator/group/chat",
-    subMenu: [],
+    label: 'Chats',
+    link: '/aggregator/group/chat',
+    subMenu: []
   },
+  {
+    key: '6',
+    icon: <FileDoneOutlined />,
+    label: 'Order',
+    link: '/aggregator/order'
+  }
 ];
 
 const PROFILE_MENU = (
@@ -69,7 +75,7 @@ const PROFILE_MENU = (
     <Menu.Item
       onClick={() => {
         removeToken();
-        Router.push("/login");
+        Router.push('/login');
       }}
       danger
     >
@@ -78,20 +84,20 @@ const PROFILE_MENU = (
   </Menu>
 );
 
-const AggregatorLayout = ({ children }) => {
+const AggregatorLayout = ({ children, isChat }) => {
   const [collapsed, setCollapsed] = useState(true);
   return (
     <div
       style={{
-        background: "#f8f8f8",
-        minHeight: "100vh",
-        position: "relative",
+        background: '#f8f8f8',
+        minHeight: '100vh',
+        position: 'relative'
       }}
     >
       <div className="">
         <Layout>
           <Sider
-            style={{ minHeight: "100vh" }}
+            style={{ minHeight: '100vh' }}
             trigger={null}
             collapsible
             collapsed={collapsed}
@@ -101,7 +107,7 @@ const AggregatorLayout = ({ children }) => {
                 <a
                   style={{
                     fontSize: 13,
-                    transform: `scale(${collapsed ? 1 : 1.5})`,
+                    transform: `scale(${collapsed ? 1 : 1.5})`
                   }}
                 >
                   B2B Market
@@ -117,7 +123,7 @@ const AggregatorLayout = ({ children }) => {
             <MemberNavComponent path={currentPath()} menus={ADMIN_MENU} />
           </Sider>
 
-          <Layout style={{ background: "#f8f8f8" }} className="site-layout">
+          <Layout style={{ background: '#f8f8f8' }} className="site-layout">
             <Header className="site-layout-background" style={{ padding: 0 }}>
               <Row justify="space-between" align="middle">
                 {collapsed ? (
@@ -148,10 +154,11 @@ const AggregatorLayout = ({ children }) => {
             <Content
               className="site-layout-background"
               style={{
-                margin: "24px 16px",
+                margin: '24px 16px',
                 padding: 24,
                 minHeight: 280,
-                background: "#fff",
+                height: isChat ? 'calc(100vh - 64px - 48px)' : 'auto',
+                background: '#fff'
               }}
             >
               {children}

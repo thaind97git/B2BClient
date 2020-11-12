@@ -1,7 +1,7 @@
-import React, { Fragment, useEffect } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
-import { BUYER } from "../enums/accountRoles";
+import { BUYER, MODERATOR, SUPPLIER } from "../enums/accountRoles";
 import { removeToken } from "../libs/localStorage";
 import {
   CurrentUserData,
@@ -29,6 +29,7 @@ const HomePageLayout = ({
   getCurrentUser,
   resetData,
 }) => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   useEffect(() => {
     getCurrentUser();
   }, [getCurrentUser]);
@@ -38,6 +39,32 @@ const HomePageLayout = ({
       resetData();
     };
   }, [resetData]);
+
+  useEffect(() => {
+    if (
+      currentUserData &&
+      (currentUserData.role === SUPPLIER ||
+        currentUserData.role === BUYER ||
+        currentUserData.role === MODERATOR)
+    ) {
+      setIsAuthenticated(true);
+    } else {
+      setIsAuthenticated(false);
+    }
+  }, [currentUserData]);
+
+  let url = "";
+  if (currentUserData) {
+    if (currentUserData.role === BUYER) {
+      url = "/buyer/user-profile";
+    }
+    if (currentUserData.role === SUPPLIER) {
+      url = "/supplier";
+    }
+    if (currentUserData.role === MODERATOR) {
+      url = "/aggregator";
+    }
+  }
   return (
     <Fragment>
       <link
@@ -112,10 +139,10 @@ const HomePageLayout = ({
             <a href="#">
               <i className="fa fa-envelope"></i>
             </a>
-            {currentUserData && currentUserData.role === BUYER ? (
+            {isAuthenticated ? (
               <Fragment>
-                <a href="/buyer/user-profile" style={{ fontSize: 14 }}>
-                  Hi, {currentUserData.firstName}
+                <a href={url} style={{ fontSize: 14 }}>
+                  Hi, {(currentUserData || {}).firstName}
                 </a>
                 <a
                   href="/login"
@@ -143,6 +170,9 @@ const HomePageLayout = ({
                 </a>
               </Fragment>
             )}
+            {/* {
+              currentUserData && currentUserData.role === SUPPLIER && 
+            } */}
           </nav>
         </div>
       </header>

@@ -23,7 +23,6 @@ const ReactTableLayout = ({
   dispatchAction,
   totalCount,
   pageSize = PAGE_SIZE_DEFAULT,
-  t,
   page = PAGE_DEFAULT,
   style = {},
   options = {},
@@ -41,20 +40,18 @@ const ReactTableLayout = ({
     placeholder,
     exCondition = [],
     exElement,
+    isDateRange = true,
   } = searchProps;
   const otherCondition = exCondition.join("-");
   const { dateRange, setDateRange } = dateRangeProps;
   const [pageSizeTable, setPageSizeTable] = useState(pageSize);
   const [pageIndex, setPageIndex] = useState(page);
-  // const [isFetchPaging, setIsFetchPaging] = useState(true);
-  // const [visible, setVisible] = useState(false);
-  // const [conditions, setConditions] = useState(exCondition);
 
   useEffect(() => {
     if (hasPaging && !hasAction) {
       typeof dispatchAction === "function" &&
         doDispatchAction(
-          dispatchAction(pageIndex, pageSizeTable, ...exCondition)
+          dispatchAction(pageIndex, pageSizeTable, ...otherCondition.split('~'))
         );
     }
   }, [
@@ -104,15 +101,15 @@ const ReactTableLayout = ({
               setDateRange={setDateRange}
             />
           </Col>
-          <Col item xs={24} sm={12} lg={10}>
-            <Space>
-              {exElement}
-              <DateRangePickerComponent
-                t={t}
-                small
-                setDateRange={setDateRange}
-              />
-            </Space>
+          <Col xs={24} sm={12} lg={10}>
+            <Row justify="end">
+              <Space>
+                {exElement}
+                {isDateRange && (
+                  <DateRangePickerComponent small setDateRange={setDateRange} />
+                )}
+              </Space>
+            </Row>
           </Col>
         </Row>
       )}

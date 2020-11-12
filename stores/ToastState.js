@@ -1,76 +1,132 @@
-import { get } from "lodash/fp";
-import { ACTIONS } from "redux-api-call";
-import { openNotification } from "../utils";
+import { ACTIONS } from 'redux-api-call';
+import { openNotification } from '../utils';
+import { CREATE_REVERSE_AUCTION } from './AuctionState';
 import {
   ADD_REQUEST_TO_GROUP,
+  ADD_SUPPLIER_TO_GROUP,
   CREATE_NEW_GROUP,
-  REMOVE_REQUEST_FROM_GROUP,
-} from "./GroupState";
-import { CANCEL_REQUEST, REJECT_REQUEST } from "./RequestState";
-import { USER_LOGIN, USER_REGISTER } from "./UserState";
-const hasErrors = get("json.errors");
+  REMOVE_REQUEST_FROM_GROUP
+} from './GroupState';
+import { CANCEL_REQUEST, REJECT_REQUEST } from './RequestState';
+import {
+  ACTIVE_SUPPLIER_PRODUCT,
+  BAN_USER,
+  DELETE_SUPPLIER_PRODUCT,
+  SUPPLIER_REGISTER_PRODUCT,
+  SUPPLIER_UPDATE_QUOTATION,
+  UN_BAN_USER
+} from './SupplierState';
+import { USER_LOGIN, USER_REGISTER } from './UserState';
 
 export default {
   displayNotify(state = {}, { type, payload = {} }) {
     const { name } = payload;
-    let msgNotify = "";
+    let msgNotify = '';
     if (type === ACTIONS.COMPLETE) {
       switch (name) {
         case USER_LOGIN:
-          msgNotify = "Login success";
+          msgNotify = 'Login success';
           break;
         case USER_REGISTER:
-          msgNotify = "Register success";
+          msgNotify = 'Register success';
           break;
         case ADD_REQUEST_TO_GROUP:
-          msgNotify = "Add Request to Group success";
+          msgNotify = 'Add Request to Group success';
+          break;
+        case ADD_SUPPLIER_TO_GROUP:
+          msgNotify = 'Add Supplier to Group success';
           break;
         case CREATE_NEW_GROUP:
-          msgNotify = "Create new Group success";
+          msgNotify = 'Create new Group success';
           break;
         case CANCEL_REQUEST:
-          msgNotify = "Cancel Request success";
+          msgNotify = 'Cancel Request success';
           break;
         case REJECT_REQUEST:
-          msgNotify = "Reject Request success";
+          msgNotify = 'Reject Request success';
           break;
         case REMOVE_REQUEST_FROM_GROUP:
-          msgNotify = "Remove Request from Group success";
+          msgNotify = 'Remove Request from Group success';
+          break;
+        case BAN_USER:
+          msgNotify = 'Ban User success';
+          break;
+        case UN_BAN_USER:
+          msgNotify = 'Active User success';
+          break;
+        case SUPPLIER_REGISTER_PRODUCT:
+          msgNotify = 'Register Product success';
+          break;
+        case SUPPLIER_UPDATE_QUOTATION:
+          msgNotify = 'Update Product Quotation success';
+          break;
+        case DELETE_SUPPLIER_PRODUCT:
+          msgNotify = 'Deactive product success';
+          break;
+        case ACTIVE_SUPPLIER_PRODUCT:
+          msgNotify = 'Active product success';
+          break;
+        case CREATE_REVERSE_AUCTION:
+          msgNotify = 'Create new reverse auction success';
           break;
         default:
           break;
       }
-      msgNotify && openNotification("success", { message: msgNotify });
+      msgNotify && openNotification('success', { message: msgNotify });
       return payload;
     } else if (type === ACTIONS.FAILURE) {
       switch (name) {
-        // case USER_LOGIN:
-        //   msgNotify = "Login fail";
-        //   break;
+        case USER_LOGIN:
+          msgNotify = 'Login fail';
+          break;
         case USER_REGISTER:
-          msgNotify = "Register fail";
+          msgNotify = 'Register fail';
           break;
         case ADD_REQUEST_TO_GROUP:
-          msgNotify = "Add Request to Group fail";
+          msgNotify = 'Add Request to Group fail';
+          break;
+        case ADD_SUPPLIER_TO_GROUP:
+          msgNotify = 'Add Supplier to Group fail';
           break;
         case CREATE_NEW_GROUP:
-          msgNotify = "Create new Group fail";
+          msgNotify = 'Create new Group fail';
           break;
         case CANCEL_REQUEST:
-          msgNotify = "Cancel Request fail";
+          msgNotify = 'Cancel Request fail';
           break;
         case REJECT_REQUEST:
-          msgNotify = "Reject Request fail";
+          msgNotify = 'Reject Request fail';
           break;
         case REMOVE_REQUEST_FROM_GROUP:
-          msgNotify = "Remove Request from Group fail";
+          msgNotify = 'Remove Request from Group fail';
+          break;
+        case BAN_USER:
+          msgNotify = 'Ban User fail';
+          break;
+        case UN_BAN_USER:
+          msgNotify = 'Active User fail';
+          break;
+        case SUPPLIER_REGISTER_PRODUCT:
+          msgNotify = 'Register Product fail';
+          break;
+        case SUPPLIER_UPDATE_QUOTATION:
+          msgNotify = 'Update Product Quotation fail';
+          break;
+        case DELETE_SUPPLIER_PRODUCT:
+          msgNotify = 'Deactive product fail';
+          break;
+        case ACTIVE_SUPPLIER_PRODUCT:
+          msgNotify = 'Active product fail';
+          break;
+        case CREATE_REVERSE_AUCTION:
+          msgNotify = 'Create new reverse auction fail';
           break;
         default:
           break;
       }
-      msgNotify && openNotification("error", { message: msgNotify });
+      msgNotify && openNotification('error', { message: msgNotify });
       return payload;
     }
     return state;
-  },
+  }
 };

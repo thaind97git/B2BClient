@@ -6,7 +6,7 @@ import {
   LoginOutlined,
   MenuUnfoldOutlined,
   MenuFoldOutlined,
-  OrderedListOutlined,
+  FileDoneOutlined,
   FallOutlined,
   BellOutlined,
 } from "@ant-design/icons";
@@ -27,12 +27,18 @@ const BUYER_MENU = [
   //   subMenu: [],
   // },
   {
-    key: "2",
+    key: '2',
     icon: <FallOutlined />,
-    label: "Your RFQ",
-    link: "/buyer/rfq",
-    subMenu: [],
+    label: 'Your RFQ',
+    link: '/buyer/rfq',
+    subMenu: []
   },
+  {
+    key: '3',
+    icon: <FileDoneOutlined />,
+    label: 'Order',
+    link: '/buyer/order'
+  }
 ];
 
 const PROFILE_MENU = (

@@ -6,8 +6,6 @@ const { RangePicker } = DatePicker;
 const dateFormat = DATE_FORMAT;
 function DateRangePicker({ setDateRange }) {
   const [selectedDate, setSelectedDate] = React.useState([null, null]);
-  // const theme = useTheme();
-  // const isMobile = useMediaQuery(theme.breakpoints.down('xs')) && 'mobile';
 
   const handleDateChange = (date = []) => {
     setSelectedDate(date);
@@ -41,9 +39,8 @@ function DateRangePicker({ setDateRange }) {
     <>
       <RangePicker
         size="large"
-        // defaultValue={[moment('2015/01/01', dateFormat), moment('2015/01/01', dateFormat)]}
         onChange={(date) => {
-          handleDateChange(date);
+          handleDateChange(date || []);
         }}
         format={dateFormat}
         value={selectedDate}

@@ -70,7 +70,6 @@ const AllCategoryComponent = ({
         )}
         options={optionCate}
         onChange={onChange}
-        changeOnSelect
         defaultValue={["all"]}
         {...other}
       />

@@ -57,6 +57,7 @@ const connectToRedux = connect(
           toDate: dateRange.toDate,
           productTitle: searchMessage,
           status,
+          category,
         })
       );
     },
@@ -117,7 +118,7 @@ const AdminRequestManagement = ({
   const [openDetails, setOpenDetails] = useState(false);
   const [currentRequestSelected, setCurrentRequestSelected] = useState({});
 
-  const [category, setCategory] = useState("1");
+  const [category, setCategory] = useState("all");
   const [loading, setLoading] = useState(true);
 
   const [currentGroupId, setCurrentGroupId] = useState(null);
@@ -157,7 +158,7 @@ const AdminRequestManagement = ({
         productId: get("product.id")(request),
         key: request.id,
         price: displayCurrency(+request.preferredUnitPrice),
-        name: request.product.description,
+        name: get("product.description")(request),
         quantity:
           +request.quantity || 0 + " " + get("product.unitType")(request),
         dueDate: (

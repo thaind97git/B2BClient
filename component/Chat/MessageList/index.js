@@ -1,163 +1,138 @@
-import React, { useEffect, useRef, useState } from "react";
-import Compose from "../Compose";
-import Toolbar from "../Toolbar";
-import ToolbarButton from "../ToolbarButton";
-import Message from "../Message";
-import moment from "moment";
-import { HubConnectionBuilder } from "@microsoft/signalr";
-import { getToken } from "../../../libs/localStorage";
-const MY_USER_ID = "apple";
+import React, { useEffect, useRef, useState } from 'react';
+import Compose from '../Compose';
+import Message from '../Message';
+import moment from 'moment';
+import { getToken } from '../../../libs/localStorage';
+import { connect } from 'react-redux';
+import { createStructuredSelector } from 'reselect';
+import {
+  getMessages,
+  GetMessagesData,
+  GetMessagesResetter
+} from '../../../stores/ConversationState';
+import { DEFAULT_PAGING_INFO } from '../../../utils';
+import useHub from '../../HOOK/useHub';
+import { Col, Row } from 'antd';
 
-const API_SERVER_URL =
-  process.env.API_SERVER_URL || "http://103.92.29.179:1234";
+const connectToRedux = connect(
+  createStructuredSelector({
+    messagesData: GetMessagesData
+  }),
+  (dispatch) => ({
+    getMessages: ({ conversationId, pageIndex, pageSize }) =>
+      dispatch(getMessages({ conversationId, pageIndex, pageSize })),
+    resetData: () => dispatch(GetMessagesResetter)
+  })
+);
 
-export default function MessageList({ props }) {
+const onSendMessage = (conversationId, description, file) => {
+  // const listFileOrigin = fileList.map((file) => file.originFileObj);
+  const formData = new FormData();
+  // for (let file of listFileOrigin) {
+  //   formData.append('files', file);
+  // }
+
+  var myHeaders = new Headers();
+  myHeaders.append('Authorization', `Bearer ${getToken()}`);
+  formData.append('ConversationId', conversationId);
+  formData.append('Description', description);
+  var requestOptions = {
+    method: 'POST',
+    headers: myHeaders,
+    body: formData
+  };
+
+  fetch(`${process.env.API_SERVER_URL}/api/Message/`, requestOptions);
+};
+
+function MessageList({
+  titleProps = {},
+  messagesData,
+  getMessages,
+  conversationId,
+  getNewMessage,
+  resetData
+}) {
   const [messages, setMessages] = useState([]);
-  const [connection, setConnection] = useState(null);
-  const [chat, setChat] = useState([]);
-  const latestChat = useRef(null);
+  const { connection } = useHub();
+  const messagesEndRef = useRef(null);
+  const [pageIndex, setPageIndex] = useState(DEFAULT_PAGING_INFO.page);
+  const [newMessage, setNewMessage] = useState({});
 
-  latestChat.current = chat;
+  const scrollToBottom = () => {
+    messagesEndRef.current &&
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+  };
 
   useEffect(() => {
-    const newConnection = new HubConnectionBuilder()
-      .withUrl(`${API_SERVER_URL}/chatHub`, {
-        accessTokenFactory: () => {
-          return `${getToken()}`;
-        },
-      })
-      .withAutomaticReconnect()
-      .build();
-
-    setConnection(newConnection);
-  }, []);
-
+    return () => {
+      resetData();
+    };
+  }, [resetData]);
+  useEffect(() => {
+    if (messagesData) {
+      setMessages(messagesData);
+      scrollToBottom();
+    }
+  }, [messagesData]);
   useEffect(() => {
     if (connection) {
       connection
         .start()
-        .then((result) => {
-          console.log("Connected!");
+        .then(() => {
+          connection.on('ReceiveMessage', (message) => {
+            console.log({ message });
+            !!message &&
+              typeof getNewMessage === 'function' &&
+              getNewMessage(message);
 
-          connection.on("ReceiveMessage", (message) => {
-            const updatedChat = [...latestChat.current];
-            updatedChat.push(message);
-
-            setChat(updatedChat);
+            setNewMessage(message);
           });
         })
-        .catch((e) => console.log("Connection failed: ", e));
+        .catch((e) => console.log('Connection failed: ', e));
     }
-  }, [connection]);
+  }, [connection, getNewMessage]);
 
-  const sendMessage = async (user, message) => {
-    const chatMessage = {
-      user: user,
-      message: message,
-    };
+  useEffect(() => {
+    if (!!newMessage) {
+      const messagesCopy = [...messages];
+      messagesCopy.push(newMessage);
+      setNewMessage(null);
+      setMessages(messagesCopy);
+    }
+  }, [newMessage]);
 
+  const sendMessage = async (message) => {
     if (connection.connectionStarted) {
       try {
-        await connection.send("SendMessage", chatMessage);
+        await onSendMessage(conversationId, message);
       } catch (e) {
         console.log(e);
       }
     } else {
-      alert("No connection to server yet.");
+      alert('No connection to server yet.');
     }
   };
 
   useEffect(() => {
-    getMessages();
-  }, []);
+    getMessages({ conversationId, pageIndex });
+  }, [getMessages, conversationId, pageIndex]);
 
-  const getMessages = () => {
-    var tempMessages = [
-      {
-        id: 1,
-        author: "apple",
-        message:
-          "Hello world! This is a long message that will hopefully get wrapped by our message bubble component! We will see how well it works.",
-        timestamp: new Date().getTime(),
-      },
-      {
-        id: 2,
-        author: "orange",
-        message:
-          "It looks like it wraps exactly as it is supposed to. Lets see what a reply looks like!",
-        timestamp: new Date().getTime(),
-      },
-      {
-        id: 3,
-        author: "orange",
-        message:
-          "Hello world! This is a long message that will hopefully get wrapped by our message bubble component! We will see how well it works.",
-        timestamp: new Date().getTime(),
-      },
-      {
-        id: 4,
-        author: "apple",
-        message:
-          "It looks like it wraps exactly as it is supposed to. Lets see what a reply looks like!",
-        timestamp: new Date().getTime(),
-      },
-      {
-        id: 5,
-        author: "apple",
-        message:
-          "Hello world! This is a long message that will hopefully get wrapped by our message bubble component! We will see how well it works.",
-        timestamp: new Date().getTime(),
-      },
-      {
-        id: 6,
-        author: "apple",
-        message:
-          "It looks like it wraps exactly as it is supposed to. Lets see what a reply looks like!",
-        timestamp: new Date().getTime(),
-      },
-      {
-        id: 7,
-        author: "orange",
-        message:
-          "Hello world! This is a long message that will hopefully get wrapped by our message bubble component! We will see how well it works.",
-        timestamp: new Date().getTime(),
-      },
-      {
-        id: 8,
-        author: "orange",
-        message:
-          "It looks like it wraps exactly as it is supposed to. Lets see what a reply looks like!",
-        timestamp: new Date().getTime(),
-      },
-      {
-        id: 9,
-        author: "apple",
-        message:
-          "Hello world! This is a long message that will hopefully get wrapped by our message bubble component! We will see how well it works.",
-        timestamp: new Date().getTime(),
-      },
-      {
-        id: 10,
-        author: "orange",
-        message:
-          "It looks like it wraps exactly as it is supposed to. Lets see what a reply looks like!",
-        timestamp: new Date().getTime(),
-      },
-    ];
-    setMessages([...messages, ...tempMessages]);
-  };
-
-  const renderMessages = () => {
+  const renderMessages = (messagesData) => {
+    if (!messagesData) {
+      return;
+    }
     let i = 0;
-    let messageCount = messages.length;
+    let messageCount = messagesData.length;
     let tempMessages = [];
 
     while (i < messageCount) {
-      let previous = messages[i - 1];
-      let current = messages[i];
-      let next = messages[i + 1];
-      let isMine = current.author === MY_USER_ID;
-      let currentMoment = moment(current.timestamp);
+      let previous = messagesData[i - 1];
+      let current = messagesData[i];
+      let next = messagesData[i + 1];
+
+      let isMine = current.yourMessage;
+      let currentMoment = moment(current.dateCreated);
       let prevBySameAuthor = false;
       let nextBySameAuthor = false;
       let startsSequence = true;
@@ -165,27 +140,26 @@ export default function MessageList({ props }) {
       let showTimestamp = true;
 
       if (previous) {
-        let previousMoment = moment(previous.timestamp);
+        let previousMoment = moment(previous.dateCreated);
         let previousDuration = moment.duration(
           currentMoment.diff(previousMoment)
         );
-        prevBySameAuthor = previous.author === current.author;
-
-        if (prevBySameAuthor && previousDuration.as("hours") < 1) {
+        prevBySameAuthor = previous.yourMessage === current.yourMessage; // previous.author === current.author;
+        if (prevBySameAuthor && previousDuration.as('hours') < 1) {
           startsSequence = false;
         }
 
-        if (previousDuration.as("hours") < 1) {
+        if (previousDuration.as('hours') < 1) {
           showTimestamp = false;
         }
       }
 
       if (next) {
-        let nextMoment = moment(next.timestamp);
+        let nextMoment = moment(next.dateCreated);
         let nextDuration = moment.duration(nextMoment.diff(currentMoment));
-        nextBySameAuthor = next.author === current.author;
+        nextBySameAuthor = next.yourMessage === current.yourMessage;
 
-        if (nextBySameAuthor && nextDuration.as("hours") < 1) {
+        if (nextBySameAuthor && nextDuration.as('hours') < 1) {
           endsSequence = false;
         }
       }
@@ -200,48 +174,65 @@ export default function MessageList({ props }) {
           data={current}
         />
       );
-
       // Proceed to the next message.
       i += 1;
     }
-
+    scrollToBottom();
     return tempMessages;
   };
 
+  const { title, leftTitle, rightTitle } = titleProps;
+
   return (
-    <div>
-      <link
-        rel="stylesheet"
-        type="text/css"
-        href="/static/assets/chat/MessageList.css"
-      />
-      <div className="message-list">
-        <Toolbar
-          title={props.title}
-          rightItems={[
-            <ToolbarButton
-              key="info"
-              icon="ion-ios-information-circle-outline"
-            />,
-            <ToolbarButton key="video" icon="ion-ios-videocam" />,
-            <ToolbarButton key="phone" icon="ion-ios-call" />,
-          ]}
-        />
-
-        <div className="message-list-container">{renderMessages()}</div>
-
-        <Compose
-          sendMessage={sendMessage}
-          // rightItems={[
-          //   <ToolbarButton key="photo" icon="ion-ios-camera" />,
-          //   <ToolbarButton key="image" icon="ion-ios-image" />,
-          //   <ToolbarButton key="audio" icon="ion-ios-mic" />,
-          //   <ToolbarButton key="money" icon="ion-ios-card" />,
-          //   <ToolbarButton key="games" icon="ion-logo-game-controller-b" />,
-          //   <ToolbarButton key="emoji" icon="ion-ios-happy" />,
-          // ]}
-        />
-      </div>
-    </div>
+    <Row style={{ height: '98%' }}>
+      <Col span={24} style={{ height: 42, zIndex: 1 }}>
+        <div className="toolbar ">
+          <div className="left-items">{leftTitle}</div>
+          <h1 className="toolbar-title">{title}</h1>
+          <div className="right-items">{rightTitle}</div>
+        </div>
+      </Col>
+      <Col
+        span={24}
+        className="message-list-chat"
+        style={{
+          padding: 10,
+          height: 'calc(100% - 94px)'
+        }}
+      >
+        {!!messages ? renderMessages(messages) : null}{' '}
+        {/* <div
+          style={{ height: 1, position: 'relative', top: -30 }}
+          ref={messagesEndRef}
+        /> */}
+      </Col>
+      <Col span={24} style={{ height: 52 }}>
+        <Compose sendMessage={sendMessage} />
+      </Col>
+      <style jsx global>
+        {`
+          .message-list-chat {
+            overflow-x: hidden;
+            overflow-y: auto;
+          }
+          .message-list-chat:hover {
+            overflow-y: auto;
+          }
+          .message-list-chat::-webkit-scrollbar-track {
+            -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+            background-color: #f5f5f5;
+          }
+          .message-list-chat::-webkit-scrollbar {
+            width: 4px;
+            background-color: #f5f5f5;
+          }
+          .message-list-chat::-webkit-scrollbar-thumb {
+            background-color: #949494;
+          }
+        `}
+      </style>
+    </Row>
   );
 }
+
+export default connectToRedux(React.memo(MessageList));

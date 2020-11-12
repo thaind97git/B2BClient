@@ -1,43 +1,35 @@
-import { Button, Drawer, Popover, Row, Select, Space, Typography } from "antd";
-import React, { useEffect, useState } from "react";
-import ReactTableLayout from "../layouts/ReactTableLayout";
-import {
-  DATE_TIME_FORMAT,
-  DEFAULT_DATE_RANGE,
-  displayCurrency,
-} from "../utils";
-import RequestStatusComponent from "./Utils/RequestStatusComponent";
-import {
-  R_BIDDING,
-  R_CANCELED,
-  R_DONE,
-  R_GROUPED,
-  R_NEGOTIATING,
-  R_ORDERED,
-  R_PENDING,
-  R_REJECTED,
-  R_WAIT_FOR_AUCTION,
-} from "../enums/requestStatus";
-import RequestDetailsComponent from "./RequestDetailsComponent";
-import { connect } from "react-redux";
-import { createStructuredSelector } from "reselect";
+import { Button, Drawer, Row, Select, Space, Typography } from 'antd';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
+import React, { useEffect, useState } from 'react';
+import ReactTableLayout from '../layouts/ReactTableLayout';
+import { DEFAULT_DATE_RANGE } from '../utils';
 
-import Moment from "react-moment";
-import { get } from "lodash/fp";
+import { connect } from 'react-redux';
+import { createStructuredSelector } from 'reselect';
+
+import { get } from 'lodash/fp';
 import {
   banUser,
   getSupplierPaging,
   GetSupplierPagingData,
   GetSupplierPagingError,
-  unBanUser,
-} from "../stores/SupplierState";
+  unBanUser
+} from '../stores/SupplierState';
+import UserStatusComponent from './Utils/UserStatusComponent';
+import {
+  U_ACTIVE,
+  U_BANNED,
+  U_PENDING,
+  U_REJECT
+} from '../enums/accountStatus';
+import Modal from 'antd/lib/modal/Modal';
 const { Option } = Select;
 const { Title } = Typography;
 
 const connectToRedux = connect(
   createStructuredSelector({
     supplierPagingData: GetSupplierPagingData,
-    supplierPagingError: GetSupplierPagingError,
+    supplierPagingError: GetSupplierPagingError
   }),
   (dispatch) => ({
     getSupplierPaging: (
@@ -52,47 +44,47 @@ const connectToRedux = connect(
           pageSize,
           pageIndex,
           email: searchMessage,
-          status: [status],
+          statusId: status
         })
       );
     },
     banSupplier: ({ id, description }) =>
       dispatch(banUser({ id, description })),
-    unBanSupplier: (id) => dispatch(unBanUser({ id })),
+    unBanSupplier: ({ id }) => dispatch(unBanUser({ id }))
   })
 );
 
 const columns = [
   {
-    title: "Email",
-    dataIndex: "email",
-    key: "email",
+    title: 'Email',
+    dataIndex: 'email',
+    key: 'email'
   },
   {
-    title: "Full Name",
-    dataIndex: "fullName",
-    key: "fullName",
+    title: 'Full Name',
+    dataIndex: 'fullName',
+    key: 'fullName'
   },
   {
-    title: "Company Name",
-    dataIndex: "companyName",
-    key: "companyName",
+    title: 'Company Name',
+    dataIndex: 'companyName',
+    key: 'companyName'
   },
   {
-    title: "Phone Number",
-    dataIndex: "phoneNumber",
-    key: "phoneNumber",
+    title: 'Phone Number',
+    dataIndex: 'phoneNumber',
+    key: 'phoneNumber'
   },
   {
-    title: "Status",
-    dataIndex: "status",
-    key: "status",
+    title: 'Status',
+    dataIndex: 'status',
+    key: 'status'
   },
   {
-    title: "Actions",
-    dataIndex: "actions",
-    key: "actions",
-  },
+    title: 'Actions',
+    dataIndex: 'actions',
+    key: 'actions'
+  }
 ];
 
 const SupplierManagementComponent = ({
@@ -100,12 +92,12 @@ const SupplierManagementComponent = ({
   supplierPagingData,
   supplierPagingError,
   banSupplier,
-  unBanSupplier,
+  unBanSupplier
 }) => {
-  const [searchMessage, setSearchMessage] = useState("");
+  const [searchMessage, setSearchMessage] = useState('');
   const [dateRange, setDateRange] = useState(DEFAULT_DATE_RANGE);
   const [openDetails, setOpenDetails] = useState(false);
-  const [currentRequestSelected, setCurrentSupplierSelected] = useState({});
+  const [currentSupplierSelected, setCurrentSupplierSelected] = useState({});
   const [status, setStatus] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -120,21 +112,11 @@ const SupplierManagementComponent = ({
   }
   const getSupplierTable = (supplierData = []) => {
     return supplierData
-      ? supplierData.map((supplier = {}) => ({
-          key: supplier.id,
-          email: supplier.email,
-          fullName: `${supplier.firstName} ${supplier.lastName}`,
-          companyName: supplier.companyName,
-          phoneNumber: supplier.phoneNumber,
-          status: <RequestStatusComponent status={null} />,
-          actions: (
-            <Space>
-              <Button type="primary" danger onClick={() => {}} size="small">
-                Ban
-              </Button>
-              <Button type="primary" onClick={() => {}} size="small">
-                UnBan
-              </Button>
+      ? supplierData.map((supplier = {}) => {
+          const supplierStatus = +get('userStatus.id')(supplier);
+          return {
+            key: supplier.id,
+            email: (
               <Button
                 onClick={() => {
                   setCurrentSupplierSelected(supplier);
@@ -143,11 +125,59 @@ const SupplierManagementComponent = ({
                 size="small"
                 type="link"
               >
-                View
+                {supplier.email}
               </Button>
-            </Space>
-          ),
-        }))
+            ),
+            fullName: `${supplier.firstName} ${supplier.lastName}`,
+            companyName: supplier.companyName,
+            phoneNumber: supplier.phoneNumber,
+            status: <UserStatusComponent status={supplierStatus} />,
+            actions: (
+              <Space>
+                {supplierStatus === U_ACTIVE && (
+                  <Button
+                    type="primary"
+                    danger
+                    onClick={() => {
+                      Modal.confirm({
+                        title: 'Do you want ban this account?',
+                        icon: <ExclamationCircleOutlined />,
+                        okText: 'Ban',
+                        cancelText: 'Cancel',
+                        onOk: () => {
+                          banSupplier({ id: supplier.id });
+                        }
+                      });
+                    }}
+                    size="small"
+                  >
+                    Ban
+                  </Button>
+                )}
+                {(supplierStatus === U_PENDING ||
+                  supplierStatus === U_BANNED) && (
+                  <Button
+                    type="primary"
+                    onClick={() => {
+                      Modal.confirm({
+                        title: 'Do you want active this account?',
+                        icon: <ExclamationCircleOutlined />,
+                        okText: 'Active',
+                        cancelText: 'Cancel',
+                        onOk: () => {
+                          unBanSupplier({ id: supplier.id });
+                        }
+                      });
+                    }}
+                    size="small"
+                  >
+                    Active
+                  </Button>
+                )}
+              </Space>
+            )
+          };
+        })
       : [];
   };
 
@@ -163,18 +193,13 @@ const SupplierManagementComponent = ({
         <Drawer
           width={640}
           title="Supplier Details"
-          placement={"right"}
+          placement={'right'}
           closable={true}
           onClose={() => setOpenDetails(false)}
           visible={openDetails}
-          key={"right"}
+          key={'right'}
         >
-          {openDetails ? (
-            <RequestDetailsComponent
-              setOpenDetails={setOpenDetails}
-              requestId={currentRequestSelected.id}
-            />
-          ) : null}
+          null
         </Drawer>
         <Title level={4}>Supplier Management</Title>
       </Row>
@@ -183,7 +208,7 @@ const SupplierManagementComponent = ({
         loading={loading}
         dispatchAction={getSupplierPaging}
         searchProps={{
-          placeholder: "Search by email",
+          placeholder: 'Search by email',
           searchMessage,
           setSearchMessage,
           exElement: (
@@ -192,25 +217,21 @@ const SupplierManagementComponent = ({
               placeholder="Filter by status"
               style={{ width: 200 }}
               onChange={handleChange}
-              defaultValue=""
+              defaultValue="all"
             >
-              <Option value="">All Status</Option>
-              <Option value={R_PENDING}>Pending</Option>
-              <Option value={R_DONE}>Done</Option>
-              <Option value={R_REJECTED}>Rejected</Option>
-              <Option value={R_CANCELED}>Canceled</Option>
-              <Option value={R_ORDERED}>Ordered</Option>
-              <Option value={R_BIDDING}>Bidding</Option>
-              <Option value={R_WAIT_FOR_AUCTION}>Wait for Auction</Option>
-              <Option value={R_GROUPED}>Grouping</Option>
-              <Option value={R_NEGOTIATING}>Negotiating</Option>
+              <Option value="all">All Status</Option>
+              <Option value={U_PENDING}>Pending</Option>
+              <Option value={U_ACTIVE}>Activating</Option>
+              <Option value={U_BANNED}>Banned</Option>
+              <Option value={U_REJECT}>Rejected</Option>
             </Select>
           ),
           exCondition: [status],
+          isDateRange: false
         }}
         dateRangeProps={{
           dateRange,
-          setDateRange,
+          setDateRange
         }}
         data={getSupplierTable(supplierData || [])}
         columns={columns}

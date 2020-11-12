@@ -6,29 +6,30 @@ import {
   Button,
   Empty,
   Tag,
-  Skeleton,
-} from "antd";
-import Router, { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
-import ImageGallery from "react-image-gallery";
-import { connect } from "react-redux";
-import { createStructuredSelector } from "reselect";
+  Skeleton
+} from 'antd';
+import Router, { useRouter } from 'next/router';
+import React, { useEffect, useState } from 'react';
+import ImageGallery from 'react-image-gallery';
+import { connect } from 'react-redux';
+import { createStructuredSelector } from 'reselect';
 import {
   getProductDetails,
   GetProductDetailsData,
-  GetProductDetailsError,
-} from "../stores/ProductState";
-import { get } from "lodash/fp";
+  GetProductDetailsError
+} from '../stores/ProductState';
+import { get } from 'lodash/fp';
+import { getDefaultProductImage, getProductImage } from '../utils';
 
 const { Title } = Typography;
 
 const connectToRedux = connect(
   createStructuredSelector({
     productDetailData: GetProductDetailsData,
-    productDetailError: GetProductDetailsError,
+    productDetailError: GetProductDetailsError
   }),
   (dispatch) => ({
-    getProduct: (id) => dispatch(getProductDetails(id)),
+    getProduct: (id) => dispatch(getProductDetails(id))
   })
 );
 
@@ -48,7 +49,7 @@ const DescriptionItem = ({ title, content }) => (
 const BuyerProductDetailsComponent = ({
   getProduct,
   productDetailData,
-  productDetailError,
+  productDetailError
 }) => {
   const router = useRouter();
   const id = router.query.id;
@@ -87,7 +88,7 @@ const BuyerProductDetailsComponent = ({
   if (!productDetailData) {
     return (
       <Empty
-        style={{ padding: "180px 0px" }}
+        style={{ padding: '180px 0px' }}
         description="Can not find any product !"
       />
     );
@@ -107,12 +108,12 @@ const BuyerProductDetailsComponent = ({
         >
           <Button
             onClick={() => {
-              Router.push("/");
+              Router.push('/');
             }}
             type="link"
           >
-            {" "}
-            {"< Back to product list"}
+            {' '}
+            {'< Back to product list'}
           </Button>
         </Row>
         <Row>
@@ -121,14 +122,14 @@ const BuyerProductDetailsComponent = ({
               items={
                 productDetailData.images
                   ? productDetailData.images.map((image) => ({
-                      original: `${process.env.API_SERVER_URL}/api/Product/ProductImage/${image}`,
-                      thumbnail: `${process.env.API_SERVER_URL}/api/Product/ProductImage/${image}`,
+                      original: `${getProductImage(image)}`,
+                      thumbnail: `${getProductImage(image)}`
                     }))
                   : [
                       {
-                        original: `/static/images/default_product_img.jpg`,
-                        thumbnail: `/static/images/default_product_img.jpg`,
-                      },
+                        original: getDefaultProductImage(),
+                        thumbnail: getDefaultProductImage()
+                      }
                     ]
               }
               showPlayButton={false}
@@ -136,13 +137,13 @@ const BuyerProductDetailsComponent = ({
             />
           </Col>
           <Col span={1} align="middle">
-            <Divider type="vertical" style={{ height: "78vh" }} />
+            <Divider type="vertical" style={{ height: '78vh' }} />
           </Col>
           <Col span={14}>
             <Row justify="space-between" align="middle">
               <Title level={4}>{(productDetailData || {}).productName}</Title>
             </Row>
-            {get("category.description")(productDetailData) && (
+            {get('category.description')(productDetailData) && (
               <DescriptionItem
                 title="Category"
                 content={
@@ -154,18 +155,18 @@ const BuyerProductDetailsComponent = ({
             )}
             <DescriptionItem
               title="Unit"
-              content={get("unitOfMeasure.description")(productDetailData)}
+              content={get('unitOfMeasure.description')(productDetailData)}
             />
             <Divider />
             <i>
               <div
                 dangerouslySetInnerHTML={{
-                  __html: (productDetailData || {}).description,
+                  __html: (productDetailData || {}).description
                 }}
               />
             </i>
             <Row>
-              <Col style={{ margin: "60px 0px" }} span={6}>
+              <Col style={{ margin: '60px 0px' }} span={6}>
                 <Button
                   onClick={() => {
                     Router.push(
@@ -174,7 +175,7 @@ const BuyerProductDetailsComponent = ({
                   }}
                   size="middle"
                   type="primary"
-                  style={{ width: "100%" }}
+                  style={{ width: '100%' }}
                 >
                   Submit RFQ
                 </Button>
@@ -186,6 +187,7 @@ const BuyerProductDetailsComponent = ({
       <style jsx global>
         {`
           #buyer-product-details {
+            width: 100%;
             background: #fff;
             padding: 60px 0px;
           }

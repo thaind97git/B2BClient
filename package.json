@@ -67,5 +67,17 @@
     "react-image-gallery": "^1.0.8",
     "shave": "^2.5.4",
     "webpack-filter-warnings-plugin": "^1.2.1"
+  },
+  "prettier": {
+    "quotes": true,
+    "semi": true,
+    "useTabs": false,
+    "tabWidth": 2,
+    "singleQuote": true,
+    "trailingComma": "none",
+    "jsxBracketSameLine": false,
+    "rcVerbose": true,
+    "eslintIntegration": false,
+    "arrowParens": "always"
   }
 }

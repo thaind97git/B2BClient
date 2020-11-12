@@ -35,7 +35,15 @@ export const CreateRequestResetter = getResetter(CreateRequestAPI);
 // Get Request Paging
 const GetRequestPagingAPI = makeFetchAction(
   GET_REQUEST_PAGING,
-  ({ status = [], productTitle, fromDate, toDate, pageIndex, pageSize }) => {
+  ({
+    status = [],
+    productTitle,
+    fromDate,
+    toDate,
+    pageIndex,
+    pageSize,
+    category,
+  }) => {
     return nfetch({
       endpoint: `/api/Request/Filter${generateQuery({
         statuses: status,
@@ -45,6 +53,7 @@ const GetRequestPagingAPI = makeFetchAction(
         pageIndex,
         pageSize,
         dateDescending: true,
+        categoryId: category,
       })}`,
       method: "GET",
     })();
@@ -58,6 +67,7 @@ export const getRequestPaging = ({
   toDate,
   pageIndex,
   pageSize,
+  category,
 }) =>
   respondToSuccess(
     GetRequestPagingAPI.actionCreator({
@@ -67,6 +77,7 @@ export const getRequestPaging = ({
       toDate,
       pageIndex,
       pageSize,
+      category,
     }),
     () => {}
   );
