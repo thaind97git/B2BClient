@@ -21,17 +21,33 @@ import {
 } from '../stores/ConversationState';
 import Router, { useRouter } from 'next/router';
 import { createLink } from '../libs';
+import {
+  ignoreSupplier,
+  IgnoreSupplierData,
+  IgnoreSupplierResetter,
+  unIgnoreSupplier,
+  UnIgnoreSupplierData,
+  UnIgnoreSupplierResetter
+} from '../stores/SupplierState';
 
 const connectToRedux = connect(
   createStructuredSelector({
     GetAggregatorGroupChatData: GetAggregatorGroupChatData,
-    GetSupplierChatByGroupData: GetSupplierChatByGroupData
+    GetSupplierChatByGroupData: GetSupplierChatByGroupData,
+    IgnoreSupData: IgnoreSupplierData,
+    UnIgnoreSupData: UnIgnoreSupplierData
   }),
   (dispatch) => ({
     getAggregatorGroupChat: (isNegotiating) =>
       dispatch(getAggregatorGroupChat(isNegotiating)),
     getSupplierChatByGroup: (groupId) =>
-      dispatch(getSupplierChatByGroup(groupId))
+      dispatch(getSupplierChatByGroup(groupId)),
+    ignoreSup: (conversationId) => dispatch(ignoreSupplier(conversationId)),
+    unIgnoreSup: (conversationId) => dispatch(unIgnoreSupplier(conversationId)),
+    resetIgnoreData: () => {
+      dispatch(IgnoreSupplierResetter);
+      dispatch(UnIgnoreSupplierResetter);
+    }
   })
 );
 
@@ -50,7 +66,12 @@ const GroupChatComponent = ({
   GetAggregatorGroupChatData,
   getAggregatorGroupChat,
   GetSupplierChatByGroupData,
-  getSupplierChatByGroup
+  getSupplierChatByGroup,
+  ignoreSup,
+  unIgnoreSup,
+  IgnoreSupData,
+  UnIgnoreSupData,
+  resetIgnoreData
 }) => {
   const [isNegotiating, setIsNegotiating] = useState('1');
   const [currentGroupIdSelected, setCurrentGroupIdSelected] = useState(null);
@@ -70,6 +91,7 @@ const GroupChatComponent = ({
   useEffect(() => {
     if (groupId && isFirstCall) {
       getSupplierChatByGroup(groupId);
+      setCurrentGroupIdSelected(groupId);
       setIsFirstCall(false);
     }
   }, [groupId, isFirstCall, getSupplierChatByGroup]);
@@ -122,16 +144,30 @@ const GroupChatComponent = ({
                             createLink([
                               'aggregator',
                               'order',
-                              `confirmation?groupID=${currentGroupIdSelected}&isNegotiating=true`
+                              `confirmation?groupId=${currentGroupIdSelected}&isNegotiating=true`
                             ])
                           );
                         }}
                       >
                         Closing deal
                       </Button>
-                      {!isIgnored && (
-                        <Button icon={<FlagOutlined />} size="small" danger>
+                      {!isIgnored ? (
+                        <Button
+                          onClick={() => ignoreSup(currentSupplierIdSelected)}
+                          icon={<FlagOutlined />}
+                          size="small"
+                          danger
+                        >
                           Ignore
+                        </Button>
+                      ) : (
+                        <Button
+                          onClick={() => unIgnoreSup(currentSupplierIdSelected)}
+                          icon={<FlagOutlined />}
+                          size="small"
+                          type="primary"
+                        >
+                          Un-Ignore
                         </Button>
                       )}
                     </Space>
@@ -187,10 +223,17 @@ const GroupChatComponent = ({
   }, [isNegotiating, getAggregatorGroupChat]);
 
   useEffect(() => {
-    if (currentGroupIdSelected) {
+    if (currentGroupIdSelected || IgnoreSupData || UnIgnoreSupData) {
       getSupplierChatByGroup(currentGroupIdSelected);
+      resetIgnoreData();
     }
-  }, [currentGroupIdSelected, getSupplierChatByGroup]);
+  }, [
+    currentGroupIdSelected,
+    getSupplierChatByGroup,
+    IgnoreSupData,
+    UnIgnoreSupData,
+    resetIgnoreData
+  ]);
 
   const GROUP_STATUS_TABS = [
     {

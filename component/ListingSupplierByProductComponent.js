@@ -17,8 +17,11 @@ const connectToRedux = connect(
     supplierByProductIdError: GetSupplierByProductIdError
   }),
   (dispatch) => ({
-    getSupplierByProductId: (pageIndex, pageSize, productId) =>
-      dispatch(getSupplierByProductId({ productId, pageIndex, pageSize })),
+    getSupplierByProductId: (pageIndex, pageSize, productId, groupId) => {
+      dispatch(
+        getSupplierByProductId({ productId, pageIndex, pageSize, groupId })
+      );
+    },
     resetData: () => dispatch(GetSupplierByProductIdResetter)
   })
 );
@@ -46,7 +49,8 @@ const ListingSupplierByProductComponent = ({
   supplierByProductIdData,
   getSupplierByProductId,
   productId,
-  setSupplierIdSelected
+  setSupplierIdSelected,
+  groupId
 }) => {
   const [recordSelected, setRecordSelected] = useState([]);
 
@@ -104,7 +108,7 @@ const ListingSupplierByProductComponent = ({
         columns={columns}
         totalCount={total}
         searchProps={{
-          exCondition: [productId]
+          exCondition: [productId, groupId]
         }}
       />
     </div>

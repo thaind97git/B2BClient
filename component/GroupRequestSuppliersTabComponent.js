@@ -19,8 +19,7 @@ import {
 import {
   getSupplierByGroupId,
   GetSupplierByGroupIdData,
-  GetSupplierByGroupIdError,
-  getSupplierByProductId
+  GetSupplierByGroupIdError
 } from '../stores/SupplierState';
 import ReactTableLayout from '../layouts/ReactTableLayout';
 import { createLink } from '../libs';
@@ -43,7 +42,7 @@ const connectToRedux = connect(
     addSupplierToGroupError: AddSupplierToGroupError
   }),
   (dispatch) => ({
-    getSupplierByGroupId: ({ groupId, pageIndex, pageSize }) =>
+    getSupplierByGroupId: (pageIndex, pageSize, groupId) =>
       dispatch(getSupplierByGroupId({ groupId, pageIndex, pageSize })),
     addSupplierToGroup: ({ groupId, supplierIds, callback }) =>
       dispatch(addSupplierToGroup({ groupId, supplierIds, callback }))
@@ -101,7 +100,7 @@ const getSupplierTable = ({
           style={{ color: 'green' }}
           onClick={() => {
             Router.push(
-              `/aggregator/order/confirmation?groupID=${1}&isNegotiating=true`
+              `/aggregator/order/confirmation?groupId=${groupId}&isNegotiating=true`
             );
           }}
         >
@@ -124,18 +123,14 @@ const GroupRequestSuppliersTabComponent = ({
   const [supplierIdSelected, setSupplierIdSelected] = useState([]);
 
   const callbackGetSupplierList = () => {
-    getSupplierByProductId(
+    getSupplierByGroupId(
       DEFAULT_PAGING_INFO.page,
       DEFAULT_PAGING_INFO.pageSize,
+      null,
+      null,
       groupId
     );
   };
-
-  useEffect(() => {
-    if (!!groupId) {
-      getSupplierByGroupId({ groupId });
-    }
-  }, [groupId, getSupplierByGroupId]);
 
   useEffect(() => {
     if (addSupplierToGroupData) {
@@ -171,7 +166,7 @@ const GroupRequestSuppliersTabComponent = ({
         <div>
           <ReactTableLayout
             hasAction={false}
-            dispatchAction={getSupplierByProductId}
+            dispatchAction={getSupplierByGroupId}
             searchProps={{
               exCondition: [groupId]
             }}
@@ -212,6 +207,7 @@ const GroupRequestSuppliersTabComponent = ({
               setSupplierIdSelected(arrayId);
             }}
             productId={productId}
+            groupId={groupId}
           />
         ) : null}
       </Modal>

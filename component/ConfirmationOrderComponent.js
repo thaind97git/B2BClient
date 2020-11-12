@@ -10,49 +10,78 @@ import {
   Table,
   Drawer,
   Modal,
-} from "antd";
-import { PhoneOutlined, UserOutlined, MobileOutlined } from "@ant-design/icons";
-import React, { useState } from "react";
-import RequestDetailsComponent from "./RequestDetailsComponent";
-import { displayCurrency } from "../utils";
+  Empty
+} from 'antd';
+import { PhoneOutlined, UserOutlined, MobileOutlined } from '@ant-design/icons';
+import React, { useEffect, useState } from 'react';
+import RequestDetailsComponent from './RequestDetailsComponent';
+import { displayCurrency } from '../utils';
+import { connect } from 'react-redux';
+import { createStructuredSelector } from 'reselect';
+import {
+  getGroupDetails,
+  GetGroupDetailsData,
+  GetGroupDetailsError,
+  GetGroupDetailsResetter
+} from '../stores/GroupState';
+import { useRouter } from 'next/router';
+import {
+  getRequestByGroupId,
+  getRequestByGroupIdData
+} from '../stores/RequestState';
 const { Title } = Typography;
 const formItemLayout = {
   labelCol: { span: 4 },
-  wrapperCol: { span: 16 },
+  wrapperCol: { span: 16 }
 };
 
 const styles = {
-  colStyle: { padding: "0 8px" },
-  titleStyle: { fontWeight: 500 },
+  colStyle: { padding: '0 8px' },
+  titleStyle: { fontWeight: 500 }
 };
 
+const connectToRedux = connect(
+  createStructuredSelector({
+    groupDetailsData: GetGroupDetailsData,
+    groupDetailsError: GetGroupDetailsError,
+    requestByGroupData: getRequestByGroupIdData
+  }),
+  (dispatch) => ({
+    getGroupDetails: (id) => dispatch(getGroupDetails(id)),
+    getRequestByGroupId: (groupId) => dispatch(getRequestByGroupId(groupId)),
+    resetData: () => {
+      dispatch(GetGroupDetailsResetter);
+    }
+  })
+);
+
 const SUPPLIER_DETAIL = {
-  name: "Supplier 1",
-  companyName: "FPT company",
-  companyPhone: "38835287",
-  address: "7 đường 10A, khu dân cư Vĩnh Lộc",
-  ward: "phường Bình Hưng Hòa B",
-  district: "quận Bình Tân",
-  province: "thành phố Hồ Chí Minh",
-  phoneNumber: "0919727775",
-  email: "duyquanghoang27@gmail.com",
+  name: 'Supplier 1',
+  companyName: 'FPT company',
+  companyPhone: '38835287',
+  address: '7 đường 10A, khu dân cư Vĩnh Lộc',
+  ward: 'phường Bình Hưng Hòa B',
+  district: 'quận Bình Tân',
+  province: 'thành phố Hồ Chí Minh',
+  phoneNumber: '0919727775',
+  email: 'duyquanghoang27@gmail.com'
 };
 const groupRequestColumns = [
-  { title: "Created By", dataIndex: "createdBy", key: "createdBy" },
-  { title: "Preferred Unit Price", dataIndex: "price", key: "price" },
-  { title: "Quantity", dataIndex: "quantity", key: "quantity" },
-  { title: "Date Created", dataIndex: "dateCreated", key: "dateCreated" },
-  { title: "Actions", dataIndex: "actions", key: "actions" },
+  { title: 'Created By', dataIndex: 'createdBy', key: 'createdBy' },
+  { title: 'Preferred Unit Price', dataIndex: 'price', key: 'price' },
+  { title: 'Quantity', dataIndex: 'quantity', key: 'quantity' },
+  { title: 'Date Created', dataIndex: 'dateCreated', key: 'dateCreated' },
+  { title: 'Actions', dataIndex: 'actions', key: 'actions' }
 ];
 
 const REQUEST_LIST = [
   {
-    key: "1",
-    price: "1.190.000 đ",
-    category: "Iphone 7S 64Gb",
+    key: '1',
+    price: '1.190.000 đ',
+    category: 'Iphone 7S 64Gb',
     quantity: 50,
-    createdBy: "Buyer 1",
-    dateCreated: "30/09/2020 02:07:26 PM",
+    createdBy: 'Buyer 1',
+    dateCreated: '30/09/2020 02:07:26 PM',
     actions: (
       <Space>
         <Button
@@ -61,19 +90,19 @@ const REQUEST_LIST = [
             // setOpenRequestDetail(true);
           }}
         >
-          {" "}
+          {' '}
           Details
         </Button>
       </Space>
-    ),
+    )
   },
   {
-    key: "2",
-    price: "1.180.000 đ",
-    category: "Iphone 7S 64Gb",
+    key: '2',
+    price: '1.180.000 đ',
+    category: 'Iphone 7S 64Gb',
     quantity: 140,
-    createdBy: "Buyer 1",
-    dateCreated: "30/09/2020 02:07:26 PM",
+    createdBy: 'Buyer 1',
+    dateCreated: '30/09/2020 02:07:26 PM',
     actions: (
       <Space>
         <Button
@@ -82,19 +111,19 @@ const REQUEST_LIST = [
             // setOpenRequestDetail(true);
           }}
         >
-          {" "}
+          {' '}
           Details
         </Button>
       </Space>
-    ),
+    )
   },
   {
-    key: "3",
-    price: "1.200.000 đ",
-    category: "Iphone 7s 64Gb",
+    key: '3',
+    price: '1.200.000 đ',
+    category: 'Iphone 7s 64Gb',
     quantity: 30,
-    createdBy: "Buyer 1",
-    dateCreated: "30/09/2020 02:07:26 PM",
+    createdBy: 'Buyer 1',
+    dateCreated: '30/09/2020 02:07:26 PM',
     actions: (
       <Space>
         <Button
@@ -103,59 +132,76 @@ const REQUEST_LIST = [
             // setOpenRequestDetail(true);
           }}
         >
-          {" "}
+          {' '}
           Details
         </Button>
       </Space>
-    ),
-  },
+    )
+  }
 ];
 
 const totalQuantity = 220;
 
-const ConfirmationOrderComponent = ({ isNegotiating = false }) => {
+const ConfirmationOrderComponent = ({
+  isNegotiating = false,
+  groupDetailsData,
+  groupDetailsError,
+  getGroupDetails,
+  getRequestByGroupId,
+  requestByGroupData
+}) => {
   const [price, setPrice] = useState(0);
   const [openRequestDetail, setOpenRequestDetail] = useState(false);
   const [form] = Form.useForm();
+  const router = useRouter();
+  const groupId = router.query.groupId;
 
+  useEffect(() => {
+    if (groupId) {
+      getGroupDetails(groupId);
+      getRequestByGroupId(groupId);
+    }
+  }, [groupId, getGroupDetails, getRequestByGroupId]);
+
+  if (!groupDetailsData) {
+    return <Empty description="Can not find any group!" />;
+  }
+  const { quantity, product = {} } = groupDetailsData;
+  const { unitOfMeasure = {} } = product;
   const productDetailsColumns = [
-    { title: "Product Name", dataIndex: "productName", key: "productName" },
+    { title: 'Product Name', dataIndex: 'productName', key: 'productName' },
     {
-      title: "Price",
-      dataIndex: "productPrice",
-      key: "productPrice",
+      title: 'Price',
+      dataIndex: 'productPrice',
+      key: 'productPrice',
       render: (text) => {
         return isNegotiating ? (
           <InputNumber
             style={{ width: 150 }}
             min={0}
             formatter={(value) =>
-              `đ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+              `đ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
             }
-            parser={(value) => value.replace(/\đ\s?|(,*)/g, "")}
+            parser={(value) => value.replace(/\đ\s?|(,*)/g, '')}
             onChange={(value) => setPrice(value)}
           />
         ) : (
           text
         );
-      },
+      }
     },
     {
-      title: "Total Quantity",
-      dataIndex: "totalQuantity",
-      key: "totalQuantity",
-    },
+      title: 'Total Quantity',
+      dataIndex: 'totalQuantity',
+      key: 'totalQuantity'
+    }
   ];
   const PRODUCT_DETAIL = [
     {
-      productName:
-        "IR Night Vision Hidden Camera Watch Sport Wear Watch Camera WIFI",
+      productName: product.productName,
       productPrice: isNegotiating ? price : displayCurrency(1170000),
-      totalQuantity:
-        REQUEST_LIST.reduce((prev, current) => {
-          return prev + current.quantity;
-        }, 0) + " Pieces",
-    },
+      totalQuantity: `${quantity} ${unitOfMeasure.description}`
+    }
   ];
 
   return (
@@ -163,156 +209,141 @@ const ConfirmationOrderComponent = ({ isNegotiating = false }) => {
       <Drawer
         width={640}
         title="RFQ details"
-        placement={"right"}
+        placement={'right'}
         closable={true}
         onClose={() => setOpenRequestDetail(false)}
         visible={openRequestDetail}
-        key={"right"}
+        key={'right'}
       >
         <RequestDetailsComponent
           buttonActions={[
             {
-              label: "Remove",
+              label: 'Remove',
               buttonProps: {
-                danger: true,
-              },
-            },
+                danger: true
+              }
+            }
           ]}
         />
       </Drawer>
       <Col span={24}>
         <Row align="middle" justify="center">
           <Col sm={20} md={18}>
-            <Form
-              form={form}
-              {...formItemLayout}
-              className="register-form"
-              initialValues={PRODUCT_DETAIL}
+            <Row justify="center">
+              <Title style={styles.titleStyle} level={2}>
+                Confirmation Order
+              </Title>
+            </Row>
+            <Card
+              bordered={false}
+              title={<b>Supplier: {SUPPLIER_DETAIL.name}</b>}
+              style={{
+                width: '100%',
+                boxShadow: '2px 2px 14px 0 rgba(0,0,0,.1)',
+                marginTop: 16
+              }}
             >
-              <Row justify="center">
-                <Title style={styles.titleStyle} level={2}>
-                  Confirmation Order
-                </Title>
-              </Row>
-              <Card
-                bordered={false}
-                title={<b>Supplier: {SUPPLIER_DETAIL.name}</b>}
-                style={{
-                  width: "100%",
-                  boxShadow: "2px 2px 14px 0 rgba(0,0,0,.1)",
-                  marginTop: 16,
-                }}
-              >
-                <Row justify="space-between">
-                  <Col span={8}>
-                    <Card bordered={false} size="small">
-                      <b>Company information</b>
-                      <br />
-                      {SUPPLIER_DETAIL.companyName}
-                      <br />
-                      {SUPPLIER_DETAIL.address}
-                      <br />
-                      {SUPPLIER_DETAIL.ward} - {SUPPLIER_DETAIL.district} -{" "}
-                      {SUPPLIER_DETAIL.province}
-                    </Card>
-                  </Col>
-                  <Col span={8}>
-                    <Card bordered={false} size="small">
-                      <b>Company contact</b>
-                      <br />
-                      <PhoneOutlined />
-                      {SUPPLIER_DETAIL.companyPhone}
-                      <br />
-                      {/* <PrinterOutlined />
-                      <br />
-                      <GlobalOutlined />
-                      <br />
-                      <MailOutlined /> */}
-                    </Card>
-                  </Col>
-                  <Col span={8}>
-                    <Card bordered={false} size="small">
-                      <b>Supplier contact</b>
-                      <br />
-                      <UserOutlined />
-                      {SUPPLIER_DETAIL.email}
-                      <br />
-                      <MobileOutlined />
-                      {SUPPLIER_DETAIL.phoneNumber}
-                      <br />
-                      {/* <UserOutlined />
-                      <br />
-                      <MobileOutlined /> */}
-                    </Card>
-                  </Col>
-                </Row>
-              </Card>
-              <Card
-                bordered={false}
-                title={<b>Invoice Item</b>}
-                style={{
-                  width: "100%",
-                  boxShadow: "2px 2px 14px 0 rgba(0,0,0,.1)",
-                  marginTop: 10,
-                }}
-              >
-                <Table
-                  bordered
-                  columns={productDetailsColumns}
-                  dataSource={PRODUCT_DETAIL}
-                  rowKey="id"
-                  pagination={false}
-                  footer={() => (
-                    <div align="right" style={{ height: "20px" }}>
-                      <p style={{ color: "#199eb8", fontSize: 18 }}>
-                        Total{" "}
-                        {isNegotiating
-                          ? displayCurrency(price * totalQuantity)
-                          : displayCurrency(257400000)}
-                      </p>
-                    </div>
-                  )}
-                />
-              </Card>
-              <Card
-                bordered={false}
-                title={<b>Request List</b>}
-                style={{
-                  width: "100%",
-                  boxShadow: "2px 2px 14px 0 rgba(0,0,0,.1)",
-                  marginTop: 10,
-                }}
-              >
-                <Table
-                  bordered
-                  columns={groupRequestColumns}
-                  dataSource={REQUEST_LIST}
-                  rowKey="id"
-                  pagination={false}
-                />
-              </Card>
-              <Row style={{ marginTop: 32 }} justify="center" align="middle">
-                <Col span={6}>
-                  <Button
-                    onClick={() => {
-                      Modal.success({
-                        content: "Send order successful",
-                      });
-                    }}
-                    block
-                    className="submit"
-                    type="primary"
-                    htmlType="submit"
-                  >
-                    Submit Order
-                  </Button>
+              <Row justify="space-between">
+                <Col span={8}>
+                  <Card bordered={false} size="small">
+                    <b>Company information</b>
+                    <br />
+                    {SUPPLIER_DETAIL.companyName}
+                    <br />
+                    {SUPPLIER_DETAIL.address}
+                    <br />
+                    {SUPPLIER_DETAIL.ward} - {SUPPLIER_DETAIL.district} -{' '}
+                    {SUPPLIER_DETAIL.province}
+                  </Card>
+                </Col>
+                <Col span={8}>
+                  <Card bordered={false} size="small">
+                    <b>Company contact</b>
+                    <br />
+                    <PhoneOutlined />
+                    {SUPPLIER_DETAIL.companyPhone}
+                    <br />
+                  </Card>
+                </Col>
+                <Col span={8}>
+                  <Card bordered={false} size="small">
+                    <b>Supplier contact</b>
+                    <br />
+                    <UserOutlined />
+                    {SUPPLIER_DETAIL.email}
+                    <br />
+                    <MobileOutlined />
+                    {SUPPLIER_DETAIL.phoneNumber}
+                    <br />
+                  </Card>
                 </Col>
               </Row>
-            </Form>
+            </Card>
+            <Card
+              bordered={false}
+              title={<b>Order Item</b>}
+              style={{
+                width: '100%',
+                boxShadow: '2px 2px 14px 0 rgba(0,0,0,.1)',
+                marginTop: 10
+              }}
+            >
+              <Table
+                bordered
+                columns={productDetailsColumns}
+                dataSource={PRODUCT_DETAIL}
+                rowKey="id"
+                pagination={false}
+                footer={() => (
+                  <div align="right" style={{ height: '20px' }}>
+                    <p style={{ color: '#199eb8', fontSize: 18 }}>
+                      Total{' '}
+                      {isNegotiating
+                        ? displayCurrency(price * totalQuantity)
+                        : displayCurrency(257400000)}
+                    </p>
+                  </div>
+                )}
+              />
+            </Card>
+            <Card
+              bordered={false}
+              title={<b>Request List</b>}
+              style={{
+                width: '100%',
+                boxShadow: '2px 2px 14px 0 rgba(0,0,0,.1)',
+                marginTop: 10
+              }}
+            >
+              <Table
+                bordered
+                columns={groupRequestColumns}
+                dataSource={REQUEST_LIST}
+                rowKey="id"
+                pagination={false}
+              />
+            </Card>
+            <Row style={{ marginTop: 32 }} justify="center" align="middle">
+              <Col span={6}>
+                <Button
+                  onClick={() => {
+                    Modal.success({
+                      content: 'Send order successful'
+                    });
+                  }}
+                  block
+                  className="submit"
+                  type="primary"
+                  htmlType="submit"
+                >
+                  Submit Order
+                </Button>
+              </Col>
+            </Row>
           </Col>
         </Row>
       </Col>
     </div>
   );
 };
-export default ConfirmationOrderComponent;
+export default connectToRedux(ConfirmationOrderComponent);
