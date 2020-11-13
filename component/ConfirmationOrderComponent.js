@@ -121,7 +121,7 @@ const ConfirmationOrderComponent = ({ isNegotiating = false }) => {
   const productDetailsColumns = [
     { title: "Product Name", dataIndex: "productName", key: "productName" },
     {
-      title: "Price",
+      title: "Unit Price",
       dataIndex: "productPrice",
       key: "productPrice",
       render: (text) => {

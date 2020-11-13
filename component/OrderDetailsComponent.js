@@ -122,22 +122,44 @@ const REQUEST_LIST = [
     category: 'Iphone 7s 64Gb',
     quantity: 30,
     createdBy: 'Buyer 1',
-    dateCreated: '30/09/2020 02:07:26 PM',
-    actions: (
-      <Space>
-        <Button
-          type="link"
-          onClick={() => {
-            // setOpenRequestDetail(true);
-          }}
-        >
-          {' '}
-          Details
-        </Button>
-      </Space>
-    )
+    dateCreated: '30/09/2020 02:07:26 PM'
   }
 ];
+
+const getRequestTable = (requestList = [], role) => {
+  return requestList
+    ? requestList.map((request = {}) => ({
+        key: request.id,
+        createdBy: request.createdBy,
+        price: request.price,
+        quantity: request.quantity,
+        dateCreated: request.dateCreated,
+        actions: (
+          <Space>
+            <Button
+              type="link"
+              onClick={() => {
+                // setOpenRequestDetail(true);
+              }}
+            >
+              {' '}
+              View
+            </Button>
+            { role==="Supplier"?
+              <Button
+                type="primary"
+                onClick={() => {
+                  // setOpenRequestDetail(true);
+                }}
+              >
+                Delivered
+              </Button>:""
+            }
+          </Space>
+        )
+      }))
+    : [];
+};
 
 const totalQuantity = 220;
 
@@ -199,7 +221,7 @@ const SupplierDetail = () => {
   );
 };
 
-const RequestList = () => {
+const RequestList = ({ role }) => {
   const [openRequestDetail, setOpenRequestDetail] = useState(false);
   return (
     <div>
@@ -214,8 +236,17 @@ const RequestList = () => {
       >
         <Table
           bordered
-          columns={groupRequestColumns}
-          dataSource={REQUEST_LIST}
+          columns={
+            role === 'Aggregator'
+              ? groupRequestColumns
+              : [
+                  groupRequestColumns[0],
+                  groupRequestColumns[2],
+                  groupRequestColumns[3],
+                  groupRequestColumns[4]
+                ]
+          }
+          dataSource={getRequestTable(REQUEST_LIST || [],role)}
           rowKey="id"
           pagination={false}
         />
@@ -251,7 +282,7 @@ const OrderDetailsComponent = ({ isNegotiating = false, currentUser }) => {
   const productDetailsColumns = [
     { title: 'Product Name', dataIndex: 'productName', key: 'productName' },
     {
-      title: 'Price',
+      title: 'Unit Price',
       dataIndex: 'productPrice',
       key: 'productPrice',
       render: (text) => {
@@ -367,7 +398,7 @@ const OrderDetailsComponent = ({ isNegotiating = false, currentUser }) => {
               </Card>
               {currentUser.role === 'Aggregator' ||
               currentUser.role === 'Supplier' ? (
-                <RequestList />
+                <RequestList role={currentUser.role} />
               ) : (
                 ''
               )}

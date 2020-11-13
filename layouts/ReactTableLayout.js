@@ -40,7 +40,7 @@ const ReactTableLayout = ({
     placeholder,
     exCondition = [],
     exElement,
-    isDateRange = true,
+    isDateRange = false,
   } = searchProps;
   const otherCondition = exCondition.join("-");
   const { dateRange, setDateRange } = dateRangeProps;
