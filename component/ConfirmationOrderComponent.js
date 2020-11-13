@@ -10,12 +10,19 @@ import {
   Table,
   Drawer,
   Modal,
-  Empty
+  Empty,
+  Avatar
 } from 'antd';
-import { PhoneOutlined, UserOutlined, MobileOutlined } from '@ant-design/icons';
+import { PhoneOutlined, MailOutlined } from '@ant-design/icons';
 import React, { useEffect, useState } from 'react';
 import RequestDetailsComponent from './RequestDetailsComponent';
-import { displayCurrency } from '../utils';
+import {
+  DATE_TIME_FORMAT,
+  displayCurrency,
+  fallbackImage,
+  getCurrentUserImage,
+  openNotification
+} from '../utils';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 import {
@@ -24,16 +31,15 @@ import {
   GetGroupDetailsError,
   GetGroupDetailsResetter
 } from '../stores/GroupState';
-import { useRouter } from 'next/router';
+import Router, { useRouter } from 'next/router';
 import {
   getRequestByGroupId,
   getRequestByGroupIdData
 } from '../stores/RequestState';
+import { getUser, getUserData } from '../stores/UserState';
+import Moment from 'react-moment';
+import { createNewOrder, CreateNewOrderData } from '../stores/OrderState';
 const { Title } = Typography;
-const formItemLayout = {
-  labelCol: { span: 4 },
-  wrapperCol: { span: 16 }
-};
 
 const styles = {
   colStyle: { padding: '0 8px' },
@@ -44,103 +50,30 @@ const connectToRedux = connect(
   createStructuredSelector({
     groupDetailsData: GetGroupDetailsData,
     groupDetailsError: GetGroupDetailsError,
-    requestByGroupData: getRequestByGroupIdData
+    requestByGroupData: getRequestByGroupIdData,
+    supplierData: getUserData,
+    createOrderData: CreateNewOrderData
   }),
   (dispatch) => ({
     getGroupDetails: (id) => dispatch(getGroupDetails(id)),
-    getRequestByGroupId: (groupId) => dispatch(getRequestByGroupId(groupId)),
+    getRequestByGroupId: (groupId) =>
+      dispatch(getRequestByGroupId({ groupId, pageIndex: 1, pageSize: 100 })),
+    getSupplier: (supplierId) => dispatch(getUser(supplierId)),
+    createOrder: ({ unitPrice, groupId, supplierId }, callback) =>
+      dispatch(createNewOrder({ unitPrice, groupId, supplierId }, callback)),
     resetData: () => {
       dispatch(GetGroupDetailsResetter);
     }
   })
 );
 
-const SUPPLIER_DETAIL = {
-  name: 'Supplier 1',
-  companyName: 'FPT company',
-  companyPhone: '38835287',
-  address: '7 đường 10A, khu dân cư Vĩnh Lộc',
-  ward: 'phường Bình Hưng Hòa B',
-  district: 'quận Bình Tân',
-  province: 'thành phố Hồ Chí Minh',
-  phoneNumber: '0919727775',
-  email: 'duyquanghoang27@gmail.com'
-};
 const groupRequestColumns = [
   { title: 'Created By', dataIndex: 'createdBy', key: 'createdBy' },
   { title: 'Preferred Unit Price', dataIndex: 'price', key: 'price' },
   { title: 'Quantity', dataIndex: 'quantity', key: 'quantity' },
   { title: 'Date Created', dataIndex: 'dateCreated', key: 'dateCreated' },
-  { title: 'Actions', dataIndex: 'actions', key: 'actions' }
+  { title: 'View Details', dataIndex: 'actions', key: 'actions' }
 ];
-
-const REQUEST_LIST = [
-  {
-    key: '1',
-    price: '1.190.000 đ',
-    category: 'Iphone 7S 64Gb',
-    quantity: 50,
-    createdBy: 'Buyer 1',
-    dateCreated: '30/09/2020 02:07:26 PM',
-    actions: (
-      <Space>
-        <Button
-          type="link"
-          onClick={() => {
-            // setOpenRequestDetail(true);
-          }}
-        >
-          {' '}
-          Details
-        </Button>
-      </Space>
-    )
-  },
-  {
-    key: '2',
-    price: '1.180.000 đ',
-    category: 'Iphone 7S 64Gb',
-    quantity: 140,
-    createdBy: 'Buyer 1',
-    dateCreated: '30/09/2020 02:07:26 PM',
-    actions: (
-      <Space>
-        <Button
-          type="link"
-          onClick={() => {
-            // setOpenRequestDetail(true);
-          }}
-        >
-          {' '}
-          Details
-        </Button>
-      </Space>
-    )
-  },
-  {
-    key: '3',
-    price: '1.200.000 đ',
-    category: 'Iphone 7s 64Gb',
-    quantity: 30,
-    createdBy: 'Buyer 1',
-    dateCreated: '30/09/2020 02:07:26 PM',
-    actions: (
-      <Space>
-        <Button
-          type="link"
-          onClick={() => {
-            // setOpenRequestDetail(true);
-          }}
-        >
-          {' '}
-          Details
-        </Button>
-      </Space>
-    )
-  }
-];
-
-const totalQuantity = 220;
 
 const ConfirmationOrderComponent = ({
   isNegotiating = false,
@@ -148,13 +81,18 @@ const ConfirmationOrderComponent = ({
   groupDetailsError,
   getGroupDetails,
   getRequestByGroupId,
-  requestByGroupData
+  requestByGroupData,
+  getSupplier,
+  supplierData,
+  createOrder,
+  createOrderData
 }) => {
   const [price, setPrice] = useState(0);
-  const [openRequestDetail, setOpenRequestDetail] = useState(false);
+  const [openRequestDetails, setOpenRequestDetails] = useState(false);
+  const [currentRequestSelected, setCurrentRequestSelected] = useState({});
   const [form] = Form.useForm();
   const router = useRouter();
-  const groupId = router.query.groupId;
+  const { groupId, supplierId } = router.query;
 
   useEffect(() => {
     if (groupId) {
@@ -163,8 +101,17 @@ const ConfirmationOrderComponent = ({
     }
   }, [groupId, getGroupDetails, getRequestByGroupId]);
 
+  useEffect(() => {
+    if (supplierId) {
+      getSupplier(supplierId);
+    }
+  }, [supplierId, getSupplier]);
+
   if (!groupDetailsData) {
-    return <Empty description="Can not find any group!" />;
+    return <Empty description="Can not find any group for this order!" />;
+  }
+  if (!supplierData) {
+    return <Empty description="Can not find any supplier for this order!" />;
   }
   const { quantity, product = {} } = groupDetailsData;
   const { unitOfMeasure = {} } = product;
@@ -180,9 +127,9 @@ const ConfirmationOrderComponent = ({
             style={{ width: 150 }}
             min={0}
             formatter={(value) =>
-              `đ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+              `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
             }
-            parser={(value) => value.replace(/\đ\s?|(,*)/g, '')}
+            parser={(value) => value.replace(/,*/g, '')}
             onChange={(value) => setPrice(value)}
           />
         ) : (
@@ -204,6 +151,22 @@ const ConfirmationOrderComponent = ({
     }
   ];
 
+  let requestData = [];
+  if (requestByGroupData) {
+    requestData = requestByGroupData.data;
+  }
+
+  const {
+    email,
+    address,
+    avatar,
+    companyName,
+    firstName,
+    lastName,
+    phoneNumber,
+    role
+  } = supplierData;
+
   return (
     <div>
       <Drawer
@@ -211,20 +174,16 @@ const ConfirmationOrderComponent = ({
         title="RFQ details"
         placement={'right'}
         closable={true}
-        onClose={() => setOpenRequestDetail(false)}
-        visible={openRequestDetail}
+        onClose={() => setOpenRequestDetails(false)}
+        visible={openRequestDetails}
         key={'right'}
       >
-        <RequestDetailsComponent
-          buttonActions={[
-            {
-              label: 'Remove',
-              buttonProps: {
-                danger: true
-              }
-            }
-          ]}
-        />
+        {openRequestDetails ? (
+          <RequestDetailsComponent
+            requestId={(currentRequestSelected || {}).id}
+            isSupplier={false}
+          />
+        ) : null}
       </Drawer>
       <Col span={24}>
         <Row align="middle" justify="center">
@@ -236,7 +195,7 @@ const ConfirmationOrderComponent = ({
             </Row>
             <Card
               bordered={false}
-              title={<b>Supplier: {SUPPLIER_DETAIL.name}</b>}
+              title={<b>Supplier: {`${firstName} ${lastName}`}</b>}
               style={{
                 width: '100%',
                 boxShadow: '2px 2px 14px 0 rgba(0,0,0,.1)',
@@ -246,35 +205,40 @@ const ConfirmationOrderComponent = ({
               <Row justify="space-between">
                 <Col span={8}>
                   <Card bordered={false} size="small">
-                    <b>Company information</b>
-                    <br />
-                    {SUPPLIER_DETAIL.companyName}
-                    <br />
-                    {SUPPLIER_DETAIL.address}
-                    <br />
-                    {SUPPLIER_DETAIL.ward} - {SUPPLIER_DETAIL.district} -{' '}
-                    {SUPPLIER_DETAIL.province}
+                    <div
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                        alignItems: 'center'
+                      }}
+                    >
+                      <Avatar
+                        size={64}
+                        src={getCurrentUserImage(avatar) || fallbackImage}
+                      />{' '}
+                      <span>&nbsp;</span>
+                      <div>
+                        Company: {companyName}
+                        <br />
+                        Address: {address}
+                      </div>
+                    </div>
                   </Card>
                 </Col>
                 <Col span={8}>
                   <Card bordered={false} size="small">
-                    <b>Company contact</b>
-                    <br />
-                    <PhoneOutlined />
-                    {SUPPLIER_DETAIL.companyPhone}
-                    <br />
-                  </Card>
-                </Col>
-                <Col span={8}>
-                  <Card bordered={false} size="small">
-                    <b>Supplier contact</b>
-                    <br />
-                    <UserOutlined />
-                    {SUPPLIER_DETAIL.email}
-                    <br />
-                    <MobileOutlined />
-                    {SUPPLIER_DETAIL.phoneNumber}
-                    <br />
+                    <div style={{ textAlign: 'right' }}>
+                      <Space>
+                        {email}
+                        <MailOutlined />
+                      </Space>
+                      <br />
+                      <Space>
+                        {phoneNumber}
+                        <PhoneOutlined />
+                      </Space>
+                      <br />
+                    </div>
                   </Card>
                 </Col>
               </Row>
@@ -299,7 +263,7 @@ const ConfirmationOrderComponent = ({
                     <p style={{ color: '#199eb8', fontSize: 18 }}>
                       Total{' '}
                       {isNegotiating
-                        ? displayCurrency(price * totalQuantity)
+                        ? displayCurrency(price * quantity)
                         : displayCurrency(257400000)}
                     </p>
                   </div>
@@ -318,8 +282,37 @@ const ConfirmationOrderComponent = ({
               <Table
                 bordered
                 columns={groupRequestColumns}
-                dataSource={REQUEST_LIST}
-                rowKey="id"
+                dataSource={(requestData || []).map((request) => {
+                  const {
+                    id,
+                    buyer = {},
+                    quantity,
+                    product = {},
+                    dateCreated,
+                    preferredUnitPrice
+                  } = request;
+                  return {
+                    key: id,
+                    createdBy: buyer.fullName,
+                    price: displayCurrency(preferredUnitPrice),
+                    quantity: `${quantity} ${product.unitType}`,
+                    dateCreated: (
+                      <Moment format={DATE_TIME_FORMAT}>{dateCreated}</Moment>
+                    ),
+                    actions: (
+                      <Button
+                        onClick={() => {
+                          setCurrentRequestSelected(request);
+                          setOpenRequestDetails(true);
+                        }}
+                        type="link"
+                      >
+                        View
+                      </Button>
+                    )
+                  };
+                })}
+                rowKey="key"
                 pagination={false}
               />
             </Card>
@@ -327,8 +320,24 @@ const ConfirmationOrderComponent = ({
               <Col span={6}>
                 <Button
                   onClick={() => {
-                    Modal.success({
-                      content: 'Send order successful'
+                    if (!price) {
+                      openNotification('error', {
+                        message: 'Please input the price for order!'
+                      });
+                      return;
+                    }
+                    Modal.confirm({
+                      title: 'Do you want submit order?',
+                      okText: 'Submit',
+                      cancelText: 'Cancel',
+                      onOk: () => {
+                        createOrder(
+                          { unitPrice: price * quantity, groupId, supplierId },
+                          () => {
+                            Router.push('aggregator/order');
+                          }
+                        );
+                      }
                     });
                   }}
                   block

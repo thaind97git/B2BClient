@@ -1,7 +1,6 @@
 import { makeFetchAction } from 'redux-api-call';
 
 import { respondToSuccess } from '../middlewares/api-reaction';
-import { createErrorSelector, parseBoolean } from '../utils';
 import nfetch from '../libs/nfetch';
 import { generateQuery, getResetter } from '../libs';
 
@@ -15,10 +14,12 @@ const CreateNewOrderAPI = makeFetchAction(
     })({ unitPrice, groupId, supplierId })
 );
 
-export const createNewOrder = ({ unitPrice, groupId, supplierId }) =>
+export const createNewOrder = ({ unitPrice, groupId, supplierId }, callback) =>
   respondToSuccess(
     CreateNewOrderAPI.actionCreator({ unitPrice, groupId, supplierId }),
-    () => {}
+    () => {
+      typeof callback === 'function' && callback()
+    }
   );
 export const CreateNewOrderData = CreateNewOrderAPI.dataSelector;
 export const CreateNewOrderError = CreateNewOrderAPI.errorSelector;

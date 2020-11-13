@@ -144,7 +144,7 @@ const GroupChatComponent = ({
                             createLink([
                               'aggregator',
                               'order',
-                              `confirmation?groupId=${currentGroupIdSelected}&isNegotiating=true`
+                              `confirmation?groupId=${currentGroupIdSelected}&isNegotiating=true&supplierId=${currentSupplierIdSelected}`
                             ])
                           );
                         }}

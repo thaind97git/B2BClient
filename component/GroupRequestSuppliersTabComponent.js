@@ -100,7 +100,7 @@ const getSupplierTable = ({
           style={{ color: 'green' }}
           onClick={() => {
             Router.push(
-              `/aggregator/order/confirmation?groupId=${groupId}&isNegotiating=true`
+              `/aggregator/order/confirmation?groupId=${groupId}&isNegotiating=true&supplierId=${supplier.id}`
             );
           }}
         >
