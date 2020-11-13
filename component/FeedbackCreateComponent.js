@@ -10,35 +10,20 @@ import {
   Select,
   Upload
 } from 'antd';
-import Modal from 'antd/lib/modal/Modal';
-import BuyerRequestCategoryComponent from './BuyerRequestCategoryComponent';
 import { createStructuredSelector } from 'reselect';
 import { connect } from 'react-redux';
-import { getCategorySelected } from '../libs';
-import { SET_CATEGORY_SELECTED } from '../stores/initState';
-import {
-  getUnitOfMeasure,
-  GetUnitOfMeasureData
-} from '../stores/SupportRequestState';
 import ImgCrop from 'antd-img-crop';
 import MarkdownEditorComponent from './MarkdownEditorComponent';
 import { acceptFileMimes, acceptFileTypes, openNotification } from '../utils';
-import { createNewProduct } from '../stores/ProductState';
+import { CurrentUserData } from '../stores/UserState';
+import { UploadOutlined } from '@ant-design/icons';
 
 const { Title } = Typography;
 const { Option } = Select;
 const FormItem = Form.Item;
 const connectToRedux = connect(
   createStructuredSelector({
-    categorySelected: (state) => state.categorySelected,
-    unitData: GetUnitOfMeasureData
-  }),
-  (dispatch) => ({
-    removeCategorySelected: () =>
-      dispatch({ type: SET_CATEGORY_SELECTED, payload: [] }),
-    getUnit: () => dispatch(getUnitOfMeasure()),
-    createNewProduct: (product, fileList) =>
-      dispatch(createNewProduct(product, fileList))
+    currentUser: CurrentUserData
   })
 );
 const styles = {
@@ -58,37 +43,26 @@ function getBase64(file) {
   });
 }
 
-const FeedbackCreateComponent = ({
-  removeCategorySelected,
-  categorySelected,
-  getUnit,
-  unitData,
-  createNewProduct
-}) => {
-  const [openCategory, setOpenCategory] = useState(false);
+const FeedbackCreateComponent = ({ currentUser }) => {
   const [fileList, setFileList] = useState([]);
   const [preview, setPreview] = useState({
     previewVisible: false,
     previewImage: '',
     previewTitle: ''
   });
-
-  useEffect(() => {
-    getUnit();
-  }, [getUnit]);
-
-  const onFinish = (values) => {
-    if (!categorySelected || categorySelected.length === 0) {
-      openNotification('error', { message: 'Please select category' });
-    } else if (!fileList || fileList.length === 0) {
-      openNotification('error', { message: 'Please upload product image' });
-    } else {
-      values.categoryId = categorySelected[categorySelected.length - 1].id;
-      values.description = values.description.value;
-      createNewProduct(values, fileList);
-      removeCategorySelected();
-    }
-  };
+  let typeData = [];
+  if (currentUser.role === 'Supplier') {
+    typeData = [
+      { id: 1, description: 'Order' },
+      { id: 2, description: 'Auction' }
+    ];
+  }
+  else if (currentUser.role==='Buyer'){
+    typeData = [
+      { id: 1, description: 'RFQ' }
+    ];
+  }
+  const onFinish = (values) => {};
 
   const checkDescription = (rule, value = {}) => {
     if (value.value) {
@@ -118,43 +92,21 @@ const FeedbackCreateComponent = ({
 
   return (
     <Row align="middle" justify="center">
-      <Modal
-        title="Choose Category"
-        centered
-        visible={openCategory}
-        onOk={() => setOpenCategory(false)}
-        onCancel={() => setOpenCategory(false)}
-        width={1000}
-      >
-        <BuyerRequestCategoryComponent
-          doneFunc={() => setOpenCategory(false)}
-        />
-        <Row>
-          {!!categorySelected.length && (
-            <Title level={4}>
-              Category selected:
-              {getCategorySelected(
-                categorySelected.map((cate) => cate.description)
-              ).substring(3)}
-            </Title>
-          )}
-        </Row>
-      </Modal>
       <Col sm={20} md={18}>
         <Form
-          {...formItemLayout}
+          //{...formItemLayout}
           autoComplete="new-password"
           className="register-form"
           onFinish={onFinish}
         >
           <Row justify="center">
             <Title style={styles.titleStyle} level={2}>
-              Create New Product
+              Create Feedback
             </Title>
           </Row>
           <Card
             bordered={false}
-            title={<b>Product Basic Information</b>}
+            title={<b>Feedback Information</b>}
             style={{
               width: '100%',
               boxShadow: '2px 2px 14px 0 rgba(0,0,0,.1)',
@@ -164,77 +116,111 @@ const FeedbackCreateComponent = ({
             <Row align="middle">
               <Col style={styles.colStyle} span={24}>
                 <FormItem
-                  label="Product Name"
-                  name="productName"
+                  {...formItemLayout}
+                  label="Title"
+                  name="title"
                   rules={[
                     {
                       required: true,
-                      message: 'Please Enter Product Name'
+                      message: 'Please Enter The Feedback Title'
                     }
                   ]}
                 >
                   <Input />
                 </FormItem>
               </Col>
-              <Col style={styles.colStyle} span={24}>
-                <FormItem
-                  label={
-                    <span>
-                      <span style={{ color: 'red' }}>*</span> Category
-                    </span>
-                  }
-                  name="category"
-                >
-                  {!!categorySelected.length && (
-                    <div>
-                      Category selected:
-                      {getCategorySelected(
-                        categorySelected.map((cate) => cate.description)
-                      ).substring(3)}
-                    </div>
-                  )}
-                  <Button onClick={() => setOpenCategory(true)}>
-                    Select Category
-                  </Button>
-                </FormItem>
-              </Col>
-              <Col style={styles.colStyle} span={24}>
-                <FormItem
-                  label="Unit"
-                  name="unitOfMeasureId"
-                  rules={[
-                    {
-                      required: true,
-                      message: 'Please select unit'
-                    }
-                  ]}
-                >
-                  <Select
-                    showSearch
-                    style={{
-                      width: '50%'
-                    }}
-                    placeholder="Select a unit"
-                    optionFilterProp="children"
-                    filterOption={(input, option) =>
-                      option.children
-                        .toLowerCase()
-                        .indexOf(input.toLowerCase()) >= 0
-                    }
-                  >
-                    {!!unitData &&
-                      unitData.map((type) => (
-                        <Option value={type.id} index={type.id} key={type.id}>
-                          {type.description}
-                        </Option>
-                      ))}
-                  </Select>
-                </FormItem>
+              <Col span={24}>
+                <Row>
+                  <Col span={4}></Col>
+                  <Col span={8} style={{ padding: '0 8px' }}>
+                    <label>
+                      <span style={{ color: 'red' }}>* </span>
+                      <span style={{ color: '#000000D9' }}>Service Type</span>
+                    </label>
+                    <FormItem
+                      name="Type"
+                      rules={[
+                        {
+                          required: true,
+                          message: 'Please select type of service'
+                        }
+                      ]}
+                    >
+                      <Select
+                        showSearch
+                        style={{
+                          width: '100%'
+                        }}
+                        placeholder="Select a type of service"
+                        optionFilterProp="children"
+                        filterOption={(input, option) =>
+                          option.children
+                            .toLowerCase()
+                            .indexOf(input.toLowerCase()) >= 0
+                        }
+                      >
+                        {!!typeData &&
+                          typeData.map((type) => (
+                            <Option
+                              value={type.id}
+                              index={type.id}
+                              key={type.id}
+                            >
+                              {type.description}
+                            </Option>
+                          ))}
+                      </Select>
+                    </FormItem>
+                  </Col>
+                  <Col span={8} style={{ padding: '0 8px' }}>
+                    <label>
+                      <span style={{ color: 'red' }}>* </span>
+                      <span style={{ color: '#000000D9' }}>
+                        Related Service
+                      </span>
+                    </label>
+                    <FormItem
+                      name="serviceID"
+                      rules={[
+                        {
+                          required: true,
+                          message: 'Please select service'
+                        }
+                      ]}
+                    >
+                      <Select
+                        showSearch
+                        style={{
+                          width: '100%'
+                        }}
+                        placeholder="Select a related service"
+                        optionFilterProp="children"
+                        filterOption={(input, option) =>
+                          option.children
+                            .toLowerCase()
+                            .indexOf(input.toLowerCase()) >= 0
+                        }
+                      >
+                        {!!typeData &&
+                          typeData.map((type) => (
+                            <Option
+                              value={type.id}
+                              index={type.id}
+                              key={type.id}
+                            >
+                              {type.description}
+                            </Option>
+                          ))}
+                      </Select>
+                    </FormItem>
+                  </Col>
+                </Row>
               </Col>
             </Row>
             <Row align="middle">
               <Col style={styles.colStyle} span={24}>
                 <FormItem
+                  {...formItemLayout}
                   label="Description"
                   name="description"
                   rules={[
@@ -249,22 +235,21 @@ const FeedbackCreateComponent = ({
               </Col>
               <Col style={styles.colStyle} span={24}>
                 <FormItem
+                  {...formItemLayout}
                   name="imageList"
                   label={
                     <span>
-                      <span style={{ color: 'red' }}>*</span> Image List
+                      <span style={{ color: 'red' }}>*</span> File Description
                     </span>
                   }
                 >
-                  <ImgCrop rotate>
-                    <Upload
-                      accept=".png, .jpg, .jpeg"
-                      action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-                      listType="picture-card"
-                      fileList={fileList}
-                      onChange={onChange}
-                      onPreview={onPreview}
-                      beforeUpload={(file) => {
+                  <Upload
+                    action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+                    listType="text"
+                    fileList={fileList}
+                    onChange={onChange}
+                    //onPreview={onPreview}
+                    /*beforeUpload={(file) => {
                         if (acceptFileMimes.includes(file.type)) {
                           return true;
                         }
@@ -272,23 +257,12 @@ const FeedbackCreateComponent = ({
                           message: `We just accept file type for ${acceptFileTypes}`
                         });
                         return false;
-                      }}
-                    >
-                      {fileList.length < 5 && '+ Upload'}
-                      <Modal
-                        visible={preview.previewVisible}
-                        title={preview.previewTitle}
-                        footer={null}
-                        onCancel={onCancel}
-                      >
-                        <img
-                          alt="example"
-                          style={{ width: '100%' }}
-                          src={preview.previewImage}
-                        />
-                      </Modal>
-                    </Upload>
-                  </ImgCrop>
+                      }}*/
+                  >
+                    {fileList.length < 5 && (
+                      <Button icon={<UploadOutlined />}>Upload</Button>
+                    )}
+                  </Upload>
                 </FormItem>
               </Col>
             </Row>
