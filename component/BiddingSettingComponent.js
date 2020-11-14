@@ -9,17 +9,13 @@ import {
   Select,
   Typography,
   Form,
-  Empty
+  Empty,
+  Modal
 } from 'antd';
 import React, { useEffect, useState } from 'react';
 import moment from 'moment';
 import MarkdownEditorComponent from './MarkdownEditorComponent';
-import { displayCurrency } from '../utils';
-import {
-  currencyFormatter,
-  currencyParser,
-  currencyValue
-} from '../libs/currencyFormatter';
+import { displayCurrency, openNotification } from '../utils';
 import { useRouter } from 'next/router';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
@@ -28,17 +24,22 @@ import {
   GetGroupDetailsData,
   GetGroupDetailsError
 } from '../stores/GroupState';
-import { get, max } from 'lodash/fp';
+import {
+  createReverseAuction,
+  CreateReverseAuctionData
+} from '../stores/AuctionState';
 const { Title } = Typography;
 const { Option } = Select;
 
 const connectToRedux = connect(
   createStructuredSelector({
     groupDetailsData: GetGroupDetailsData,
-    groupDetailsError: GetGroupDetailsError
+    groupDetailsError: GetGroupDetailsError,
+    submitAuctionData: CreateReverseAuctionData
   }),
   (dispatch) => ({
-    getGroupDetails: (id) => dispatch(getGroupDetails(id))
+    getGroupDetails: (id) => dispatch(getGroupDetails(id)),
+    submitAuction: (values) => dispatch(createReverseAuction(values))
   })
 );
 
@@ -73,7 +74,9 @@ const BiddingSettingComponent = ({
   setDefaultTab,
   getGroupDetails,
   groupDetailsData,
-  groupDetailsError
+  groupDetailsError,
+  submitAuction,
+  submitAuctionData
 }) => {
   const [brief, setBrief] = useState(null);
   const [currentPrice, setCurrentPrice] = useState(0);
@@ -94,8 +97,38 @@ const BiddingSettingComponent = ({
 
   const onFinish = (values) => {
     console.log('Received values of form: ', values);
-    setIsDoneSetting(true);
+    if (!(values.brief || {}).value) {
+      openNotification('error', {
+        message: "Please input the auction's brief"
+      });
+      return;
+    }
+    values.quantity = values.quantity + '';
+    values.currentPrice = values.currentPrice + '';
+    values.qualificationPrice = values.qualificationPrice + '';
+    values.minimumDuration = +values.minimumDuration;
+    values.dynamicClosePeriod = +values.dynamicClosePeriod;
+    values.minimumBidChange = +values.minimumBidChange;
+    values.maximumBidChange = +values.maximumBidChange;
+    values.groupId = groupId;
+    values.description = (values.brief || {}).value;
+    values.auctionStartTime = new Date(values.auctionStartTime);
+    Modal.confirm({
+      title: 'Do you want create auction?',
+      okText: 'Submit',
+      cancelText: 'Cancel',
+      onOk: () => {
+        submitAuction(values);
+      }
+    });
   };
+
+  useEffect(() => {
+    if (submitAuctionData) {
+      setIsDoneSetting(true);
+      setDefaultTab('2');
+    }
+  }, [submitAuctionData, setDefaultTab, setIsDoneSetting]);
 
   useEffect(() => {
     setCurrentValue(quantity * currentPrice);
@@ -103,10 +136,6 @@ const BiddingSettingComponent = ({
   useEffect(() => {
     setQualificationValue(quantity * qualificationPrice);
   }, [qualificationPrice, quantity]);
-
-  useEffect(() => {
-    console.log({ currentValue });
-  }, [currentValue]);
 
   useEffect(() => {
     if (groupDetailsData) {
@@ -134,10 +163,10 @@ const BiddingSettingComponent = ({
         initialValues={{
           group: groupName,
           productName: productName,
-          dynamic: 'none',
+          dynamicClosePeriod: 'none',
           minimumDuration: '10',
-          minimumBid: minBidChange,
-          maximumBid: maxBidChange,
+          minimumBidChange: minBidChange,
+          maximumBidChange: maxBidChange,
           currency: 'VNĐ',
           units: unitOfMeasure.description,
           quantity: groupDetailsData.quantity
@@ -287,7 +316,7 @@ const BiddingSettingComponent = ({
           <Col md={12} sm={20} style={styles.colStyle}>
             <Form.Item
               label="Qualification Price"
-              name="quaPrice"
+              name="qualificationPrice"
               rules={[
                 {
                   required: true,
@@ -317,7 +346,16 @@ const BiddingSettingComponent = ({
         </Row>
         <Row>
           <Col md={12} sm={20} style={styles.colStyle}>
-            <Form.Item label="Brief" name="brief">
+            <Form.Item
+              label="Brief"
+              name="brief"
+              rules={[
+                {
+                  required: true,
+                  message: "Please input the auction's brief"
+                }
+              ]}
+            >
               <MarkdownEditorComponent value={brief} setValue={setBrief} />
             </Form.Item>
           </Col>
@@ -328,7 +366,7 @@ const BiddingSettingComponent = ({
           <Col md={12} sm={20} style={styles.colStyle}>
             <Form.Item
               label="Auction start time"
-              name="startTime"
+              name="auctionStartTime"
               rules={[
                 {
                   required: true,
@@ -372,7 +410,7 @@ const BiddingSettingComponent = ({
           <Col md={12} sm={20} style={styles.colStyle}>
             <Form.Item
               label="Dynamic Close Period"
-              name="dynamic"
+              name="dynamicClosePeriod"
               rules={[
                 {
                   required: true,
@@ -381,7 +419,7 @@ const BiddingSettingComponent = ({
               ]}
             >
               <Select onChange={handleChange} style={{ width: '100%' }}>
-                <Option value="none">None</Option>
+                <Option value={0}>None</Option>
                 <Option value={1}>Last minute</Option>
                 <Option value={2}>Last 2 minutes</Option>
                 <Option value={5}>Last 5 minutes</Option>
@@ -395,7 +433,7 @@ const BiddingSettingComponent = ({
               <Col span={12}>
                 <Form.Item
                   label="Minimum Bid Change"
-                  name="minimumBid"
+                  name="minimumBidChange"
                   rules={[
                     {
                       required: true,
@@ -415,7 +453,7 @@ const BiddingSettingComponent = ({
               <Col span={12} style={styles.colStyle}>
                 <Form.Item
                   label="Maximum Bid Change"
-                  name="maximumBid"
+                  name="maximumBidChange"
                   rules={[
                     {
                       required: true,
@@ -440,12 +478,7 @@ const BiddingSettingComponent = ({
 
         <Form.Item>
           <Row style={{ padding: 24 }} justify="end">
-            <Button
-              htmlType="submit"
-              onClick={() => setDefaultTab('2')}
-              size="large"
-              type="primary"
-            >
+            <Button htmlType="submit" size="large" type="primary">
               Save & Go to Next Step
             </Button>
           </Row>

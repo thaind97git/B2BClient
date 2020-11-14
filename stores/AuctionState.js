@@ -1,16 +1,16 @@
-import { makeFetchAction } from "redux-api-call";
+import { makeFetchAction } from 'redux-api-call';
 
-import { respondToSuccess } from "../middlewares/api-reaction";
-import nfetch from "../libs/nfetch";
-import { generateQuery, getResetter } from "../libs";
+import { respondToSuccess } from '../middlewares/api-reaction';
+import nfetch from '../libs/nfetch';
+import { generateQuery, getResetter } from '../libs';
 
-export const CREATE_REVERSE_AUCTION = "CreateReverseAuctionAPI";
+export const CREATE_REVERSE_AUCTION = 'CreateReverseAuctionAPI';
 
 const CreateReverseAuctionAPI = makeFetchAction(
   CREATE_REVERSE_AUCTION,
   (values) =>
     nfetch({
-      endpoint: "/api/ReversAuction",
+      endpoint: '/api/ReverseAuction'
     })(values)
 );
 

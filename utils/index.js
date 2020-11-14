@@ -204,3 +204,6 @@ export const getCurrentUserImage = (image) =>
   image ? `${process.env.API_SERVER_URL}/api/Account/Avatar/${image}` : null;
 export const getDefaultProductImage = () =>
   '/static/images/default_product_img.jpg';
+
+export const getCurrentTimezone = () =>
+  Intl.DateTimeFormat().resolvedOptions().timeZone;

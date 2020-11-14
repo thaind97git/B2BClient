@@ -12,9 +12,11 @@ import {
   ACTIVE_SUPPLIER_PRODUCT,
   BAN_USER,
   DELETE_SUPPLIER_PRODUCT,
+  IGNORE_SUPPLIER,
   SUPPLIER_REGISTER_PRODUCT,
   SUPPLIER_UPDATE_QUOTATION,
-  UN_BAN_USER
+  UN_BAN_USER,
+  UN_IGNORE_SUPPLIER
 } from './SupplierState';
 import { USER_LOGIN, USER_REGISTER } from './UserState';
 
@@ -69,6 +71,12 @@ export default {
         case CREATE_REVERSE_AUCTION:
           msgNotify = 'Create new reverse auction success';
           break;
+        case IGNORE_SUPPLIER:
+          msgNotify = 'Ignore success';
+          break;
+        case UN_IGNORE_SUPPLIER:
+          msgNotify = 'Un-Ignore success';
+          break;
         default:
           break;
       }
@@ -120,6 +128,12 @@ export default {
           break;
         case CREATE_REVERSE_AUCTION:
           msgNotify = 'Create new reverse auction fail';
+          break;
+        case IGNORE_SUPPLIER:
+          msgNotify = 'Ignore fail';
+          break;
+        case UN_IGNORE_SUPPLIER:
+          msgNotify = 'Un-Ignore fail';
           break;
         default:
           break;

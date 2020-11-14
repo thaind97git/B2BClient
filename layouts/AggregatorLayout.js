@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 import { Layout, Menu, Row, Dropdown } from 'antd';
 import {
-  UserOutlined,
+  UsergroupAddOutlined,
   DownOutlined,
   LoginOutlined,
   MenuUnfoldOutlined,
@@ -42,7 +42,7 @@ const ADMIN_MENU = [
   },
   {
     key: '4',
-    icon: <UserOutlined />,
+    icon: <UsergroupAddOutlined />,
     label: 'Groups',
     link: '/aggregator/group',
     subMenu: []

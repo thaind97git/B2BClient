@@ -14,6 +14,7 @@ export const USER_UPLOAD_AVATAR = "UserUploadAvatarAPI";
 export const USER_UPDATE_PASSWORD = "UserUpdatePasswordAPI"
 export const USER_ACTIVE_CODE = "UserActiveCodeAPI";
 export const USER_UPDATE_PASSWORD_BY_CODE = "UserUpdatePasswordByCodeAPI";
+const GET_USER = 'GetUserAPI';
 
 //Login
 export const UserLoginAPI = makeFetchAction(USER_LOGIN, ({ email, password }) =>
@@ -244,3 +245,17 @@ export const userUpdatePasswordByCode = ({ email, password, code }) =>
 export const userUpdatePasswordByCodeData = UserUpdatePasswordByCodeAPI.dataSelector;
 export const userUpdatePasswordByCodeError = UserUpdatePasswordByCodeAPI.errorSelector;
 export const userUpdatePasswordByCodeResetter = getResetter(UserUpdatePasswordByCodeAPI);
+
+//Get User
+const GetUserAPI = makeFetchAction(GET_USER, ({ id }) =>
+  nfetch({
+    endpoint: `/api/Account/${id}`,
+    method: "GET"
+  })()
+);
+
+export const getUser = (id) =>
+  respondToSuccess(GetUserAPI.actionCreator({ id }));
+export const getUserData = GetUserAPI.dataSelector;
+export const getUserError = GetUserAPI.errorSelector;
+export const getUserResetter = getResetter(GetUserAPI);

@@ -132,7 +132,8 @@ const GroupRequestDetailsTabComponent = ({
   removeRequestFromGroup,
   addRequestToGroup,
   addRequestToGroupData,
-  groupId
+  groupId,
+  getGroupDetails
 }) => {
   const [isOpenAddRequest, setIsOpenAddRequest] = useState(false);
   const [openRequestDetail, setOpenRequestDetail] = useState(false);
@@ -145,8 +146,8 @@ const GroupRequestDetailsTabComponent = ({
       DEFAULT_PAGING_INFO.pageSize,
       groupId
     );
+    typeof getGroupDetails === 'function' && getGroupDetails(groupId);
   };
-
   useEffect(() => {
     if (addRequestToGroupData) {
       setIsOpenAddRequest(false);
