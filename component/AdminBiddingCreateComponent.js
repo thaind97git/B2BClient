@@ -38,7 +38,8 @@ const AdminBiddingCreateComponent = () => {
             Add New Supplier
           </Button>
         </div>
-      )
+      ),
+      disabled: isDoneSetting ? false : true
     }
   ];
 

@@ -16,6 +16,7 @@ import {
   GetSupplierGroupChatData
 } from '../stores/ConversationState';
 import moment from 'moment';
+import SignalR from '../libs/signalR';
 
 const connectToRedux = connect(
   createStructuredSelector({
@@ -68,6 +69,9 @@ const GroupTile = ({
   </Row>
 );
 
+const signalR = new SignalR();
+signalR.startConnection();
+
 const SupplierChatComponent = ({
   supplierGroupChatData,
   getSupplierGroupChat
@@ -113,6 +117,7 @@ const SupplierChatComponent = ({
         key: id,
         content: (
           <MessageList
+            signalR={signalR}
             getNewMessage={(message) => setNewMessage(message)}
             conversationId={currentGroupIdSelected}
             titleProps={{

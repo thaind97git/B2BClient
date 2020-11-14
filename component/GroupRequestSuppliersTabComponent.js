@@ -126,8 +126,6 @@ const GroupRequestSuppliersTabComponent = ({
     getSupplierByGroupId(
       DEFAULT_PAGING_INFO.page,
       DEFAULT_PAGING_INFO.pageSize,
-      null,
-      null,
       groupId
     );
   };

@@ -4,6 +4,7 @@ import moment from 'moment';
 
 export default function ConversationListItem({ data, isIgnored }) {
   const { photo, name, text = '', lastMessageTime } = data;
+
   return (
     <div
       className="conversation-list-item"
@@ -17,7 +18,7 @@ export default function ConversationListItem({ data, isIgnored }) {
             <p className="conversation-snippet">
               {!!text && text.trim() ? text : 'N/A'}{' '}
               <span>&nbsp;&nbsp;&nbsp;</span>
-              {lastMessageTime && moment(lastMessageTime).fromNow()}
+              {lastMessageTime && moment.utc(lastMessageTime).local().fromNow()}
             </p>
           </span>
         </div>
