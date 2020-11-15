@@ -9,6 +9,8 @@ const AUCTION_FILTER = 'AuctionFilterAPI';
 const GET_AUCTION_DETAILS = 'GetAuctionDetailsAPI';
 export const CANCEL_AUCTION = 'CancelAuctionAPI';
 export const RESPONSE_AUCTION_INVITATION = 'ResponseAuctionInvitationAPI';
+export const PLACE_NEW_BID = 'PlaceNewBidAPI';
+const GET_HISTORY_AUCTION = 'GetHistoryAuctionAPI';
 const CreateReverseAuctionAPI = makeFetchAction(
   CREATE_REVERSE_AUCTION,
   (values) =>
@@ -143,3 +145,38 @@ export const ResponseAuctionInvitationError =
 export const ResponseAuctionInvitationResetter = getResetter(
   ResponseAuctionInvitationAPI
 );
+
+// Cancel Auctions
+const PlaceNewBidAPI = makeFetchAction(
+  PLACE_NEW_BID,
+  ({ reverseAuctionId, bid }) =>
+    nfetch({
+      endpoint: `/api/ReverseAuction/PlaceBid`,
+      method: 'POST'
+    })({ reverseAuctionId, bid })
+);
+
+export const placeNewBid = ({ reverseAuctionId, bid }, callback) =>
+  respondToSuccess(
+    PlaceNewBidAPI.actionCreator({ reverseAuctionId, bid }),
+    () => {
+      typeof callback === 'function' && callback();
+    }
+  );
+export const PlaceNewBidData = PlaceNewBidAPI.dataSelector;
+export const PlaceNewBidError = PlaceNewBidAPI.errorSelector;
+export const PlaceNewBidResetter = getResetter(PlaceNewBidAPI);
+
+// Get Auctions History
+const GetAuctionHistoryAPI = makeFetchAction(GET_HISTORY_AUCTION, (auctionId) =>
+  nfetch({
+    endpoint: `/api/ReverseAuction/History/${auctionId}`,
+    method: 'GET'
+  })()
+);
+
+export const GetAuctionHistory = (auctionId) =>
+  respondToSuccess(GetAuctionHistoryAPI.actionCreator(auctionId));
+export const GetAuctionHistoryData = GetAuctionHistoryAPI.dataSelector;
+export const GetAuctionHistoryError = GetAuctionHistoryAPI.errorSelector;
+export const GetAuctionHistoryResetter = getResetter(GetAuctionHistoryAPI);

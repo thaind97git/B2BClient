@@ -1,14 +1,13 @@
 import { HubConnectionBuilder } from '@microsoft/signalr';
-import React, { useEffect, useState } from 'react';
 import { getToken } from './localStorage';
 const API_SERVER_URL =
   process.env.API_SERVER_URL || 'http://35.240.230.138:5555';
 
 class SignalR {
-  constructor() {
+  constructor({ hubDomain = 'chatHub' }) {
     this.serverSignalR = API_SERVER_URL;
     this.connection = new HubConnectionBuilder()
-      .withUrl(`${API_SERVER_URL}/chatHub`, {
+      .withUrl(`${API_SERVER_URL}/${hubDomain}`, {
         accessTokenFactory: () => {
           return `${getToken()}`;
         }
@@ -32,12 +31,6 @@ class SignalR {
 
   async onListen(eventName, callback) {
     if (this.connection && this.connection.connectionStarted) {
-      //   this.connection.start().then(() => {
-      //     this.connection.on(eventName, (data) => {
-      //       typeof callback === 'function' && callback(data);
-      //     });
-      //   });
-      // } else {
       this.connection.on(eventName, (data) => {
         typeof callback === 'function' && callback(data);
       });

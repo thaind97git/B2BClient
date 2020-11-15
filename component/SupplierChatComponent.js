@@ -69,7 +69,7 @@ const GroupTile = ({
   </Row>
 );
 
-const signalR = new SignalR();
+const signalR = new SignalR({});
 signalR.startConnection();
 
 const SupplierChatComponent = ({

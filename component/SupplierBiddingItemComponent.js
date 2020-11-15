@@ -25,6 +25,7 @@ import {
   responseAuctionInvitation,
   ResponseAuctionInvitationData
 } from '../stores/AuctionState';
+import { B_DONE } from '../enums/biddingStatus';
 const { Title } = Typography;
 const styles = {
   root: {
@@ -96,7 +97,8 @@ const SupplierBiddingItemComponent = ({
     aggregator = {},
     currency,
     product = {},
-    dateCreated
+    dateCreated,
+    reverseAuctionStatus = {}
   } = bidding || {};
   const { category = {} } = product;
   const { firstName, lastName } = aggregator;
@@ -104,10 +106,20 @@ const SupplierBiddingItemComponent = ({
     <div style={styles.root}>
       <Badge.Ribbon
         color={
-          closed ? 'red' : auctionStartTime <= Date.now() ? 'blue' : 'gold'
+          reverseAuctionStatus.id === B_DONE
+            ? 'green'
+            : closed
+            ? 'red'
+            : auctionStartTime <= Date.now()
+            ? 'blue'
+            : 'gold'
         }
         placement="end"
-        text={getBadgeAuctionLabel(auctionStartTime, closed)}
+        text={getBadgeAuctionLabel(
+          auctionStartTime,
+          closed,
+          reverseAuctionStatus.id
+        )}
       >
         <Row className="bidding-item" align="middle">
           <Col style={styles.detailSection} md={15} sm={24}>

@@ -19,8 +19,7 @@ const BiddingOverviewComponent = ({ isSupplier = true, auction }) => {
     minimumDuration,
     aggregator = {},
     quantity,
-    currentPrice,
-    qualificationPrice
+    currentPrice
   } = auction;
   const { firstName, lastName, email, phoneNumber } = aggregator;
   const { productName, unitOfMeasure = {} } = product;
@@ -93,17 +92,9 @@ const BiddingOverviewComponent = ({ isSupplier = true, auction }) => {
                   {quantity} {unitOfMeasure.description}
                 </span>
               </Col>
-              {!isSupplier && (
-                <Col span={24}>
-                  Current Price:{' '}
-                  <span className="info">{displayCurrency(currentPrice)}</span>
-                </Col>
-              )}
               <Col span={24}>
-                Qualification Price:{' '}
-                <span className="info">
-                  {displayCurrency(qualificationPrice)}
-                </span>
+                Current Price:{' '}
+                <span className="info">{displayCurrency(currentPrice)}</span>
               </Col>
             </Row>
           }
@@ -124,9 +115,9 @@ const BiddingOverviewComponent = ({ isSupplier = true, auction }) => {
               <Col span={24}>
                 Bid Direction: <span className="info">Reverse</span>
               </Col>
-              <Col span={24}>
+              {/* <Col span={24}>
                 Event type: <span className="info">Ranked</span>
-              </Col>
+              </Col> */}
               <Col span={24}>
                 Minimum Duration:{' '}
                 <span className="info">{timeConvert(minimumDuration)}</span>

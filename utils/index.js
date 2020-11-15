@@ -5,6 +5,7 @@ import moment from 'moment';
 import Router from 'next/router';
 import { notification } from 'antd';
 import brn from 'brn';
+import { B_CANCELED, B_CLOSED, B_DONE, B_FAILED } from '../enums/biddingStatus';
 
 export const currentPath = () => !isServer && Router.route;
 
@@ -220,12 +221,30 @@ export const timeConvert = (n) => {
   return rsH || rsM ? `${rsH} ${rsM}` : 'N/A';
 };
 
-export const getBadgeAuctionLabel = (auctionStartTime, isClosed = false) => {
+export const getBadgeAuctionLabel = (
+  auctionStartTime,
+  isClosed = false,
+  auctionStatus
+) => {
   let text = 'A next few days';
   const dateBetween =
     new Date(auctionStartTime).getDate() - new Date().getDate();
   if (isClosed) {
-    text = 'Closed';
+    const getLabelByStatus = (status) => {
+      switch (status) {
+        case B_DONE:
+          return 'Done';
+        case B_CLOSED:
+          return 'Closed';
+        case B_CANCELED:
+          return 'Canceled';
+        case B_FAILED:
+          return 'Failed';
+        default:
+          break;
+      }
+    };
+    text = getLabelByStatus(auctionStatus);
   } else if (dateBetween <= 0) {
     text = 'Happening';
   } else if (dateBetween === 1) {

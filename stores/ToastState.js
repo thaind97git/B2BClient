@@ -3,6 +3,7 @@ import { openNotification } from '../utils';
 import {
   CANCEL_AUCTION,
   CREATE_REVERSE_AUCTION,
+  PLACE_NEW_BID,
   RESPONSE_AUCTION_INVITATION
 } from './AuctionState';
 import {
@@ -87,6 +88,9 @@ export default {
         case RESPONSE_AUCTION_INVITATION:
           msgNotify = 'Response event success';
           break;
+        case PLACE_NEW_BID:
+          msgNotify = 'Place new bid success';
+          break;
         default:
           break;
       }
@@ -150,6 +154,9 @@ export default {
           break;
         case RESPONSE_AUCTION_INVITATION:
           msgNotify = 'Response event fail';
+          break;
+        case PLACE_NEW_BID:
+          msgNotify = 'Place new bid fail';
           break;
         default:
           break;

@@ -81,8 +81,6 @@ const BiddingSettingComponent = ({
   const [brief, setBrief] = useState(null);
   const [currentPrice, setCurrentPrice] = useState(0);
   const [currentValue, setCurrentValue] = useState(0);
-  const [qualificationValue, setQualificationValue] = useState(0);
-  const [qualificationPrice, setQualificationPrice] = useState(0);
   const [minBidChange, setMinBidChange] = useState(0.5);
   const [maxBidChange, setMaxBidChange] = useState(10);
   const [quantity, setQuantity] = useState(0);
@@ -105,7 +103,6 @@ const BiddingSettingComponent = ({
     }
     values.quantity = values.quantity + '';
     values.currentPrice = values.currentPrice + '';
-    values.qualificationPrice = values.qualificationPrice + '';
     values.minimumDuration = +values.minimumDuration;
     values.dynamicClosePeriod = +values.dynamicClosePeriod;
     values.minimumBidChange = +values.minimumBidChange;
@@ -133,9 +130,6 @@ const BiddingSettingComponent = ({
   useEffect(() => {
     setCurrentValue(quantity * currentPrice);
   }, [currentPrice, quantity]);
-  useEffect(() => {
-    setQualificationValue(quantity * qualificationPrice);
-  }, [qualificationPrice, quantity]);
 
   useEffect(() => {
     if (groupDetailsData) {
@@ -279,7 +273,7 @@ const BiddingSettingComponent = ({
         <Row>
           <Col md={12} sm={20} style={styles.colStyle}>
             <Form.Item
-              label="Current Price (Not show to participants)"
+              label="Current Price"
               name="currentPrice"
               rules={[
                 {
@@ -303,42 +297,10 @@ const BiddingSettingComponent = ({
             </Form.Item>
           </Col>
           <Col md={12} sm={20} style={styles.colStyle}>
-            <Form.Item
-              label="Current Value (Not show to participants)"
-              name="currentValue"
-            >
+            <Form.Item label="Current Value" name="currentValue">
               <Title level={4}>{displayCurrency(currentValue)}</Title>Average
               price in unit: {displayCurrency(Math.floor(averagePrice))}
-            </Form.Item>
-          </Col>
-        </Row>
-        <Row>
-          <Col md={12} sm={20} style={styles.colStyle}>
-            <Form.Item
-              label="Qualification Price"
-              name="qualificationPrice"
-              rules={[
-                {
-                  required: true,
-                  message: 'Please enter the qualification price'
-                }
-              ]}
-            >
-              <InputNumber
-                placeholder="Enter the qualification price"
-                style={{ width: '100%' }}
-                min={0}
-                formatter={(value) =>
-                  `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-                }
-                parser={(value) => value.replace(/,*/g, '')}
-                onChange={(value) => setQualificationPrice(value)}
-              />
-            </Form.Item>
-          </Col>
-          <Col md={12} sm={20} style={styles.colStyle}>
-            <Form.Item label="Qualification Value" name="quaValue">
-              <Title level={4}>{displayCurrency(qualificationValue)} </Title>{' '}
+              <br />
               Min RFQ price: {displayCurrency(minPrice)} - Max RFQ price:{' '}
               {displayCurrency(maxPrice)}
             </Form.Item>
@@ -377,8 +339,8 @@ const BiddingSettingComponent = ({
               <DatePicker
                 style={{ width: '100%' }}
                 format="YYYY-MM-DD HH:mm:ss"
-                disabledDate={disabledDate}
-                disabledTime={disabledDateTime}
+                // disabledDate={disabledDate}
+                // disabledTime={disabledDateTime}
                 showTime={{ defaultValue: moment('00:00:00', 'HH:mm:ss') }}
               />
             </Form.Item>
