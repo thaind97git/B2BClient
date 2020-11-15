@@ -65,7 +65,7 @@ const AdminBiddingDetailsComponent = ({
     {
       title: 'Reverse Auction',
       key: '2',
-      content: <BiddingResultListComponent />
+      content: <BiddingResultListComponent auction={auctionDetailsData} />
     }
   ];
   return (

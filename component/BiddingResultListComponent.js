@@ -1,10 +1,35 @@
 import { Collapse, Row, Table, Typography, List, Button } from 'antd';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { CaretRightOutlined } from '@ant-design/icons';
 import { displayCurrency } from '../utils';
 import Router from 'next/router';
+import SignalR from '../libs/signalR';
+import { connect } from 'react-redux';
+import { createStructuredSelector } from 'reselect';
+import {
+  GetAuctionHistoryData,
+  GetAuctionHistory
+} from '../stores/AuctionState';
+import { get } from 'lodash/fp';
+import moment from 'moment';
+import ScrollToBottom from 'react-scroll-to-bottom';
 const { Panel } = Collapse;
 const { Link } = Typography;
+
+const signalR = new SignalR({
+  hubDomain: 'reverseAuctionHub'
+});
+signalR.startConnection();
+
+const connectToRedux = connect(
+  createStructuredSelector({
+    auctionHistoryData: GetAuctionHistoryData
+  }),
+  (dispatch) => ({
+    getAuctionHistory: (id) => dispatch(GetAuctionHistory(id))
+  })
+);
+
 const columns = [
   {
     title: <b>CURRENT VALUE</b>,
@@ -62,18 +87,65 @@ const dataSrc = [
     active: 3
   }
 ];
-const data = [
-  '12:40:00  Supplier-1 placed a bid of 800,000 đ.',
-  '12:40:03  Supplier-2 placed a bid of 790,000 đ.',
-  '12:41:20  Supplier-1 placed a bid of 780,000 đ.',
-  '12:41:30  Supplier-3 placed a bid of 772,000 đ.',
-  '12:41:50  Supplier-1 placed a bid of 765,000 đ.',
-  '12:43:40  Supplier-2 placed a bid of 764,000 đ.',
-  '12:45:10  Supplier-1 placed a bid of 760,000 đ.',
-  '12:46:05  Supplier-3 placed a bid of 740,000 đ.'
-];
+const getRecordHistory = ({ auctionData = [] }) => {
+  return (
+    (auctionData &&
+      auctionData.map((auction) => {
+        let result = `${moment
+          .utc(auction.dateCreated)
+          .local()
+          .format('hh:mm:ss')} ${get('supplier.description')(
+          auction
+        )} placed a bid of ${displayCurrency(auction.price)}.`;
+        return result;
+      })) ||
+    []
+  );
+};
 
-const BiddingResultListComponent = () => {
+const BiddingResultListComponent = ({
+  getAuctionHistory,
+  auctionHistoryData,
+  auction
+}) => {
+  const [biddingHistory, setBiddingHistory] = useState([]);
+
+  useEffect(() => {
+    if (auction) {
+      const { id } = auction;
+      getAuctionHistory(id);
+    }
+  }, [auction, getAuctionHistory]);
+
+  // Set history total lot at the first load
+  useEffect(() => {
+    if (auctionHistoryData && auction) {
+      console.log({ auctionHistoryData });
+      // set Total lot
+      // setTotalLot(Math.floor(quantity * lastedPrice));
+      setBiddingHistory(auctionHistoryData);
+    }
+  }, [auctionHistoryData, auction]);
+
+  useEffect(() => {
+    signalR.onListen('NewBid', (history) => {
+      if (
+        history &&
+        history.price &&
+        biddingHistory &&
+        biddingHistory.length > 0
+      ) {
+        if (
+          biddingHistory[biddingHistory.length - 1].reverseAuctionHistoryId !==
+          history.reverseAuctionHistoryId
+        ) {
+          const cloneHistory = [...biddingHistory];
+          cloneHistory.push(history);
+          setBiddingHistory([...cloneHistory]);
+        }
+      }
+    });
+  }, [biddingHistory]);
   return (
     <Row style={{ width: '100%' }}>
       <Collapse
@@ -90,13 +162,17 @@ const BiddingResultListComponent = () => {
           key="1"
           className="site-collapse-custom-panel"
         >
-          <div style={{ height: 200, overflowY: 'scroll' }}>
-            <List
-              size="small"
-              dataSource={data}
-              renderItem={(item) => <List.Item>{item}</List.Item>}
-            />
-          </div>
+          <ScrollToBottom>
+            <div style={{ height: 200 }}>
+              <List
+                size="small"
+                dataSource={getRecordHistory({
+                  auctionData: biddingHistory || []
+                })}
+                renderItem={(item) => <List.Item>{item}</List.Item>}
+              />
+            </div>
+          </ScrollToBottom>
         </Panel>
       </Collapse>
       <Table
@@ -119,4 +195,4 @@ const BiddingResultListComponent = () => {
   );
 };
 
-export default BiddingResultListComponent;
+export default connectToRedux(BiddingResultListComponent);

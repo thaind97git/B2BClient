@@ -25,7 +25,7 @@ import {
   responseAuctionInvitation,
   ResponseAuctionInvitationData
 } from '../stores/AuctionState';
-import { B_DONE } from '../enums/biddingStatus';
+import { B_ACTIVE, B_DONE } from '../enums/biddingStatus';
 const { Title } = Typography;
 const styles = {
   root: {
@@ -108,6 +108,8 @@ const SupplierBiddingItemComponent = ({
         color={
           reverseAuctionStatus.id === B_DONE
             ? 'green'
+            : reverseAuctionStatus.id === B_ACTIVE
+            ? 'blue'
             : closed
             ? 'red'
             : auctionStartTime <= Date.now()

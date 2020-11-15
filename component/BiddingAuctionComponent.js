@@ -30,7 +30,7 @@ import {
 import { get } from 'lodash/fp';
 import moment from 'moment';
 import SignalR from '../libs/signalR';
-
+import ScrollToBottom from 'react-scroll-to-bottom';
 const { Panel } = Collapse;
 const connectToRedux = connect(
   createStructuredSelector({
@@ -84,11 +84,6 @@ const columns = [
     key: 'total',
     render: (text, record) => `${record.total}`
   }
-  // {
-  //   title: "Rank",
-  //   key: "rank",
-  //   render: (text, record) => <Rank rank={record.rank} />,
-  // },
 ];
 
 const data = [
@@ -115,7 +110,7 @@ const data = [
 const getLastedOwnerBid = (bidHistory = []) => {
   let data = {};
   const arrayOfOwner =
-    bidHistory && bidHistory.filter((bid = {}) => bid.supplier !== null);
+    bidHistory && bidHistory.filter((bid = {}) => !!bid.supplier);
   if (!!arrayOfOwner) {
     data = arrayOfOwner[arrayOfOwner.length - 1];
   }
@@ -174,6 +169,8 @@ const BiddingAuctionComponent = ({
   const [firstTime, setFirstTime] = useState(true);
   const [yourLastedBid, setYourLastedBid] = useState(0);
   const [isYouBided, setIsYouBided] = useState(false);
+
+  const [isFirstRank, setIsFirstRank] = useState(false);
   useEffect(() => {
     if (auction) {
       const { id, minimumBidChange, maximumBidChange } = auction;
@@ -182,6 +179,15 @@ const BiddingAuctionComponent = ({
       setMaxPercentageChange(maximumBidChange);
     }
   }, [auction, getAuctionHistory]);
+
+  // Check is first rank
+  useEffect(() => {
+    if (lowestBid === yourLastedBid) {
+      setIsFirstRank(true);
+    } else {
+      setIsFirstRank(false);
+    }
+  }, [yourLastedBid, lowestBid]);
 
   // Calculate lowest bid at first time load data
   useEffect(() => {
@@ -236,12 +242,10 @@ const BiddingAuctionComponent = ({
         biddingHistory &&
         biddingHistory.length > 0
       ) {
-        // console.log({ biddingHistory });
-        // console.log({ lasted: biddingHistory[biddingHistory.length - 1] });
-        // console.log({ history });
         if (
           biddingHistory[biddingHistory.length - 1].reverseAuctionHistoryId !==
-          history.reverseAuctionHistoryId
+            history.reverseAuctionHistoryId &&
+          history.reverseAuctionId === auction.id
         ) {
           const cloneHistory = [...biddingHistory];
           cloneHistory.push(history);
@@ -249,7 +253,7 @@ const BiddingAuctionComponent = ({
         }
       }
     });
-  }, [biddingHistory]);
+  }, [biddingHistory, auction.id]);
 
   if (!auction) {
     return null;
@@ -273,19 +277,21 @@ const BiddingAuctionComponent = ({
           className="site-collapse-custom-panel"
         >
           {auctionHistoryData && auctionHistoryData.length > 0 ? (
-            <div style={{ height: 200, overflowY: 'scroll' }}>
-              <List
-                size="small"
-                dataSource={
-                  getRecordHistory({
-                    auctionData: biddingHistory,
-                    isAggregator,
-                    unit: unitOfMeasure.description
-                  }) || []
-                }
-                renderItem={(item) => <List.Item>{item}</List.Item>}
-              />
-            </div>
+            <ScrollToBottom>
+              <div style={{ height: 200 }}>
+                <List
+                  size="small"
+                  dataSource={
+                    getRecordHistory({
+                      auctionData: biddingHistory,
+                      isAggregator,
+                      unit: unitOfMeasure.description
+                    }) || []
+                  }
+                  renderItem={(item) => <List.Item>{item}</List.Item>}
+                />
+              </div>
+            </ScrollToBottom>
           ) : (
             <p>
               The Live Auction Feed will provide real-time notifications of
@@ -344,7 +350,7 @@ const BiddingAuctionComponent = ({
               )}
             </Descriptions.Item>
             <Descriptions.Item label="YOUR RANK" span={3}>
-              {yourLastedBid === lowestBid ? (
+              {isFirstRank ? (
                 <Rank rank={1} />
               ) : (
                 <Tag icon={<ExclamationCircleOutlined />} color="warning">
@@ -381,7 +387,12 @@ const BiddingAuctionComponent = ({
                   </Space>
                 </Row>
               ) : (
-                <Button onClick={() => setIsPlaceBid(true)}>Place Bid</Button>
+                <Button
+                  disabled={isFirstRank}
+                  onClick={() => setIsPlaceBid(true)}
+                >
+                  Place Bid
+                </Button>
               )}
             </Descriptions.Item>
           </Descriptions>
@@ -389,7 +400,6 @@ const BiddingAuctionComponent = ({
         <Col md={12} sm={24}>
           <Collapse defaultActiveKey="1">
             <Panel header="Your Bidding History" key="1">
-              {/* <Empty /> */}
               <Table columns={columns} dataSource={data} />
             </Panel>
           </Collapse>

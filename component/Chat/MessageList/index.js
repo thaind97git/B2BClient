@@ -12,6 +12,7 @@ import {
 } from '../../../stores/ConversationState';
 import { DEFAULT_PAGING_INFO } from '../../../utils';
 import { Col, Row } from 'antd';
+import ScrollToBottom from 'react-scroll-to-bottom';
 
 const connectToRedux = connect(
   createStructuredSelector({
@@ -197,18 +198,17 @@ function MessageList({
         </div>
       </Col>
       <Col
-        span={24}
-        className="message-list-chat"
         style={{
           padding: 10,
-          height: 'calc(100% - 94px)'
+          height: 'calc(100% - 94px)',
+          position: 'relative'
         }}
+        span={24}
+        className="message-list-chat"
       >
-        {!!messages ? <RenderMessages messagesData={messages} /> : null}{' '}
-        {/* <div
-          style={{ height: 1, position: 'relative', top: -30 }}
-          ref={messagesEndRef}
-        /> */}
+        <ScrollToBottom>
+          {!!messages ? <RenderMessages messagesData={messages} /> : null}{' '}
+        </ScrollToBottom>
       </Col>
       <Col span={24} style={{ height: 52 }}>
         <Compose sendMessage={sendMessage} />
