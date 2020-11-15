@@ -8,7 +8,7 @@ export const CREATE_REVERSE_AUCTION = 'CreateReverseAuctionAPI';
 const AUCTION_FILTER = 'AuctionFilterAPI';
 const GET_AUCTION_DETAILS = 'GetAuctionDetailsAPI';
 export const CANCEL_AUCTION = 'CancelAuctionAPI';
-
+export const RESPONSE_AUCTION_INVITATION = 'ResponseAuctionInvitationAPI';
 const CreateReverseAuctionAPI = makeFetchAction(
   CREATE_REVERSE_AUCTION,
   (values) =>
@@ -35,7 +35,8 @@ const AuctionFilterAPI = makeFetchAction(
     fromDate,
     toDate,
     pageIndex,
-    pageSize
+    pageSize,
+    orderByDateDescending
   }) =>
     nfetch({
       endpoint: `/api/ReverseAuction/Filter${generateQuery({
@@ -46,7 +47,8 @@ const AuctionFilterAPI = makeFetchAction(
         fromDate,
         toDate,
         pageIndex,
-        pageSize
+        pageSize,
+        orderByDateDescending
       })}`,
       method: 'GET'
     })()
@@ -60,7 +62,8 @@ export const auctionFilter = ({
   fromDate,
   toDate,
   pageIndex,
-  pageSize
+  pageSize,
+  orderByDateDescending
 }) =>
   respondToSuccess(
     AuctionFilterAPI.actionCreator({
@@ -71,7 +74,8 @@ export const auctionFilter = ({
       fromDate,
       toDate,
       pageIndex,
-      pageSize
+      pageSize,
+      orderByDateDescending
     })
   );
 export const AuctionFilterData = AuctionFilterAPI.dataSelector;
@@ -107,3 +111,35 @@ export const cancelAuction = (auctionId, callback) =>
 export const CancelAuctionData = CancelAuctionAPI.dataSelector;
 export const CancelAuctionError = CancelAuctionAPI.errorSelector;
 export const CancelAuctionResetter = getResetter(CancelAuctionAPI);
+
+// Response Auction Invitation
+const ResponseAuctionInvitationAPI = makeFetchAction(
+  RESPONSE_AUCTION_INVITATION,
+  (reverseAuctionId, isAccept) =>
+    nfetch({
+      endpoint: `/api/Invitation/Response`,
+      method: 'PUT'
+    })({
+      reverseAuctionId,
+      isAccept
+    })
+);
+
+export const responseAuctionInvitation = (
+  reverseAuctionId,
+  isAccept,
+  callback
+) =>
+  respondToSuccess(
+    ResponseAuctionInvitationAPI.actionCreator(reverseAuctionId, isAccept),
+    () => {
+      typeof callback === 'function' && callback();
+    }
+  );
+export const ResponseAuctionInvitationData =
+  ResponseAuctionInvitationAPI.dataSelector;
+export const ResponseAuctionInvitationError =
+  ResponseAuctionInvitationAPI.errorSelector;
+export const ResponseAuctionInvitationResetter = getResetter(
+  ResponseAuctionInvitationAPI
+);

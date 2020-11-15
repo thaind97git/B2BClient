@@ -1,11 +1,52 @@
-import React, { Fragment } from "react";
-import { Row, Select, Space, Tabs } from "antd";
-import { ApartmentOutlined, ClusterOutlined } from "@ant-design/icons";
-import SupplierBiddingItemComponent from "./SupplierBiddingItemComponent";
+import React, { Fragment, useEffect, useState } from 'react';
+import { Empty, Row, Select, Space, Tabs } from 'antd';
+import { ApartmentOutlined, ClusterOutlined } from '@ant-design/icons';
+import SupplierBiddingItemComponent from './SupplierBiddingItemComponent';
+import { connect } from 'react-redux';
+import { createStructuredSelector } from 'reselect';
+import {
+  auctionFilter,
+  AuctionFilterData,
+  AuctionFilterError,
+  ResponseAuctionInvitationData,
+  ResponseAuctionInvitationResetter
+} from '../stores/AuctionState';
+import AllCategoryComponent from './AllCategoryComponent';
+import { B_CANCELED, B_CLOSED, B_DONE, B_FAILED } from '../enums/biddingStatus';
+import { DEFAULT_PAGING_INFO } from '../utils';
 
 const { TabPane } = Tabs;
 const { Option } = Select;
-
+const connectToRedux = connect(
+  createStructuredSelector({
+    auctionFilterData: AuctionFilterData,
+    auctionFilterError: AuctionFilterError,
+    responseInvitationData: ResponseAuctionInvitationData
+  }),
+  (dispatch) => ({
+    auctionFilter: ({
+      pageIndex,
+      pageSize,
+      searchMessage,
+      status,
+      categoryId,
+      isInvitation,
+      isDescending
+    }) =>
+      dispatch(
+        auctionFilter({
+          pageIndex,
+          pageSize,
+          name: searchMessage,
+          status,
+          categoryId,
+          isInvitation,
+          orderByDateDescending: isDescending
+        })
+      ),
+    resetResponseInvitation: () => dispatch(ResponseAuctionInvitationResetter)
+  })
+);
 const getFeatureDate = (numberDate = 0) => {
   const timeInOneDay = 24 * 60 * 60 * 1000;
   const currentDate = new Date(
@@ -17,110 +58,107 @@ const getFeatureDate = (numberDate = 0) => {
 const BIDDING_INVITE = [
   {
     id: 1,
-    title: "IR Night Vision Hidden Camera Watch Sport - 24/10/2020",
-    category: "Action & Sports Camera",
+    title: 'IR Night Vision Hidden Camera Watch Sport - 24/10/2020',
+    category: 'Action & Sports Camera',
     startTime: getFeatureDate(),
-    owner: "John Smith",
+    owner: 'John Smith',
     duration: 200,
-    currency: "VND",
-  },
-  // {
-  //   id: 2,
-  //   title: "Jean for men",
-  //   category: "Cloth",
-  //   startTime: getFeatureDate(1),
-  //   owner: "John Smith",
-  //   duration: 500,
-  //   currency: "VND",
-  // },
-  // {
-  //   id: 3,
-  //   title: "Iphone 12 Plus",
-  //   category: "Iphone",
-  //   startTime: Date.now(),
-  //   owner: "John Smith",
-  //   duration: 400,
-  //   currency: "USD",
-  // },
-  // {
-  //   id: 4,
-  //   title: "Apple Macbook Air 15 inches",
-  //   category: "Mackbook",
-  //   startTime: getFeatureDate(1),
-  //   owner: "John Smith",
-  //   duration: 100,
-  //   currency: "USD",
-  // },
+    currency: 'VND'
+  }
 ];
-const BIDDING_INVITE2 = [
-  {
-    id: 1,
-    title: "IR Night Vision Hidden Camera Watch Sport - 24/10/2020",
-    category: "Action & Sports Camera",
-    startTime: getFeatureDate(1),
-    owner: "John Smith",
-    duration: 200,
-    currency: "VND",
-  },
-  // {
-  //   id: 2,
-  //   title: "Jean for men",
-  //   category: "Cloth",
-  //   startTime: getFeatureDate(1),
-  //   owner: "John Smith",
-  //   duration: 500,
-  //   currency: "VND",
-  // },
-  // {
-  //   id: 3,
-  //   title: "Iphone 12 Plus",
-  //   category: "Iphone",
-  //   startTime: getFeatureDate(1),
-  //   owner: "John Smith",
-  //   duration: 400,
-  //   currency: "USD",
-  // },
-  // {
-  //   id: 4,
-  //   title: "Apple Macbook Air 15 inches",
-  //   category: "Mackbook",
-  //   startTime: getFeatureDate(1),
-  //   owner: "John Smith",
-  //   duration: 100,
-  //   currency: "USD",
-  // },
-];
+const callAuctionFilter = ({
+  key,
+  auctionFilter,
+  page,
+  pageSize,
+  categoryId,
+  isDescending
+}) => {
+  let isInvitation, status;
+  if (key === '1') {
+    isInvitation = true;
+  } else if (key === '2') {
+    isInvitation = 'false';
+  } else {
+    status = [B_CLOSED, B_CANCELED, B_FAILED, B_DONE];
+  }
+  auctionFilter({
+    pageIndex: page,
+    pageSize,
+    categoryId,
+    isInvitation,
+    isDescending,
+    status
+  });
+};
 
-const SupplierBiddingComponent = () => {
+const SupplierBiddingComponent = ({
+  auctionFilter,
+  auctionFilterData,
+  responseInvitationData,
+  resetResponseInvitation
+}) => {
+  const [currentTab, setCurrentTab] = useState('1');
+  const [category, setCategory] = useState('all');
+  const [page, setPage] = useState(DEFAULT_PAGING_INFO.page);
+  const [pageSize, setPageSize] = useState(DEFAULT_PAGING_INFO.pageSize);
+  const [isDescending, setIsDescending] = useState('true');
+
+  useEffect(() => {
+    callAuctionFilter({
+      key: currentTab,
+      auctionFilter,
+      page,
+      pageSize,
+      categoryId: category,
+      isDescending
+    });
+  }, [currentTab, page, pageSize, category, isDescending, auctionFilter]);
+
+  useEffect(() => {
+    if (!!responseInvitationData) {
+      callAuctionFilter({
+        key: currentTab,
+        auctionFilter,
+        page,
+        pageSize,
+        categoryId: category,
+        isDescending
+      });
+      resetResponseInvitation();
+    }
+  }, [responseInvitationData]);
+  let auctionData = [],
+    totalCount;
+  if (auctionFilterData) {
+    auctionData = auctionFilterData.data;
+    totalCount = auctionFilterData.total;
+  }
+  console.log({ auctionData });
   return (
     <Fragment>
       <Row justify="end">
         <Space>
+          <AllCategoryComponent
+            onGetLastValue={(value) => setCategory(value)}
+            size="large"
+            isSearchStyle={false}
+          />
           <Select
-            placeholder="Filter by category"
-            style={{
-              width: "200px",
-              margin: "0 4px",
-            }}
-          >
-            <Option value="c1">Category 1</Option>
-            <Option value="c2">Category 2</Option>
-            <Option value="c3">Category 3</Option>
-            <Option value="c4">Category 4</Option>
-          </Select>
-          <Select
+            size="large"
+            onChange={(value) => setIsDescending(value)}
             placeholder="Sort by"
             style={{
-              width: "200px",
-              margin: "0 4px",
+              width: '200px',
+              margin: '0 4px'
             }}
           >
-            <Option value="new">Newest</Option>
-            <Option value="old">Oldest</Option>
+            <Option value={'true'}>Newest</Option>
+            <Option value={'false'}>Oldest</Option>
           </Select>
         </Space>
       </Row>
-      <Tabs defaultActiveKey="1">
+      <Tabs defaultActiveKey="1" onChange={(key) => setCurrentTab(key)}>
         <TabPane
           tab={
             <span>
@@ -130,13 +168,15 @@ const SupplierBiddingComponent = () => {
           }
           key="1"
         >
-          {BIDDING_INVITE2.map((bidding, index) => (
-            <SupplierBiddingItemComponent
-              bidding={bidding}
-              key={index}
-              isInvitation={true}
-            />
-          ))}
+          {!!auctionData && auctionData.length > 0 ? (
+            auctionData.map((event, index) => {
+              return new Date(event.auctionStartTime) > Date.now() ? (
+                <SupplierBiddingItemComponent bidding={event} key={index} />
+              ) : null;
+            })
+          ) : (
+            <Empty description="Empty record" />
+          )}
         </TabPane>
         <TabPane
           tab={
@@ -147,9 +187,13 @@ const SupplierBiddingComponent = () => {
           }
           key="2"
         >
-          {BIDDING_INVITE.map((bidding, index) => (
-            <SupplierBiddingItemComponent bidding={bidding} key={index} />
-          ))}
+          {!!auctionData && auctionData.length > 0 ? (
+            auctionData.map((event, index) => (
+              <SupplierBiddingItemComponent bidding={event} key={index} />
+            ))
+          ) : (
+            <Empty description="Empty record" />
+          )}
         </TabPane>
         <TabPane
           tab={
@@ -160,17 +204,21 @@ const SupplierBiddingComponent = () => {
           }
           key="3"
         >
-          {BIDDING_INVITE.map((bidding, index) => (
-            <SupplierBiddingItemComponent
-              closed
-              key={index}
-              bidding={bidding}
-            />
-          ))}
+          {!!auctionData && auctionData.length > 0 ? (
+            auctionData.map((event, index) => (
+              <SupplierBiddingItemComponent
+                closed
+                bidding={event}
+                key={index}
+              />
+            ))
+          ) : (
+            <Empty description="Empty record" />
+          )}
         </TabPane>
       </Tabs>
     </Fragment>
   );
 };
 
-export default SupplierBiddingComponent;
+export default connectToRedux(SupplierBiddingComponent);

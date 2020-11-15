@@ -1,97 +1,129 @@
-import { Row, Col, Typography, Divider, Button, Badge, Tag, Space } from "antd";
+import {
+  Row,
+  Col,
+  Typography,
+  Divider,
+  Button,
+  Badge,
+  Tag,
+  Space,
+  Modal
+} from 'antd';
 import {
   ClockCircleOutlined,
   EditOutlined,
-  MoneyCollectOutlined,
-} from "@ant-design/icons";
-import Link from "next/link";
-import React from "react";
-import Moment from "react-moment";
-import Router from "next/router";
+  MoneyCollectOutlined
+} from '@ant-design/icons';
+import Link from 'next/link';
+import React from 'react';
+import Moment from 'react-moment';
+import Router from 'next/router';
+import { getBadgeAuctionLabel } from '../utils';
+import { connect } from 'react-redux';
+import { createStructuredSelector } from 'reselect';
+import {
+  responseAuctionInvitation,
+  ResponseAuctionInvitationData
+} from '../stores/AuctionState';
 const { Title } = Typography;
 const styles = {
   root: {
-    padding: "0px 8px",
+    padding: '0px 8px'
   },
   detailSection: {
-    paddingLeft: 8,
+    paddingLeft: 8
   },
   labelInfo: {
-    textAlign: "left",
+    textAlign: 'left'
   },
   buttonAction: {
-    margin: "2px 4px",
-  },
+    margin: '2px 4px'
+  }
 };
 
 const getDurationWithMinutes = (minutes) => {
   let unit = minutes;
-  let label = " Minutes";
+  let label = ' Minutes';
   let subUnit = 0;
-  let subLabel = "";
+  let subLabel = '';
   if (minutes < 0) {
     return null;
   }
   if (minutes === 1) {
-    label = " Minute";
+    label = ' Minute';
   }
   if (minutes >= 60 && minutes < 1440) {
     const tmp = Math.floor(minutes / 60);
     unit = tmp;
-    label = tmp === 1 ? " Hour" : " Hours";
+    label = tmp === 1 ? ' Hour' : ' Hours';
     subUnit = minutes - tmp * 60;
-    subLabel = " Minutes";
+    subLabel = ' Minutes';
   } else if (minutes >= 1440) {
     const tmp = Math.floor(minutes / 60 / 24);
     unit = tmp;
-    label = tmp === 1 ? " Day" : " Days";
+    label = tmp === 1 ? ' Day' : ' Days';
     subUnit = minutes - tmp * 60 * 24;
-    subLabel = " Hours";
+    subLabel = ' Hours';
   }
-  return `${unit + label} ${subUnit > 0 ? subUnit + subLabel : ""}`;
+  return `${unit + label} ${subUnit > 0 ? subUnit + subLabel : ''}`;
 };
 
-// const BiddingLayout = ({ isClosed, children }) => {
-//   return isClosed ? (
-//     <Fragment>{children}</Fragment>
-//   ) : (
-//     <Badge.Ribbon placement="end" text="Tomorrow"></Badge.Ribbon>
-//   );
-// };
+const connectToRedux = connect(
+  createStructuredSelector({
+    responseInvitationData: ResponseAuctionInvitationData
+  }),
+  (dispatch) => ({
+    responseAuctionInvitation: (reverseAuctionId, isAccept, callback) =>
+      dispatch(responseAuctionInvitation(reverseAuctionId, isAccept, callback))
+  })
+);
 
 const SupplierBiddingItemComponent = ({
-  bidding = {},
+  bidding,
   isInvitation = false,
   closed = false,
+  responseInvitationData,
+  responseAuctionInvitation
 }) => {
-  const { id, title, category, startTime, duration, owner, currency } = bidding;
+  if (!bidding) {
+    return null;
+  }
+  const {
+    id,
+    auctionName,
+    auctionStartTime,
+    minimumDuration,
+    aggregator = {},
+    currency,
+    product = {},
+    dateCreated
+  } = bidding || {};
+  const { category = {} } = product;
+  const { firstName, lastName } = aggregator;
   return (
     <div style={styles.root}>
       <Badge.Ribbon
-        color={closed ? "red" : startTime <= Date.now() ? "blue" : "gold"}
-        placement="end"
-        text={
-          closed ? "Closed" : startTime <= Date.now() ? "Happening" : "Tomorrow"
+        color={
+          closed ? 'red' : auctionStartTime <= Date.now() ? 'blue' : 'gold'
         }
+        placement="end"
+        text={getBadgeAuctionLabel(auctionStartTime, closed)}
       >
         <Row className="bidding-item" align="middle">
           <Col style={styles.detailSection} md={15} sm={24}>
             <Title className="title" level={4}>
-              {title}
+              {auctionName}
             </Title>
-            {/* <div>Posted on September 14th, 2020 by admin</div> */}
             <div>
-              Posted in{" "}
+              Posted on <Moment format="LLL">{dateCreated}</Moment>
+            </div>
+            <div>
+              Posted in{' '}
               <Tag color="processing">
                 <Link href="">
-                  <a>{category}</a>
+                  <a>{category.description}</a>
                 </Link>
               </Tag>
-              {/* <Badge color="blue">
-                <Link href="">
-                  <a>{category}</a>
-                </Link>
-              </Badge> */}
             </div>
           </Col>
           <Col md={9} sm={24} style={{ marginTop: 24 }}>
@@ -100,21 +132,20 @@ const SupplierBiddingItemComponent = ({
                 <ClockCircleOutlined /> Start Time:
               </Col>
               <Col span={18}>
-                <Moment format="LLL">{startTime}</Moment>
-                {/* September 14th, 2020 14:00 GMT */}
+                <Moment format="LLL">{auctionStartTime}</Moment>
               </Col>
             </Row>
             <Row>
               <Col span={6} style={styles.labelInfo}>
                 <ClockCircleOutlined /> Duration:
               </Col>
-              <Col span={18}> {getDurationWithMinutes(duration)} </Col>
+              <Col span={18}> {getDurationWithMinutes(minimumDuration)} </Col>
             </Row>
             <Row>
               <Col span={6} style={styles.labelInfo}>
                 <EditOutlined /> Host by:
               </Col>
-              <Col span={18}> {owner}</Col>
+              <Col span={18}> {`${firstName} ${lastName}`}</Col>
               <Col span={6} style={styles.labelInfo}>
                 <MoneyCollectOutlined /> Currency:
               </Col>
@@ -125,32 +156,58 @@ const SupplierBiddingItemComponent = ({
                 <Space>
                   <Button
                     onClick={() => {
-                      // Router.push(`/supplier/bidding/details?id=${id}`);
+                      Modal.confirm({
+                        title: 'Do you want accept this event?',
+                        okText: 'Accept',
+                        cancelText: 'Close',
+                        onOk: () => {
+                          responseAuctionInvitation(id, true);
+                        }
+                      });
                     }}
                     type="primary"
                     size="small"
                   >
                     Accept
                   </Button>
-                  <Button type="ghost" danger size="small">
+                  <Button
+                    onClick={() => {
+                      Modal.confirm({
+                        title: 'Do you want decline this event?',
+                        okText: 'Decline',
+                        cancelText: 'Close',
+                        okButtonProps: {
+                          danger: true
+                        },
+                        onOk: () => {
+                          responseAuctionInvitation(id, false);
+                        }
+                      });
+                    }}
+                    type="ghost"
+                    danger
+                    size="small"
+                  >
                     Decline
                   </Button>
                 </Space>
               )}
-              {!closed && !isInvitation && startTime <= Date.now() && (
-                <Space>
-                  <Button
-                    style={styles.buttonAction}
-                    onClick={() => {
-                      Router.push(`/supplier/bidding/details?id=${id}`);
-                    }}
-                    type="primary"
-                    size="small"
-                  >
-                    Join Event
-                  </Button>
-                </Space>
-              )}
+              {!closed &&
+                !isInvitation &&
+                new Date(auctionStartTime) <= Date.now() && (
+                  <Space>
+                    <Button
+                      style={styles.buttonAction}
+                      onClick={() => {
+                        Router.push(`/supplier/bidding/details?id=${id}`);
+                      }}
+                      type="primary"
+                      size="small"
+                    >
+                      Join Event
+                    </Button>
+                  </Space>
+                )}
             </Row>
           </Col>
           <Divider />
@@ -160,4 +217,4 @@ const SupplierBiddingItemComponent = ({
   );
 };
 
-export default SupplierBiddingItemComponent;
+export default connectToRedux(SupplierBiddingItemComponent);

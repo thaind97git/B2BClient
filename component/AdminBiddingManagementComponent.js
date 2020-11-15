@@ -36,7 +36,7 @@ const connectToRedux = connect(
       pageIndex,
       pageSize,
       searchMessage,
-      dateRange,
+      dateRange = {},
       status,
       categoryId
     ) =>

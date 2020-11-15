@@ -219,3 +219,21 @@ export const timeConvert = (n) => {
     rminutes === 0 ? '' : rminutes + ` minute${rminutes > 1 ? 's' : ''}`;
   return rsH || rsM ? `${rsH} ${rsM}` : 'N/A';
 };
+
+export const getBadgeAuctionLabel = (auctionStartTime, isClosed = false) => {
+  let text = 'A next few days';
+  const dateBetween =
+    new Date(auctionStartTime).getDate() - new Date().getDate();
+  if (isClosed) {
+    text = 'Closed';
+  } else if (dateBetween <= 0) {
+    text = 'Happening';
+  } else if (dateBetween === 1) {
+    text = 'Tomorrow';
+  } else if (dateBetween >= 7) {
+    text = 'Next week';
+  } else if (dateBetween >= 14) {
+    text = 'A next few weeks';
+  }
+  return text;
+};
