@@ -1,6 +1,6 @@
 import { ACTIONS } from 'redux-api-call';
 import { openNotification } from '../utils';
-import { CREATE_REVERSE_AUCTION } from './AuctionState';
+import { CANCEL_AUCTION, CREATE_REVERSE_AUCTION } from './AuctionState';
 import {
   ADD_REQUEST_TO_GROUP,
   ADD_SUPPLIER_TO_GROUP,
@@ -77,6 +77,9 @@ export default {
         case UN_IGNORE_SUPPLIER:
           msgNotify = 'Un-Ignore success';
           break;
+        case CANCEL_AUCTION:
+          msgNotify = 'Cancel success';
+          break;
         default:
           break;
       }
@@ -134,6 +137,9 @@ export default {
           break;
         case UN_IGNORE_SUPPLIER:
           msgNotify = 'Un-Ignore fail';
+          break;
+        case CANCEL_AUCTION:
+          msgNotify = 'Cancel fail';
           break;
         default:
           break;

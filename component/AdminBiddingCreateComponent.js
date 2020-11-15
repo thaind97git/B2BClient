@@ -5,6 +5,7 @@ import React, { useState } from 'react';
 import TabsLayout from '../layouts/TabsLayout';
 import BiddingSettingComponent from './BiddingSettingComponent';
 import ListingSupplierByProductComponent from './ListingSupplierByProductComponent';
+import BiddingSupplierInvitationComponent from './BiddingSupplierInvitationComponent';
 const { Title } = Typography;
 const plainOptions = [
   { id: 1, label: 'Supplier 1 (supplier1@gmail.com)' },
@@ -32,13 +33,7 @@ const AdminBiddingCreateComponent = () => {
     {
       title: 'Suppliers Invitation',
       key: '2',
-      content: (
-        <div>
-          <Button onClick={() => setVisible(true)} danger>
-            Add New Supplier
-          </Button>
-        </div>
-      ),
+      content: <BiddingSupplierInvitationComponent />,
       disabled: isDoneSetting ? false : true
     }
   ];

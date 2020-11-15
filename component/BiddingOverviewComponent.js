@@ -1,7 +1,29 @@
-import React, { Fragment } from "react";
-import { Card, Col, Row } from "antd";
+import React, { Fragment } from 'react';
+import { Card, Col, Empty, Row } from 'antd';
+import Moment from 'react-moment';
+import { DATE_TIME_FORMAT, displayCurrency, timeConvert } from '../utils';
 const { Meta } = Card;
-const BiddingOverviewComponent = ({ isSupplier = true }) => {
+const BiddingOverviewComponent = ({ isSupplier = true, auction }) => {
+  if (!auction) {
+    return <Empty description="Can not find any event details" />;
+  }
+  const {
+    description,
+    auctionName,
+    currency,
+    product = {},
+    auctionStartTime,
+    dynamicClosePeriod = '0',
+    minimumBidChange,
+    maximumBidChange,
+    minimumDuration,
+    aggregator = {},
+    quantity,
+    currentPrice,
+    qualificationPrice
+  } = auction;
+  const { firstName, lastName, email, phoneNumber } = aggregator;
+  const { productName, unitOfMeasure = {} } = product;
   return (
     <div>
       <Card bordered={false}>
@@ -10,17 +32,11 @@ const BiddingOverviewComponent = ({ isSupplier = true }) => {
           description={
             <Row className="info">
               <Col span={24}>
-                We are looking 220 Pieces for IR Night Vision Hidden Camera
-                Watch Sport Wear Watch Camera WIFI.
-              </Col>
-              <Col span={24}>
-                These must be delivered to our Ho Chi Minh office
-              </Col>
-              <Col span={24}>
-                Lorem Ipsum is simply dummy text of the printing and typesetting
-                industry. Lorem Ipsum has been the industry's standard dummy
-                text ever since the 1500s, when an unknown printer took a galley
-                of type and scrambled it to make a type specimen book.
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: description
+                  }}
+                />
               </Col>
             </Row>
           }
@@ -32,13 +48,13 @@ const BiddingOverviewComponent = ({ isSupplier = true }) => {
           description={
             <Row>
               <Col span={24}>
-                Name: <span className="info">John Smith</span>
+                Name: <span className="info">{`${firstName} ${lastName}`}</span>
               </Col>
               <Col span={24}>
-                E-mail: <span className="info">aggregator1@gmail.com</span>
+                E-mail: <span className="info">{email}</span>
               </Col>
               <Col span={24}>
-                Phone: <span className="info">123456789</span>
+                Phone: <span className="info">{phoneNumber}</span>
               </Col>
             </Row>
           }
@@ -50,16 +66,13 @@ const BiddingOverviewComponent = ({ isSupplier = true }) => {
           description={
             <Row>
               <Col span={24}>
-                Event Name:{" "}
-                <span className="info">
-                  Group IR Night Vision Hidden Camera Watch Sport - 23/10/2020
-                </span>
+                Event Name: <span className="info">{auctionName}</span>
               </Col>
               <Col span={24}>
                 Event type: <span className="info">Online Reverse Auction</span>
               </Col>
               <Col span={24}>
-                Currency: <span className="info">VNĐ</span>
+                Currency: <span className="info">{currency}</span>
               </Col>
             </Row>
           }
@@ -72,22 +85,25 @@ const BiddingOverviewComponent = ({ isSupplier = true }) => {
           description={
             <Row>
               <Col span={24}>
-                Product Name:{" "}
-                <span className="info">
-                  IR Night Vision Hidden Camera Watch Sport Wear Watch Camera
-                  WIFI
-                </span>
+                Product Name: <span className="info">{productName}</span>
               </Col>
               <Col span={24}>
-                Quantity of UoM's: <span className="info">220 Pieces</span>
+                Quantity of UoM's:{' '}
+                <span className="info">
+                  {quantity} {unitOfMeasure.description}
+                </span>
               </Col>
               {!isSupplier && (
                 <Col span={24}>
-                  Current Price: <span className="info">1.190.000 đ</span>
+                  Current Price:{' '}
+                  <span className="info">{displayCurrency(currentPrice)}</span>
                 </Col>
               )}
               <Col span={24}>
-                Qualification Price: <span className="info">1.180.000 đ</span>
+                Qualification Price:{' '}
+                <span className="info">
+                  {displayCurrency(qualificationPrice)}
+                </span>
               </Col>
             </Row>
           }
@@ -100,8 +116,10 @@ const BiddingOverviewComponent = ({ isSupplier = true }) => {
           description={
             <Row>
               <Col span={24}>
-                Auction Start Time:{" "}
-                <span className="info">September 28, 2020 12:39 PM</span>
+                Auction Start Time:{' '}
+                <span className="info">
+                  <Moment format={DATE_TIME_FORMAT}>{auctionStartTime}</Moment>
+                </span>
               </Col>
               <Col span={24}>
                 Bid Direction: <span className="info">Reverse</span>
@@ -110,21 +128,26 @@ const BiddingOverviewComponent = ({ isSupplier = true }) => {
                 Event type: <span className="info">Ranked</span>
               </Col>
               <Col span={24}>
-                Minimum Duration: <span className="info">30 minutes</span>
+                Minimum Duration:{' '}
+                <span className="info">{timeConvert(minimumDuration)}</span>
               </Col>
               <Col span={24}>
-                Dynamic Close Period:{" "}
+                Dynamic Close Period:{' '}
                 <span className="info">
-                  2 minutes which applies to All bidders
+                  {dynamicClosePeriod ? dynamicClosePeriod : 0}{' '}
+                  {dynamicClosePeriod > 1 ? 'minutes' : 'minute'} which applies
+                  to All bidders
                 </span>
               </Col>
               {!isSupplier && (
                 <Fragment>
                   <Col span={24}>
-                    Minimum Bid Change: <span className="info">1%</span>
+                    Minimum Bid Change:{' '}
+                    <span className="info">{minimumBidChange} %</span>
                   </Col>
                   <Col span={24}>
-                    Maximum Bid Change: <span className="info">10 %</span>
+                    Maximum Bid Change:{' '}
+                    <span className="info">{maximumBidChange} %</span>
                   </Col>
                 </Fragment>
               )}
