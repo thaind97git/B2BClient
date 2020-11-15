@@ -91,7 +91,7 @@ const ReactTableLayout = ({
     <div style={{ width: '100%' }}>
       {hasAction && (
         <Row justify="space-between" style={{ padding: '6px 4px' }}>
-          <Col xs={24} sm={12} lg={12}>
+          <Col xs={24} sm={12} lg={10}>
             <SearchTableComponent
               searchMessage={searchMessage}
               setSearchMessage={setSearchMessage}
@@ -101,7 +101,7 @@ const ReactTableLayout = ({
               setDateRange={setDateRange}
             />
           </Col>
-          <Col xs={24} sm={12} lg={10}>
+          <Col xs={24} sm={12} lg={14}>
             <Row justify="end">
               <Space>
                 {exElement}

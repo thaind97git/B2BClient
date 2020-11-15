@@ -207,3 +207,15 @@ export const getDefaultProductImage = () =>
 
 export const getCurrentTimezone = () =>
   Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+export const timeConvert = (n) => {
+  let num = n;
+  let hours = num / 60;
+  let rhours = Math.floor(hours);
+  let minutes = (hours - rhours) * 60;
+  let rminutes = Math.round(minutes);
+  const rsH = rhours === 0 ? '' : rhours + ` hour${rhours > 1 ? 's' : ''}`;
+  const rsM =
+    rminutes === 0 ? '' : rminutes + ` minute${rminutes > 1 ? 's' : ''}`;
+  return rsH || rsM ? `${rsH} ${rsM}` : 'N/A';
+};

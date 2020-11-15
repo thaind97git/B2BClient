@@ -1,53 +1,91 @@
-import { Card, Col, Divider, Row, Typography } from "antd";
-import React, { Fragment, useState } from "react";
-import { B_ACTIVE } from "../enums/biddingStatus";
-import TabsLayout from "../layouts/TabsLayout";
-import BiddingSupplierListComponent from "./BiddingSupplierListComponent";
-import BiddingStatusComponent from "./Utils/BiddingStatusComponent";
-import BiddingOverviewComponent from "./BiddingOverviewComponent";
-import BiddingResultListComponent from "./BiddingResultListComponent";
+import { Card, Col, Divider, Empty, Row, Typography } from 'antd';
+import React, { Fragment, useEffect, useState } from 'react';
+import TabsLayout from '../layouts/TabsLayout';
+import BiddingSupplierListComponent from './BiddingSupplierListComponent';
+import BiddingStatusComponent from './Utils/BiddingStatusComponent';
+import BiddingOverviewComponent from './BiddingOverviewComponent';
+import BiddingResultListComponent from './BiddingResultListComponent';
+import { connect } from 'react-redux';
+import { createStructuredSelector } from 'reselect';
+import {
+  getAuctionDetails,
+  GetAuctionDetailsData
+} from '../stores/AuctionState';
+import { useRouter } from 'next/router';
 const { Title } = Typography;
-const AdminBiddingDetailsComponent = ({ bidding }) => {
-  const [defaultTab, setDefaultTab] = useState("0");
+
+const connectToRedux = connect(
+  createStructuredSelector({
+    auctionDetailsData: GetAuctionDetailsData
+  }),
+  (dispatch) => ({
+    getAuctionDetails: (id) => dispatch(getAuctionDetails(id))
+  })
+);
+const AdminBiddingDetailsComponent = ({
+  auctionDetailsData,
+  getAuctionDetails
+}) => {
+  const [defaultTab, setDefaultTab] = useState('0');
+  const [firstTime, setFirstTime] = useState(true);
+  const router = useRouter();
+  const { id: auctionId } = router.query;
+  useEffect(() => {
+    if (auctionId && firstTime) {
+      getAuctionDetails(auctionId);
+      setFirstTime(false);
+    }
+  }, [auctionId, firstTime, getAuctionDetails]);
+  if (!auctionId || !auctionDetailsData) {
+    return <Empty description="Can not find any event" />;
+  }
+
   const {
-    groupName = "Group A7 Action Camera 4k HD720P - 02/10/2020",
-    status = B_ACTIVE,
-    hostBy = "John Smith",
-  } = bidding || {};
+    reverseAuctionStatus = {},
+    aggregator = {},
+    group = {}
+  } = auctionDetailsData;
+  const { firstName, lastName } = aggregator;
   const BIDDING = [
     {
-      title: "Overview",
-      key: "0",
-      content: <BiddingOverviewComponent isSupplier={false} />,
+      title: 'Overview',
+      key: '0',
+      content: (
+        <BiddingOverviewComponent
+          auction={auctionDetailsData}
+          isSupplier={false}
+        />
+      )
     },
     {
-      title: "Suppliers",
-      key: "1",
-      content: <BiddingSupplierListComponent />,
+      title: 'Suppliers',
+      key: '1',
+      content: <BiddingSupplierListComponent />
     },
     {
-      title: "Reverse Auction",
-      key: "2",
-      content: <BiddingResultListComponent />,
-    },
+      title: 'Reverse Auction',
+      key: '2',
+      content: <BiddingResultListComponent />
+    }
   ];
   return (
     <Fragment>
       <Card
-        style={{ width: "100%", boxShadow: "0 2px 6px rgba(28,35,43,0.06)" }}
+        style={{ width: '100%', boxShadow: '0 2px 6px rgba(28,35,43,0.06)' }}
       >
         <Row justify="space-between">
-          <Col>
-            <Title level={4}>Group Name: {groupName}</Title>
+          <Col span={14}>
+            <Title level={4}>Group Name: {group.description}</Title>
           </Col>
-          <Col>
-            <Row align="middle">
+          <Col span={8}>
+            <Row align="middle" justify="end">
               <div>
-                Auction Status: <BiddingStatusComponent status={status} />
+                Auction Status:{' '}
+                <BiddingStatusComponent status={reverseAuctionStatus.id} />
               </div>
               <Divider type="vertical" />
               <div>
-                Host: <b>{hostBy}</b>
+                Host: <b>{`${firstName} ${lastName}`}</b>
               </div>
             </Row>
           </Col>
@@ -62,4 +100,4 @@ const AdminBiddingDetailsComponent = ({ bidding }) => {
   );
 };
 
-export default AdminBiddingDetailsComponent;
+export default connectToRedux(AdminBiddingDetailsComponent);

@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect, useState } from 'react';
 import { FileProtectOutlined, FlagOutlined } from '@ant-design/icons';
-import { Row, Col, Button, Empty, Space, Avatar, Tabs } from 'antd';
+import { Row, Col, Button, Empty, Space, Avatar } from 'antd';
 import MessageList from './Chat/MessageList';
 import {
   fallbackImage,
@@ -62,69 +62,6 @@ const GroupTile = ({ productImage, groupName }) => (
   </Row>
 );
 
-const GetContentMessageListForMessenger = ({
-  conversationId,
-  groupName,
-  groupId,
-  isIgnored,
-  ignoreSup,
-  unIgnoreSup,
-  signalR
-}) => {
-  if (!conversationId) {
-    return null;
-  }
-
-  return (
-    <MessageList
-      signalR={signalR}
-      conversationId={conversationId}
-      titleProps={{
-        leftTitle: groupName,
-        rightTitle: (
-          <Space>
-            <Button
-              icon={<FileProtectOutlined />}
-              size="small"
-              style={{ color: 'green' }}
-              onClick={() => {
-                Router.push(
-                  createLink([
-                    'aggregator',
-                    'order',
-                    `confirmation?groupId=${groupId}&isNegotiating=true&supplierId=${conversationId}`
-                  ])
-                );
-              }}
-            >
-              Closing deal
-            </Button>
-            {!isIgnored ? (
-              <Button
-                onClick={() => ignoreSup(conversationId)}
-                icon={<FlagOutlined />}
-                size="small"
-                danger
-              >
-                Ignore
-              </Button>
-            ) : (
-              <Button
-                onClick={() => unIgnoreSup(conversationId)}
-                icon={<FlagOutlined />}
-                size="small"
-                type="primary"
-              >
-                Un-Ignore
-              </Button>
-            )}
-          </Space>
-        )
-      }}
-    />
-  );
-};
-
 const signalR = new SignalR();
 signalR.startConnection();
 
@@ -157,39 +94,16 @@ const GroupChatComponent = ({
       signalR.stopConnection();
     };
   }, []);
-  // useEffect(() => {
-  //   if (connection) {
-  //     connection
-  //       .start()
-  //       .then(() => {
-  //         connection.on('ConversationPushing', (conversation) => {
-  //           console.log(conversation.id);
-  //           console.log({ 1: GetSupplierChatByGroupData });
-  //           if (
-  //             GetSupplierGroupChatData &&
-  //             GetSupplierGroupChatData.length > 0
-  //           ) {
-  //             GetSupplierGroupChatData.sort(function (x, y) {
-  //               return x.id === conversation.id
-  //                 ? -1
-  //                 : y.id === conversation.id
-  //                 ? 1
-  //                 : 0;
-  //             });
-  //             console.log({ 2: GetSupplierChatByGroupData });
-  //           }
-  //         });
-  //         connection.on('GroupPushing', (data) => {
-  //           console.log({ GroupPushing: data });
-  //         });
-  //       })
-  //       .catch((e) => console.log('Connection failed: ', e));
-  //   }
-  // }, [connection]);
-
   useEffect(() => {
-    signalR.onListen('ConversationPushing', (data) => {
-      console.log({ data });
+    signalR.onListen('ConversationPushing', (conversationId) => {
+      console.log({ conversationId });
+      if (GetSupplierChatByGroupData && GetSupplierChatByGroupData.length > 0) {
+        console.log({ 1: GetSupplierChatByGroupData });
+        GetSupplierChatByGroupData.sort(function (x, y) {
+          return x.id === conversationId ? -1 : y.id === conversationId ? 1 : 0;
+        });
+        console.log({ 2: GetSupplierChatByGroupData });
+      }
     });
   }, []);
   useEffect(() => {
