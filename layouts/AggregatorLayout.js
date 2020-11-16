@@ -37,7 +37,7 @@ const ADMIN_MENU = [
   {
     key: '3',
     icon: <ExperimentOutlined />,
-    label: 'Biddings',
+    label: 'Reverse auctions',
     link: '/aggregator/bidding'
   },
   {

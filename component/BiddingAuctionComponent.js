@@ -295,9 +295,9 @@ const BiddingAuctionComponent = ({
                   min={Math.floor(minimumChange)}
                   max={Math.floor(maximumChange)}
                   formatter={(value) =>
-                    `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+                    `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
                   }
-                  parser={(value) => value.replace(/,*/g, '')}
+                  parser={(value) => value.replace('.', '')}
                   onChange={(value) => {
                     setBidTmp(value);
                     setTotalLot(Math.floor(value * quantity));
