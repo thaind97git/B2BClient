@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Row, Col, Tooltip } from 'antd';
+import { Row, Col, Tooltip, Empty } from 'antd';
 import MessageList from './Chat/MessageList';
 import TabsLayout from '../layouts/TabsLayout';
 import {
