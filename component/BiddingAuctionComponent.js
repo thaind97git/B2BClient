@@ -9,7 +9,6 @@ import {
   Row,
   Space,
   Statistic,
-  Table,
   List,
   Badge,
   Tag
@@ -18,7 +17,7 @@ import {
   CaretRightOutlined,
   ExclamationCircleOutlined
 } from '@ant-design/icons';
-import { displayCurrency } from '../utils';
+import { DATE_TIME_FORMAT, displayCurrency } from '../utils';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 import {
@@ -31,6 +30,7 @@ import { get } from 'lodash/fp';
 import moment from 'moment';
 import SignalR from '../libs/signalR';
 import ScrollToBottom from 'react-scroll-to-bottom';
+import BiddingAuctionHistoryComponent from './BiddingAuctionHistoryComponent'
 const { Panel } = Collapse;
 const connectToRedux = connect(
   createStructuredSelector({
@@ -66,46 +66,6 @@ const Rank = ({ rank }) => {
   }
   return <Badge count={rank} style={{ backgroundColor: color }} />;
 };
-const columns = [
-  {
-    title: 'No',
-    dataIndex: 'no',
-    key: 'no'
-  },
-  {
-    title: 'Bid Per UOM',
-    dataIndex: 'bid',
-    key: 'bid',
-    render: (text, record) => ` ${record.bid}`
-  },
-  {
-    title: 'Total Lot',
-    dataIndex: 'total',
-    key: 'total',
-    render: (text, record) => `${record.total}`
-  }
-];
-
-const data = [
-  {
-    key: 1,
-    no: 1,
-    bid: displayCurrency(780000),
-    total: displayCurrency(171600000)
-  },
-  {
-    key: 2,
-    no: 2,
-    bid: displayCurrency(765000),
-    total: displayCurrency(168300000)
-  },
-  {
-    key: 3,
-    no: 3,
-    bid: displayCurrency(740000),
-    total: displayCurrency(162800000)
-  }
-];
 
 const getLastedOwnerBid = (bidHistory = []) => {
   let data = {};
@@ -129,7 +89,7 @@ const getRecordHistory = ({ auctionData = [], isAggregator = false, unit }) => {
         let result = `${moment
           .utc(auction.dateCreated)
           .local()
-          .format('hh:mm:ss')} ${
+          .format(DATE_TIME_FORMAT)} - ${
           isAggregator
             ? get('supplier.description')(auction)
             : isMe
@@ -398,11 +358,7 @@ const BiddingAuctionComponent = ({
           </Descriptions>
         </Col>
         <Col md={12} sm={24}>
-          <Collapse defaultActiveKey="1">
-            <Panel header="Your Bidding History" key="1">
-              <Table columns={columns} dataSource={data} />
-            </Panel>
-          </Collapse>
+          <BiddingAuctionHistoryComponent auctionHistory={biddingHistory} totalQuantity={quantity} />
         </Col>
       </Row>
     </div>
