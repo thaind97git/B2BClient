@@ -57,7 +57,22 @@ const GroupTile = ({ productImage, groupName }) => (
       <Avatar size="small" src={getProductImage(productImage)} />
     </Col>
     <Col span={20}>
-      <b>{getShortContent(groupName)}</b>
+      <div
+        style={{
+          width: 260,
+          height: '5em',
+          textAlign: 'left',
+          whiteSpace: 'normal',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          display: '-webkit-box',
+          WebkitLineClamp: 3,
+          WebkitBoxOrient: 'vertical',
+          paddingRight: 6
+        }}
+      >
+        {groupName}
+      </div>
     </Col>
   </Row>
 );
@@ -251,7 +266,6 @@ const GroupChatComponent = ({
           };
         })) ||
       [];
-
     setGroupTabs(groupTabs);
   }, [
     GetAggregatorGroupChatData,
@@ -349,6 +363,7 @@ const GroupChatComponent = ({
             height: 100%;
           }
           .list-chat,
+          #aggregator-group-chat,
           .aggregator-chat
             .ant-tabs-content-holder
             > .ant-tabs-content
@@ -361,6 +376,9 @@ const GroupChatComponent = ({
             > .ant-tabs-nav
             .ant-tabs-tab {
             padding: 8px 24px 8px 4px;
+          }
+          #aggregator-group-chat .ant-tabs-left > .ant-tabs-nav .ant-tabs-tab {
+            padding-left: 0px;
           }
 
           .aggregator-chat .ant-tabs-nav-list {

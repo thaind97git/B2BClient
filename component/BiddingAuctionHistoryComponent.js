@@ -1,15 +1,12 @@
 import React from 'react';
-import {
-  Collapse,
-  Table,
-} from 'antd';
+import { Table, Typography } from 'antd';
 import { DATE_TIME_FORMAT, displayCurrency } from '../utils';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 import { placeNewBid, PlaceNewBidData } from '../stores/AuctionState';
 import Moment from 'react-moment';
 
-const { Panel } = Collapse;
+const { Title } = Typography;
 const connectToRedux = connect(
   createStructuredSelector({
     placeBidData: PlaceNewBidData
@@ -39,31 +36,40 @@ const columns = [
   }
 ];
 
-const BiddingAuctionHistoryComponent = ({ auctionHistory = [], totalQuantity = 0 }) => {
+const BiddingAuctionHistoryComponent = ({
+  auctionHistory = [],
+  totalQuantity = 0
+}) => {
   const getOwnerBid = (bidHistory = []) => {
     const arrayOfOwner =
-      bidHistory && bidHistory.filter((bid = {}) => !!bid.supplier) || [];
+      (bidHistory && bidHistory.filter((bid = {}) => !!bid.supplier)) || [];
     return {
-      data: arrayOfOwner,
+      data: arrayOfOwner.sort(
+        (a, b) =>
+          new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime()
+      ),
       totalCount: arrayOfOwner.length
     };
   };
 
-  const {totalCount, data = []} = getOwnerBid(auctionHistory)
+  const { totalCount, data = [] } = getOwnerBid(auctionHistory);
 
   return (
-    <div style={{marginTop: 40}}>
-      <Collapse defaultActiveKey="1">
-        <Panel header="Your Bidding History" key="1">
-          <Table columns={columns} dataSource={data.map(item => {
-            return {
+    <div style={{ marginTop: 46 }}>
+      <Table
+        title={() => <b>Your Bidding History</b>}
+        bordered
+        columns={columns}
+        dataSource={data.map((item, index) => {
+          return {
             time: <Moment format={DATE_TIME_FORMAT}>{item.dateCreated}</Moment>,
-              bid: displayCurrency(item.price) ,
-              total:  displayCurrency(totalQuantity * item.price)
-            }
-          })} pagination={{total: totalCount, defaultPageSize: 5}} />
-        </Panel>
-      </Collapse>
+            bid: displayCurrency(item.price),
+            total: displayCurrency(totalQuantity * item.price),
+            key: index
+          };
+        })}
+        pagination={{ total: totalCount, defaultPageSize: 5 }}
+      />
     </div>
   );
 };

@@ -30,7 +30,7 @@ import { get } from 'lodash/fp';
 import moment from 'moment';
 import SignalR from '../libs/signalR';
 import ScrollToBottom from 'react-scroll-to-bottom';
-import BiddingAuctionHistoryComponent from './BiddingAuctionHistoryComponent'
+import BiddingAuctionHistoryComponent from './BiddingAuctionHistoryComponent';
 const { Panel } = Collapse;
 const connectToRedux = connect(
   createStructuredSelector({
@@ -133,6 +133,7 @@ const BiddingAuctionComponent = ({
   const [isFirstRank, setIsFirstRank] = useState(false);
   useEffect(() => {
     if (auction) {
+      console.log({ auction });
       const { id, minimumBidChange, maximumBidChange } = auction;
       getAuctionHistory(id);
       setMiniPercentageChange(minimumBidChange);
@@ -164,15 +165,15 @@ const BiddingAuctionComponent = ({
 
   // Calculate minimumChange and maximumChange each lowest bid change
   useEffect(() => {
-    if (miniPercentageChange && maxPercentageChange) {
+    if (miniPercentageChange && maxPercentageChange && auction) {
       setMinimumChange(
-        lowestBid - (+maxPercentageChange * +lowestBid) / 100 || 0
+        lowestBid - (+maxPercentageChange * +auction.currentPrice) / 100 || 0
       );
       setMaximumChange(
-        lowestBid - (+miniPercentageChange * +lowestBid) / 100 || 0
+        lowestBid - (+miniPercentageChange * +auction.currentPrice) / 100 || 0
       );
     }
-  }, [lowestBid]);
+  }, [lowestBid, auction]);
 
   // Set history total lot at the first load
   useEffect(() => {
@@ -358,7 +359,10 @@ const BiddingAuctionComponent = ({
           </Descriptions>
         </Col>
         <Col md={12} sm={24}>
-          <BiddingAuctionHistoryComponent auctionHistory={biddingHistory} totalQuantity={quantity} />
+          <BiddingAuctionHistoryComponent
+            auctionHistory={biddingHistory}
+            totalQuantity={quantity}
+          />
         </Col>
       </Row>
     </div>
