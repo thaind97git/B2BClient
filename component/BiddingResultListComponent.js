@@ -164,7 +164,7 @@ const BiddingResultListComponent = ({
       ) {
         if (
           biddingHistory[biddingHistory.length - 1].reverseAuctionHistoryId !==
-          history.reverseAuctionHistoryId
+          history.reverseAuctionHistoryId && history.reverseAuctionId === auction.id
         ) {
           const cloneHistory = [...biddingHistory];
           cloneHistory.push(history);
@@ -172,7 +172,7 @@ const BiddingResultListComponent = ({
         }
       }
     });
-  }, [biddingHistory]);
+  }, [biddingHistory, auction.id]);
   return (
     <Row style={{ width: '100%' }}>
       <Collapse
