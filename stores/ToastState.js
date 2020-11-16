@@ -1,6 +1,11 @@
 import { ACTIONS } from 'redux-api-call';
 import { openNotification } from '../utils';
-import { CREATE_REVERSE_AUCTION } from './AuctionState';
+import {
+  CANCEL_AUCTION,
+  CREATE_REVERSE_AUCTION,
+  PLACE_NEW_BID,
+  RESPONSE_AUCTION_INVITATION
+} from './AuctionState';
 import {
   ADD_REQUEST_TO_GROUP,
   ADD_SUPPLIER_TO_GROUP,
@@ -12,9 +17,11 @@ import {
   ACTIVE_SUPPLIER_PRODUCT,
   BAN_USER,
   DELETE_SUPPLIER_PRODUCT,
+  IGNORE_SUPPLIER,
   SUPPLIER_REGISTER_PRODUCT,
   SUPPLIER_UPDATE_QUOTATION,
-  UN_BAN_USER
+  UN_BAN_USER,
+  UN_IGNORE_SUPPLIER
 } from './SupplierState';
 import { USER_LOGIN, USER_REGISTER } from './UserState';
 
@@ -69,6 +76,21 @@ export default {
         case CREATE_REVERSE_AUCTION:
           msgNotify = 'Create new reverse auction success';
           break;
+        case IGNORE_SUPPLIER:
+          msgNotify = 'Ignore success';
+          break;
+        case UN_IGNORE_SUPPLIER:
+          msgNotify = 'Un-Ignore success';
+          break;
+        case CANCEL_AUCTION:
+          msgNotify = 'Cancel success';
+          break;
+        case RESPONSE_AUCTION_INVITATION:
+          msgNotify = 'Response event success';
+          break;
+        case PLACE_NEW_BID:
+          msgNotify = 'Place new bid success';
+          break;
         default:
           break;
       }
@@ -120,6 +142,21 @@ export default {
           break;
         case CREATE_REVERSE_AUCTION:
           msgNotify = 'Create new reverse auction fail';
+          break;
+        case IGNORE_SUPPLIER:
+          msgNotify = 'Ignore fail';
+          break;
+        case UN_IGNORE_SUPPLIER:
+          msgNotify = 'Un-Ignore fail';
+          break;
+        case CANCEL_AUCTION:
+          msgNotify = 'Cancel fail';
+          break;
+        case RESPONSE_AUCTION_INVITATION:
+          msgNotify = 'Response event fail';
+          break;
+        case PLACE_NEW_BID:
+          msgNotify = 'Place new bid fail';
           break;
         default:
           break;

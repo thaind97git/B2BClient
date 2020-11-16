@@ -11,8 +11,8 @@ import {
   GetMessagesResetter
 } from '../../../stores/ConversationState';
 import { DEFAULT_PAGING_INFO } from '../../../utils';
-import useHub from '../../HOOK/useHub';
 import { Col, Row } from 'antd';
+import ScrollToBottom from 'react-scroll-to-bottom';
 
 const connectToRedux = connect(
   createStructuredSelector({
@@ -45,16 +45,79 @@ const onSendMessage = (conversationId, description, file) => {
   fetch(`${process.env.API_SERVER_URL}/api/Message/`, requestOptions);
 };
 
+const RenderMessages = React.memo(({ messagesData }) => {
+  if (!messagesData) {
+    return;
+  }
+  let i = 0;
+  let messageCount = messagesData.length;
+  let tempMessages = [];
+
+  while (i < messageCount) {
+    let previous = messagesData[i - 1];
+    let current = messagesData[i];
+    let next = messagesData[i + 1];
+
+    let isMine = current.yourMessage;
+    let currentMoment = moment(current.dateCreated);
+    let prevBySameAuthor = false;
+    let nextBySameAuthor = false;
+    let startsSequence = true;
+    let endsSequence = true;
+    let showTimestamp = true;
+
+    if (previous) {
+      let previousMoment = moment(previous.dateCreated);
+      let previousDuration = moment.duration(
+        currentMoment.diff(previousMoment)
+      );
+      prevBySameAuthor = previous.yourMessage === current.yourMessage; // previous.author === current.author;
+      if (prevBySameAuthor && previousDuration.as('hours') < 1) {
+        startsSequence = false;
+      }
+
+      if (previousDuration.as('hours') < 1) {
+        showTimestamp = false;
+      }
+    }
+
+    if (next) {
+      let nextMoment = moment(next.dateCreated);
+      let nextDuration = moment.duration(nextMoment.diff(currentMoment));
+      nextBySameAuthor = next.yourMessage === current.yourMessage;
+
+      if (nextBySameAuthor && nextDuration.as('hours') < 1) {
+        endsSequence = false;
+      }
+    }
+
+    tempMessages.push(
+      <Message
+        key={i}
+        isMine={isMine}
+        startsSequence={startsSequence}
+        endsSequence={endsSequence}
+        showTimestamp={showTimestamp}
+        data={current}
+      />
+    );
+    // Proceed to the next message.
+    i += 1;
+  }
+  // scrollToBottom();
+  return tempMessages;
+});
+
 function MessageList({
   titleProps = {},
   messagesData,
   getMessages,
   conversationId,
   getNewMessage,
-  resetData
+  resetData,
+  signalR
 }) {
   const [messages, setMessages] = useState([]);
-  const { connection } = useHub();
   const messagesEndRef = useRef(null);
   const [pageIndex, setPageIndex] = useState(DEFAULT_PAGING_INFO.page);
   const [newMessage, setNewMessage] = useState({});
@@ -63,12 +126,14 @@ function MessageList({
     messagesEndRef.current &&
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
   };
+  const currentConversationId = conversationId;
 
   useEffect(() => {
     return () => {
       resetData();
+      signalR && signalR.stopConnection();
     };
-  }, [resetData]);
+  }, [resetData, signalR]);
   useEffect(() => {
     if (messagesData) {
       setMessages(messagesData);
@@ -76,34 +141,35 @@ function MessageList({
     }
   }, [messagesData]);
   useEffect(() => {
-    if (connection) {
-      connection
-        .start()
-        .then(() => {
-          connection.on('ReceiveMessage', (message) => {
-            console.log({ message });
-            !!message &&
-              typeof getNewMessage === 'function' &&
-              getNewMessage(message);
+    if (signalR) {
+      signalR.onListen('ReceiveMessage', (message) => {
+        !!message &&
+          typeof getNewMessage === 'function' &&
+          getNewMessage(message);
 
-            setNewMessage(message);
-          });
-        })
-        .catch((e) => console.log('Connection failed: ', e));
+        currentConversationId === message.conversationId &&
+          setNewMessage(message);
+      });
     }
-  }, [connection, getNewMessage]);
+  }, [currentConversationId, messages, getNewMessage, signalR]);
 
   useEffect(() => {
     if (!!newMessage) {
-      const messagesCopy = [...messages];
-      messagesCopy.push(newMessage);
-      setNewMessage(null);
-      setMessages(messagesCopy);
+      const isExisted = messages.find((mes) => mes.id === newMessage.id);
+      if (isExisted) {
+        return;
+      }
+      if (currentConversationId === newMessage.conversationId) {
+        const messagesCopy = [...messages];
+        messagesCopy.push(newMessage);
+        setNewMessage(null);
+        setMessages(messagesCopy);
+      }
     }
-  }, [newMessage]);
+  }, [newMessage, messages, currentConversationId]);
 
   const sendMessage = async (message) => {
-    if (connection.connectionStarted) {
+    if (signalR.isConnectionStarted()) {
       try {
         await onSendMessage(conversationId, message);
       } catch (e) {
@@ -115,71 +181,10 @@ function MessageList({
   };
 
   useEffect(() => {
-    getMessages({ conversationId, pageIndex });
+    if (conversationId) {
+      getMessages({ conversationId, pageIndex });
+    }
   }, [getMessages, conversationId, pageIndex]);
-
-  const renderMessages = (messagesData) => {
-    if (!messagesData) {
-      return;
-    }
-    let i = 0;
-    let messageCount = messagesData.length;
-    let tempMessages = [];
-
-    while (i < messageCount) {
-      let previous = messagesData[i - 1];
-      let current = messagesData[i];
-      let next = messagesData[i + 1];
-
-      let isMine = current.yourMessage;
-      let currentMoment = moment(current.dateCreated);
-      let prevBySameAuthor = false;
-      let nextBySameAuthor = false;
-      let startsSequence = true;
-      let endsSequence = true;
-      let showTimestamp = true;
-
-      if (previous) {
-        let previousMoment = moment(previous.dateCreated);
-        let previousDuration = moment.duration(
-          currentMoment.diff(previousMoment)
-        );
-        prevBySameAuthor = previous.yourMessage === current.yourMessage; // previous.author === current.author;
-        if (prevBySameAuthor && previousDuration.as('hours') < 1) {
-          startsSequence = false;
-        }
-
-        if (previousDuration.as('hours') < 1) {
-          showTimestamp = false;
-        }
-      }
-
-      if (next) {
-        let nextMoment = moment(next.dateCreated);
-        let nextDuration = moment.duration(nextMoment.diff(currentMoment));
-        nextBySameAuthor = next.yourMessage === current.yourMessage;
-
-        if (nextBySameAuthor && nextDuration.as('hours') < 1) {
-          endsSequence = false;
-        }
-      }
-
-      tempMessages.push(
-        <Message
-          key={i}
-          isMine={isMine}
-          startsSequence={startsSequence}
-          endsSequence={endsSequence}
-          showTimestamp={showTimestamp}
-          data={current}
-        />
-      );
-      // Proceed to the next message.
-      i += 1;
-    }
-    scrollToBottom();
-    return tempMessages;
-  };
 
   const { title, leftTitle, rightTitle } = titleProps;
 
@@ -193,18 +198,17 @@ function MessageList({
         </div>
       </Col>
       <Col
-        span={24}
-        className="message-list-chat"
         style={{
           padding: 10,
-          height: 'calc(100% - 94px)'
+          height: 'calc(100% - 94px)',
+          position: 'relative'
         }}
+        span={24}
+        className="message-list-chat"
       >
-        {!!messages ? renderMessages(messages) : null}{' '}
-        {/* <div
-          style={{ height: 1, position: 'relative', top: -30 }}
-          ref={messagesEndRef}
-        /> */}
+        <ScrollToBottom>
+          {!!messages ? <RenderMessages messagesData={messages} /> : null}{' '}
+        </ScrollToBottom>
       </Col>
       <Col span={24} style={{ height: 52 }}>
         <Compose sendMessage={sendMessage} />

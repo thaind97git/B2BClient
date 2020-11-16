@@ -10,8 +10,10 @@
     "heroku-postbuild": "npm run build"
   },
   "dependencies": {
+    "@antv/g2plot": "^2.0.9",
     "@babel/core": "^7.11.6",
     "@babel/node": "^7.10.5",
+    "@emotion/css": "^11.0.0",
     "@microsoft/signalr": "^3.1.9",
     "add": "^2.0.6",
     "antd": "^4.6.3",
@@ -38,6 +40,7 @@
     "react-image-gallery": "^1.0.8",
     "react-moment": "^0.9.7",
     "react-redux": "^7.2.1",
+    "react-scroll-to-bottom": "^4.0.0",
     "redux": "^4.0.5",
     "redux-api-call": "^1.2.1",
     "redux-thunk": "^2.3.0",

@@ -16,6 +16,9 @@ export const SUPPLIER_UPDATE_QUOTATION = 'SupplierUpdateQuotationAPI';
 export const DELETE_SUPPLIER_PRODUCT = 'DeleteSupplierProductAPI';
 export const ACTIVE_SUPPLIER_PRODUCT = 'ActiveSupplierProductAPI';
 
+export const IGNORE_SUPPLIER = 'IgnoreSupplierAPI';
+export const UN_IGNORE_SUPPLIER = 'UnIgnoreSupplierAPI';
+
 // Get Supplier By Group Id
 const GetSupplierByGroupIdAPI = makeFetchAction(
   GET_SUPPLIER_BY_GROUP_ID,
@@ -44,13 +47,14 @@ export const GetSupplierByGroupIdResetter = getResetter(
   GetSupplierByGroupIdAPI
 );
 
-// Get Supplier By Product Id
+// Get Supplier By Product For Group Id
 const GetSupplierByProductIdAPI = makeFetchAction(
   GET_SUPPLIER_BY_PRODUCT_ID,
-  ({ productId, pageIndex, pageSize }) =>
+  ({ productId, pageIndex, pageSize, groupId }) =>
     nfetch({
       endpoint: `/api/Supplier/Product${generateQuery({
         productId,
+        groupId,
         pageIndex,
         pageSize
       })}`,
@@ -61,10 +65,16 @@ const GetSupplierByProductIdAPI = makeFetchAction(
 export const getSupplierByProductId = ({
   productId,
   pageIndex = 1,
-  pageSize = 10
+  pageSize = 10,
+  groupId
 }) =>
   respondToSuccess(
-    GetSupplierByProductIdAPI.actionCreator({ productId, pageIndex, pageSize })
+    GetSupplierByProductIdAPI.actionCreator({
+      productId,
+      pageIndex,
+      pageSize,
+      groupId
+    })
   );
 export const GetSupplierByProductIdData =
   GetSupplierByProductIdAPI.dataSelector;
@@ -277,3 +287,37 @@ export const ActiveSupplierProductError =
 export const ActiveSupplierProductResetter = getResetter(
   ActiveSupplierProductAPI
 );
+
+// Ignore Supplier
+export const IgnoreSupplierAPI = makeFetchAction(
+  IGNORE_SUPPLIER,
+  (conversationId) =>
+    nfetch({
+      method: 'PUT',
+      endpoint: `/api/Conversation/Ignore/${conversationId}`
+    })()
+);
+export const ignoreSupplier = (conversationId, callback) =>
+  respondToSuccess(IgnoreSupplierAPI.actionCreator(conversationId), () => {
+    typeof callback === 'function' && callback();
+  });
+export const IgnoreSupplierData = IgnoreSupplierAPI.dataSelector;
+export const IgnoreSupplierError = IgnoreSupplierAPI.errorSelector;
+export const IgnoreSupplierResetter = getResetter(IgnoreSupplierAPI);
+
+//Un-Ignore Supplier
+export const UnIgnoreSupplierAPI = makeFetchAction(
+  UN_IGNORE_SUPPLIER,
+  (conversationId) =>
+    nfetch({
+      method: 'PUT',
+      endpoint: `/api/Conversation/UnIgnore/${conversationId}`
+    })()
+);
+export const unIgnoreSupplier = (conversationId, callback) =>
+  respondToSuccess(UnIgnoreSupplierAPI.actionCreator(conversationId), () => {
+    typeof callback === 'function' && callback();
+  });
+export const UnIgnoreSupplierData = UnIgnoreSupplierAPI.dataSelector;
+export const UnIgnoreSupplierError = UnIgnoreSupplierAPI.errorSelector;
+export const UnIgnoreSupplierResetter = getResetter(UnIgnoreSupplierAPI);

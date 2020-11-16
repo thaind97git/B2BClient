@@ -1,5 +1,5 @@
-import { Tag } from "antd";
-import React from "react";
+import { Tag } from 'antd';
+import React from 'react';
 import {
   CheckCircleOutlined,
   SyncOutlined,
@@ -7,8 +7,8 @@ import {
   ClockCircleOutlined,
   ScheduleOutlined,
   AreaChartOutlined,
-  FormOutlined,
-} from "@ant-design/icons";
+  FormOutlined
+} from '@ant-design/icons';
 import {
   G_BIDDING,
   G_FAILED,
@@ -16,26 +16,26 @@ import {
   G_PENDING,
   G_NEGOTIATING,
   G_WAIT_FOR_AUCTION,
-  G_ORDERED,
-} from "../../enums/groupStatus";
+  G_ORDERED
+} from '../../enums/groupStatus';
 
 const GroupStatusComponent = ({ status }) => {
   const getColorByStatus = (status) => {
     switch (status) {
       case G_PENDING:
-        return "default";
+        return 'default';
       case G_BIDDING:
-        return "cyan";
+        return 'cyan';
       case G_DONE:
-        return "success";
+        return 'success';
       case G_FAILED:
-        return "red";
+        return 'red';
       case G_NEGOTIATING:
-        return "blue";
+        return 'blue';
       case G_WAIT_FOR_AUCTION:
-        return "processing";
+        return 'processing';
       case G_ORDERED:
-        return "#87d068";
+        return '#87d068';
       default:
         break;
     }
@@ -43,19 +43,19 @@ const GroupStatusComponent = ({ status }) => {
   const getLabelByStatus = (status) => {
     switch (status) {
       case G_PENDING:
-        return "PENDING";
+        return 'PENDING';
       case G_BIDDING:
-        return "BIDDING";
+        return 'BIDDING';
       case G_DONE:
-        return "SUCCESS";
+        return 'DONE';
       case G_FAILED:
-        return "FAILED";
+        return 'FAILED';
       case G_NEGOTIATING:
-        return "NEGOTIATING";
+        return 'NEGOTIATING';
       case G_WAIT_FOR_AUCTION:
-        return "WAIT FOR REVERSE AUCTION";
+        return 'WAIT FOR REVERSE AUCTION';
       case G_ORDERED:
-        return "ORDERED";
+        return 'ORDERED';
       default:
         break;
     }

@@ -5,6 +5,7 @@ import moment from 'moment';
 import Router from 'next/router';
 import { notification } from 'antd';
 import brn from 'brn';
+import { B_CANCELED, B_CLOSED, B_DONE, B_FAILED } from '../enums/biddingStatus';
 
 export const currentPath = () => !isServer && Router.route;
 
@@ -204,3 +205,54 @@ export const getCurrentUserImage = (image) =>
   image ? `${process.env.API_SERVER_URL}/api/Account/Avatar/${image}` : null;
 export const getDefaultProductImage = () =>
   '/static/images/default_product_img.jpg';
+
+export const getCurrentTimezone = () =>
+  Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+export const timeConvert = (n) => {
+  let num = n;
+  let hours = num / 60;
+  let rhours = Math.floor(hours);
+  let minutes = (hours - rhours) * 60;
+  let rminutes = Math.round(minutes);
+  const rsH = rhours === 0 ? '' : rhours + ` hour${rhours > 1 ? 's' : ''}`;
+  const rsM =
+    rminutes === 0 ? '' : rminutes + ` minute${rminutes > 1 ? 's' : ''}`;
+  return rsH || rsM ? `${rsH} ${rsM}` : 'N/A';
+};
+
+export const getBadgeAuctionLabel = (
+  auctionStartTime,
+  isClosed = false,
+  auctionStatus
+) => {
+  let text = 'A next few days';
+  const dateBetween =
+    new Date(auctionStartTime).getDate() - new Date().getDate();
+  if (isClosed) {
+    const getLabelByStatus = (status) => {
+      switch (status) {
+        case B_DONE:
+          return 'Done';
+        case B_CLOSED:
+          return 'Closed';
+        case B_CANCELED:
+          return 'Canceled';
+        case B_FAILED:
+          return 'Failed';
+        default:
+          break;
+      }
+    };
+    text = getLabelByStatus(auctionStatus);
+  } else if (dateBetween <= 0) {
+    text = 'Happening';
+  } else if (dateBetween === 1) {
+    text = 'Tomorrow';
+  } else if (dateBetween >= 7) {
+    text = 'Next week';
+  } else if (dateBetween >= 14) {
+    text = 'A next few weeks';
+  }
+  return text;
+};

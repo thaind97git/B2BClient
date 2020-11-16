@@ -1,120 +1,220 @@
-import { Button, Row, Table, Tabs } from "antd";
-import Link from "next/link";
-import Router from "next/router";
-import React from "react";
-import { B_ACTIVE, B_CLOSED, B_DONE, B_FEATURE } from "../enums/biddingStatus";
-import { createLink } from "../libs";
-import BiddingStatusComponent from "./Utils/BiddingStatusComponent";
-const { TabPane } = Tabs;
-function callback(key) {
-  console.log(key);
-}
+import { Button, Select, Space, Modal, Row, Typography } from 'antd';
+import Link from 'next/link';
+import React, { useState } from 'react';
+import Moment from 'react-moment';
+import { connect } from 'react-redux';
+import { createStructuredSelector } from 'reselect';
+import { B_ACTIVE, B_CLOSED, B_DONE, B_FEATURE } from '../enums/biddingStatus';
+import ReactTableLayout from '../layouts/ReactTableLayout';
+import { createLink } from '../libs';
+import {
+  auctionFilter,
+  AuctionFilterData,
+  AuctionFilterError,
+  cancelAuction,
+  CancelAuctionData
+} from '../stores/AuctionState';
+import {
+  DATE_TIME_FORMAT,
+  DEFAULT_DATE_RANGE,
+  DEFAULT_PAGING_INFO,
+  timeConvert
+} from '../utils';
+import AllCategoryComponent from './AllCategoryComponent';
+import BiddingStatusComponent from './Utils/BiddingStatusComponent';
+const { Title } = Typography;
+const { Option } = Select;
 
-const dataSource = [
-  {
-    key: "1",
-    name: "IR Night Vision Hidden Camera Watch Sport - 25/10/2020",
-    duration: "30 Minutes",
-    dateCreated: "October 22, 2020 17:00 GTM",
-    createdBy: "John Smith",
-    status: <BiddingStatusComponent status={B_FEATURE} />,
-    actions: (
-      <Button size="small" danger>
-        Cancel
-      </Button>
-    ),
-  },
-  {
-    key: "2",
-    name:
-      "Followsun 50 in 1 Accessories for Go pro, Action Camera Mounts, Sports Camera Head Strap Chest Strap - 24/10/2020",
-    duration: "2 Hours",
-    dateCreated: "October 18, 2020 17:00 GTM",
-    createdBy: "Ryota",
-    status: <BiddingStatusComponent status={B_ACTIVE} />,
-  },
-  {
-    key: "3",
-    name:
-      "Customization japanese School Uniform shirts wholesale Set - 27/09/2020",
-    duration: "1 Hour",
-    dateCreated: "September 25, 2020 17:00 GTM",
-    createdBy: "Ryota",
-    status: <BiddingStatusComponent status={B_CLOSED} />,
-  },
-  {
-    key: "4",
-    name:
-      "Factory Direct Supply Double-breasted Breathable Chef Cook Uniform - 28/05/2020",
-    duration: "2 Hours",
-    dateCreated: "May 27, 2020 17:00 GTM",
-    createdBy: "Ryota",
-    status: <BiddingStatusComponent status={B_DONE} />,
-  },
-];
+const connectToRedux = connect(
+  createStructuredSelector({
+    auctionData: AuctionFilterData,
+    auctionError: AuctionFilterError,
+    cancelAuctionData: CancelAuctionData
+  }),
+  (dispatch) => ({
+    auctionFilter: (
+      pageIndex,
+      pageSize,
+      searchMessage,
+      dateRange = {},
+      status,
+      categoryId
+    ) =>
+      dispatch(
+        auctionFilter({
+          pageIndex,
+          pageSize,
+          name: searchMessage,
+          fromDate: dateRange.fromDate,
+          toDate: dateRange.toDate,
+          status,
+          categoryId
+        })
+      ),
+    cancelAuction: (id, callback) => dispatch(cancelAuction(id, callback))
+  })
+);
 
 const columns = [
   {
-    title: "Name",
-    dataIndex: "name",
-    key: "name",
-    render: (text) => (
-      <Link href={createLink(["aggregator", "bidding", `details?id=${1}`])}>
+    title: 'Name',
+    dataIndex: 'name',
+    key: 'name',
+    render: (text, record) => (
+      <Link
+        href={createLink(['aggregator', 'bidding', `details?id=${record.key}`])}
+      >
         {text}
       </Link>
-    ),
+    )
   },
   {
-    title: "Duration",
-    dataIndex: "duration",
-    key: "duration",
+    title: 'Duration',
+    dataIndex: 'duration',
+    key: 'duration'
   },
   {
-    title: "Date create",
-    dataIndex: "dateCreated",
-    key: "dateCreated",
+    title: 'Date start',
+    dataIndex: 'dateStart',
+    key: 'dateStart'
   },
   {
-    title: "Created By",
-    dataIndex: "createdBy",
-    key: "createdBy",
+    title: 'Created By',
+    dataIndex: 'createdBy',
+    key: 'createdBy'
   },
   {
-    title: "Status",
-    dataIndex: "status",
-    key: "status",
+    title: 'Status',
+    dataIndex: 'status',
+    key: 'status'
   },
   {
-    title: "Actions",
-    dataIndex: "actions",
-    key: "actions",
-  },
+    title: 'Actions',
+    dataIndex: 'actions',
+    key: 'actions'
+  }
 ];
 
-const AdminBiddingManagementComponent = () => {
+const AdminBiddingManagementComponent = ({
+  auctionFilter,
+  auctionData,
+  auctionError,
+  cancelAuction
+}) => {
+  const [searchMessage, setSearchMessage] = useState('');
+  const [dateRange, setDateRange] = useState(DEFAULT_DATE_RANGE);
+  const [category, setCategory] = useState('all');
+  const [status, setStatus] = useState(null);
+  function handleChange(value) {
+    setStatus(value);
+  }
+  const getAuctionData = (auctionData = []) => {
+    return (
+      auctionData &&
+      auctionData.length > 0 &&
+      auctionData.map((auction) => {
+        const {
+          id,
+          auctionName,
+          auctionStartTime,
+          minimumDuration,
+          aggregator,
+          reverseAuctionStatus = {}
+        } = auction;
+        return {
+          key: id,
+          name: auctionName,
+          duration: timeConvert(minimumDuration),
+          dateStart: (
+            <Moment format={DATE_TIME_FORMAT}>{auctionStartTime}</Moment>
+          ),
+          createdBy: `${aggregator.firstName} ${aggregator.lastName}`,
+          status: <BiddingStatusComponent status={reverseAuctionStatus.id} />,
+          actions:
+            +reverseAuctionStatus.id === B_FEATURE ? (
+              <Button
+                onClick={() => {
+                  Modal.confirm({
+                    title: 'Do you want cancel auction?',
+                    okText: 'Yes',
+                    cancelText: 'No',
+                    onOk: () => {
+                      cancelAuction(id, () => {
+                        auctionFilter({
+                          pageIndex: DEFAULT_PAGING_INFO.page,
+                          pageSize: DEFAULT_PAGING_INFO.pageSize,
+                          name: searchMessage,
+                          fromDate: null,
+                          toDate: null,
+                          status,
+                          categoryId: category
+                        });
+                      });
+                    }
+                  });
+                }}
+                size="small"
+                danger
+              >
+                Cancel
+              </Button>
+            ) : null
+        };
+      })
+    );
+  };
+
+  let requestData = [],
+    totalCount = 0;
+  if (!!auctionData && !auctionError) {
+    requestData = auctionData.data;
+    totalCount = auctionData.total;
+  }
   return (
     <div>
-      {/* <Row justify="end">
-        <Button
-          onClick={() => {
-            Router.push("/aggregator/bidding/create");
-          }}
-          type="primary"
-          danger
-        >
-          Create New Event
-        </Button>
-      </Row> */}
-      <Tabs defaultActiveKey="1" onChange={callback}>
-        <TabPane tab="Current Event" key="1">
-          <Table dataSource={dataSource} columns={columns} />
-        </TabPane>
-        {/* <TabPane tab="Invite Participants" key="2">
-          Content of Tab Pane 2
-        </TabPane> */}
-      </Tabs>
+      <Row justify="start">
+        <Title level={4}>Event management</Title>
+      </Row>
+      <ReactTableLayout
+        dispatchAction={auctionFilter}
+        searchProps={{
+          placeholder: 'Search by event name',
+          searchMessage,
+          setSearchMessage,
+          exElement: (
+            <Space>
+              <Select
+                size="large"
+                placeholder="Filter by status"
+                style={{ width: 140 }}
+                onChange={handleChange}
+                defaultValue=""
+              >
+                <Option value="">All Status</Option>
+                <Option value={B_FEATURE}>Waiting</Option>
+                <Option value={B_DONE}>Donned</Option>
+                <Option value={B_CLOSED}>Closed</Option>
+                <Option value={B_ACTIVE}>Activating</Option>
+              </Select>
+              <AllCategoryComponent
+                onGetLastValue={(value) => setCategory(value)}
+                size="large"
+                isSearchStyle={false}
+              />
+            </Space>
+          ),
+          exCondition: [status, category]
+        }}
+        dateRangeProps={{
+          dateRange,
+          setDateRange
+        }}
+        data={getAuctionData(requestData || [])}
+        columns={columns}
+        totalCount={totalCount}
+      />
     </div>
   );
 };
 
-export default AdminBiddingManagementComponent;
+export default connectToRedux(AdminBiddingManagementComponent);

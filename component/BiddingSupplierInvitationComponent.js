@@ -1,4 +1,4 @@
-import { Button, Card, Drawer, Space, Typography, Modal } from 'antd';
+import { Button, Card, Drawer, Space, Typography } from 'antd';
 import {
   CloseCircleOutlined,
   CommentOutlined,
@@ -6,7 +6,6 @@ import {
 } from '@ant-design/icons';
 import Router from 'next/router';
 import React, { Fragment, useEffect, useState } from 'react';
-import ListingSupplierByProductComponent from './ListingSupplierByProductComponent';
 import UserProfileComponent from './UserProfileComponent';
 import { DEFAULT_PAGING_INFO } from '../utils';
 import { connect } from 'react-redux';
@@ -110,7 +109,7 @@ const getSupplierTable = ({
     )
   }));
 
-const GroupRequestSuppliersTabComponent = ({
+const BiddingSupplierInvitationComponent = ({
   getSupplierByGroupId,
   supplierByGroupIdData,
   addSupplierToGroup,
@@ -120,7 +119,6 @@ const GroupRequestSuppliersTabComponent = ({
 }) => {
   const [isOpenContact, setIsOpenContact] = useState(false);
   const [openSupplierDetail, setOpenSupplierDetail] = useState(false);
-  const [supplierIdSelected, setSupplierIdSelected] = useState([]);
 
   const callbackGetSupplierList = () => {
     getSupplierByGroupId(
@@ -183,34 +181,8 @@ const GroupRequestSuppliersTabComponent = ({
           />
         </div>
       </Card>
-      <Modal
-        width={1000}
-        onCancel={() => setIsOpenContact(false)}
-        onOk={() => {
-          if (supplierIdSelected && supplierIdSelected.length > 0) {
-            addSupplierToGroup({
-              groupId,
-              supplierIds: supplierIdSelected,
-              callback: callbackGetSupplierList
-            });
-          }
-        }}
-        title="Find Supplier"
-        visible={isOpenContact}
-        okText="Add"
-      >
-        {isOpenContact ? (
-          <ListingSupplierByProductComponent
-            setSupplierIdSelected={(arrayId = []) => {
-              setSupplierIdSelected(arrayId);
-            }}
-            productId={productId}
-            groupId={groupId}
-          />
-        ) : null}
-      </Modal>
     </Fragment>
   );
 };
 
-export default connectToRedux(GroupRequestSuppliersTabComponent);
+export default connectToRedux(BiddingSupplierInvitationComponent);

@@ -1,16 +1,52 @@
-import React from "react";
-import { Row, Statistic, Tabs, Tag, Typography } from "antd";
-import { ADMIN, SUPPLIER } from "../enums/accountRoles";
-import BiddingOverviewComponent from "./BiddingOverviewComponent";
-import BiddingAuctionComponent from "./BiddingAuctionComponent";
+import React, { useEffect, useState } from 'react';
+import { Empty, Row, Statistic, Tabs, Tag, Typography } from 'antd';
+import { ADMIN, SUPPLIER } from '../enums/accountRoles';
+import BiddingOverviewComponent from './BiddingOverviewComponent';
+import BiddingAuctionComponent from './BiddingAuctionComponent';
+import { connect } from 'react-redux';
+import { createStructuredSelector } from 'reselect';
+import {
+  getAuctionDetails,
+  GetAuctionDetailsData
+} from '../stores/AuctionState';
+import { useRouter } from 'next/router';
+import moment from 'moment';
 const { TabPane } = Tabs;
 const { Countdown } = Statistic;
 const { Title } = Typography;
 function onFinish() {
-  console.log("finished!");
+  console.log('finished!');
 }
-const SupplierBiddingDetailsComponent = ({ role = SUPPLIER }) => {
-  const deadline = Date.now() + 1000 * 60 * 60 * 24 * 2 + 1000 * 30;
+
+const connectToRedux = connect(
+  createStructuredSelector({
+    auctionDetailsData: GetAuctionDetailsData
+  }),
+  (dispatch) => ({
+    getAuctionDetails: (id) => dispatch(getAuctionDetails(id))
+  })
+);
+const SupplierBiddingDetailsComponent = ({
+  role = SUPPLIER,
+  auctionDetailsData,
+  getAuctionDetails
+}) => {
+  const [firstTime, setFirstTime] = useState(true);
+  const router = useRouter();
+  const { id: auctionId } = router.query;
+  useEffect(() => {
+    if (auctionId && firstTime) {
+      getAuctionDetails(auctionId);
+      setFirstTime(false);
+    }
+  }, [auctionId, firstTime, getAuctionDetails]);
+  if (!auctionDetailsData) {
+    return <Empty description="Can not find any event" />;
+  }
+  const { auctionStartTime, minimumDuration } = auctionDetailsData || {};
+  const deadline =
+    new Date(moment.utc(auctionStartTime).local()).getTime() +
+    1000 * 60 * minimumDuration;
   return (
     <div>
       <Row justify="space-between">
@@ -18,7 +54,7 @@ const SupplierBiddingDetailsComponent = ({ role = SUPPLIER }) => {
         <Tag color="blue">
           <Row align="middle">
             <Title style={{ fontWeight: 500, marginBottom: 0 }} level={5}>
-              Time Remaining:{" "}
+              Time Remaining:{' '}
             </Title>
             <span>&nbsp;</span>
             <Countdown title="" value={deadline} onFinish={onFinish} />
@@ -31,7 +67,7 @@ const SupplierBiddingDetailsComponent = ({ role = SUPPLIER }) => {
           tab={<span>Overview</span>}
           key="1"
         >
-          <BiddingOverviewComponent />
+          <BiddingOverviewComponent auction={auctionDetailsData} />
         </TabPane>
         {role === ADMIN && (
           <TabPane tab={<span>Participants</span>} key="2">
@@ -39,10 +75,10 @@ const SupplierBiddingDetailsComponent = ({ role = SUPPLIER }) => {
           </TabPane>
         )}
         <TabPane tab={<span>Reverse Auction</span>} key="5">
-          <BiddingAuctionComponent />
+          <BiddingAuctionComponent auction={auctionDetailsData} />
         </TabPane>
       </Tabs>
     </div>
   );
 };
-export default SupplierBiddingDetailsComponent;
+export default connectToRedux(SupplierBiddingDetailsComponent);
