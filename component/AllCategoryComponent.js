@@ -25,6 +25,7 @@ const AllCategoryComponent = ({
   isSearchStyle = true,
   style = {},
   defaultLabel = 'All Category',
+  onGetLastLabel,
   ...other
 }) => {
   const allCateOption = {
@@ -60,6 +61,8 @@ const AllCategoryComponent = ({
     typeof onGetValue === 'function' && onGetValue(currentValueSelected);
     typeof onGetLastValue === 'function' &&
       onGetLastValue(currentValueSelected[currentValueSelected.length - 1]);
+    typeof onGetLastLabel === 'function' &&
+      onGetLastLabel(currentLabelSelected[currentLabelSelected.length - 1]);
   }
   return (
     <Fragment>
