@@ -1,24 +1,21 @@
-import { Cascader } from "antd";
-import React, { Fragment, useEffect } from "react";
-import { connect } from "react-redux";
-import { createStructuredSelector } from "reselect";
+import { Cascader } from 'antd';
+import React, { Fragment, useEffect } from 'react';
+import { connect } from 'react-redux';
+import { createStructuredSelector } from 'reselect';
 import {
   getCategories,
-  GetCategoriesDataSelector,
-} from "../stores/CategoryState";
+  GetCategoriesDataSelector
+} from '../stores/CategoryState';
 const connectToRedux = connect(
   createStructuredSelector({
-    allCategoryData: GetCategoriesDataSelector,
+    allCategoryData: GetCategoriesDataSelector
   }),
   (dispatch) => ({
-    getAllCategory: () => dispatch(getCategories()),
+    getAllCategory: () => dispatch(getCategories())
   })
 );
 let optionCate = [];
-const allCateOption = {
-  label: "All Category",
-  value: "all",
-};
+
 const AllCategoryComponent = ({
   allCategoryData,
   getAllCategory,
@@ -27,8 +24,13 @@ const AllCategoryComponent = ({
   onGetLastValue,
   isSearchStyle = true,
   style = {},
+  defaultLabel = 'All Category',
   ...other
 }) => {
+  const allCateOption = {
+    label: defaultLabel,
+    value: 'all'
+  };
   useEffect(() => {
     getAllCategory();
   }, [getAllCategory]);
@@ -51,12 +53,12 @@ const AllCategoryComponent = ({
   }
 
   function onChange(value = []) {
-    const currentLabelSelected = value.map((item) => item.split(",")[1]);
-    const currentValueSelected = value.map((item) => item.split(",")[0]);
-    typeof onGetLabel === "function" &&
-      onGetLabel(currentLabelSelected.join(" >> "));
-    typeof onGetValue === "function" && onGetValue(currentValueSelected);
-    typeof onGetLastValue === "function" &&
+    const currentLabelSelected = value.map((item) => item.split(',')[1]);
+    const currentValueSelected = value.map((item) => item.split(',')[0]);
+    typeof onGetLabel === 'function' &&
+      onGetLabel(currentLabelSelected.join(' >> '));
+    typeof onGetValue === 'function' && onGetValue(currentValueSelected);
+    typeof onGetLastValue === 'function' &&
       onGetLastValue(currentValueSelected[currentValueSelected.length - 1]);
   }
   return (
@@ -65,12 +67,12 @@ const AllCategoryComponent = ({
         placeholder="Select category"
         style={Object.assign(
           {},
-          isSearchStyle && { width: "224px", margin: "-5px -14px", height: 40 },
+          isSearchStyle && { width: '224px', margin: '-5px -14px', height: 40 },
           style
         )}
         options={optionCate}
         onChange={onChange}
-        defaultValue={["all"]}
+        defaultValue={['all']}
         {...other}
       />
       <style jsx global>

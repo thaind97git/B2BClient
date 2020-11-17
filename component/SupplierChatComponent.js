@@ -62,7 +62,9 @@ const GroupTile = ({
             {contentLabel}
           </small>{' '}
           <span>&nbsp;</span>{' '}
-          <small>{lastMessageTime && moment(lastMessageTime).fromNow()}</small>
+          <small>
+            {lastMessageTime && moment.utc(lastMessageTime).local().fromNow()}
+          </small>
         </div>
       </Col>
     </Col>

@@ -1,23 +1,22 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 
-import { Layout, Menu, Row, Dropdown } from "antd";
+import { Layout, Menu, Row, Dropdown } from 'antd';
 import {
   DownOutlined,
   LoginOutlined,
   MenuUnfoldOutlined,
   MenuFoldOutlined,
   OrderedListOutlined,
-  FormOutlined,
-  BulbOutlined,
-  MessageOutlined ,
+  AppstoreAddOutlined,
+  MessageOutlined,
   SolutionOutlined,
-  TeamOutlined,
-} from "@ant-design/icons";
-import MemberNavComponent from "../component/MemberNavComponent";
-import { currentPath } from "../utils";
-import Link from "next/link";
-import { removeToken } from "../libs/localStorage";
-import Router from "next/router";
+  TeamOutlined
+} from '@ant-design/icons';
+import MemberNavComponent from '../component/MemberNavComponent';
+import { currentPath } from '../utils';
+import Link from 'next/link';
+import { removeToken } from '../libs/localStorage';
+import Router from 'next/router';
 
 const { Header, Content, Sider } = Layout;
 
@@ -27,6 +26,12 @@ const ADMIN_MENU = [
     icon: <OrderedListOutlined />,
     label: 'Product',
     link: '/admin/product'
+  },
+  {
+    key: '5',
+    icon: <AppstoreAddOutlined />,
+    label: 'Category',
+    link: '/admin/category'
   },
   {
     key: '2',
@@ -61,7 +66,7 @@ const PROFILE_MENU = (
     <Menu.Item
       onClick={() => {
         removeToken();
-        Router.push("/login");
+        Router.push('/login');
       }}
       danger
     >
@@ -75,15 +80,15 @@ const AdminLayout = ({ children }) => {
   return (
     <div
       style={{
-        background: "#f8f8f8",
-        minHeight: "100vh",
-        position: "relative",
+        background: '#f8f8f8',
+        minHeight: '100vh',
+        position: 'relative'
       }}
     >
       <div className="">
         <Layout>
           <Sider
-            style={{ minHeight: "100vh" }}
+            style={{ minHeight: '100vh' }}
             trigger={null}
             collapsible
             collapsed={collapsed}
@@ -93,7 +98,7 @@ const AdminLayout = ({ children }) => {
                 <a
                   style={{
                     fontSize: 13,
-                    transform: `scale(${collapsed ? 1 : 1.5})`,
+                    transform: `scale(${collapsed ? 1 : 1.5})`
                   }}
                 >
                   B2B Market
@@ -103,7 +108,7 @@ const AdminLayout = ({ children }) => {
             <MemberNavComponent path={currentPath()} menus={ADMIN_MENU} />
           </Sider>
 
-          <Layout style={{ background: "#f8f8f8" }} className="site-layout">
+          <Layout style={{ background: '#f8f8f8' }} className="site-layout">
             <Header className="site-layout-background" style={{ padding: 0 }}>
               <Row justify="space-between" align="middle">
                 {collapsed ? (
@@ -134,10 +139,10 @@ const AdminLayout = ({ children }) => {
             <Content
               className="site-layout-background"
               style={{
-                margin: "24px 16px",
+                margin: '24px 16px',
                 padding: 24,
                 minHeight: 280,
-                background: "#fff",
+                background: '#fff'
               }}
             >
               {children}
