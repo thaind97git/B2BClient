@@ -118,15 +118,9 @@ const ConfirmationOrderComponent = ({
   const productDetailsColumns = [
     { title: 'Product Name', dataIndex: 'productName', key: 'productName' },
     {
-<<<<<<< HEAD
-      title: "Unit Price",
-      dataIndex: "productPrice",
-      key: "productPrice",
-=======
-      title: 'Price',
+      title: 'Unit Price',
       dataIndex: 'productPrice',
       key: 'productPrice',
->>>>>>> da1cf06a0df674cf6a7921f7b978405e741bc248
       render: (text) => {
         return isNegotiating ? (
           <InputNumber
