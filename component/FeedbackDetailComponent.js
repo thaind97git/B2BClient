@@ -36,7 +36,9 @@ import {
   getFeedbackDetails,
   GetFeedbackDetailsData,
   GetFeedbackDetailsResetter,
-  createFeedbackReply
+  createFeedbackReply,
+  CreateFeedbackReplyData,
+  CreateFeedbackReplyResetter
 } from '../stores/FeedbackState';
 import Moment from 'react-moment';
 
@@ -46,17 +48,18 @@ const FormItem = Form.Item;
 const connectToRedux = connect(
   createStructuredSelector({
     feedbackDetailsData: GetFeedbackDetailsData,
-    // productPagingError: GetProductPagingError,
-    currentUser: CurrentUserData,
+    createFeedbackReplyData: CreateFeedbackReplyData,
+    currentUser: CurrentUserData
   }),
   (dispatch) => ({
     getFeedbackDetails: (feedbackId) => {
       dispatch(getFeedbackDetails(feedbackId));
     },
-    replyFeedback:(object) => {
+    replyFeedback: (object) => {
       dispatch(createFeedbackReply(object));
     },
-    resetData: () => dispatch(GetFeedbackDetailsResetter)
+    resetData: () => dispatch(GetFeedbackDetailsResetter),
+    resetCreateFeedbackReply: () => dispatch(CreateFeedbackReplyResetter)
   })
 );
 
@@ -90,7 +93,9 @@ const AdminFeedbackDetailComponent = ({
   getFeedbackDetails,
   feedbackDetailsData,
   resetData,
-  replyFeedback
+  replyFeedback,
+  createFeedbackReplyData,
+  resetCreateFeedbackReply
 }) => {
   const router = useRouter();
   const feedbackId = router.query.id;
@@ -106,8 +111,6 @@ const AdminFeedbackDetailComponent = ({
       description: value,
       feedbackId: feedbackDetailsData.id
     });
-    //getFeedbackDetails(feedbackId);
-    //resetData()
   };
 
   const handleChange = (e) => {
@@ -117,6 +120,13 @@ const AdminFeedbackDetailComponent = ({
   useEffect(() => {
     if (!!feedbackId) getFeedbackDetails(feedbackId);
   }, [feedbackId, getFeedbackDetails]);
+
+  useEffect(() => {
+    if (createFeedbackReplyData) {
+      getFeedbackDetails(feedbackId);
+      resetCreateFeedbackReply();
+    }
+  }, [createFeedbackReplyData]);
 
   useEffect(() => {
     setFileList([]);
@@ -178,21 +188,18 @@ const AdminFeedbackDetailComponent = ({
       ) {
         setIsReply(false);
       } else if (
-        (currentUser.role === 'Buyer' ||
-        currentUser.role === 'Supplier') &&
-          feedbackDetailsData.feedbackStatus.id === F_CLOSED
+        (currentUser.role === 'Buyer' || currentUser.role === 'Supplier') &&
+        feedbackDetailsData.feedbackStatus.id === F_CLOSED
       ) {
         setIsReply(true);
       } else if (
-        (currentUser.role === 'Buyer' ||
-        currentUser.role === 'Supplier') &&
-          feedbackDetailsData.feedbackStatus.id === F_OPEN
+        (currentUser.role === 'Buyer' || currentUser.role === 'Supplier') &&
+        feedbackDetailsData.feedbackStatus.id === F_OPEN
       ) {
         setIsReply(false);
       }
     }
   }, [feedbackDetailsData]);
-
 
   useEffect(() => {
     return () => {
@@ -305,7 +312,7 @@ const AdminFeedbackDetailComponent = ({
                     __html: (feedbackDetailsData || {}).description
                   }}
                 />
-                <Divider />
+                {fileList.length>0?<Divider />:''}
                 <Upload
                   title="File Attachment List"
                   action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
