@@ -14,6 +14,7 @@ import {
 } from '../stores/RequestState';
 import { get } from 'lodash/fp';
 import AdminRequestPendingDrawerComponent from './AdminRequestPendingDrawerComponent';
+import AllCategoryComponent from './AllCategoryComponent';
 
 const { Title } = Typography;
 const connectToRedux = connect(
@@ -66,7 +67,7 @@ const columns2 = [
     key: 'totalQuantity'
   },
   {
-    title: 'View RFQ list',
+    title: 'View RFQ List',
     dataIndex: 'listRfq',
     key: 'listRfq'
   }
@@ -83,6 +84,7 @@ const AdminRequestGroupManagement = ({
   const [searchMessage, setSearchMessage] = useState('');
   const [dateRange, setDateRange] = useState(DEFAULT_DATE_RANGE);
   const [openRequestList, setOpenRequestList] = useState(false);
+  const [category, setCategory] = useState('all')
 
   const [currentProductIdSelected, setCurrentProductIdSelected] = useState(
     null
@@ -154,14 +156,15 @@ const AdminRequestGroupManagement = ({
           placeholder: 'Search by product name',
           searchMessage,
           setSearchMessage,
-          // exElement: (
-          //   <AllCategoryComponent
-          //     onGetLastValue={(value) => setCategory(value)}
-          //     size="large"
-          //     isSearchStyle={false}
-          //   />
-          // ),
-          exCondition: [statusFilter]
+          exElement: (
+            <AllCategoryComponent
+              onGetLastValue={(value) => setCategory(value)}
+              size="large"
+              isSearchStyle={false}
+            />
+          ),
+          exCondition: [statusFilter, category],
+          isDateRange: false
         }}
         dateRangeProps={{
           dateRange,

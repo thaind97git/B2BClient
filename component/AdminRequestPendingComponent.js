@@ -96,7 +96,7 @@ const columns = [
   },
 
   {
-    title: 'Actions',
+    title: 'View Details',
     dataIndex: 'actions',
     key: 'actions'
   }
