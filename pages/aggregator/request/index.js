@@ -8,12 +8,12 @@ import TabsLayout from '../../../layouts/TabsLayout';
 import withAuth from '../../../component/HOC/AuthenHOC';
 import { Radio, Row } from 'antd';
 const options = [
-  { label: 'View manual RFQ', value: false },
-  { label: 'View RFQ group by product', value: true }
+  { label: 'View RFQ Group By Product', value: true },
+  { label: 'View Manual RFQ', value: false },
 ];
 const Page = () => {
   const [defaultTab, setDefaultTab] = useState('1');
-  const [groupBy, setGroupBy] = useState(false);
+  const [groupBy, setGroupBy] = useState(true);
 
   const REQUEST_TABS = [
     {
