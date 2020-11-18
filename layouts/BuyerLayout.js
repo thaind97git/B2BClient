@@ -9,6 +9,7 @@ import {
   FileDoneOutlined,
   FallOutlined,
   BellOutlined,
+  CustomerServiceOutlined
 } from "@ant-design/icons";
 import MemberNavComponent from "../component/MemberNavComponent";
 import { currentPath } from "../utils";
@@ -38,6 +39,12 @@ const BUYER_MENU = [
     icon: <FileDoneOutlined />,
     label: 'Order',
     link: '/buyer/order'
+  },
+  {
+    key: '4',
+    icon: <CustomerServiceOutlined />,
+    label: 'Feedback',
+    link: '/buyer/feedback'
   }
 ];
 

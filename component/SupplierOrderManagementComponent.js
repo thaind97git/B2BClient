@@ -3,23 +3,11 @@ import { CurrentUserData } from '../stores/UserState';
 import { createStructuredSelector } from 'reselect';
 import { connect } from 'react-redux';
 import { get } from 'lodash/fp';
-import {
-  Button,
-  Col,
-  DatePicker,
-  Divider,
-  Input,
-  InputNumber,
-  Row,
-  Select,
-  Typography,
-  Form,
-  Empty,
-  Popover
-} from 'antd';
+import { Button, Row, Typography, Popover, Space } from 'antd';
 import { DEFAULT_DATE_RANGE, displayCurrency } from '../utils';
 import ReactTableLayout from '../layouts/ReactTableLayout';
 import Router from 'next/router';
+import OrderStatusComponent from './Utils/OrderStatusComponent';
 
 const { Title } = Typography;
 
@@ -44,7 +32,7 @@ const connectToRedux = connect(
 
 const columns = [
   {
-    title: 'Product Name',
+    title: 'Group Name',
     dataIndex: 'name',
     key: 'name'
   },
@@ -57,6 +45,11 @@ const columns = [
     title: 'Quantity',
     dataIndex: 'quantity',
     key: 'quantity'
+  },
+  {
+    title: 'Status',
+    dataIndex: 'status',
+    key: 'status'
   },
   {
     title: 'Details',
@@ -73,9 +66,24 @@ const data = [
         'Wholesale Stock Tactical Combat Men Army Trousers Military Suit Camouflage Uniform',
       unitType: 'Boxes'
     },
+    id: 1,
     price: 10000,
     quantity: 100,
-    supplierName: 'rko@gmail.com'
+    supplierName: 'rko@gmail.com',
+    status: 1
+  },
+  {
+    product: {
+      id: 'f6ae608f-2010-4e2d-4d3d-08d88552484d',
+      description:
+        'Wholesale Stock Tactical Combat Men Army Trousers Military Suit Camouflage Uniform',
+      unitType: 'Boxes'
+    },
+    id: 2,
+    price: 10000,
+    quantity: 100,
+    supplierName: 'rko@gmail.com',
+    status: 2
   }
 ];
 
@@ -100,6 +108,7 @@ const getSupplierTable = (orderData = []) => {
         ),
         quantity: (+order.quantity || 0) + ' ' + get('product.unitType')(order),
         contact: order.supplierName,
+        status: <OrderStatusComponent status={order.status} />,
         actions: (
           <Button
             onClick={() => {

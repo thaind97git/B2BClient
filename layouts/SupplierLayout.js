@@ -12,7 +12,8 @@ import {
   WechatOutlined,
   BellOutlined,
   ShoppingCartOutlined,
-  FileDoneOutlined
+  FileDoneOutlined,
+  CustomerServiceOutlined
 } from '@ant-design/icons';
 import MemberNavComponent from '../component/MemberNavComponent';
 import { currentPath } from '../utils';
@@ -69,6 +70,12 @@ const SUPPLIER_MENU = [
     icon: <FileDoneOutlined />,
     label: 'Order',
     link: '/supplier/order'
+  },
+  {
+    key: '6',
+    icon: <CustomerServiceOutlined />,
+    label: 'Feedback',
+    link: '/supplier/feedback'
   }
 ];
 

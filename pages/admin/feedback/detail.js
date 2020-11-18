@@ -1,12 +1,12 @@
 import React from "react";
 import AdminLayout from "../../../layouts/AdminLayout";
-import AdminFeedbackDetailComponent from "../../../component/AdminFeedbackDetailComponent";
+import FeedbackDetailComponent from "../../../component/FeedbackDetailComponent";
 import withAuth from "../../../component/HOC/AuthenHOC";
 
 function Page() {
   return (
     <AdminLayout>
-      <AdminFeedbackDetailComponent/>
+      <FeedbackDetailComponent/>
     </AdminLayout>
   );
 }
