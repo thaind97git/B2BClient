@@ -40,7 +40,8 @@ const ReactTableLayout = ({
     placeholder,
     exCondition = [],
     exElement,
-    isDateRange = true
+    isDateRange = true,
+    isSearch = true
   } = searchProps;
   const otherCondition = exCondition.join('~');
   const { dateRange, setDateRange } = dateRangeProps;
@@ -92,14 +93,16 @@ const ReactTableLayout = ({
       {hasAction && (
         <Row justify="space-between" style={{ padding: '6px 4px' }}>
           <Col xs={24} sm={12} lg={10}>
-            <SearchTableComponent
-              searchMessage={searchMessage}
-              setSearchMessage={setSearchMessage}
-              placeholder={placeholder}
-              dispatchAction={dispatchAction}
-              dateRange={dateRange}
-              setDateRange={setDateRange}
-            />
+            {isSearch && (
+              <SearchTableComponent
+                searchMessage={searchMessage}
+                setSearchMessage={setSearchMessage}
+                placeholder={placeholder}
+                dispatchAction={dispatchAction}
+                dateRange={dateRange}
+                setDateRange={setDateRange}
+              />
+            )}
           </Col>
           <Col xs={24} sm={12} lg={14}>
             <Row justify="end">

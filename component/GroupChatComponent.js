@@ -179,7 +179,7 @@ const GroupChatComponent = ({
                 signalR={signalR}
                 conversationId={currentConversationId}
                 titleProps={{
-                  leftTitle: currentGroupNameSelected,
+                  leftTitle: supplierName,
                   rightTitle: (
                     <Space>
                       <Button

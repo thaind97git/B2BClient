@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import moment from 'moment';
+import { getFileMessage } from '../../../utils';
 
 export default function Message(props) {
   const { data, isMine, startsSequence, endsSequence, showTimestamp } = props;
@@ -19,7 +20,19 @@ export default function Message(props) {
 
         <div className="bubble-container">
           <div className="bubble" title={friendlyTimestamp}>
-            {data.description}
+            {data.fileName && (
+              <Fragment>
+                <a
+                  href={getFileMessage(data.id)}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  {data.fileName}
+                </a>
+                <br />
+              </Fragment>
+            )}
+            {data.description && data.description}
           </div>
         </div>
       </div>
