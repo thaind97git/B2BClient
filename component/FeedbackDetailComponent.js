@@ -106,16 +106,12 @@ const AdminFeedbackDetailComponent = ({
       description: value,
       feedbackId: feedbackDetailsData.id
     });
-    // resetData();
-    setFileList([]);
-    setComments([]);
-    setIsReply(false);
-    getFeedbackDetails(feedbackId);
+    //getFeedbackDetails(feedbackId);
+    //resetData()
   };
 
   const handleChange = (e) => {
     setValue(e.target.value);
-    console.log(value);
   };
 
   useEffect(() => {
@@ -123,6 +119,9 @@ const AdminFeedbackDetailComponent = ({
   }, [feedbackId, getFeedbackDetails]);
 
   useEffect(() => {
+    setFileList([]);
+    setComments([]);
+    console.log(feedbackDetailsData);
     if (feedbackDetailsData) {
       if (feedbackDetailsData.feedbackReplies) {
         for (let i = 0; i < feedbackDetailsData.feedbackReplies.length; i++) {
@@ -153,12 +152,10 @@ const AdminFeedbackDetailComponent = ({
               ).fromNow()
             }
           ]);
-          console.log(feedbackDetailsData.feedbackReplies[i]);
         }
       }
       if (feedbackDetailsData.files) {
         for (let i = 0; i < feedbackDetailsData.files.length; i++) {
-          console.log(feedbackDetailsData.files[i]);
           setFileList((fileList) => [
             ...fileList,
             {
@@ -213,10 +210,16 @@ const AdminFeedbackDetailComponent = ({
         <Button
           type="primary"
           onClick={() => {
-            Router.push('/admin/feedback');
+            if (currentUser.role === 'Supplier') {
+              Router.push(`/supplier/feedback`);
+            } else if (currentUser.role === 'Buyer') {
+              Router.push(`/buyer/feedback`);
+            } else if (currentUser.role === 'Admin') {
+              Router.push(`/admin/feedback`);
+            }
           }}
         >
-          <LeftOutlined /> Back to feedback list1
+          <LeftOutlined /> Back to feedback list
         </Button>
       </Row>
       <Row justify="space-between">

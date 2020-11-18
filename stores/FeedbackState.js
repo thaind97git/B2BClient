@@ -126,7 +126,9 @@ const CreateFeedbackReplyAPI = makeFetchAction(CREATE_FEEDBACK_REPLY, (object) =
 );
 
 export const createFeedbackReply = (object) =>
-  respondToSuccess(CreateFeedbackReplyAPI.actionCreator(object), (resp) => {});
+  respondToSuccess(CreateFeedbackReplyAPI.actionCreator(object), (resp) => {
+    
+  });
 export const CreateFeedbackReplyData = CreateFeedbackReplyAPI.dataSelector;
 export const CreateFeedbackReplyError = CreateFeedbackReplyAPI.errorSelector;
 export const CreateFeedbackReplyResetter = getResetter(CreateFeedbackReplyAPI);

@@ -1,13 +1,13 @@
 import React from 'react';
-import BuyerLayout from '../../../layouts/BuyerLayout';
+import SupplierLayout from '../../../layouts/SupplierLayout';
 import FeedbackDetailComponent from '../../../component/FeedbackDetailComponent';
 import withAuth from '../../../component/HOC/AuthenHOC';
 
 function Page() {
   return (
-    <BuyerLayout>
+    <SupplierLayout>
       <FeedbackDetailComponent />
-    </BuyerLayout>
+    </SupplierLayout>
   );
 }
 export default withAuth(Page);
