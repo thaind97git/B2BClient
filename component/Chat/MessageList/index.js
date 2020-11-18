@@ -10,8 +10,8 @@ import {
   GetMessagesData,
   GetMessagesResetter
 } from '../../../stores/ConversationState';
-import { DEFAULT_PAGING_INFO } from '../../../utils';
-import { Col, Row } from 'antd';
+import { DEFAULT_PAGING_INFO, getShortContent } from '../../../utils';
+import { Col, Row, Tooltip } from 'antd';
 import ScrollToBottom from 'react-scroll-to-bottom';
 
 const connectToRedux = connect(
@@ -192,7 +192,9 @@ function MessageList({
     <Row style={{ height: '98%' }}>
       <Col span={24} style={{ height: 42, zIndex: 1 }}>
         <div className="toolbar ">
-          <div className="left-items">{leftTitle}</div>
+          <div className="left-items">
+            <Tooltip title={leftTitle}>{getShortContent(leftTitle)}</Tooltip>
+          </div>
           <h1 className="toolbar-title">{title}</h1>
           <div className="right-items">{rightTitle}</div>
         </div>
@@ -200,14 +202,14 @@ function MessageList({
       <Col
         style={{
           padding: 10,
-          height: 'calc(100% - 94px)',
-          position: 'relative'
+          height: 'calc(100% - 94px)'
         }}
         span={24}
-        className="message-list-chat"
       >
         <ScrollToBottom>
-          {!!messages ? <RenderMessages messagesData={messages} /> : null}{' '}
+          <div style={{ height: `calc(100vh - 340px)` }}>
+            {!!messages ? <RenderMessages messagesData={messages} /> : null}{' '}
+          </div>
         </ScrollToBottom>
       </Col>
       <Col span={24} style={{ height: 52 }}>

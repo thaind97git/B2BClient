@@ -47,25 +47,6 @@ const connectToRedux = connect(
     resetResponseInvitation: () => dispatch(ResponseAuctionInvitationResetter)
   })
 );
-const getFeatureDate = (numberDate = 0) => {
-  const timeInOneDay = 24 * 60 * 60 * 1000;
-  const currentDate = new Date(
-    new Date().getTime() + numberDate * timeInOneDay
-  );
-  return currentDate;
-};
-
-const BIDDING_INVITE = [
-  {
-    id: 1,
-    title: 'IR Night Vision Hidden Camera Watch Sport - 24/10/2020',
-    category: 'Action & Sports Camera',
-    startTime: getFeatureDate(),
-    owner: 'John Smith',
-    duration: 200,
-    currency: 'VND'
-  }
-];
 const callAuctionFilter = ({
   key,
   auctionFilter,
@@ -134,7 +115,6 @@ const SupplierBiddingComponent = ({
     auctionData = auctionFilterData.data;
     totalCount = auctionFilterData.total;
   }
-  console.log({ auctionData });
   return (
     <Fragment>
       <Row justify="end">

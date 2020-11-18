@@ -143,7 +143,7 @@ export const openNotification = (
   });
 };
 
-export const displayCurrency = (amount, prefix = 'đ', splitChar = '.') =>
+export const displayCurrency = (amount, prefix = 'đ', splitChar = ',') =>
   amount
     ? `${amount} ${prefix}`.replace(/\B(?=(\d{3})+(?!\d))/g, splitChar)
     : `0 ${prefix}`;

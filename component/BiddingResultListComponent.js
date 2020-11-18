@@ -1,7 +1,7 @@
 import { Collapse, Row, Table, Typography, List, Button } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { CaretRightOutlined } from '@ant-design/icons';
-import { displayCurrency } from '../utils';
+import { DATE_TIME_FORMAT, displayCurrency } from '../utils';
 import Router from 'next/router';
 import SignalR from '../libs/signalR';
 import { connect } from 'react-redux';
@@ -78,15 +78,17 @@ const columns = [
   }
 ];
 
-const dataSrc = [
-  {
-    currentValue: 850000,
-    noBids: 8,
-    bestBid: 740000,
-    leadSupplier: 'Supplier Rank 1',
-    active: 3
-  }
-];
+
+const getActiveSupplier = ({biddingHistory = []}) => {
+  let suppliers = [];
+  biddingHistory.forEach((bid = {}) => {
+    const supId = (bid.supplier || {}).id
+    if (!suppliers.includes(supId)) {
+      suppliers.push(supId)
+    }
+  })
+  return suppliers.length
+}
 const getRecordHistory = ({ auctionData = [] }) => {
   return (
     (auctionData &&
@@ -94,7 +96,7 @@ const getRecordHistory = ({ auctionData = [] }) => {
         let result = `${moment
           .utc(auction.dateCreated)
           .local()
-          .format('hh:mm:ss')} ${get('supplier.description')(
+          .format(DATE_TIME_FORMAT)} - ${get('supplier.description')(
           auction
         )} placed a bid of ${displayCurrency(auction.price)}.`;
         return result;
@@ -109,23 +111,48 @@ const BiddingResultListComponent = ({
   auction
 }) => {
   const [biddingHistory, setBiddingHistory] = useState([]);
+  const [result, setResult] = useState({})
+  const [firstTime, setFirstTime] = useState(true);
 
   useEffect(() => {
-    if (auction) {
+    if (auction && firstTime) {
       const { id } = auction;
       getAuctionHistory(id);
+      setFirstTime(false)
     }
-  }, [auction, getAuctionHistory]);
+  }, [auction, getAuctionHistory, firstTime]);
 
-  // Set history total lot at the first load
+  // Set history at the first load
   useEffect(() => {
     if (auctionHistoryData && auction) {
-      console.log({ auctionHistoryData });
-      // set Total lot
-      // setTotalLot(Math.floor(quantity * lastedPrice));
       setBiddingHistory(auctionHistoryData);
+      const lastBid = auctionHistoryData[auctionHistoryData.length - 1] || {}
+      const src = {
+        currentValue: auction.currentPrice,
+        noBids: auctionHistoryData.length,
+        bestBid: Math.floor(lastBid.price),
+        leadSupplier: (lastBid.supplier || {}).description,
+        active: getActiveSupplier({biddingHistory: auctionHistoryData})
+      }
+      setResult(src)
     }
   }, [auctionHistoryData, auction]);
+
+
+  useEffect(() => {
+    if (biddingHistory && biddingHistory.length > 0 && !firstTime) {
+
+      const lastBid = biddingHistory[biddingHistory.length - 1] || {}
+      const src = {
+        currentValue: auction.currentPrice,
+        noBids: biddingHistory.length,
+        bestBid: Math.floor(lastBid.price),
+        leadSupplier: (lastBid.supplier || {}).description,
+        active: getActiveSupplier({biddingHistory})
+      }
+      setResult(src)
+    }
+  }, [biddingHistory, firstTime, auction.currentPrice]);
 
   useEffect(() => {
     signalR.onListen('NewBid', (history) => {
@@ -137,7 +164,7 @@ const BiddingResultListComponent = ({
       ) {
         if (
           biddingHistory[biddingHistory.length - 1].reverseAuctionHistoryId !==
-          history.reverseAuctionHistoryId
+          history.reverseAuctionHistoryId && history.reverseAuctionId === auction.id
         ) {
           const cloneHistory = [...biddingHistory];
           cloneHistory.push(history);
@@ -145,7 +172,7 @@ const BiddingResultListComponent = ({
         }
       }
     });
-  }, [biddingHistory]);
+  }, [biddingHistory, auction.id]);
   return (
     <Row style={{ width: '100%' }}>
       <Collapse
@@ -179,7 +206,7 @@ const BiddingResultListComponent = ({
         pagination={false}
         style={{ width: '100%' }}
         columns={columns}
-        dataSource={dataSrc}
+        dataSource={[result]}
       />
       <Row justify="start" style={{ marginTop: 32 }}>
         <Button

@@ -34,7 +34,7 @@ import Moment from 'react-moment';
 import RequestStatusComponent from './Utils/RequestStatusComponent';
 
 import ReactTableLayout from '../layouts/ReactTableLayout';
-import { G_PENDING } from '../enums/groupStatus';
+import { G_NEGOTIATING, G_PENDING } from '../enums/groupStatus';
 
 const { Title } = Typography;
 const groupRequestColumns = [
@@ -86,7 +86,7 @@ const getRequestTable = ({
       status: <RequestStatusComponent status={request.requestStatus.id} />,
       actions: (
         <Space>
-          {status === G_PENDING && isCanRemove && (
+          {(status === G_PENDING || status === G_NEGOTIATING) && isCanRemove && (
             <Button
               onClick={() => {
                 Modal.confirm({

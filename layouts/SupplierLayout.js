@@ -61,7 +61,7 @@ const SUPPLIER_MENU = [
   {
     key: '3',
     icon: <ExperimentOutlined />,
-    label: 'Available Bidding',
+    label: 'Available reverse auctions',
     link: '/supplier/bidding',
     subMenu: []
   },

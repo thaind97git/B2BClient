@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Row, Col, Tooltip } from 'antd';
+import { Row, Col, Tooltip, Empty } from 'antd';
 import MessageList from './Chat/MessageList';
 import TabsLayout from '../layouts/TabsLayout';
 import {
@@ -46,7 +46,22 @@ const GroupTile = ({
     </Col>
     <Col span={21}>
       <Col span={24} style={{ textAlign: 'left' }}>
-        <b>{getShortContent(groupName)}</b>
+        <div
+          style={{
+            width: 260,
+            height: '5em',
+            textAlign: 'left',
+            whiteSpace: 'normal',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            display: '-webkit-box',
+            WebkitLineClamp: 3,
+            WebkitBoxOrient: 'vertical',
+            paddingRight: 6
+          }}
+        >
+          {groupName}
+        </div>
       </Col>
       <Col style={{ textAlign: 'left' }} span={24}>
         <div style={{ width: '100%' }}>
@@ -62,7 +77,9 @@ const GroupTile = ({
             {contentLabel}
           </small>{' '}
           <span>&nbsp;</span>{' '}
-          <small>{lastMessageTime && moment(lastMessageTime).fromNow()}</small>
+          <small>
+            {lastMessageTime && moment.utc(lastMessageTime).local().fromNow()}
+          </small>
         </div>
       </Col>
     </Col>
