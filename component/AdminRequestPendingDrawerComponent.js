@@ -1,4 +1,4 @@
-import { Button, Col, Row, Drawer, Typography } from 'antd';
+import { Button, Col, Row, Drawer, Empty } from 'antd';
 import Modal from 'antd/lib/modal/Modal';
 import React, { useEffect, useState } from 'react';
 import { R_PENDING } from '../enums/requestStatus';
@@ -15,6 +15,7 @@ import RequestDetailsComponent from './RequestDetailsComponent';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 import {
+  getRequestGroupBy,
   getRequestPaging,
   GetRequestPagingData,
   GetRequestPagingError,
@@ -33,7 +34,6 @@ import {
   CreateNewGroupResetter
 } from '../stores/GroupState';
 import { CreateNewProductError } from '../stores/ProductState';
-const { Title } = Typography;
 const connectToRedux = connect(
   createStructuredSelector({
     requestPagingData: GetRequestPagingData,
@@ -50,10 +50,35 @@ const connectToRedux = connect(
       searchMessage,
       dateRange,
       status,
+      category,
+      productId
+    ) => {
+      if (!productId) {
+        return;
+      }
+      dispatch(
+        getRequestPaging({
+          pageSize,
+          pageIndex,
+          fromDate: dateRange.fromDate,
+          toDate: dateRange.toDate,
+          productTitle: searchMessage,
+          status,
+          category,
+          productId
+        })
+      );
+    },
+    getRequestByGroup: (
+      pageIndex,
+      pageSize,
+      searchMessage,
+      dateRange,
+      status,
       category
     ) => {
       dispatch(
-        getRequestPaging({
+        getRequestGroupBy({
           pageSize,
           pageIndex,
           fromDate: dateRange.fromDate,
@@ -67,18 +92,15 @@ const connectToRedux = connect(
 
     addRequest: (groupId, requestIds) =>
       dispatch(addRequestToGroup({ groupId, requestIds })),
-    resetData: () => dispatch(GetRequestPagingResetter),
+    resetData: () => {
+      dispatch(GetRequestPagingResetter);
+    },
     resetAddRequestToGroup: () => dispatch(AddRequestToGroupResetter),
     resetCreateNewGroup: () => dispatch(CreateNewGroupResetter)
   })
 );
 
 const columns = [
-  {
-    title: 'Product Name',
-    dataIndex: 'name',
-    key: 'name'
-  },
   {
     title: 'Preferred Unit Price',
     dataIndex: 'price',
@@ -96,7 +118,7 @@ const columns = [
   },
 
   {
-    title: 'Actions',
+    title: 'Details',
     dataIndex: 'actions',
     key: 'actions'
   }
@@ -104,7 +126,7 @@ const columns = [
 
 const statusFilter = [R_PENDING];
 
-const AdminRequestManagement = ({
+const AdminRequestDrawerManagement = ({
   requestPagingData,
   requestPagingError,
   getRequest,
@@ -112,6 +134,8 @@ const AdminRequestManagement = ({
   addRequestData,
   createNewGroupData,
   resetData,
+  productId,
+  getRequestByGroup,
   resetAddRequestToGroup,
   resetCreateNewGroup
 }) => {
@@ -140,6 +164,15 @@ const AdminRequestManagement = ({
         searchMessage,
         {},
         statusFilter,
+        category,
+        productId
+      );
+      getRequestByGroup(
+        DEFAULT_PAGING_INFO.page,
+        DEFAULT_PAGING_INFO.pageSize,
+        searchMessage,
+        {},
+        statusFilter,
         category
       );
       resetAddRequestToGroup();
@@ -152,6 +185,15 @@ const AdminRequestManagement = ({
       setOpenListGroup(false);
       setRecordSelected([]);
       getRequest(
+        DEFAULT_PAGING_INFO.page,
+        DEFAULT_PAGING_INFO.pageSize,
+        searchMessage,
+        {},
+        statusFilter,
+        category,
+        productId
+      );
+      getRequestByGroup(
         DEFAULT_PAGING_INFO.page,
         DEFAULT_PAGING_INFO.pageSize,
         searchMessage,
@@ -175,6 +217,10 @@ const AdminRequestManagement = ({
     };
   }, [resetData]);
 
+  if (!productId) {
+    return <Empty description="Invalid Product" />;
+  }
+
   const getRequestTable = (requestData = []) => {
     return (
       requestData &&
@@ -189,7 +235,9 @@ const AdminRequestManagement = ({
         dueDate: (
           <Moment format={DATE_TIME_FORMAT}>{new Date(request.dueDate)}</Moment>
         ),
-        status: <RequestStatusComponent status={request.requestStatus.id} />,
+        status: (
+          <RequestStatusComponent status={(request.requestStatus || {}).id} />
+        ),
         actions: (
           <Button
             onClick={() => {
@@ -310,7 +358,6 @@ const AdminRequestManagement = ({
         </Button>
       </Row>
       <ReactTableLayout
-        title={() => <Title level={5}>List RFQ need to process</Title>}
         dispatchAction={getRequest}
         rowSelection={{
           type: 'checkbox',
@@ -327,7 +374,7 @@ const AdminRequestManagement = ({
               isSearchStyle={false}
             />
           ),
-          exCondition: [statusFilter, category]
+          exCondition: [statusFilter, category, productId]
         }}
         dateRangeProps={{
           dateRange,
@@ -358,4 +405,4 @@ const AdminRequestManagement = ({
   );
 };
 
-export default connectToRedux(AdminRequestManagement);
+export default connectToRedux(AdminRequestDrawerManagement);
