@@ -3,6 +3,14 @@
   flex-direction: column;
 }
 
+.message a {
+  text-decoration: underline;
+}
+
+.message a:hover {
+  text-decoration: underline;
+}
+
 .message .timestamp {
   display: flex;
   justify-content: center;
@@ -55,10 +63,13 @@
 }
 
 .message.mine .bubble-container .bubble {
-  background: #007aff;
+  background: #199eb8;
   color: white;
   border-top-left-radius: 20px;
   border-bottom-left-radius: 20px;
   border-top-right-radius: 2px;
   border-bottom-right-radius: 2px;
+}
+.message.mine .bubble-container .bubble a {
+  color: white;
 }

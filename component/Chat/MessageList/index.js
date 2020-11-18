@@ -26,12 +26,10 @@ const connectToRedux = connect(
 );
 
 const onSendMessage = (conversationId, description, file) => {
-  // const listFileOrigin = fileList.map((file) => file.originFileObj);
   const formData = new FormData();
-  // for (let file of listFileOrigin) {
-  //   formData.append('files', file);
-  // }
-
+  if (file) {
+    formData.append('File', file.originFileObj);
+  }
   var myHeaders = new Headers();
   myHeaders.append('Authorization', `Bearer ${getToken()}`);
   formData.append('ConversationId', conversationId);
@@ -168,10 +166,10 @@ function MessageList({
     }
   }, [newMessage, messages, currentConversationId]);
 
-  const sendMessage = async (message) => {
+  const sendMessage = async (message, file) => {
     if (signalR.isConnectionStarted()) {
       try {
-        await onSendMessage(conversationId, message);
+        await onSendMessage(conversationId, message, file);
       } catch (e) {
         console.log(e);
       }
@@ -207,7 +205,7 @@ function MessageList({
         span={24}
       >
         <ScrollToBottom>
-          <div style={{ height: `calc(100vh - 340px)` }}>
+          <div style={{ height: `calc(100vh - 340px)`, padding: '0 12px' }}>
             {!!messages ? <RenderMessages messagesData={messages} /> : null}{' '}
           </div>
         </ScrollToBottom>

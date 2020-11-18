@@ -203,6 +203,9 @@ export const getProductImage = (image) =>
     : null;
 export const getCurrentUserImage = (image) =>
   image ? `${process.env.API_SERVER_URL}/api/Account/Avatar/${image}` : null;
+
+export const getFileMessage = (image) =>
+  image ? `${process.env.API_SERVER_URL}/api/Message/File/${image}` : null;
 export const getDefaultProductImage = () =>
   '/static/images/default_product_img.jpg';
 
