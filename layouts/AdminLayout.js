@@ -48,7 +48,15 @@ const ADMIN_MENU = [
   },
   {
     key: '4',
-    icon: <CustomerServiceOutlined />,
+    icon: (
+      <img
+        style={{ paddingRight: 10 }}
+        alt=""
+        className="imgicon"
+        src="/static/images/feedback.png"
+        height={16}
+      />
+    ),
     label: 'Feedback',
     link: '/admin/feedback'
   }

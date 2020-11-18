@@ -7,13 +7,10 @@ import {
   MenuUnfoldOutlined,
   MenuFoldOutlined,
   ExperimentOutlined,
-  OrderedListOutlined,
   PicLeftOutlined,
   WechatOutlined,
   BellOutlined,
-  ShoppingCartOutlined,
-  FileDoneOutlined,
-  CustomerServiceOutlined
+  FileDoneOutlined
 } from '@ant-design/icons';
 import MemberNavComponent from '../component/MemberNavComponent';
 import { currentPath } from '../utils';
@@ -24,13 +21,6 @@ import Router from 'next/router';
 const { Header, Content, Sider } = Layout;
 
 const SUPPLIER_MENU = [
-  // {
-  //   key: "1",
-  //   icon: <UserOutlined />,
-  //   label: "Dashboard",
-  //   link: "/supplier",
-  //   subMenu: [],
-  // },
   {
     key: '4',
     icon: <WechatOutlined />,
@@ -43,20 +33,6 @@ const SUPPLIER_MENU = [
     icon: <PicLeftOutlined />,
     label: 'Product Listing',
     link: '/supplier/product/listing'
-    // subMenu: [
-    //   {
-    //     subKey: "2.1",
-    //     subLink: "/supplier/product/register",
-    //     subIcon: <ShoppingCartOutlined />,
-    //     subLabel: "Product Register",
-    //   },
-    //   {
-    //     subKey: "2.2",
-    //     subLink: "/supplier/product/listing",
-    //     subIcon: <OrderedListOutlined />,
-    //     subLabel: "Product Listing",
-    //   },
-    // ],
   },
   {
     key: '3',
@@ -73,7 +49,15 @@ const SUPPLIER_MENU = [
   },
   {
     key: '6',
-    icon: <CustomerServiceOutlined />,
+    icon: (
+      <img
+        style={{ paddingRight: 10 }}
+        alt=""
+        className="imgicon"
+        src="/static/images/feedback.png"
+        height={16}
+      />
+    ),
     label: 'Feedback',
     link: '/supplier/feedback'
   }

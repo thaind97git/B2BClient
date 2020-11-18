@@ -367,14 +367,8 @@ const AdminRequestDrawerManagement = ({
           placeholder: 'Search by product name',
           searchMessage,
           setSearchMessage,
-          exElement: (
-            <AllCategoryComponent
-              onGetLastValue={(value) => setCategory(value)}
-              size="large"
-              isSearchStyle={false}
-            />
-          ),
-          exCondition: [statusFilter, category, productId]
+          exCondition: [statusFilter, category, productId],
+          isSearch: false
         }}
         dateRangeProps={{
           dateRange,

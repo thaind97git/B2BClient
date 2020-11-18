@@ -145,7 +145,6 @@ const SupplierChatComponent = ({
                       {getShortContent(productName, 100)}
                     </span>
                   </Tooltip>
-                  <div style={{ fontStyle: 'normal', fontWeight: 400 }}></div>
                 </div>
               ),
               rightTitle: (
