@@ -89,6 +89,9 @@ const AdminRequestGroupManagement = ({
   const [currentProductIdSelected, setCurrentProductIdSelected] = useState(
     null
   );
+  const [currentProductNameSelected, setCurrentProductNameSelected] = useState(
+    null
+  );
 
   const [loading, setLoading] = useState(true);
 
@@ -126,6 +129,7 @@ const AdminRequestGroupManagement = ({
               onClick={() => {
                 setOpenRequestList(true);
                 setCurrentProductIdSelected((group.product || {}).id);
+                setCurrentProductNameSelected(get('product.productName')(group))
               }}
               size="small"
               type="link"
@@ -175,9 +179,9 @@ const AdminRequestGroupManagement = ({
         totalCount={totalCount}
       />
       <Drawer
-        width={'65vw'}
-        title="List RFQ"
-        placement={'left'}
+        width={'70vw'}
+        title={`List RFQ inside ${currentProductNameSelected}`}
+        placement={'right'}
         closable={true}
         onClose={() => setOpenRequestList(false)}
         visible={openRequestList}
