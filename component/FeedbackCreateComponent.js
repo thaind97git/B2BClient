@@ -38,6 +38,7 @@ import {
 } from '../stores/FeedbackState';
 import { UploadOutlined } from '@ant-design/icons';
 import { get } from 'lodash';
+import Router from 'next/router';
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -115,7 +116,8 @@ const FeedbackCreateComponent = ({
   auctionData,
   getOrder,
   orderPagingData,
-  createFeedback
+  createFeedback,
+  createFeedbackData
 }) => {
   const [fileList, setFileList] = useState([]);
   const [serviceData, setServiceData] = useState([]);
@@ -189,6 +191,12 @@ const FeedbackCreateComponent = ({
       console.log(orderPagingData.data);
     }
   }, [orderPagingData]);
+
+  useEffect(() => {
+    if (createFeedbackData) {
+      Router.push(`/${currentUser.role.toLowerCase()}/feedback`);
+    }
+  }, [createFeedbackData]);
 
   //const getRFQList
 

@@ -201,7 +201,7 @@ export const getProductImage = (image) =>
   image
     ? `${process.env.API_SERVER_URL}/api/Product/ProductImage/${image}`
     : null;
-export const getFeedbackFile = (file) =>
+export const getFeedbackFileURL = (file) =>
   file
     ? `${process.env.API_SERVER_URL}/api/Feedback/FeedbackFile/${file}`
     : null;

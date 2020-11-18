@@ -2,23 +2,19 @@ import { connect } from 'react-redux';
 import {
   Button,
   Card,
-  Descriptions,
-  Drawer,
   Row,
   Space,
-  Table,
   Typography,
-  Modal,
   Col,
   Comment,
   Tooltip,
   Input,
   Form,
   List,
-  Avatar,
   Skeleton,
   Upload,
-  Divider
+  Divider,
+  Rate
 } from 'antd';
 import { LeftOutlined } from '@ant-design/icons';
 import moment from 'moment';
@@ -28,7 +24,7 @@ import { F_CLOSED, F_OPEN } from '../enums/feedbackStatus';
 import {
   DATE_TIME_FORMAT,
   getCurrentUserImage,
-  getFeedbackFile
+  getFeedbackFileURL
 } from '../utils';
 import { CurrentUserData } from '../stores/UserState';
 import { createStructuredSelector } from 'reselect';
@@ -38,9 +34,15 @@ import {
   GetFeedbackDetailsResetter,
   createFeedbackReply,
   CreateFeedbackReplyData,
-  CreateFeedbackReplyResetter
+  CreateFeedbackReplyResetter,
+  createFeedbackRate,
+  CreateFeedbackRateData,
+  CreateFeedbackRateResetter,
+  GetFeedbackFileData,
+  getFeedbackFile
 } from '../stores/FeedbackState';
 import Moment from 'react-moment';
+import { SmileOutlined, FrownOutlined } from '@ant-design/icons';
 
 const { TextArea } = Input;
 const { Title } = Typography;
@@ -49,7 +51,9 @@ const connectToRedux = connect(
   createStructuredSelector({
     feedbackDetailsData: GetFeedbackDetailsData,
     createFeedbackReplyData: CreateFeedbackReplyData,
-    currentUser: CurrentUserData
+    createFeedbackRateData: CreateFeedbackRateData,
+    currentUser: CurrentUserData,
+    feedbackFileData: GetFeedbackFileData
   }),
   (dispatch) => ({
     getFeedbackDetails: (feedbackId) => {
@@ -58,8 +62,15 @@ const connectToRedux = connect(
     replyFeedback: (object) => {
       dispatch(createFeedbackReply(object));
     },
+    rateFeedback: (object) => {
+      dispatch(createFeedbackRate(object));
+    },
+    getFeedbackFile: (fileId) => {
+      dispatch(getFeedbackFile(fileId));
+    },
     resetData: () => dispatch(GetFeedbackDetailsResetter),
-    resetCreateFeedbackReply: () => dispatch(CreateFeedbackReplyResetter)
+    resetCreateFeedbackReply: () => dispatch(CreateFeedbackReplyResetter),
+    resetCreateFeedbackRate: () => dispatch(CreateFeedbackRateResetter)
   })
 );
 
@@ -88,6 +99,20 @@ const Editor = ({ onChange, onSubmit, submitting, value }) => (
     </FormItem>
   </>
 );
+const customIcons1 = {
+  1: <FrownOutlined />,
+  2: '',
+  3: '',
+  4: '',
+  5: ''
+};
+const customIcons2 = {
+  1: '',
+  2: <SmileOutlined />,
+  3: '',
+  4: '',
+  5: ''
+};
 const AdminFeedbackDetailComponent = ({
   currentUser,
   getFeedbackDetails,
@@ -95,7 +120,12 @@ const AdminFeedbackDetailComponent = ({
   resetData,
   replyFeedback,
   createFeedbackReplyData,
-  resetCreateFeedbackReply
+  resetCreateFeedbackReply,
+  rateFeedback,
+  createFeedbackRateData,
+  resetCreateFeedbackRate,
+  getFeedbackFile,
+  feedbackFileData
 }) => {
   const router = useRouter();
   const feedbackId = router.query.id;
@@ -109,6 +139,13 @@ const AdminFeedbackDetailComponent = ({
   const handleSubmit = () => {
     replyFeedback({
       description: value,
+      feedbackId: feedbackDetailsData.id
+    });
+  };
+
+  const handleRate = (value) => {
+    rateFeedback({
+      isHappy: value,
       feedbackId: feedbackDetailsData.id
     });
   };
@@ -129,9 +166,15 @@ const AdminFeedbackDetailComponent = ({
   }, [createFeedbackReplyData]);
 
   useEffect(() => {
+    if (createFeedbackRateData) {
+      getFeedbackDetails(feedbackId);
+      resetCreateFeedbackRate();
+    }
+  }, [createFeedbackRateData]);
+
+  useEffect(() => {
     setFileList([]);
     setComments([]);
-    console.log(feedbackDetailsData);
     if (feedbackDetailsData) {
       if (feedbackDetailsData.feedbackReplies) {
         for (let i = 0; i < feedbackDetailsData.feedbackReplies.length; i++) {
@@ -155,7 +198,9 @@ const AdminFeedbackDetailComponent = ({
                   )
                 : '/static/images/avatar.png',
               content: (
-                <p>{feedbackDetailsData.feedbackReplies[i].description}</p>
+                <Card>
+                  {feedbackDetailsData.feedbackReplies[i].description}
+                </Card>
               ),
               datetime: moment(
                 feedbackDetailsData.feedbackReplies[i].dateCreated
@@ -166,13 +211,15 @@ const AdminFeedbackDetailComponent = ({
       }
       if (feedbackDetailsData.files) {
         for (let i = 0; i < feedbackDetailsData.files.length; i++) {
+          getFeedbackFile(feedbackDetailsData.files[i]);
+          //console.log(feedbackFileData.headers);
           setFileList((fileList) => [
             ...fileList,
             {
               uid: i,
               name: feedbackDetailsData.files[i],
               status: 'done',
-              url: getFeedbackFile(feedbackDetailsData.files[i])
+              url: getFeedbackFileURL(feedbackDetailsData.files[i])
             }
           ]);
         }
@@ -306,13 +353,20 @@ const AdminFeedbackDetailComponent = ({
                 : '/static/images/avatar.png'
             }
             content={
-              <div>
+              <Card>
                 <div
                   dangerouslySetInnerHTML={{
                     __html: (feedbackDetailsData || {}).description
                   }}
                 />
-                {fileList.length>0?<Divider />:''}
+                {fileList.length > 0 ? (
+                  <div>
+                    <Divider />
+                    File Attachment
+                  </div>
+                ) : (
+                  ''
+                )}
                 <Upload
                   title="File Attachment List"
                   action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
@@ -323,7 +377,7 @@ const AdminFeedbackDetailComponent = ({
                   // onPreview={this.handlePreview}
                   // onChange={this.handleChange}
                 ></Upload>
-              </div>
+              </Card>
             }
             datetime={
               <Tooltip
@@ -353,6 +407,36 @@ const AdminFeedbackDetailComponent = ({
                 />
               }
             />
+          ) : (
+            ''
+          )}
+          {isHappy === 'None' &&
+          feedbackDetailsData.feedbackStatus.id === F_CLOSED &&
+          (currentUser.role === 'Buyer' || currentUser.role === 'Supplier') ? (
+            <div align="center">
+              <p style={{ fontSize: '20px', marginBottom: '-20px' }}>
+                Do you like what you see?
+              </p>
+              <br />
+              <Rate
+                style={{ fontSize: '100px' }}
+                onChange={(value) => {
+                  handleRate(false);
+                }}
+                character={({ index }) => {
+                  return customIcons1[index + 1];
+                }}
+              />
+              <Rate
+                style={{ fontSize: '100px' }}
+                onChange={(value) => {
+                  handleRate(true);
+                }}
+                character={({ index }) => {
+                  return customIcons2[index + 1];
+                }}
+              />
+            </div>
           ) : (
             ''
           )}
