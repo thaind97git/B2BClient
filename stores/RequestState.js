@@ -14,6 +14,7 @@ export const REJECT_REQUEST = "RejectRequestAPI";
 const UPDATE_REQUEST = "UpdateRequestAPI";
 const GET_REQUEST_BY_GROUP_ID = "GetRequestByGroupIdAPI";
 const GET_REQUEST_SUGGEST_BY_PRODUCT_ID = "GetRequestSuggestByProductIdAPI";
+const GET_REQUEST_GROUP_BY = 'GetRequestGroupByAPI'
 
 // Create new Request
 const CreateRequestAPI = makeFetchAction(CREATE_REQUEST, (object) =>
@@ -43,6 +44,7 @@ const GetRequestPagingAPI = makeFetchAction(
     pageIndex,
     pageSize,
     category,
+    productId
   }) => {
     return nfetch({
       endpoint: `/api/Request/Filter${generateQuery({
@@ -54,6 +56,7 @@ const GetRequestPagingAPI = makeFetchAction(
         pageSize,
         dateDescending: true,
         categoryId: category,
+        productId
       })}`,
       method: "GET",
     })();
@@ -68,9 +71,65 @@ export const getRequestPaging = ({
   pageIndex,
   pageSize,
   category,
+  productId
 }) =>
   respondToSuccess(
     GetRequestPagingAPI.actionCreator({
+      status,
+      productTitle,
+      fromDate,
+      toDate,
+      pageIndex,
+      pageSize,
+      category,
+      productId
+    }),
+    () => {}
+  );
+
+export const GetRequestPagingData = GetRequestPagingAPI.dataSelector;
+export const GetRequestPagingError = GetRequestPagingAPI.errorSelector;
+export const GetRequestPagingResetter = getResetter(GetRequestPagingAPI);
+
+// Get Request Group By
+const GetRequestGroupByAPI = makeFetchAction(
+  GET_REQUEST_GROUP_BY,
+  ({
+    status = [],
+    productTitle,
+    fromDate,
+    toDate,
+    pageIndex,
+    pageSize,
+    category,
+  }) => {
+    return nfetch({
+      endpoint: `/api/Request/FilterByProductGroup${generateQuery({
+        statuses: status,
+        productName: productTitle,
+        fromDate,
+        toDate,
+        pageIndex,
+        pageSize,
+        dateDescending: true,
+        categoryId: category,
+      })}`,
+      method: "GET",
+    })();
+  }
+);
+
+export const getRequestGroupBy = ({
+  status = [],
+  productTitle,
+  fromDate,
+  toDate,
+  pageIndex,
+  pageSize,
+  category,
+}) =>
+  respondToSuccess(
+    GetRequestGroupByAPI.actionCreator({
       status,
       productTitle,
       fromDate,
@@ -82,9 +141,9 @@ export const getRequestPaging = ({
     () => {}
   );
 
-export const GetRequestPagingData = GetRequestPagingAPI.dataSelector;
-export const GetRequestPagingError = GetRequestPagingAPI.errorSelector;
-export const GetRequestPagingResetter = getResetter(GetRequestPagingAPI);
+export const GetRequestGroupByData = GetRequestGroupByAPI.dataSelector;
+export const GetRequestGroupByError = GetRequestGroupByAPI.errorSelector;
+export const GetRequestGroupByResetter = getResetter(GetRequestGroupByAPI);
 
 // Get Request Details
 const GetRequestDetailsAPI = makeFetchAction(GET_REQUEST_DETAILS, (requestId) =>
