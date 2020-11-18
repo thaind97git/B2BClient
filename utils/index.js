@@ -201,6 +201,10 @@ export const getProductImage = (image) =>
   image
     ? `${process.env.API_SERVER_URL}/api/Product/ProductImage/${image}`
     : null;
+export const getFeedbackFile = (file) =>
+  file
+    ? `${process.env.API_SERVER_URL}/api/Feedback/FeedbackFile/${file}`
+    : null;
 export const getCurrentUserImage = (image) =>
   image ? `${process.env.API_SERVER_URL}/api/Account/Avatar/${image}` : null;
 export const getDefaultProductImage = () =>

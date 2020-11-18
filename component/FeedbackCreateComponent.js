@@ -12,18 +12,82 @@ import {
 } from 'antd';
 import { createStructuredSelector } from 'reselect';
 import { connect } from 'react-redux';
-import ImgCrop from 'antd-img-crop';
 import MarkdownEditorComponent from './MarkdownEditorComponent';
-import { acceptFileMimes, acceptFileTypes, openNotification } from '../utils';
+//import { acceptFileMimes, acceptFileTypes, openNotification } from '../utils';
 import { CurrentUserData } from '../stores/UserState';
+import { R_DONE, R_ORDERED } from '../enums/requestStatus';
+import {
+  GetRequestPagingData,
+  // GetRequestPagingError,
+  getRequestPaging
+} from '../stores/RequestState';
+import {
+  auctionFilter,
+  AuctionFilterData
+  //AuctionFilterError
+} from '../stores/AuctionState';
+import {
+  getOrderPaging,
+  GetOrderPagingData
+  //AuctionFilterError
+} from '../stores/OrderState';
+import {
+  createFeedback,
+  CreateFeedbackData
+  //AuctionFilterError
+} from '../stores/FeedbackState';
 import { UploadOutlined } from '@ant-design/icons';
+import { get } from 'lodash';
 
 const { Title } = Typography;
 const { Option } = Select;
 const FormItem = Form.Item;
 const connectToRedux = connect(
   createStructuredSelector({
-    currentUser: CurrentUserData
+    currentUser: CurrentUserData,
+    requestPagingData: GetRequestPagingData,
+    auctionData: AuctionFilterData,
+    orderPagingData: GetOrderPagingData,
+    createFeedbackData: CreateFeedbackData
+    // requestPagingError: GetRequestPagingError
+  }),
+  (dispatch) => ({
+    getRequest: () => {
+      dispatch(
+        getRequestPaging({
+          pageSize: 99999,
+          pageIndex: 1,
+          fromDate: null,
+          toDate: null,
+          productTitle: null,
+          status: [R_DONE, R_ORDERED]
+        })
+      );
+    },
+    auctionFilter: () =>
+      dispatch(
+        auctionFilter({
+          pageIndex: 1,
+          pageSize: 99999,
+          name: null,
+          fromDate: null,
+          toDate: null,
+          status: [1, 2, 3, 4, 5, 6],
+          categoryId: null
+        })
+      ),
+    getOrder: () =>
+      dispatch(
+        getOrderPaging({
+          pageIndex: 1,
+          pageSize: 99999,
+          groupName: null,
+          fromDate: null,
+          toDate: null,
+          status: null
+        })
+      ),
+    createFeedback: (object,fileList) => dispatch(createFeedback(object,fileList))
   })
 );
 const styles = {
@@ -34,35 +98,64 @@ const formItemLayout = {
   labelCol: { span: 4 },
   wrapperCol: { span: 16 }
 };
-function getBase64(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = (error) => reject(error);
-  });
-}
+// function getBase64(file) {
+//   return new Promise((resolve, reject) => {
+//     const reader = new FileReader();
+//     reader.readAsDataURL(file);
+//     reader.onload = () => resolve(reader.result);
+//     reader.onerror = (error) => reject(error);
+//   });
+// }
 
-const FeedbackCreateComponent = ({ currentUser }) => {
+const FeedbackCreateComponent = ({
+  currentUser,
+  getRequest,
+  requestPagingData,
+  auctionFilter,
+  auctionData,
+  getOrder,
+  orderPagingData,
+  createFeedback
+}) => {
   const [fileList, setFileList] = useState([]);
-  const [preview, setPreview] = useState({
-    previewVisible: false,
-    previewImage: '',
-    previewTitle: ''
-  });
+  const [serviceData, setServiceData] = useState([]);
+  const [form] = Form.useForm();
+  const [disableService, setDisableService] = useState(false);
+  //const [preview, setPreview] = useState({
+  //   previewVisible: false,
+  //   previewImage: '',
+  //   previewTitle: ''
+  // });
   let typeData = [];
   if (currentUser.role === 'Supplier') {
     typeData = [
       { id: 1, description: 'Order' },
-      { id: 2, description: 'Auction' }
+      { id: 2, description: 'Auction' },
+      { id: 4, description: 'System' }
     ];
-  }
-  else if (currentUser.role==='Buyer'){
+  } else if (currentUser.role === 'Buyer') {
     typeData = [
-      { id: 1, description: 'RFQ' }
+      { id: 3, description: 'Order' },
+      { id: 4, description: 'System' }
     ];
   }
-  const onFinish = (values) => {};
+  const onFinish = (values) => {
+    let feedback = { title: values.title, description: values.description.value };
+    switch (values.typeID) {
+      case 1:
+        feedback = {... feedback,orderId:values.serviceID}
+        break;
+      case 2:
+        feedback = { ...feedback, reverseAuctionId: values.serviceID };
+        break;
+      case 3:
+        feedback = { ...feedback, requestId: values.serviceID };
+        break;
+      default:
+        break;
+    }
+    createFeedback(feedback,fileList);
+  };
 
   const checkDescription = (rule, value = {}) => {
     if (value.value) {
@@ -76,19 +169,42 @@ const FeedbackCreateComponent = ({ currentUser }) => {
     setFileList(newFileList);
   };
 
-  const onCancel = () => setPreview({ previewVisible: false });
-
-  const onPreview = async (file) => {
-    if (!file.url && !file.preview) {
-      file.preview = await getBase64(file.originFileObj);
+  useEffect(() => {
+    if (requestPagingData) {
+      setServiceData(requestPagingData.data);
+      console.log(requestPagingData.data);
     }
-    setPreview({
-      previewImage: file.url || file.preview,
-      previewVisible: true,
-      previewTitle:
-        file.name || file.url.substring(file.url.lastIndexOf('/') + 1)
-    });
-  };
+  }, [requestPagingData]);
+
+  useEffect(() => {
+    if (auctionData) {
+      setServiceData(auctionData.data);
+      console.log(auctionData.data);
+    }
+  }, [auctionData]);
+
+  useEffect(() => {
+    if (orderPagingData) {
+      setServiceData(orderPagingData.data);
+      console.log(orderPagingData.data);
+    }
+  }, [orderPagingData]);
+
+  //const getRFQList
+
+  //const onCancel = () => setPreview({ previewVisible: false });
+
+  // const onPreview = async (file) => {
+  //   if (!file.url && !file.preview) {
+  //     file.preview = await getBase64(file.originFileObj);
+  //   }
+  //   setPreview({
+  //     previewImage: file.url || file.preview,
+  //     previewVisible: true,
+  //     previewTitle:
+  //       file.name || file.url.substring(file.url.lastIndexOf('/') + 1)
+  //   });
+  // };
 
   return (
     <Row align="middle" justify="center">
@@ -98,6 +214,7 @@ const FeedbackCreateComponent = ({ currentUser }) => {
           autoComplete="new-password"
           className="register-form"
           onFinish={onFinish}
+          form={form}
         >
           <Row justify="center">
             <Title style={styles.titleStyle} level={2}>
@@ -135,10 +252,12 @@ const FeedbackCreateComponent = ({ currentUser }) => {
                   <Col span={8} style={{ padding: '0 8px' }}>
                     <label>
                       <span style={{ color: 'red' }}>* </span>
-                      <span style={{ color: '#000000D9' }}>Service Type</span>
+                      <span style={{ color: '#000000D9' }}>
+                        Feedback subject
+                      </span>
                     </label>
                     <FormItem
-                      name="Type"
+                      name="typeID"
                       rules={[
                         {
                           required: true,
@@ -154,10 +273,38 @@ const FeedbackCreateComponent = ({ currentUser }) => {
                         placeholder="Select a type of service"
                         optionFilterProp="children"
                         filterOption={(input, option) =>
-                          option.children
+                          option.children.innerHTML
+                            .toString()
                             .toLowerCase()
                             .indexOf(input.toLowerCase()) >= 0
                         }
+                        onChange={(value) => {
+                          switch (value) {
+                            case 1:
+                              setDisableService(false);
+                              getOrder();
+                              form.resetFields(['serviceID']);
+                              break;
+                            case 2:
+                              setDisableService(false);
+                              auctionFilter();
+                              form.resetFields(['serviceID']);
+                              break;
+                            case 3:
+                              setDisableService(false);
+                              getRequest();
+                              form.resetFields(['serviceID']);
+                              break;
+                            case 4:
+                              form.resetFields(['serviceID']);
+                              setServiceData([{ id: 1, description: '' }]);
+                              form.setFieldsValue({ serviceID: 1 });
+                              setDisableService(true);
+                              break;
+                            default:
+                              break;
+                          }
+                        }}
                       >
                         {!!typeData &&
                           typeData.map((type) => (
@@ -200,15 +347,26 @@ const FeedbackCreateComponent = ({ currentUser }) => {
                             .toLowerCase()
                             .indexOf(input.toLowerCase()) >= 0
                         }
+                        disabled={disableService}
                       >
-                        {!!typeData &&
-                          typeData.map((type) => (
+                        {!!serviceData &&
+                          serviceData.map((service) => (
                             <Option
-                              value={type.id}
-                              index={type.id}
-                              key={type.id}
+                              value={service.id}
+                              index={service.id}
+                              key={service.id}
                             >
-                              {type.description}
+                              {form.getFieldValue('typeID') === 3
+                                ? service.quantity +
+                                  ' ' +
+                                  service.product.unitType +
+                                  ' of ' +
+                                  service.product.description
+                                : form.getFieldValue('typeID') === 2
+                                ? service.auctionName
+                                : form.getFieldValue('typeID') === 1
+                                ? service.groupName
+                                : service.description}
                             </Option>
                           ))}
                       </Select>
@@ -236,12 +394,8 @@ const FeedbackCreateComponent = ({ currentUser }) => {
               <Col style={styles.colStyle} span={24}>
                 <FormItem
                   {...formItemLayout}
-                  name="imageList"
-                  label={
-                    <span>
-                      <span style={{ color: 'red' }}>*</span> File Description
-                    </span>
-                  }
+                  name="fileList"
+                  label="Attachments"
                 >
                   <Upload
                     action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
