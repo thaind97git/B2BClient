@@ -61,3 +61,9 @@ ul {
   width: 100%;
   border: 1px solid #ffffff;
 }
+
+.ant-menu-inline-collapsed > .ant-menu-item .imgicon + span {
+  display: inline-block;
+  max-width: 0;
+  opacity: 0;
+}

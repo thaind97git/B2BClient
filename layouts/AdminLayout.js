@@ -10,7 +10,8 @@ import {
   AppstoreAddOutlined,
   MessageOutlined,
   SolutionOutlined,
-  TeamOutlined
+  TeamOutlined,
+  CustomerServiceOutlined
 } from '@ant-design/icons';
 import MemberNavComponent from '../component/MemberNavComponent';
 import { currentPath } from '../utils';
@@ -47,7 +48,15 @@ const ADMIN_MENU = [
   },
   {
     key: '4',
-    icon: <MessageOutlined />,
+    icon: (
+      <img
+        style={{ paddingRight: 10 }}
+        alt=""
+        className="imgicon"
+        src="/static/images/feedback.png"
+        height={16}
+      />
+    ),
     label: 'Feedback',
     link: '/admin/feedback'
   }

@@ -436,7 +436,7 @@
     "npm_package_dependencies_nprogress": "^0.2.0",
     "PORT": "3001",
     "API_SERVER_URL2": "http://103.92.29.179:1234",
-    "API_SERVER_URL": "http://34.87.135.69:5555"
+    "API_SERVER_URL": "http://35.240.230.138:5555"
   },
   "userLimits": {
     "core_file_size_blocks": {

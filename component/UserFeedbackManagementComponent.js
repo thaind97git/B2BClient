@@ -11,6 +11,7 @@ import {
   GetFeedbackPagingData,
   GetFeedbackPagingError
 } from '../stores/FeedbackState';
+import { CurrentUserData } from '../stores/UserState';
 //import AdminProductDetailsComponent from "./AdminProductDetailsComponent";
 import FeedbackStatusComponent from './Utils/FeedbackStatusComponent';
 import { get } from 'lodash/fp';
@@ -22,6 +23,7 @@ const connectToRedux = connect(
   createStructuredSelector({
     feedbackPagingData: GetFeedbackPagingData,
     feedbackPagingError: GetFeedbackPagingError,
+    currentUser: CurrentUserData
   }),
   (dispatch) => ({
     getFeedback: (pageIndex, pageSize, searchMessage, dateRange, status) => {
@@ -46,11 +48,6 @@ const columns = [
     key: 'title'
   },
   {
-    title: 'User',
-    dataIndex: 'user',
-    key: 'user'
-  },
-  {
     title: 'Date created',
     dataIndex: 'dateCreated',
     key: 'dateCreated'
@@ -72,13 +69,12 @@ const columns = [
   }
 ];
 
-const AdminFeedbackManagementComponent = (
-  {
-    feedbackPagingData,
-    getFeedback,
-    feedbackPagingError
-  }
-) => {
+const UserFeedbackManagementComponent = ({
+  feedbackPagingData,
+  getFeedback,
+  feedbackPagingError,
+  currentUser
+}) => {
   const [searchMessage, setSearchMessage] = useState('');
   const [dateRange, setDateRange] = useState(DEFAULT_DATE_RANGE);
   const [status, setStatus] = useState(null);
@@ -120,7 +116,6 @@ const AdminFeedbackManagementComponent = (
             {new Date(feedback.dateCreated)}
           </Moment>
         ),
-        user: feedback.user.email,
         status: (
           <FeedbackStatusComponent
             status={feedback.feedbackStatus.id}
@@ -129,7 +124,12 @@ const AdminFeedbackManagementComponent = (
         actions: (
           <Button
             onClick={() => {
-              Router.push(`/admin/feedback/detail?id=${feedback.id}`);
+              if (currentUser.role === 'Supplier') {
+                Router.push(`/supplier/feedback/detail?id=${feedback.id}`);
+              }
+              else if (currentUser.role === 'Buyer') {
+                Router.push(`/buyer/feedback/detail?id=${feedback.id}`);
+              }
             }}
             size="small"
             type="link"
@@ -169,6 +169,18 @@ const AdminFeedbackManagementComponent = (
     <div>
       <Row justify="space-between">
         <Title level={4}>Feedback List</Title>
+        <Button
+          onClick={() => {
+            if (currentUser.role === 'Supplier') {
+              Router.push(`/supplier/feedback/create`);
+            } else if (currentUser.role === 'Buyer') {
+              Router.push(`/buyer/feedback/create`);
+            }
+          }}
+          type="primary"
+        >
+          Create feedback
+        </Button>
       </Row>
       <ReactTableLayout
         // loading={loading}
@@ -203,4 +215,4 @@ const AdminFeedbackManagementComponent = (
     </div>
   );
 };
-export default connectToRedux(AdminFeedbackManagementComponent);
+export default connectToRedux(UserFeedbackManagementComponent);

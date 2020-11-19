@@ -5,21 +5,14 @@ import { connect } from 'react-redux';
 import { get } from 'lodash/fp';
 import {
   Button,
-  Col,
-  DatePicker,
-  Divider,
-  Input,
-  InputNumber,
   Row,
-  Select,
   Typography,
-  Form,
-  Empty,
   Popover
 } from 'antd';
 import { DEFAULT_DATE_RANGE, displayCurrency } from '../utils';
 import ReactTableLayout from '../layouts/ReactTableLayout';
 import Router from 'next/router';
+import OrderStatusComponent from './Utils/OrderStatusComponent';
 
 const { Title } = Typography;
 
@@ -44,7 +37,7 @@ const connectToRedux = connect(
 
 const columns = [
   {
-    title: 'Product Name',
+    title: 'Group Name',
     dataIndex: 'name',
     key: 'name'
   },
@@ -64,6 +57,11 @@ const columns = [
     key: 'contact'
   },
   {
+    title: 'Status',
+    dataIndex: 'status',
+    key: 'status'
+  },
+  {
     title: 'Details',
     dataIndex: 'actions',
     key: 'actions'
@@ -80,7 +78,20 @@ const data = [
     },
     price: 10000,
     quantity: 100,
-    supplierName: 'rko@gmail.com'
+    supplierName: 'rko@gmail.com',
+    status: 1
+  },
+  {
+    product: {
+      id: 'f6ae608f-2010-4e2d-4d3d-08d88552484d',
+      description:
+        'Wholesale Stock Tactical Combat Men Army Trousers Military Suit Camouflage Uniform',
+      unitType: 'Boxes'
+    },
+    price: 10000,
+    quantity: 100,
+    supplierName: 'rko@gmail.com',
+    status: 2
   }
 ];
 
@@ -105,6 +116,7 @@ const getAggregatorTable = (orderData = []) => {
         ),
         quantity: (+order.quantity || 0) + ' ' + get('product.unitType')(order),
         contact: order.supplierName,
+        status: <OrderStatusComponent status={order.status} />,
         actions: (
           <Button
             onClick={() => {

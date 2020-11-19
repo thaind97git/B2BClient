@@ -210,13 +210,7 @@ const UserProfileComponent = ({ isDrawer, userId, currentUser, uploadAvatar, upd
           <Title level={5}>Supplier Basic Information</Title>
         </Col>
         <DescriptionItem title="Email" content={USER_PROFILE.email} />
-        <DescriptionItem
-          title="Alternative Email"
-          content={USER_PROFILE.alternativeEmail}
-        />
-        <DescriptionItem title="Fax" content={USER_PROFILE.fax} />
         <DescriptionItem title="Mobile" content={USER_PROFILE.mobile} />
-        <DescriptionItem title="Telephone" content={USER_PROFILE.telephone} />
         <DescriptionItem title="Address" content={USER_PROFILE.address} />
         <Divider />
         <Col span={24}>
@@ -282,8 +276,8 @@ const UserProfileComponent = ({ isDrawer, userId, currentUser, uploadAvatar, upd
                     if (acceptFileMimes.includes(file.type)) {
                       return true;
                     }
-                    openNotification("error", {
-                      message: `We just accept file type for ${acceptFileTypes}`,
+                    openNotification('error', {
+                      message: `We just accept file type for ${acceptFileTypes}`
                     });
                     return false;
                   }}
@@ -300,7 +294,7 @@ const UserProfileComponent = ({ isDrawer, userId, currentUser, uploadAvatar, upd
           </Col>
           <Col span={20}>
             <Descriptions
-              title={currentUser.firstName + " " + currentUser.lastName}
+              title={currentUser.firstName + ' ' + currentUser.lastName}
               extra={
                 <Button type="primary" onClick={showChangePasswordModal}>
                   Change Password
@@ -309,17 +303,17 @@ const UserProfileComponent = ({ isDrawer, userId, currentUser, uploadAvatar, upd
               column={1}
             >
               <Descriptions.Item label="at">
-                {currentUser.companyName ? currentUser.companyName : "None"}
+                {currentUser.companyName ? currentUser.companyName : 'None'}
               </Descriptions.Item>
               <Descriptions.Item label="Email">
-                {currentUser.email ? currentUser.email : "None"}
-                {/* {(() => {
+                {currentUser.email ? currentUser.email : 'None'}
+                {(() => {
                   if (USER_PROFILE.isEmailVerified) {
                     return <font color="green"> [Verified]</font>;
                   } else {
                     return <font color="red"> [Unverified]</font>;
                   }
-                })()} */}
+                })()}
               </Descriptions.Item>
             </Descriptions>
           </Col>
@@ -327,22 +321,13 @@ const UserProfileComponent = ({ isDrawer, userId, currentUser, uploadAvatar, upd
         <Divider dashed />
         <Descriptions title="Contact Information">
           <Descriptions.Item label="Email">
-            {currentUser.email ? currentUser.email : "None"}
-          </Descriptions.Item>
-          <Descriptions.Item label="Alternative Email">
-            {currentUser.alternativeEmail ? currentUser.alternativeEmail : "None"}
-          </Descriptions.Item>
-          <Descriptions.Item label="Fax">
-            {currentUser.fax ? currentUser.fax : "None"}
+            {currentUser.email ? currentUser.email : 'None'}
           </Descriptions.Item>
           <Descriptions.Item label="Mobile">
-            {currentUser.phoneNumber ? currentUser.phoneNumber : "None"}
-          </Descriptions.Item>
-          <Descriptions.Item label="Telephone">
-            {currentUser.telephone ? currentUser.telephone : "None"}
+            {currentUser.phoneNumber ? currentUser.phoneNumber : 'None'}
           </Descriptions.Item>
           <Descriptions.Item label="Address">
-            {currentUser.address ? currentUser.address : "None"}
+            {currentUser.address ? currentUser.address : 'None'}
           </Descriptions.Item>
         </Descriptions>
         <Divider dashed />
@@ -368,9 +353,9 @@ const UserProfileComponent = ({ isDrawer, userId, currentUser, uploadAvatar, upd
             className="register-form"
             ref={updatePasswordRef}
             onFinish={onUpdatePasswordFinish}
-          // initialValues={{
-          //   isBuyer: role,
-          // }}
+            // initialValues={{
+            //   isBuyer: role,
+            // }}
           >
             <Row align="middle">
               <Col span={24}>
@@ -380,8 +365,8 @@ const UserProfileComponent = ({ isDrawer, userId, currentUser, uploadAvatar, upd
                   rules={[
                     {
                       required: true,
-                      message: "Please enter your old login password",
-                    },
+                      message: 'Please enter your old login password'
+                    }
                   ]}
                 >
                   <Input
@@ -400,8 +385,8 @@ const UserProfileComponent = ({ isDrawer, userId, currentUser, uploadAvatar, upd
                   rules={[
                     {
                       required: true,
-                      message: "Please set your new login password",
-                    },
+                      message: 'Please set your new login password'
+                    }
                   ]}
                 >
                   <Input
@@ -420,9 +405,9 @@ const UserProfileComponent = ({ isDrawer, userId, currentUser, uploadAvatar, upd
                   rules={[
                     {
                       required: true,
-                      message: "Your confirm login password not match",
+                      message: 'Your confirm login password not match',
                       validator: checkNewPassword
-                    },
+                    }
                   ]}
                 >
                   <Input
@@ -439,13 +424,13 @@ const UserProfileComponent = ({ isDrawer, userId, currentUser, uploadAvatar, upd
         </Modal>
         <Modal
           visible={preview.previewVisible}
-          title={"Your Avatar"}
+          title={'Your Avatar'}
           footer={null}
           onCancel={handlePreviewCancel}
         >
           <img
             alt="example"
-            style={{ width: "100%" }}
+            style={{ width: '100%' }}
             src={preview.previewImage}
           />
         </Modal>
@@ -454,7 +439,7 @@ const UserProfileComponent = ({ isDrawer, userId, currentUser, uploadAvatar, upd
             display: flex;
             flex-direction: column;
           }
-          .avatar-uploader .ant-upload .ant-btn{
+          .avatar-uploader .ant-upload .ant-btn {
             top: -35px;
             visibility: visible;
           }
