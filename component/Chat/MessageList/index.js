@@ -111,7 +111,7 @@ const MessagesList = ({ messages, setPageIndex, firstTime, isAllMessage }) => {
 
   useEffect(() => {
     if (atTop && !firstTime && !isAllMessage) {
-      setPageIndex((prev) => prev + 1);
+      // setPageIndex((prev) => prev + 1);
     }
   }, [atTop, setPageIndex]);
   return (
@@ -137,20 +137,22 @@ function MessageList({
   const [pageIndex, setPageIndex] = useState(DEFAULT_PAGING_INFO.page);
   const [newMessage, setNewMessage] = useState({});
   const [firstTime, setFirstTime] = useState(true);
-
   const currentConversationId = conversationId;
 
   useEffect(() => {
     return () => {
+      setMessages([]);
+      setPageIndex(1);
       resetData();
-      signalR && signalR.stopConnection();
     };
   }, [resetData, signalR]);
   useEffect(() => {
     if (messagesData) {
+      console.log({ messagesData });
+      console.log({ conversationId });
       const mesTmp = [...messages];
       mesTmp.unshift(...messagesData);
-      setMessages(mesTmp);
+      setMessages(messagesData);
     }
   }, [messagesData]);
   useEffect(() => {
@@ -222,6 +224,7 @@ function MessageList({
       >
         <ScrollToBottom>
           <MessagesList
+            // isAllMessage={isAllMessage}
             messages={messages}
             setPageIndex={setPageIndex}
             firstTime={firstTime}
