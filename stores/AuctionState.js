@@ -11,6 +11,8 @@ export const CANCEL_AUCTION = 'CancelAuctionAPI';
 export const RESPONSE_AUCTION_INVITATION = 'ResponseAuctionInvitationAPI';
 export const PLACE_NEW_BID = 'PlaceNewBidAPI';
 const GET_HISTORY_AUCTION = 'GetHistoryAuctionAPI';
+const GET_SUPPLIER_INVITATION = 'GetSupplierInvitationAPI';
+
 const CreateReverseAuctionAPI = makeFetchAction(
   CREATE_REVERSE_AUCTION,
   (values) =>
@@ -180,3 +182,36 @@ export const GetAuctionHistory = (auctionId) =>
 export const GetAuctionHistoryData = GetAuctionHistoryAPI.dataSelector;
 export const GetAuctionHistoryError = GetAuctionHistoryAPI.errorSelector;
 export const GetAuctionHistoryResetter = getResetter(GetAuctionHistoryAPI);
+
+// Get Supplier Invitation
+const GetSupplierInvitationAPI = makeFetchAction(
+  GET_SUPPLIER_INVITATION,
+  ({ reverseAuctionId, pageIndex, pageSize }) =>
+    nfetch({
+      endpoint: `/api/ReverseAuction/AllSupplier${generateQuery({
+        reverseAuctionId,
+        pageIndex,
+        pageSize
+      })}`,
+      method: 'GET'
+    })()
+);
+
+export const getSupplierInvitation = ({
+  reverseAuctionId,
+  pageIndex,
+  pageSize
+}) =>
+  respondToSuccess(
+    GetSupplierInvitationAPI.actionCreator({
+      reverseAuctionId,
+      pageIndex,
+      pageSize
+    })
+  );
+export const GetSupplierInvitationData = GetSupplierInvitationAPI.dataSelector;
+export const GetSupplierInvitationError =
+  GetSupplierInvitationAPI.errorSelector;
+export const GetSupplierInvitationResetter = getResetter(
+  GetSupplierInvitationAPI
+);

@@ -16,6 +16,7 @@ import { createStructuredSelector } from 'reselect';
 import {
   getAggregatorGroupChat,
   GetAggregatorGroupChatData,
+  GetAggregatorGroupChatResetter,
   getSupplierChatByGroup,
   GetSupplierChatByGroupData
 } from '../stores/ConversationState';
@@ -47,7 +48,8 @@ const connectToRedux = connect(
     resetIgnoreData: () => {
       dispatch(IgnoreSupplierResetter);
       dispatch(UnIgnoreSupplierResetter);
-    }
+    },
+    resetGroupList: () => dispatch(GetAggregatorGroupChatResetter)
   })
 );
 
@@ -89,10 +91,12 @@ const GroupChatComponent = ({
   unIgnoreSup,
   IgnoreSupData,
   UnIgnoreSupData,
-  resetIgnoreData
+  resetIgnoreData,
+  resetGroupList
 }) => {
   const [isNegotiating, setIsNegotiating] = useState('1');
   const [currentGroupIdSelected, setCurrentGroupIdSelected] = useState(null);
+  const [currentGroupSelected, setCurrentGroupSelected] = useState(null);
   const [currentGroupNameSelected, setCurrentGroupNameSelected] = useState(
     null
   );
@@ -111,16 +115,15 @@ const GroupChatComponent = ({
   }, []);
   useEffect(() => {
     signalR.onListen('ConversationPushing', (conversationId) => {
-      console.log({ conversationId });
+      console.log('before', GetSupplierChatByGroupData);
       if (GetSupplierChatByGroupData && GetSupplierChatByGroupData.length > 0) {
-        console.log({ 1: GetSupplierChatByGroupData });
         GetSupplierChatByGroupData.sort(function (x, y) {
           return x.id === conversationId ? -1 : y.id === conversationId ? 1 : 0;
         });
-        console.log({ 2: GetSupplierChatByGroupData });
       }
+      console.log('after', GetSupplierChatByGroupData);
     });
-  }, []);
+  }, [GetSupplierChatByGroupData]);
   useEffect(() => {
     signalR.onListen('GroupPushing', (data) => {
       console.log({ GroupPushing: data });
@@ -141,7 +144,7 @@ const GroupChatComponent = ({
       (GetSupplierChatByGroupData || []).find(
         (x) => x.id === currentConversationId
       ) || {};
-    const { flag: isIgnored } = current;
+    const { flag: isIgnored, supplierName: name, id: supplierId } = current;
     const mesTabs =
       (GetSupplierChatByGroupData &&
         GetSupplierChatByGroupData.map((supplier = {}) => {
@@ -179,7 +182,7 @@ const GroupChatComponent = ({
                 signalR={signalR}
                 conversationId={currentConversationId}
                 titleProps={{
-                  leftTitle: supplierName,
+                  leftTitle: name,
                   rightTitle: (
                     <Space>
                       <Button
@@ -191,7 +194,9 @@ const GroupChatComponent = ({
                             createLink([
                               'aggregator',
                               'order',
-                              `confirmation?groupId=${groupId}&isNegotiating=true&supplierId=${currentConversationId}`
+                              `confirmation?groupId=${
+                                groupId || currentGroupIdSelected
+                              }&isNegotiating=true&supplierId=${supplierId}`
                             ])
                           );
                         }}
@@ -229,7 +234,8 @@ const GroupChatComponent = ({
     currentGroupNameSelected,
     groupId,
     ignoreSup,
-    unIgnoreSup
+    unIgnoreSup,
+    currentGroupIdSelected
   ]);
   // Receive list aggregator
   useEffect(() => {
@@ -251,6 +257,7 @@ const GroupChatComponent = ({
                 <Fragment>
                   <TabsLayout
                     onTabClick={(conversationId) => {
+                      setCurrentGroupSelected(group);
                       setCurrentGroupNameSelected(group.groupName);
                       setCurrentConversationId(conversationId);
                     }}
@@ -321,7 +328,7 @@ const GroupChatComponent = ({
             onTabClick={(groupId) => {
               setCurrentGroupIdSelected(groupId);
             }}
-            defaultTab={groupId || (groupTabs[0] || {}).id}
+            defaultTab={groupId}
             className="aggregator-chat"
             tabPosition={'left'}
             style={{ height: '100%' }}
@@ -340,6 +347,7 @@ const GroupChatComponent = ({
       <TabsLayout
         onTabClick={(key) => {
           setIsNegotiating(key);
+          resetGroupList();
         }}
         style={{ height: '100%' }}
         defaultTab={isNegotiating}

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Compose from '../Compose';
 import Message from '../Message';
 import moment from 'moment';
@@ -12,7 +12,7 @@ import {
 } from '../../../stores/ConversationState';
 import { DEFAULT_PAGING_INFO, getShortContent } from '../../../utils';
 import { Col, Row, Tooltip } from 'antd';
-import ScrollToBottom from 'react-scroll-to-bottom';
+import ScrollToBottom, { useAtTop } from 'react-scroll-to-bottom';
 
 const connectToRedux = connect(
   createStructuredSelector({
@@ -106,6 +106,24 @@ const RenderMessages = React.memo(({ messagesData }) => {
   return tempMessages;
 });
 
+const MessagesList = ({ messages, setPageIndex, firstTime, isAllMessage }) => {
+  const [atTop] = useAtTop();
+
+  useEffect(() => {
+    if (atTop && !firstTime && !isAllMessage) {
+      setPageIndex((prev) => prev + 1);
+    }
+  }, [atTop, setPageIndex]);
+  return (
+    <div
+      id="message-list-chat"
+      style={{ height: `calc(100vh - 340px)`, padding: '0 12px' }}
+    >
+      {!!messages ? <RenderMessages messagesData={messages} /> : null}{' '}
+    </div>
+  );
+};
+
 function MessageList({
   titleProps = {},
   messagesData,
@@ -116,14 +134,10 @@ function MessageList({
   signalR
 }) {
   const [messages, setMessages] = useState([]);
-  const messagesEndRef = useRef(null);
   const [pageIndex, setPageIndex] = useState(DEFAULT_PAGING_INFO.page);
   const [newMessage, setNewMessage] = useState({});
+  const [firstTime, setFirstTime] = useState(true);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current &&
-      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
-  };
   const currentConversationId = conversationId;
 
   useEffect(() => {
@@ -134,8 +148,9 @@ function MessageList({
   }, [resetData, signalR]);
   useEffect(() => {
     if (messagesData) {
-      setMessages(messagesData);
-      scrollToBottom();
+      const mesTmp = [...messages];
+      mesTmp.unshift(...messagesData);
+      setMessages(mesTmp);
     }
   }, [messagesData]);
   useEffect(() => {
@@ -181,6 +196,7 @@ function MessageList({
   useEffect(() => {
     if (conversationId) {
       getMessages({ conversationId, pageIndex });
+      setFirstTime(false);
     }
   }, [getMessages, conversationId, pageIndex]);
 
@@ -205,36 +221,16 @@ function MessageList({
         span={24}
       >
         <ScrollToBottom>
-          <div style={{ height: `calc(100vh - 340px)`, padding: '0 12px' }}>
-            {!!messages ? <RenderMessages messagesData={messages} /> : null}{' '}
-          </div>
+          <MessagesList
+            messages={messages}
+            setPageIndex={setPageIndex}
+            firstTime={firstTime}
+          />
         </ScrollToBottom>
       </Col>
       <Col span={24} style={{ height: 52 }}>
         <Compose sendMessage={sendMessage} />
       </Col>
-      <style jsx global>
-        {`
-          .message-list-chat {
-            overflow-x: hidden;
-            overflow-y: auto;
-          }
-          .message-list-chat:hover {
-            overflow-y: auto;
-          }
-          .message-list-chat::-webkit-scrollbar-track {
-            -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-            background-color: #f5f5f5;
-          }
-          .message-list-chat::-webkit-scrollbar {
-            width: 4px;
-            background-color: #f5f5f5;
-          }
-          .message-list-chat::-webkit-scrollbar-thumb {
-            background-color: #949494;
-          }
-        `}
-      </style>
     </Row>
   );
 }

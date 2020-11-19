@@ -6,8 +6,8 @@ export default function Message(props) {
   const { data, isMine, startsSequence, endsSequence, showTimestamp } = props;
 
   const friendlyTimestamp = moment(data.dateCreated).format('LLLL');
-  return (
-    <div style={{ width: '100%' }}>
+  return (data.fileName || data.description) &&
+      <div style={{ width: '100%' }}>
       <div
         className={[
           'message',
@@ -37,5 +37,6 @@ export default function Message(props) {
         </div>
       </div>
     </div>
-  );
+    
+  
 }
