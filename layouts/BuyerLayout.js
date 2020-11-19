@@ -9,7 +9,8 @@ import {
   FileDoneOutlined,
   FallOutlined,
   BellOutlined,
-  CustomerServiceOutlined
+  CustomerServiceOutlined,
+  ProfileOutlined
 } from '@ant-design/icons';
 import MemberNavComponent from '../component/MemberNavComponent';
 import { currentPath } from '../utils';
@@ -29,7 +30,7 @@ const BUYER_MENU = [
   // },
   {
     key: '2',
-    icon: <FallOutlined />,
+    icon: <ProfileOutlined />,
     label: 'Your RFQ',
     link: '/buyer/rfq',
     subMenu: []

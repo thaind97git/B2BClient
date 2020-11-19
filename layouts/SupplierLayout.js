@@ -10,7 +10,9 @@ import {
   PicLeftOutlined,
   WechatOutlined,
   BellOutlined,
-  FileDoneOutlined
+  FileDoneOutlined,
+  FallOutlined,
+  MessageOutlined
 } from '@ant-design/icons';
 import MemberNavComponent from '../component/MemberNavComponent';
 import { currentPath } from '../utils';
@@ -23,7 +25,7 @@ const { Header, Content, Sider } = Layout;
 const SUPPLIER_MENU = [
   {
     key: '4',
-    icon: <WechatOutlined />,
+    icon: <MessageOutlined />,
     label: 'Chat',
     link: '/supplier/chat',
     subMenu: []
@@ -36,7 +38,7 @@ const SUPPLIER_MENU = [
   },
   {
     key: '3',
-    icon: <ExperimentOutlined />,
+    icon: <FallOutlined />,
     label: 'Available reverse auctions',
     link: '/supplier/bidding',
     subMenu: []

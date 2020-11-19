@@ -99,7 +99,7 @@ const SupplierChatComponent = ({
 
   const [newMessage, setNewMessage] = useState({});
   useEffect(() => {
-    getSupplierGroupChat(isNegotiating);
+    getSupplierGroupChat(parseBoolean(isNegotiating));
   }, [getSupplierGroupChat, isNegotiating]);
 
   let GROUP_NEGOTIATING_TABS = [];
@@ -179,7 +179,15 @@ const SupplierChatComponent = ({
     {
       title: 'Done',
       key: '0',
-      content: 'Done'
+      content: (
+        <TabsLayout
+          onTabClick={(key) => setCurrentGroupIdSelected(key)}
+          className="supplier-chat"
+          tabPosition={'left'}
+          style={{ height: '100%' }}
+          tabs={GROUP_NEGOTIATING_TABS}
+        />
+      )
     }
   ];
 
@@ -190,7 +198,7 @@ const SupplierChatComponent = ({
     >
       <TabsLayout
         onTabClick={(key) => {
-          setIsNegotiating(parseBoolean(key));
+          setIsNegotiating(key);
         }}
         style={{ height: '100%' }}
         defaultTab={isNegotiating}

@@ -10,7 +10,10 @@ import {
   ExperimentOutlined,
   FileDoneOutlined,
   FallOutlined,
-  WechatOutlined
+  DiffOutlined,
+  WechatOutlined,
+  ProfileOutlined,
+  MessageOutlined
 } from '@ant-design/icons';
 import MemberNavComponent from '../component/MemberNavComponent';
 import { currentPath } from '../utils';
@@ -30,26 +33,26 @@ const ADMIN_MENU = [
   // },
   {
     key: '2',
-    icon: <FallOutlined />,
+    icon: <ProfileOutlined />,
     label: 'Requests',
     link: '/aggregator/request'
   },
   {
     key: '3',
-    icon: <ExperimentOutlined />,
+    icon: <FallOutlined />,
     label: 'Reverse auctions',
     link: '/aggregator/bidding'
   },
   {
     key: '4',
-    icon: <UsergroupAddOutlined />,
+    icon: <DiffOutlined />,
     label: 'Groups',
     link: '/aggregator/group',
     subMenu: []
   },
   {
     key: '5',
-    icon: <WechatOutlined />,
+    icon: <MessageOutlined />,
     label: 'Chats',
     link: '/aggregator/group/chat',
     subMenu: []
