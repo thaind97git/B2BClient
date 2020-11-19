@@ -55,56 +55,55 @@ const connectToRedux = connect(
   })
 );
 
-const columns = [
-  {
-    title: 'Name',
-    dataIndex: 'name',
-    key: 'name',
-    render: (text, record) => (
-      <Link
-        href={createLink(['aggregator', 'bidding', `details?id=${record.key}`])}
-      >
-        {text}
-      </Link>
-    )
-  },
-  {
-    title: 'Duration',
-    dataIndex: 'duration',
-    key: 'duration'
-  },
-  {
-    title: 'Date start',
-    dataIndex: 'dateStart',
-    key: 'dateStart'
-  },
-  {
-    title: 'Created By',
-    dataIndex: 'createdBy',
-    key: 'createdBy'
-  },
-  {
-    title: 'Status',
-    dataIndex: 'status',
-    key: 'status'
-  },
-  {
-    title: 'Actions',
-    dataIndex: 'actions',
-    key: 'actions'
-  }
-];
-
 const AdminBiddingManagementComponent = ({
   auctionFilter,
   auctionData,
   auctionError,
   cancelAuction
 }) => {
+  const columns = [
+    {
+      title: 'Name',
+      dataIndex: 'name',
+      key: 'name',
+      render: (text, record) => (
+        <Link
+          href={createLink([
+            'aggregator',
+            'bidding',
+            `details?id=${record.key}`
+          ])}
+        >
+          {text}
+        </Link>
+      )
+    },
+    {
+      title: 'Duration',
+      dataIndex: 'duration',
+      key: 'duration'
+    },
+    {
+      title: 'Date start',
+      dataIndex: 'dateStart',
+      key: 'dateStart'
+    },
+    {
+      title: 'Created By',
+      dataIndex: 'createdBy',
+      key: 'createdBy'
+    },
+    {
+      title: 'Status',
+      dataIndex: 'status',
+      key: 'status'
+    }
+  ];
   const [searchMessage, setSearchMessage] = useState('');
   const [dateRange, setDateRange] = useState(DEFAULT_DATE_RANGE);
   const [category, setCategory] = useState('all');
   const [status, setStatus] = useState(null);
+
   function handleChange(value) {
     setStatus(value);
   }
@@ -163,12 +162,22 @@ const AdminBiddingManagementComponent = ({
       })
     );
   };
-
+  let isActions = false;
   let requestData = [],
     totalCount = 0;
   if (!!auctionData && !auctionError) {
     requestData = auctionData.data;
+    isActions = requestData.some(
+      (auction = {}) => (auction.reverseAuctionStatus || {}).id === B_FEATURE
+    );
     totalCount = auctionData.total;
+  }
+  if (isActions) {
+    columns.push({
+      title: 'Actions',
+      dataIndex: 'actions',
+      key: 'actions'
+    });
   }
   return (
     <div>
