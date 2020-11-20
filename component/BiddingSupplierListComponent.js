@@ -87,9 +87,6 @@ const getSupplierDataTable = (supplierData = []) => {
             <Button size="small" danger>
               Remove
             </Button>
-            <Button size="small" danger>
-              Cancel
-            </Button>
           </Space>
         )
       };

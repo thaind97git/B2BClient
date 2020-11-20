@@ -140,7 +140,8 @@ function MessageList({
   conversationId,
   getNewMessage,
   resetData,
-  signalR
+  signalR,
+  isDone = false
 }) {
   const [messages, setMessages] = useState([]);
   const [pageIndex, setPageIndex] = useState(DEFAULT_PAGING_INFO.page);
@@ -263,7 +264,19 @@ function MessageList({
         </ScrollToBottom>
       </Col>
       <Col span={24} style={{ height: 52 }}>
-        <Compose sendMessage={sendMessage} />
+        {!isDone ? (
+          <Compose sendMessage={sendMessage} />
+        ) : (
+          <Row
+            style={{ cursor: 'not-allowed' }}
+            justify="center"
+            align="middle"
+          >
+            <i style={{ opacity: 0.7 }}>
+              The conversation in this group has been closed...
+            </i>
+          </Row>
+        )}
       </Col>
     </Row>
   );

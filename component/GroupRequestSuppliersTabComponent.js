@@ -23,6 +23,7 @@ import {
 } from '../stores/SupplierState';
 import ReactTableLayout from '../layouts/ReactTableLayout';
 import { createLink } from '../libs';
+import { G_NEGOTIATING, G_PENDING } from '../enums/groupStatus';
 
 const { Title } = Typography;
 
@@ -30,8 +31,7 @@ const SUPPLIER_CONTACT = [
   { title: 'Name', dataIndex: 'name', key: 'name' },
   { title: 'Email', dataIndex: 'email', key: 'email' },
   { title: 'Phone', dataIndex: 'phone', key: 'phone' },
-  { title: 'Is Ignore', dataIndex: 'isIgnore', key: 'isIgnore' },
-  { title: 'Actions', dataIndex: 'actions', key: 'actions' }
+  { title: 'Is Ignore', dataIndex: 'isIgnore', key: 'isIgnore' }
 ];
 
 const connectToRedux = connect(
@@ -116,7 +116,8 @@ const GroupRequestSuppliersTabComponent = ({
   addSupplierToGroup,
   groupId,
   productId,
-  addSupplierToGroupData
+  addSupplierToGroupData,
+  group
 }) => {
   const [isOpenContact, setIsOpenContact] = useState(false);
   const [openSupplierDetail, setOpenSupplierDetail] = useState(false);
@@ -141,6 +142,15 @@ const GroupRequestSuppliersTabComponent = ({
   if (supplierByGroupIdData) {
     supplierData = supplierByGroupIdData.data;
     totalSupplier = supplierByGroupIdData.total;
+  }
+
+  const { groupStatus = {} } = group;
+  if (groupStatus.id === G_NEGOTIATING) {
+    SUPPLIER_CONTACT.push({
+      title: 'Actions',
+      dataIndex: 'actions',
+      key: 'actions'
+    });
   }
 
   return (
@@ -175,11 +185,14 @@ const GroupRequestSuppliersTabComponent = ({
             })}
             columns={SUPPLIER_CONTACT}
             totalCount={totalSupplier}
-            footer={() => (
-              <Button type="primary" onClick={() => setIsOpenContact(true)}>
-                Add Suppliers
-              </Button>
-            )}
+            footer={() =>
+              groupStatus.id !== G_PENDING ||
+              groupStatus.id !== G_NEGOTIATING ? null : (
+                <Button type="primary" onClick={() => setIsOpenContact(true)}>
+                  Add Suppliers
+                </Button>
+              )
+            }
           />
         </div>
       </Card>

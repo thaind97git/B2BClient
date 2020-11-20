@@ -87,6 +87,7 @@ const GroupRequestDetailsComponent = ({
       key: '1',
       content: (
         <GroupRequestSuppliersTabComponent
+          group={groupDetailsData}
           groupId={groupId}
           productId={productId}
         />
