@@ -96,6 +96,7 @@ const TabsConversation = ({
 }) => {
   return conversationData && conversationData.length > 0 ? (
     <Tabs
+      className="conversation-tabs"
       destroyInactiveTabPane
       tabPosition="left"
       onChange={(key) => setCurrentConversationId(key)}
@@ -109,7 +110,8 @@ const TabsConversation = ({
           yourMessage,
           flag: currentIgnore,
           lastMessageTime,
-          seen
+          seen,
+          supplierId
         } = conversation;
         const contentLabel = `${yourMessage ? 'You: ' : ''} ${getShortContent(
           lastMessage,
@@ -148,7 +150,7 @@ const TabsConversation = ({
                             createLink([
                               'aggregator',
                               'order',
-                              `confirmation?groupId=${groupId}&isNegotiating=true&supplierId=${''}`
+                              `confirmation?groupId=${groupId}&isNegotiating=true&supplierId=${supplierId}`
                             ])
                           );
                         }}
@@ -194,15 +196,21 @@ const TabsGroup = ({
   setCurrentConversationId,
   currentConversationId,
   signalR,
-  isClosingDeal
+  isClosingDeal,
+  defaultGroup,
+  setDefaultGroup
 }) => {
   return groupData && groupData.length > 0 ? (
     <Tabs
+      className="group-tabs"
       destroyInactiveTabPane
       tabPosition="left"
-      onChange={(groupId) => setCurrentGroupIdSelected(groupId)}
-      defaultActiveKey={groupId}
-      activeKey={groupId}
+      onChange={(groupId) => {
+        setDefaultGroup(groupId);
+        setCurrentGroupIdSelected(groupId);
+      }}
+      activeKey={defaultGroup}
+      defaultActiveKey={defaultGroup}
     >
       {groupData.map((group = {}) => {
         return (
@@ -255,6 +263,9 @@ const GroupChatComponent = ({
   const [isFirstCall, setIsFirstCall] = useState(true);
   const router = useRouter();
   const groupId = router.query.groupId;
+  const [conversationData, setConversationData] = useState([]);
+
+  const [defaultGroup, setDefaultGroup] = useState(groupId || null);
 
   useEffect(() => {
     return () => {
@@ -262,15 +273,27 @@ const GroupChatComponent = ({
     };
   }, []);
   useEffect(() => {
-    signalR.onListen('ConversationPushing', (conversationId) => {
-      console.log('before', GetSupplierChatByGroupData);
+    console.log('before', GetSupplierChatByGroupData);
+    signalR.onListen('ConversationPushing', (conversation = {}) => {
+      console.log({ conversation });
       if (GetSupplierChatByGroupData && GetSupplierChatByGroupData.length > 0) {
         GetSupplierChatByGroupData.sort(function (x, y) {
-          return x.id === conversationId ? -1 : y.id === conversationId ? 1 : 0;
+          return x.id === conversation.id
+            ? -1
+            : y.id === conversation.id
+            ? 1
+            : 0;
         });
+        setConversationData(GetSupplierChatByGroupData);
       }
       console.log('after', GetSupplierChatByGroupData);
     });
+  }, [GetSupplierChatByGroupData]);
+
+  useEffect(() => {
+    if (GetSupplierChatByGroupData && GetSupplierChatByGroupData.length > 0) {
+      setConversationData(GetSupplierChatByGroupData);
+    }
   }, [GetSupplierChatByGroupData]);
   useEffect(() => {
     signalR.onListen('GroupPushing', (data) => {
@@ -312,13 +335,22 @@ const GroupChatComponent = ({
         defaultActiveKey={isNegotiating}
         tabPosition="top"
         destroyInactiveTabPane
-        onChange={(key) => setIsNegotiating(key)}
+        onChange={(key) => {
+          resetMessage();
+          setIsNegotiating(key);
+          setCurrentGroupIdSelected(null);
+          resetGroupList();
+          setConversationData([]);
+          setDefaultGroup(groupId || null);
+        }}
       >
         <TabPane tab="Negotiating" key="1">
           <TabsGroup
+            defaultGroup={defaultGroup}
+            setDefaultGroup={setDefaultGroup}
             groupData={GetAggregatorGroupChatData}
             setCurrentGroupIdSelected={setCurrentGroupIdSelected}
-            conversationData={GetSupplierChatByGroupData}
+            conversationData={conversationData}
             groupId={groupId || currentGroupIdSelected}
             ignoreSup={ignoreSup}
             unIgnoreSup={unIgnoreSup}
@@ -329,9 +361,11 @@ const GroupChatComponent = ({
         </TabPane>
         <TabPane tab="Others" key="0">
           <TabsGroup
+            defaultGroup={defaultGroup}
+            setDefaultGroup={setDefaultGroup}
             groupData={GetAggregatorGroupChatData}
             setCurrentGroupIdSelected={setCurrentGroupIdSelected}
-            conversationData={GetSupplierChatByGroupData}
+            conversationData={conversationData}
             groupId={groupId || currentGroupIdSelected}
             setCurrentConversationId={setCurrentConversationId}
             currentConversationId={currentConversationId}
@@ -343,6 +377,9 @@ const GroupChatComponent = ({
 
       <style jsx global>
         {`
+          .conversation-tabs .ant-tabs-nav {
+            width: 260px;
+          }
           #aggregator-group-chat .ant-tabs-content.ant-tabs-content-left {
             height: 100%;
           }

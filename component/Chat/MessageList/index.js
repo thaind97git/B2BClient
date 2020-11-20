@@ -11,8 +11,9 @@ import {
   GetMessagesResetter
 } from '../../../stores/ConversationState';
 import { DEFAULT_PAGING_INFO, getShortContent } from '../../../utils';
-import { Col, Row, Tooltip } from 'antd';
+import { Col, Row, Skeleton, Spin, Tooltip } from 'antd';
 import ScrollToBottom, { useAtTop } from 'react-scroll-to-bottom';
+import { LoadingOutlined } from '@ant-design/icons';
 
 const connectToRedux = connect(
   createStructuredSelector({
@@ -106,14 +107,21 @@ const RenderMessages = React.memo(({ messagesData }) => {
   return tempMessages;
 });
 
-const MessagesList = ({ messages, setPageIndex, firstTime, isAllMessage }) => {
+const MessagesList = ({
+  messages,
+  setPageIndex,
+  firstTime,
+  isAllMessage,
+  setLoading
+}) => {
   const [atTop] = useAtTop();
 
   useEffect(() => {
     if (atTop && !firstTime && !isAllMessage) {
-      // setPageIndex((prev) => prev + 1);
+      setLoading(true);
+      setPageIndex((prev) => prev + 1);
     }
-  }, [atTop, setPageIndex]);
+  }, [atTop, setPageIndex, isAllMessage]);
   return (
     <div
       id="message-list-chat"
@@ -123,6 +131,7 @@ const MessagesList = ({ messages, setPageIndex, firstTime, isAllMessage }) => {
     </div>
   );
 };
+const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
 
 function MessageList({
   titleProps = {},
@@ -138,23 +147,31 @@ function MessageList({
   const [newMessage, setNewMessage] = useState({});
   const [firstTime, setFirstTime] = useState(true);
   const currentConversationId = conversationId;
-
+  const [isAllMessage, setIsAllMessage] = useState(false);
+  const [totalCount, setTotalCount] = useState(null);
+  const [loading, setLoading] = useState(false);
   useEffect(() => {
     return () => {
       setMessages([]);
       setPageIndex(1);
       resetData();
+      setIsAllMessage(false);
+      setTotalCount(null);
     };
   }, [resetData, signalR]);
   useEffect(() => {
-    if (messagesData) {
-      console.log({ messagesData });
-      console.log({ conversationId });
+    const { data, total } = messagesData || {};
+    if (data && data.length > 0) {
+      if ((data[0] || {}).conversationId !== conversationId) {
+        return;
+      }
+      setLoading(false);
+      setTotalCount(total);
       const mesTmp = [...messages];
-      mesTmp.unshift(...messagesData);
-      setMessages(messagesData);
+      mesTmp.unshift(...data);
+      setMessages(mesTmp);
     }
-  }, [messagesData]);
+  }, [messagesData, conversationId]);
   useEffect(() => {
     if (signalR) {
       signalR.onListen('ReceiveMessage', (message) => {
@@ -182,6 +199,14 @@ function MessageList({
       }
     }
   }, [newMessage, messages, currentConversationId]);
+
+  useEffect(() => {
+    if (totalCount === 0) {
+      setIsAllMessage(true);
+    } else if ((messages || []).length === totalCount && !firstTime) {
+      setIsAllMessage(true);
+    }
+  }, [messages, totalCount, firstTime]);
 
   const sendMessage = async (message, file) => {
     if (signalR.isConnectionStarted()) {
@@ -223,8 +248,14 @@ function MessageList({
         span={24}
       >
         <ScrollToBottom>
+          {loading && (
+            <Row justify="center">
+              <Spin indicator={antIcon} />
+            </Row>
+          )}
           <MessagesList
-            // isAllMessage={isAllMessage}
+            setLoading={setLoading}
+            isAllMessage={isAllMessage}
             messages={messages}
             setPageIndex={setPageIndex}
             firstTime={firstTime}
