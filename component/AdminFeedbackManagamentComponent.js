@@ -141,29 +141,6 @@ const AdminFeedbackManagementComponent = (
     );
   };
 
-  // let feedbackData = [
-  //     {
-  //       title: 'About current auction',
-  //       id: '1',
-  //       user: 'quanghnd@gmail.com',
-  //       dateCreated: 'October 22, 2020 17:00 GTM',
-  //       dateUpdated: 'October 22, 2020 17:00 GTM',
-  //       status: 0
-  //     },
-  //     {
-  //       title: 'About supplier ABC',
-  //       id: '2',
-  //       user: 'duyquanghoang@gmail.com',
-  //       dateCreated: 'October 22, 2020 17:00 GTM',
-  //       dateUpdated: 'October 22, 2020 17:00 GTM',
-  //       status: 1
-  //     }
-  //   ],
-  //   totalCount = 0;
-  //   if (productPagingData) {
-  //     productData = productPagingData.data;
-  //     totalCount = productPagingData.total;
-  //   }
 
   return (
     <div>
@@ -174,7 +151,7 @@ const AdminFeedbackManagementComponent = (
         // loading={loading}
         dispatchAction={getFeedback}
         searchProps={{
-          placeholder: 'Search',
+          placeholder: 'Search by title',
           searchMessage,
           setSearchMessage,
           exElement: (

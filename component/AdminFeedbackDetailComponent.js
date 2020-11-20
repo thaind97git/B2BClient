@@ -14,7 +14,8 @@ import {
   Skeleton,
   Upload,
   Divider,
-  Rate
+  Rate,
+  Popover
 } from 'antd';
 import { LeftOutlined } from '@ant-design/icons';
 import moment from 'moment';
@@ -35,12 +36,22 @@ import {
   createFeedbackReply,
   CreateFeedbackReplyData,
   CreateFeedbackReplyResetter,
-  createFeedbackRate,
-  CreateFeedbackRateData,
-  CreateFeedbackRateResetter,
   GetFeedbackFileData,
   getFeedbackFile
 } from '../stores/FeedbackState';
+
+import {
+  getAuctionDetails,
+  GetAuctionDetailsData
+} from '../stores/AuctionState';
+import {
+  getRequestDetails,
+  GetRequestDetailsDataSelector
+} from '../stores/RequestState';
+import {
+  getOrderDetails,
+  GetOrderDetailsDataSelector
+} from '../stores/OrderState';
 import Moment from 'react-moment';
 import { SmileOutlined, FrownOutlined } from '@ant-design/icons';
 
@@ -51,9 +62,11 @@ const connectToRedux = connect(
   createStructuredSelector({
     feedbackDetailsData: GetFeedbackDetailsData,
     createFeedbackReplyData: CreateFeedbackReplyData,
-    createFeedbackRateData: CreateFeedbackRateData,
     currentUser: CurrentUserData,
-    feedbackFileData: GetFeedbackFileData
+    feedbackFileData: GetFeedbackFileData,
+    orderDetails: GetOrderDetailsDataSelector,
+    requestDetails: GetRequestDetailsDataSelector,
+    auctionDetails: GetAuctionDetailsData
   }),
   (dispatch) => ({
     getFeedbackDetails: (feedbackId) => {
@@ -62,15 +75,20 @@ const connectToRedux = connect(
     replyFeedback: (object) => {
       dispatch(createFeedbackReply(object));
     },
-    rateFeedback: (object) => {
-      dispatch(createFeedbackRate(object));
-    },
     getFeedbackFile: (fileId) => {
       dispatch(getFeedbackFile(fileId));
     },
+    getOrderDetail: (orderId) => {
+      dispatch(getOrderDetails(orderId));
+    },
+    getRequestDetails: (requestId) => {
+      dispatch(getRequestDetails(requestId));
+    },
+    getAuctionDetails: (auctionId) => {
+      dispatch(getAuctionDetails(auctionId));
+    },
     resetData: () => dispatch(GetFeedbackDetailsResetter),
-    resetCreateFeedbackReply: () => dispatch(CreateFeedbackReplyResetter),
-    resetCreateFeedbackRate: () => dispatch(CreateFeedbackRateResetter)
+    resetCreateFeedbackReply: () => dispatch(CreateFeedbackReplyResetter)
   })
 );
 
@@ -99,6 +117,7 @@ const Editor = ({ onChange, onSubmit, submitting, value }) => (
     </FormItem>
   </>
 );
+
 const customIcons1 = {
   1: <FrownOutlined />,
   2: '',
@@ -113,6 +132,13 @@ const customIcons2 = {
   4: '',
   5: ''
 };
+
+const desc1 = ['Not Happy', '', '', '', ''];
+const desc2 = ['', 'Happy', '', '', ''];
+
+const displayServiceName = (name) =>
+  name ? (name.length > 38 ? name.slice(0, 38) + ' ...' : name) : '';
+
 const AdminFeedbackDetailComponent = ({
   currentUser,
   getFeedbackDetails,
@@ -121,11 +147,14 @@ const AdminFeedbackDetailComponent = ({
   replyFeedback,
   createFeedbackReplyData,
   resetCreateFeedbackReply,
-  rateFeedback,
-  createFeedbackRateData,
-  resetCreateFeedbackRate,
   getFeedbackFile,
-  feedbackFileData
+  feedbackFileData,
+  auctionDetails,
+  getAuctionDetails,
+  requestDetails,
+  getRequestDetails,
+  orderDetails,
+  getOrderDetails
 }) => {
   const router = useRouter();
   const feedbackId = router.query.id;
@@ -135,17 +164,12 @@ const AdminFeedbackDetailComponent = ({
   const [isReply, setIsReply] = useState(false);
   const [isHappy, setIsHappy] = useState('None');
   const [fileList, setFileList] = useState([]);
+  const [serviceName, setServiceName] = useState('');
+  const [isFeedbackSystem, setIsFeedbackSystem] = useState(true);
 
   const handleSubmit = () => {
     replyFeedback({
       description: value,
-      feedbackId: feedbackDetailsData.id
-    });
-  };
-
-  const handleRate = (value) => {
-    rateFeedback({
-      isHappy: value,
       feedbackId: feedbackDetailsData.id
     });
   };
@@ -166,16 +190,43 @@ const AdminFeedbackDetailComponent = ({
   }, [createFeedbackReplyData]);
 
   useEffect(() => {
-    if (createFeedbackRateData) {
-      getFeedbackDetails(feedbackId);
-      resetCreateFeedbackRate();
+    if (requestDetails) {
+      setServiceName(
+        requestDetails.quantity +
+          ' ' +
+          requestDetails.product.unitType +
+          ' of ' +
+          requestDetails.product.description
+      );
     }
-  }, [createFeedbackRateData]);
+  }, [requestDetails]);
+
+  useEffect(() => {
+    if (auctionDetails) {
+      setServiceName(auctionDetails.auctionName);
+    }
+  }, [auctionDetails]);
+
+  useEffect(() => {
+    if (orderDetails) {
+      setServiceName(orderDetails.groupName);
+    }
+  }, [orderDetails]);
 
   useEffect(() => {
     setFileList([]);
     setComments([]);
     if (feedbackDetailsData) {
+      if (feedbackDetailsData.reverseAuctionId) {
+        getAuctionDetails(feedbackDetailsData.reverseAuctionId);
+        setIsFeedbackSystem(false);
+      } else if (feedbackDetailsData.orderId) {
+        getOrderDetails(feedbackDetailsData.orderId);
+        setIsFeedbackSystem(false);
+      } else if (feedbackDetailsData.requestId) {
+        getRequestDetails(feedbackDetailsData.requestId);
+        setIsFeedbackSystem(false);
+      }
       if (feedbackDetailsData.feedbackReplies) {
         for (let i = 0; i < feedbackDetailsData.feedbackReplies.length; i++) {
           if (feedbackDetailsData.feedbackReplies[i].isHappy) {
@@ -224,25 +275,9 @@ const AdminFeedbackDetailComponent = ({
           ]);
         }
       }
-      if (
-        currentUser.role === 'Admin' &&
-        feedbackDetailsData.feedbackStatus.id === F_OPEN
-      ) {
+      if (feedbackDetailsData.feedbackStatus.id === F_OPEN) {
         setIsReply(true);
-      } else if (
-        currentUser.role === 'Admin' &&
-        feedbackDetailsData.feedbackStatus.id === F_CLOSED
-      ) {
-        setIsReply(false);
-      } else if (
-        (currentUser.role === 'Buyer' || currentUser.role === 'Supplier') &&
-        feedbackDetailsData.feedbackStatus.id === F_CLOSED
-      ) {
-        setIsReply(true);
-      } else if (
-        (currentUser.role === 'Buyer' || currentUser.role === 'Supplier') &&
-        feedbackDetailsData.feedbackStatus.id === F_OPEN
-      ) {
+      } else if (feedbackDetailsData.feedbackStatus.id === F_CLOSED) {
         setIsReply(false);
       }
     }
@@ -264,13 +299,7 @@ const AdminFeedbackDetailComponent = ({
         <Button
           type="primary"
           onClick={() => {
-            if (currentUser.role === 'Supplier') {
-              Router.push(`/supplier/feedback`);
-            } else if (currentUser.role === 'Buyer') {
-              Router.push(`/buyer/feedback`);
-            } else if (currentUser.role === 'Admin') {
-              Router.push(`/admin/feedback`);
-            }
+            Router.push(`/admin/feedback`);
           }}
         >
           <LeftOutlined /> Back to feedback list
@@ -282,7 +311,7 @@ const AdminFeedbackDetailComponent = ({
       <Space direction="vertical" style={{ width: '100%' }}>
         <Card style={{ width: '100%' }}>
           <Row span={24} gutter={16} justify="space-between">
-            <Col span={6}>
+            <Col span={isFeedbackSystem ? 8 : 6}>
               <Card
                 style={{ backgroundColor: '#199EB8', color: '#FFFFFF' }}
                 bordered={false}
@@ -300,7 +329,7 @@ const AdminFeedbackDetailComponent = ({
                 </div>
               </Card>
             </Col>
-            <Col span={6}>
+            <Col span={isFeedbackSystem ? 8 : 6}>
               <Card
                 style={{ backgroundColor: '#199EB8', color: '#FFFFFF' }}
                 bordered={false}
@@ -314,7 +343,7 @@ const AdminFeedbackDetailComponent = ({
                 </div>
               </Card>
             </Col>
-            <Col span={6}>
+            <Col span={isFeedbackSystem ? 8 : 6}>
               <Card
                 style={{ backgroundColor: '#199EB8', color: '#FFFFFF' }}
                 bordered={false}
@@ -326,18 +355,24 @@ const AdminFeedbackDetailComponent = ({
                 </div>
               </Card>
             </Col>
-            <Col span={6}>
-              <Card
-                style={{ backgroundColor: '#199EB8', color: '#FFFFFF' }}
-                bordered={false}
-              >
-                <div style={{ fontSize: '14px' }}>Rate</div>
-                <br />
-                <div style={{ fontSize: '17px', fontWeight: 'bold' }}>
-                  {isHappy}
-                </div>
-              </Card>
-            </Col>
+            {!isFeedbackSystem ? (
+              <Col span={6}>
+                <Card
+                  style={{ backgroundColor: '#199EB8', color: '#FFFFFF' }}
+                  bordered={false}
+                >
+                  <div style={{ fontSize: '14px' }}>Service Name</div>
+                  <br />
+                  <Popover content={serviceName}>
+                    <div style={{ fontSize: '17px', fontWeight: 'bold' }}>
+                      {displayServiceName(serviceName)}
+                    </div>
+                  </Popover>
+                </Card>
+              </Col>
+            ) : (
+              ''
+            )}
           </Row>
         </Card>
         <Card style={{ width: '100%' }}>
@@ -410,28 +445,33 @@ const AdminFeedbackDetailComponent = ({
           ) : (
             ''
           )}
-          {isHappy === 'None' &&
-          feedbackDetailsData.feedbackStatus.id === F_CLOSED &&
-          (currentUser.role === 'Buyer' || currentUser.role === 'Supplier') ? (
+          {isHappy === 'Not Happy' ? (
             <div align="center">
               <p style={{ fontSize: '20px', marginBottom: '-20px' }}>
-                Do you like what you see?
+                User rate
               </p>
               <br />
               <Rate
-                style={{ fontSize: '100px' }}
-                onChange={(value) => {
-                  handleRate(false);
-                }}
+                tooltips={desc1}
+                defaultValue={2}
+                disabled
+                style={{ paddingLeft: '32px', fontSize: '100px' }}
                 character={({ index }) => {
                   return customIcons1[index + 1];
                 }}
               />
+            </div>
+          ) : isHappy === 'Happy' ? (
+            <div align="center">
+              <p style={{ fontSize: '20px', marginBottom: '-20px' }}>
+                User rate
+              </p>
+              <br />
               <Rate
-                style={{ fontSize: '100px' }}
-                onChange={(value) => {
-                  handleRate(true);
-                }}
+                tooltips={desc2}
+                defaultValue={2}
+                disabled
+                style={{ paddingLeft: '32px', fontSize: '100px' }}
                 character={({ index }) => {
                   return customIcons2[index + 1];
                 }}
