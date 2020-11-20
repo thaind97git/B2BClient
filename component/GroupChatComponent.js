@@ -131,6 +131,7 @@ const TabsConversation = ({
             key={conversationId}
           >
             <MessageList
+              isDone={!isClosingDeal}
               isIgnored={currentIgnore}
               signalR={signalR}
               conversationId={conversationId}

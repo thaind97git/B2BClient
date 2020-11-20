@@ -4,7 +4,14 @@ import React, { useState } from 'react';
 import Moment from 'react-moment';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
-import { B_ACTIVE, B_CLOSED, B_DONE, B_FEATURE } from '../enums/biddingStatus';
+import {
+  B_ACTIVE,
+  B_CANCELED,
+  B_CLOSED,
+  B_DONE,
+  B_FAILED,
+  B_FEATURE
+} from '../enums/biddingStatus';
 import ReactTableLayout from '../layouts/ReactTableLayout';
 import { createLink } from '../libs';
 import {
@@ -201,9 +208,11 @@ const AdminBiddingManagementComponent = ({
               >
                 <Option value="">All Status</Option>
                 <Option value={B_FEATURE}>Waiting</Option>
+                <Option value={B_ACTIVE}>Activating</Option>
                 <Option value={B_DONE}>Donned</Option>
                 <Option value={B_CLOSED}>Closed</Option>
-                <Option value={B_ACTIVE}>Activating</Option>
+                <Option value={B_CANCELED}>Canceled</Option>
+                <Option value={B_FAILED}>Failed</Option>
               </Select>
               <AllCategoryComponent
                 onGetLastValue={(value) => setCategory(value)}

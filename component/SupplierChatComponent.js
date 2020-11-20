@@ -134,6 +134,7 @@ const SupplierChatComponent = ({
         key: id,
         content: (
           <MessageList
+            isDone={!parseBoolean(isNegotiating)}
             signalR={signalR}
             getNewMessage={(message) => setNewMessage(message)}
             conversationId={currentGroupIdSelected}
