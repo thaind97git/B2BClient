@@ -1,4 +1,4 @@
-import React, { Fragment, useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FileProtectOutlined, FlagOutlined } from '@ant-design/icons';
 import { Row, Col, Button, Empty, Space, Avatar, Tabs } from 'antd';
 import MessageList from './Chat/MessageList';
@@ -7,10 +7,8 @@ import {
   getProductImage,
   getShortContent,
   parseBoolean,
-  getCurrentUserImage,
-  DEFAULT_PAGING_INFO
+  getCurrentUserImage
 } from '../utils';
-import TabsLayout from '../layouts/TabsLayout';
 import ConversationListItem from './Chat/ConversationListItem';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
@@ -272,23 +270,6 @@ const GroupChatComponent = ({
       signalR.stopConnection();
     };
   }, []);
-  useEffect(() => {
-    console.log('before', GetSupplierChatByGroupData);
-    signalR.onListen('ConversationPushing', (conversation = {}) => {
-      console.log({ conversation });
-      if (GetSupplierChatByGroupData && GetSupplierChatByGroupData.length > 0) {
-        GetSupplierChatByGroupData.sort(function (x, y) {
-          return x.id === conversation.id
-            ? -1
-            : y.id === conversation.id
-            ? 1
-            : 0;
-        });
-        setConversationData(GetSupplierChatByGroupData);
-      }
-      console.log('after', GetSupplierChatByGroupData);
-    });
-  }, [GetSupplierChatByGroupData]);
 
   useEffect(() => {
     if (GetSupplierChatByGroupData && GetSupplierChatByGroupData.length > 0) {
