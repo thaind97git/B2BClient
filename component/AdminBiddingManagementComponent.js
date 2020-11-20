@@ -4,7 +4,14 @@ import React, { useState } from 'react';
 import Moment from 'react-moment';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
-import { B_ACTIVE, B_CLOSED, B_DONE, B_FEATURE } from '../enums/biddingStatus';
+import {
+  B_ACTIVE,
+  B_CANCELED,
+  B_CLOSED,
+  B_DONE,
+  B_FAILED,
+  B_FEATURE
+} from '../enums/biddingStatus';
 import ReactTableLayout from '../layouts/ReactTableLayout';
 import { createLink } from '../libs';
 import {
@@ -55,56 +62,55 @@ const connectToRedux = connect(
   })
 );
 
-const columns = [
-  {
-    title: 'Name',
-    dataIndex: 'name',
-    key: 'name',
-    render: (text, record) => (
-      <Link
-        href={createLink(['aggregator', 'bidding', `details?id=${record.key}`])}
-      >
-        {text}
-      </Link>
-    )
-  },
-  {
-    title: 'Duration',
-    dataIndex: 'duration',
-    key: 'duration'
-  },
-  {
-    title: 'Date start',
-    dataIndex: 'dateStart',
-    key: 'dateStart'
-  },
-  {
-    title: 'Created By',
-    dataIndex: 'createdBy',
-    key: 'createdBy'
-  },
-  {
-    title: 'Status',
-    dataIndex: 'status',
-    key: 'status'
-  },
-  {
-    title: 'Actions',
-    dataIndex: 'actions',
-    key: 'actions'
-  }
-];
-
 const AdminBiddingManagementComponent = ({
   auctionFilter,
   auctionData,
   auctionError,
   cancelAuction
 }) => {
+  const columns = [
+    {
+      title: 'Name',
+      dataIndex: 'name',
+      key: 'name',
+      render: (text, record) => (
+        <Link
+          href={createLink([
+            'aggregator',
+            'bidding',
+            `details?id=${record.key}`
+          ])}
+        >
+          {text}
+        </Link>
+      )
+    },
+    {
+      title: 'Duration',
+      dataIndex: 'duration',
+      key: 'duration'
+    },
+    {
+      title: 'Date start',
+      dataIndex: 'dateStart',
+      key: 'dateStart'
+    },
+    {
+      title: 'Created By',
+      dataIndex: 'createdBy',
+      key: 'createdBy'
+    },
+    {
+      title: 'Status',
+      dataIndex: 'status',
+      key: 'status'
+    }
+  ];
   const [searchMessage, setSearchMessage] = useState('');
   const [dateRange, setDateRange] = useState(DEFAULT_DATE_RANGE);
   const [category, setCategory] = useState('all');
   const [status, setStatus] = useState(null);
+
   function handleChange(value) {
     setStatus(value);
   }
@@ -163,12 +169,22 @@ const AdminBiddingManagementComponent = ({
       })
     );
   };
-
+  let isActions = false;
   let requestData = [],
     totalCount = 0;
   if (!!auctionData && !auctionError) {
     requestData = auctionData.data;
+    isActions = requestData.some(
+      (auction = {}) => (auction.reverseAuctionStatus || {}).id === B_FEATURE
+    );
     totalCount = auctionData.total;
+  }
+  if (isActions) {
+    columns.push({
+      title: 'Actions',
+      dataIndex: 'actions',
+      key: 'actions'
+    });
   }
   return (
     <div>
@@ -192,9 +208,11 @@ const AdminBiddingManagementComponent = ({
               >
                 <Option value="">All Status</Option>
                 <Option value={B_FEATURE}>Waiting</Option>
+                <Option value={B_ACTIVE}>Activating</Option>
                 <Option value={B_DONE}>Donned</Option>
                 <Option value={B_CLOSED}>Closed</Option>
-                <Option value={B_ACTIVE}>Activating</Option>
+                <Option value={B_CANCELED}>Canceled</Option>
+                <Option value={B_FAILED}>Failed</Option>
               </Select>
               <AllCategoryComponent
                 onGetLastValue={(value) => setCategory(value)}

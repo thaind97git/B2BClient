@@ -41,10 +41,12 @@ const AdminBiddingDetailsComponent = ({
   }
 
   const {
+    id: reverseAuctionId,
     reverseAuctionStatus = {},
     aggregator = {},
     group = {}
   } = auctionDetailsData;
+  console.log({ reverseAuctionId });
   const { firstName, lastName } = aggregator;
   const BIDDING = [
     {
@@ -60,7 +62,9 @@ const AdminBiddingDetailsComponent = ({
     {
       title: 'Suppliers',
       key: '1',
-      content: <BiddingSupplierListComponent />
+      content: (
+        <BiddingSupplierListComponent reverseAuctionId={reverseAuctionId} />
+      )
     },
     {
       title: 'Reverse Auction',

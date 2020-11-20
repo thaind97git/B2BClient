@@ -1,111 +1,123 @@
-import { Button, Col, Row, Space, Tag } from "antd";
-import React, { useState } from "react";
-import ReactTableLayout from "../layouts/ReactTableLayout";
+import { Button, Row, Space, Tag } from 'antd';
+import React from 'react';
+import ReactTableLayout from '../layouts/ReactTableLayout';
 import {
   CheckCircleOutlined,
   CloseCircleOutlined,
-  ClockCircleOutlined,
-} from "@ant-design/icons";
-import Modal from "antd/lib/modal/Modal";
-import ListingSupplierByProductComponent from "./ListingSupplierByProductComponent";
+  ClockCircleOutlined
+} from '@ant-design/icons';
+import { connect } from 'react-redux';
+import { createStructuredSelector } from 'reselect';
+import {
+  getSupplierInvitation,
+  GetSupplierInvitationData
+} from '../stores/AuctionState';
+
+const connectToRedux = connect(
+  createStructuredSelector({
+    supplierInvitationData: GetSupplierInvitationData
+  }),
+  (dispatch) => ({
+    getSupplierInvitation: (page, pageSize, reverseAuctionId) =>
+      dispatch(
+        getSupplierInvitation({
+          reverseAuctionId,
+          pageIndex: page,
+          pageSize
+        })
+      )
+  })
+);
+
 const columns = [
   {
-    title: "Supplier",
-    dataIndex: "supplier",
-    key: "supplier",
+    title: 'Supplier',
+    dataIndex: 'supplier',
+    key: 'supplier'
   },
   {
-    title: "Email",
-    dataIndex: "email",
-    key: "email",
+    title: 'Email',
+    dataIndex: 'email',
+    key: 'email'
   },
   {
-    title: "Phone",
-    dataIndex: "phone",
-    key: "phone",
+    title: 'Phone',
+    dataIndex: 'phone',
+    key: 'phone'
   },
   {
-    title: "Status",
-    dataIndex: "status",
-    key: "status",
+    title: 'Status',
+    dataIndex: 'status',
+    key: 'status'
   },
   {
-    title: "Details",
-    dataIndex: "actions",
-    key: "actions",
-  },
+    title: 'Actions',
+    dataIndex: 'actions',
+    key: 'actions'
+  }
 ];
-const dataSource = [
-  {
-    key: "1",
-    supplier: "Supplier 1",
-    email: "supplier1@gmail.com",
-    phone: "0163909365",
-    status: (
-      <Tag icon={<CheckCircleOutlined />} color="success">
-        Registered
-      </Tag>
-    ),
-    actions: (
-      <Button size="small" danger>
-        Remove
-      </Button>
-    ),
-  },
-  {
-    key: "2",
-    supplier: "Supplier 2",
-    email: "supplier2@gmail.com",
-    phone: "0934496442",
-    status: (
-      <Tag icon={<CloseCircleOutlined />} color="error">
-        Not accepted invitation
-      </Tag>
-    ),
-  },
-  {
-    key: "3",
-    supplier: "Supplier 3",
-    email: "Supplier3@gmail.com",
-    phone: "0934496441",
-    status: (
-      <Tag icon={<ClockCircleOutlined />} color="warning">
-        Pending
-      </Tag>
-    ),
-    actions: (
-      <Button size="small" danger>
-        Cancel
-      </Button>
-    ),
-  },
-];
-const BiddingSupplierListComponent = () => {
-  const [isOpenContact, setIsOpenContact] = useState(false);
+
+const getSupplierDataTable = (supplierData = []) => {
+  return (
+    supplierData &&
+    supplierData.length > 0 &&
+    supplierData.map((supplierItem) => {
+      const { supplier = {}, isAccepted } = supplierItem || {};
+      return {
+        key: supplier.id,
+        supplier: `${supplier.firstName} ${supplier.lastName}`,
+        email: supplier.email,
+        phone: supplier.phoneNumber,
+        status:
+          isAccepted === null ? (
+            <Tag icon={<ClockCircleOutlined />} color="warning">
+              Pending
+            </Tag>
+          ) : isAccepted ? (
+            <Tag icon={<CheckCircleOutlined />} color="success">
+              Registered
+            </Tag>
+          ) : (
+            <Tag icon={<CloseCircleOutlined />} color="error">
+              Not accepted invitation
+            </Tag>
+          ),
+        actions: (
+          <Space>
+            <Button size="small" danger>
+              Remove
+            </Button>
+          </Space>
+        )
+      };
+    })
+  );
+};
+const BiddingSupplierListComponent = ({
+  getSupplierInvitation,
+  supplierInvitationData,
+  reverseAuctionId
+}) => {
+  let supplierData = [],
+    totalCount = 0;
+  if (supplierInvitationData) {
+    supplierData = supplierInvitationData.data;
+    totalCount = supplierInvitationData.total;
+  }
   return (
     <Row>
-      <Modal
-        width={1000}
-        onCancel={() => setIsOpenContact(false)}
-        title="Add Supplier"
-        visible={isOpenContact}
-        okText="Add"
-      >
-        <ListingSupplierByProductComponent />
-      </Modal>
-      <Row justify="end" style={{ marginBottom: 32, width: "100%" }}>
-        <Button onClick={() => setIsOpenContact(true)} type="primary">
-          Add new Supplier
-        </Button>
-      </Row>
       <ReactTableLayout
+        totalCount={totalCount}
+        searchProps={{
+          exCondition: [reverseAuctionId]
+        }}
         hasAction={false}
-        hasPaging={false}
-        data={dataSource}
+        dispatchAction={getSupplierInvitation}
+        data={getSupplierDataTable(supplierData) || []}
         columns={columns}
       />
     </Row>
   );
 };
 
-export default BiddingSupplierListComponent;
+export default connectToRedux(BiddingSupplierListComponent);

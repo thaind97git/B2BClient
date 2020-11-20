@@ -20,6 +20,7 @@ const TabsLayout = ({
   };
   return (
     <Tabs
+      destroyInactiveTabPane={true}
       defaultActiveKey={value}
       activeKey={value}
       onChange={callback}

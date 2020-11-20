@@ -1,6 +1,6 @@
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FileProtectOutlined, FlagOutlined } from '@ant-design/icons';
-import { Row, Col, Button, Empty, Space, Avatar } from 'antd';
+import { Row, Col, Button, Empty, Space, Avatar, Tabs } from 'antd';
 import MessageList from './Chat/MessageList';
 import {
   fallbackImage,
@@ -9,13 +9,14 @@ import {
   parseBoolean,
   getCurrentUserImage
 } from '../utils';
-import TabsLayout from '../layouts/TabsLayout';
 import ConversationListItem from './Chat/ConversationListItem';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 import {
   getAggregatorGroupChat,
   GetAggregatorGroupChatData,
+  GetAggregatorGroupChatResetter,
+  GetMessagesResetter,
   getSupplierChatByGroup,
   GetSupplierChatByGroupData
 } from '../stores/ConversationState';
@@ -47,10 +48,12 @@ const connectToRedux = connect(
     resetIgnoreData: () => {
       dispatch(IgnoreSupplierResetter);
       dispatch(UnIgnoreSupplierResetter);
-    }
+    },
+    resetGroupList: () => dispatch(GetAggregatorGroupChatResetter),
+    resetMessage: () => dispatch(GetMessagesResetter)
   })
 );
-
+const { TabPane } = Tabs;
 const GroupTile = ({ productImage, groupName }) => (
   <Row justify="start">
     <Col span={4}>
@@ -80,6 +83,164 @@ const GroupTile = ({ productImage, groupName }) => (
 const signalR = new SignalR({});
 signalR.startConnection();
 
+const TabsConversation = ({
+  conversationData = [],
+  groupId,
+  ignoreSup,
+  unIgnoreSup,
+  setCurrentConversationId,
+  signalR,
+  isClosingDeal = true
+}) => {
+  return conversationData && conversationData.length > 0 ? (
+    <Tabs
+      className="conversation-tabs"
+      destroyInactiveTabPane
+      tabPosition="left"
+      onChange={(key) => setCurrentConversationId(key)}
+    >
+      {conversationData.map((conversation = {}) => {
+        const {
+          id: conversationId,
+          supplierName,
+          supplierAvatar,
+          lastMessage,
+          yourMessage,
+          flag: currentIgnore,
+          lastMessageTime,
+          seen,
+          supplierId
+        } = conversation;
+        const contentLabel = `${yourMessage ? 'You: ' : ''} ${getShortContent(
+          lastMessage,
+          12
+        )}`;
+        return (
+          <TabPane
+            tab={
+              <ConversationListItem
+                isIgnored={currentIgnore}
+                data={{
+                  name: supplierName,
+                  text: contentLabel,
+                  photo: getCurrentUserImage(supplierAvatar) || fallbackImage,
+                  lastMessageTime
+                }}
+              />
+            }
+            key={conversationId}
+          >
+            <MessageList
+              isDone={!isClosingDeal}
+              isIgnored={currentIgnore}
+              signalR={signalR}
+              conversationId={conversationId}
+              titleProps={{
+                leftTitle: supplierName,
+                rightTitle: (
+                  <Space>
+                    {isClosingDeal && (
+                      <Button
+                        icon={<FileProtectOutlined />}
+                        size="small"
+                        style={{ color: 'green' }}
+                        onClick={() => {
+                          Router.push(
+                            createLink([
+                              'aggregator',
+                              'order',
+                              `confirmation?groupId=${groupId}&isNegotiating=true&supplierId=${supplierId}`
+                            ])
+                          );
+                        }}
+                      >
+                        Closing deal
+                      </Button>
+                    )}
+                    {(ignoreSup || unIgnoreSup) && (
+                      <Button
+                        onClick={() => {
+                          currentIgnore
+                            ? unIgnoreSup(conversationId)
+                            : ignoreSup(conversationId);
+                        }}
+                        icon={<FlagOutlined />}
+                        size="small"
+                        type={currentIgnore ? 'primary' : ''}
+                        danger={currentIgnore ? false : true}
+                      >
+                        {currentIgnore ? 'Un-Ignore' : 'Ignore'}
+                      </Button>
+                    )}
+                  </Space>
+                )
+              }}
+            />
+          </TabPane>
+        );
+      })}
+    </Tabs>
+  ) : (
+    <Empty description="Not found any group" />
+  );
+};
+
+const TabsGroup = ({
+  groupData = [],
+  conversationData = [],
+  setCurrentGroupIdSelected,
+  groupId,
+  ignoreSup,
+  unIgnoreSup,
+  setCurrentConversationId,
+  currentConversationId,
+  signalR,
+  isClosingDeal,
+  defaultGroup,
+  setDefaultGroup
+}) => {
+  return groupData && groupData.length > 0 ? (
+    <Tabs
+      className="group-tabs"
+      destroyInactiveTabPane
+      tabPosition="left"
+      onChange={(groupId) => {
+        setDefaultGroup(groupId);
+        setCurrentGroupIdSelected(groupId);
+      }}
+      activeKey={defaultGroup}
+      defaultActiveKey={defaultGroup}
+    >
+      {groupData.map((group = {}) => {
+        return (
+          <TabPane
+            tab={
+              <GroupTile
+                productImage={group.avatar}
+                groupName={group.groupName}
+              />
+            }
+            key={group.id}
+          >
+            <TabsConversation
+              signalR={signalR}
+              groupId={groupId}
+              ignoreSup={ignoreSup}
+              unIgnoreSup={unIgnoreSup}
+              conversationData={conversationData}
+              setCurrentConversationId={setCurrentConversationId}
+              currentConversationId={currentConversationId}
+              isClosingDeal={isClosingDeal}
+            />
+          </TabPane>
+        );
+      })}
+    </Tabs>
+  ) : (
+    <Empty description="Not found any group" />
+  );
+};
+
 const GroupChatComponent = ({
   GetAggregatorGroupChatData,
   getAggregatorGroupChat,
@@ -89,38 +250,33 @@ const GroupChatComponent = ({
   unIgnoreSup,
   IgnoreSupData,
   UnIgnoreSupData,
-  resetIgnoreData
+  resetIgnoreData,
+  resetGroupList,
+  resetMessage
 }) => {
   const [isNegotiating, setIsNegotiating] = useState('1');
   const [currentGroupIdSelected, setCurrentGroupIdSelected] = useState(null);
-  const [currentGroupNameSelected, setCurrentGroupNameSelected] = useState(
-    null
-  );
+
   const [currentConversationId, setCurrentConversationId] = useState(null);
 
-  const [groupTabs, setGroupTabs] = useState([]);
-  const [messengerTabs, setMessengerTabs] = useState([]);
   const [isFirstCall, setIsFirstCall] = useState(true);
   const router = useRouter();
   const groupId = router.query.groupId;
+  const [conversationData, setConversationData] = useState([]);
+
+  const [defaultGroup, setDefaultGroup] = useState(groupId || null);
 
   useEffect(() => {
     return () => {
       signalR.stopConnection();
     };
   }, []);
+
   useEffect(() => {
-    signalR.onListen('ConversationPushing', (conversationId) => {
-      console.log({ conversationId });
-      if (GetSupplierChatByGroupData && GetSupplierChatByGroupData.length > 0) {
-        console.log({ 1: GetSupplierChatByGroupData });
-        GetSupplierChatByGroupData.sort(function (x, y) {
-          return x.id === conversationId ? -1 : y.id === conversationId ? 1 : 0;
-        });
-        console.log({ 2: GetSupplierChatByGroupData });
-      }
-    });
-  }, []);
+    if (GetSupplierChatByGroupData && GetSupplierChatByGroupData.length > 0) {
+      setConversationData(GetSupplierChatByGroupData);
+    }
+  }, [GetSupplierChatByGroupData]);
   useEffect(() => {
     signalR.onListen('GroupPushing', (data) => {
       console.log({ GroupPushing: data });
@@ -134,146 +290,6 @@ const GroupChatComponent = ({
       setIsFirstCall(false);
     }
   }, [groupId, isFirstCall, getSupplierChatByGroup]);
-
-  // Receive list chat message
-  useEffect(() => {
-    const current =
-      (GetSupplierChatByGroupData || []).find(
-        (x) => x.id === currentConversationId
-      ) || {};
-    const { flag: isIgnored } = current;
-    const mesTabs =
-      (GetSupplierChatByGroupData &&
-        GetSupplierChatByGroupData.map((supplier = {}) => {
-          const {
-            id,
-            supplierName,
-            supplierAvatar,
-            lastMessage,
-            yourMessage,
-            flag: currentIgnore,
-            lastMessageTime,
-            seen
-          } = supplier;
-
-          const contentLabel = `${yourMessage ? 'You: ' : ''} ${getShortContent(
-            lastMessage,
-            12
-          )}`;
-          return {
-            title: (
-              <ConversationListItem
-                isIgnored={currentIgnore}
-                data={{
-                  name: supplierName,
-                  text: contentLabel,
-                  photo: getCurrentUserImage(supplierAvatar) || fallbackImage,
-                  lastMessageTime
-                }}
-              />
-            ),
-            key: id,
-            content: (
-              <MessageList
-                isIgnored={isIgnored}
-                signalR={signalR}
-                conversationId={currentConversationId}
-                titleProps={{
-                  leftTitle: supplierName,
-                  rightTitle: (
-                    <Space>
-                      <Button
-                        icon={<FileProtectOutlined />}
-                        size="small"
-                        style={{ color: 'green' }}
-                        onClick={() => {
-                          Router.push(
-                            createLink([
-                              'aggregator',
-                              'order',
-                              `confirmation?groupId=${groupId}&isNegotiating=true&supplierId=${currentConversationId}`
-                            ])
-                          );
-                        }}
-                      >
-                        Closing deal
-                      </Button>
-                      {
-                        <Button
-                          onClick={() => {
-                            isIgnored
-                              ? unIgnoreSup(currentConversationId)
-                              : ignoreSup(currentConversationId);
-                          }}
-                          icon={<FlagOutlined />}
-                          size="small"
-                          type={isIgnored ? 'primary' : ''}
-                          danger={isIgnored ? false : true}
-                        >
-                          {isIgnored ? 'Un-Ignore' : 'Ignore'}
-                        </Button>
-                      }
-                    </Space>
-                  )
-                }}
-              />
-            )
-          };
-        })) ||
-      [];
-
-    setMessengerTabs(mesTabs);
-  }, [
-    GetSupplierChatByGroupData,
-    currentConversationId,
-    currentGroupNameSelected,
-    groupId,
-    ignoreSup,
-    unIgnoreSup
-  ]);
-  // Receive list aggregator
-  useEffect(() => {
-    const groupTabs =
-      (GetAggregatorGroupChatData &&
-        GetAggregatorGroupChatData.map((group = {}) => {
-          return {
-            tooltipTitle: group.groupName,
-            title: (
-              <GroupTile
-                productImage={group.avatar}
-                groupName={group.groupName}
-              />
-            ),
-            key: group.id,
-            content:
-              GetSupplierChatByGroupData &&
-              GetSupplierChatByGroupData.length > 0 ? (
-                <Fragment>
-                  <TabsLayout
-                    onTabClick={(conversationId) => {
-                      setCurrentGroupNameSelected(group.groupName);
-                      setCurrentConversationId(conversationId);
-                    }}
-                    className="list-chat"
-                    tabPosition={'left'}
-                    style={{ height: '100%' }}
-                    tabs={messengerTabs}
-                  />
-                </Fragment>
-              ) : (
-                <Empty description="No suppliers in this group" />
-              )
-          };
-        })) ||
-      [];
-    setGroupTabs(groupTabs);
-  }, [
-    GetAggregatorGroupChatData,
-    messengerTabs,
-    ignoreSup,
-    unIgnoreSup,
-    GetSupplierChatByGroupData
-  ]);
 
   useEffect(() => {
     getAggregatorGroupChat(parseBoolean(isNegotiating));
@@ -292,63 +308,60 @@ const GroupChatComponent = ({
     resetIgnoreData
   ]);
 
-  const GROUP_STATUS_TABS = [
-    {
-      title: 'Negotiating',
-      key: '1',
-      content:
-        GetAggregatorGroupChatData && GetAggregatorGroupChatData.length > 0 ? (
-          <TabsLayout
-            onTabClick={(groupId) => {
-              setCurrentGroupIdSelected(groupId);
-            }}
-            defaultTab={groupId || (groupTabs[0] || {}).id}
-            className="aggregator-chat"
-            tabPosition={'left'}
-            style={{ height: '100%' }}
-            tabs={groupTabs}
-          />
-        ) : (
-          <Empty description="Not found any group" />
-        )
-    },
-    {
-      title: 'Others',
-      key: '0',
-      content:
-        GetAggregatorGroupChatData && GetAggregatorGroupChatData.length > 0 ? (
-          <TabsLayout
-            onTabClick={(groupId) => {
-              setCurrentGroupIdSelected(groupId);
-            }}
-            defaultTab={groupId || (groupTabs[0] || {}).id}
-            className="aggregator-chat"
-            tabPosition={'left'}
-            style={{ height: '100%' }}
-            tabs={groupTabs}
-          />
-        ) : (
-          <Empty description="Not found any group" />
-        )
-    }
-  ];
   return (
     <div
       id="aggregator-group-chat"
       style={{ height: '100%', overflowY: 'hidden', position: 'relative' }}
     >
-      <TabsLayout
-        onTabClick={(key) => {
-          setIsNegotiating(key);
-        }}
-        style={{ height: '100%' }}
-        defaultTab={isNegotiating}
+      <Tabs
+        defaultActiveKey={isNegotiating}
         tabPosition="top"
-        tabs={GROUP_STATUS_TABS}
-      />
+        destroyInactiveTabPane
+        onChange={(key) => {
+          resetMessage();
+          setIsNegotiating(key);
+          setCurrentGroupIdSelected(null);
+          resetGroupList();
+          setConversationData([]);
+          setDefaultGroup(groupId || null);
+        }}
+      >
+        <TabPane tab="Negotiating" key="1">
+          <TabsGroup
+            defaultGroup={defaultGroup}
+            setDefaultGroup={setDefaultGroup}
+            groupData={GetAggregatorGroupChatData}
+            setCurrentGroupIdSelected={setCurrentGroupIdSelected}
+            conversationData={conversationData}
+            groupId={groupId || currentGroupIdSelected}
+            ignoreSup={ignoreSup}
+            unIgnoreSup={unIgnoreSup}
+            setCurrentConversationId={setCurrentConversationId}
+            currentConversationId={currentConversationId}
+            signalR={signalR}
+          />
+        </TabPane>
+        <TabPane tab="Others" key="0">
+          <TabsGroup
+            defaultGroup={defaultGroup}
+            setDefaultGroup={setDefaultGroup}
+            groupData={GetAggregatorGroupChatData}
+            setCurrentGroupIdSelected={setCurrentGroupIdSelected}
+            conversationData={conversationData}
+            groupId={groupId || currentGroupIdSelected}
+            setCurrentConversationId={setCurrentConversationId}
+            currentConversationId={currentConversationId}
+            signalR={signalR}
+            isClosingDeal={false}
+          />
+        </TabPane>
+      </Tabs>
 
       <style jsx global>
         {`
+          .conversation-tabs .ant-tabs-nav {
+            width: 260px;
+          }
           #aggregator-group-chat .ant-tabs-content.ant-tabs-content-left {
             height: 100%;
           }

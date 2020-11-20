@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Compose from '../Compose';
 import Message from '../Message';
 import moment from 'moment';
@@ -11,8 +11,9 @@ import {
   GetMessagesResetter
 } from '../../../stores/ConversationState';
 import { DEFAULT_PAGING_INFO, getShortContent } from '../../../utils';
-import { Col, Row, Tooltip } from 'antd';
-import ScrollToBottom from 'react-scroll-to-bottom';
+import { Col, Row, Skeleton, Spin, Tooltip } from 'antd';
+import ScrollToBottom, { useAtTop } from 'react-scroll-to-bottom';
+import { LoadingOutlined } from '@ant-design/icons';
 
 const connectToRedux = connect(
   createStructuredSelector({
@@ -106,6 +107,32 @@ const RenderMessages = React.memo(({ messagesData }) => {
   return tempMessages;
 });
 
+const MessagesList = ({
+  messages,
+  setPageIndex,
+  firstTime,
+  isAllMessage,
+  setLoading
+}) => {
+  const [atTop] = useAtTop();
+
+  useEffect(() => {
+    if (atTop && !firstTime && !isAllMessage) {
+      setLoading(true);
+      setPageIndex((prev) => prev + 1);
+    }
+  }, [atTop, setPageIndex, isAllMessage]);
+  return (
+    <div
+      id="message-list-chat"
+      style={{ height: `calc(100vh - 340px)`, padding: '0 12px' }}
+    >
+      {!!messages ? <RenderMessages messagesData={messages} /> : null}{' '}
+    </div>
+  );
+};
+const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
+
 function MessageList({
   titleProps = {},
   messagesData,
@@ -113,31 +140,39 @@ function MessageList({
   conversationId,
   getNewMessage,
   resetData,
-  signalR
+  signalR,
+  isDone = false
 }) {
   const [messages, setMessages] = useState([]);
-  const messagesEndRef = useRef(null);
   const [pageIndex, setPageIndex] = useState(DEFAULT_PAGING_INFO.page);
   const [newMessage, setNewMessage] = useState({});
-
-  const scrollToBottom = () => {
-    messagesEndRef.current &&
-      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
-  };
+  const [firstTime, setFirstTime] = useState(true);
   const currentConversationId = conversationId;
-
+  const [isAllMessage, setIsAllMessage] = useState(false);
+  const [totalCount, setTotalCount] = useState(null);
+  const [loading, setLoading] = useState(false);
   useEffect(() => {
     return () => {
+      setMessages([]);
+      setPageIndex(1);
       resetData();
-      signalR && signalR.stopConnection();
+      setIsAllMessage(false);
+      setTotalCount(null);
     };
   }, [resetData, signalR]);
   useEffect(() => {
-    if (messagesData) {
-      setMessages(messagesData);
-      scrollToBottom();
+    const { data, total } = messagesData || {};
+    if (data && data.length > 0) {
+      if ((data[0] || {}).conversationId !== conversationId) {
+        return;
+      }
+      setLoading(false);
+      setTotalCount(total);
+      const mesTmp = [...messages];
+      mesTmp.unshift(...data);
+      setMessages(mesTmp);
     }
-  }, [messagesData]);
+  }, [messagesData, conversationId]);
   useEffect(() => {
     if (signalR) {
       signalR.onListen('ReceiveMessage', (message) => {
@@ -166,6 +201,14 @@ function MessageList({
     }
   }, [newMessage, messages, currentConversationId]);
 
+  useEffect(() => {
+    if (totalCount === 0) {
+      setIsAllMessage(true);
+    } else if ((messages || []).length === totalCount && !firstTime) {
+      setIsAllMessage(true);
+    }
+  }, [messages, totalCount, firstTime]);
+
   const sendMessage = async (message, file) => {
     if (signalR.isConnectionStarted()) {
       try {
@@ -181,6 +224,7 @@ function MessageList({
   useEffect(() => {
     if (conversationId) {
       getMessages({ conversationId, pageIndex });
+      setFirstTime(false);
     }
   }, [getMessages, conversationId, pageIndex]);
 
@@ -205,36 +249,35 @@ function MessageList({
         span={24}
       >
         <ScrollToBottom>
-          <div style={{ height: `calc(100vh - 340px)`, padding: '0 12px' }}>
-            {!!messages ? <RenderMessages messagesData={messages} /> : null}{' '}
-          </div>
+          {loading && (
+            <Row justify="center">
+              <Spin indicator={antIcon} />
+            </Row>
+          )}
+          <MessagesList
+            setLoading={setLoading}
+            isAllMessage={isAllMessage}
+            messages={messages}
+            setPageIndex={setPageIndex}
+            firstTime={firstTime}
+          />
         </ScrollToBottom>
       </Col>
       <Col span={24} style={{ height: 52 }}>
-        <Compose sendMessage={sendMessage} />
+        {!isDone ? (
+          <Compose sendMessage={sendMessage} />
+        ) : (
+          <Row
+            style={{ cursor: 'not-allowed' }}
+            justify="center"
+            align="middle"
+          >
+            <i style={{ opacity: 0.7 }}>
+              The conversation in this group has been closed...
+            </i>
+          </Row>
+        )}
       </Col>
-      <style jsx global>
-        {`
-          .message-list-chat {
-            overflow-x: hidden;
-            overflow-y: auto;
-          }
-          .message-list-chat:hover {
-            overflow-y: auto;
-          }
-          .message-list-chat::-webkit-scrollbar-track {
-            -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-            background-color: #f5f5f5;
-          }
-          .message-list-chat::-webkit-scrollbar {
-            width: 4px;
-            background-color: #f5f5f5;
-          }
-          .message-list-chat::-webkit-scrollbar-thumb {
-            background-color: #949494;
-          }
-        `}
-      </style>
     </Row>
   );
 }
