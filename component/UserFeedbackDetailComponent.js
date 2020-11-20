@@ -17,7 +17,7 @@ import {
   Rate,
   Popover
 } from 'antd';
-import { LeftOutlined } from '@ant-design/icons';
+import { LeftOutlined, WarningOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import Router, { useRouter } from 'next/router';
 import React, { Fragment, useState, useEffect } from 'react';
@@ -141,7 +141,11 @@ const customIcons2 = {
 };
 
 const displayServiceName = (serviceName) =>
-  serviceName ? (serviceName.length > 38 ? serviceName.slice(0, 38) + ' ...' : serviceName) : '';
+  serviceName
+    ? serviceName.length > 38
+      ? serviceName.slice(0, 38) + ' ...'
+      : serviceName
+    : '';
 
 const desc1 = ['Not Happy', '', '', '', ''];
 const desc2 = ['', 'Happy', '', '', ''];
@@ -175,7 +179,7 @@ const UserFeedbackDetailComponent = ({
   const [isHappy, setIsHappy] = useState('None');
   const [fileList, setFileList] = useState([]);
   const [isFeedbackSystem, setIsFeedbackSystem] = useState(true);
-  const [serviceName, setServiceName] = useState("");
+  const [serviceName, setServiceName] = useState('');
 
   const handleSubmit = () => {
     replyFeedback({
@@ -233,7 +237,7 @@ const UserFeedbackDetailComponent = ({
 
   useEffect(() => {
     if (orderDetails) {
-      setServiceName(orderDetails.groupName)
+      setServiceName(orderDetails.groupName);
     }
   }, [orderDetails]);
 
@@ -406,7 +410,7 @@ const UserFeedbackDetailComponent = ({
         {feedbackDetailsData.feedbackStatus.id === F_CLOSED ? (
           <Card
             bodyStyle={{
-              color: '#fac839',
+              color: 'rgb(184 165 109)',
               borderColor: '#fac839',
               borderStyle: 'dashed',
               backgroundColor: '#fcebbb'
@@ -414,8 +418,8 @@ const UserFeedbackDetailComponent = ({
             style={{ width: '100%' }}
           >
             <i style={{ fontSize: '16px' }}>
-              This feedback has been closed, you can reply to open this feedback
-              again
+              <WarningOutlined /> This feedback has been closed, you can reply
+              to open this feedback again
             </i>
           </Card>
         ) : (
