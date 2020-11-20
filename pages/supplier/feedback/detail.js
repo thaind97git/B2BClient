@@ -1,12 +1,12 @@
 import React from 'react';
 import SupplierLayout from '../../../layouts/SupplierLayout';
-import FeedbackDetailComponent from '../../../component/FeedbackDetailComponent';
+import UserFeedbackDetailComponent from '../../../component/UserFeedbackDetailComponent';
 import withAuth from '../../../component/HOC/AuthenHOC';
 
 function Page() {
   return (
     <SupplierLayout>
-      <FeedbackDetailComponent />
+      <UserFeedbackDetailComponent />
     </SupplierLayout>
   );
 }
