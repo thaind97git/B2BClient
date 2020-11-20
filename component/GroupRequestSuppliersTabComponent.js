@@ -27,13 +27,6 @@ import { G_NEGOTIATING, G_PENDING } from '../enums/groupStatus';
 
 const { Title } = Typography;
 
-const SUPPLIER_CONTACT = [
-  { title: 'Name', dataIndex: 'name', key: 'name' },
-  { title: 'Email', dataIndex: 'email', key: 'email' },
-  { title: 'Phone', dataIndex: 'phone', key: 'phone' },
-  { title: 'Is Ignore', dataIndex: 'isIgnore', key: 'isIgnore' }
-];
-
 const connectToRedux = connect(
   createStructuredSelector({
     supplierByGroupIdData: GetSupplierByGroupIdData,
@@ -56,59 +49,62 @@ const getSupplierTable = ({
 }) =>
   supplierData &&
   supplierData.length > 0 &&
-  supplierData.map((supplier = {}) => ({
-    key: supplier.id,
-    name: (
-      <Button
-        type="link"
-        onClick={() => {
-          setOpenSupplierDetail(true);
-        }}
-      >
-        {supplier.firstName + supplier.lastName}
-      </Button>
-    ),
-    phone: supplier.phoneNumber,
-    email: supplier.email,
-    isIgnore: !supplier.flag ? (
-      <span style={{ color: 'green' }}>Negotiating</span>
-    ) : (
-      <Space style={{ color: 'red' }}>
-        <CloseCircleOutlined />
-        Ignored
-      </Space>
-    ),
-    actions: (
-      <Space>
-        <Button icon={<CommentOutlined />} size="small" type="dashed">
-          <span>&nbsp;</span>
-          <a
-            href={createLink([
-              'aggregator',
-              'group',
-              `chat?groupId=${groupId}`
-            ])}
-            target="_blank"
-            rel="noreferrer"
-          >
-            Chat
-          </a>
-        </Button>
+  supplierData.map((supplier = {}) => {
+    console.log({ supplier });
+    return {
+      key: supplier.id,
+      name: (
         <Button
-          icon={<FileProtectOutlined />}
-          size="small"
-          style={{ color: 'green' }}
+          type="link"
           onClick={() => {
-            Router.push(
-              `/aggregator/order/confirmation?groupId=${groupId}&isNegotiating=true&supplierId=${supplier.id}`
-            );
+            setOpenSupplierDetail(true);
           }}
         >
-          Closing deal
+          {supplier.firstName + supplier.lastName}
         </Button>
-      </Space>
-    )
-  }));
+      ),
+      phone: supplier.phoneNumber,
+      email: supplier.email,
+      isIgnore: !supplier.flag ? (
+        <span style={{ color: 'green' }}>Negotiating</span>
+      ) : (
+        <Space style={{ color: 'red' }}>
+          <CloseCircleOutlined />
+          Ignored
+        </Space>
+      ),
+      actions: (
+        <Space>
+          <Button icon={<CommentOutlined />} size="small" type="dashed">
+            <span>&nbsp;</span>
+            <a
+              href={createLink([
+                'aggregator',
+                'group',
+                `chat?groupId=${groupId}`
+              ])}
+              target="_blank"
+              rel="noreferrer"
+            >
+              Chat
+            </a>
+          </Button>
+          <Button
+            icon={<FileProtectOutlined />}
+            size="small"
+            style={{ color: 'green' }}
+            onClick={() => {
+              Router.push(
+                `/aggregator/order/confirmation?groupId=${groupId}&isNegotiating=true&supplierId=${supplier.id}`
+              );
+            }}
+          >
+            Closing deal
+          </Button>
+        </Space>
+      )
+    };
+  });
 
 const GroupRequestSuppliersTabComponent = ({
   getSupplierByGroupId,
@@ -119,6 +115,13 @@ const GroupRequestSuppliersTabComponent = ({
   addSupplierToGroupData,
   group
 }) => {
+  const SUPPLIER_CONTACT = [
+    { title: 'Name', dataIndex: 'name', key: 'name' },
+    { title: 'Email', dataIndex: 'email', key: 'email' },
+    { title: 'Phone', dataIndex: 'phone', key: 'phone' },
+    { title: 'Is Ignore', dataIndex: 'isIgnore', key: 'isIgnore' }
+  ];
+
   const [isOpenContact, setIsOpenContact] = useState(false);
   const [openSupplierDetail, setOpenSupplierDetail] = useState(false);
   const [supplierIdSelected, setSupplierIdSelected] = useState([]);
@@ -186,7 +189,7 @@ const GroupRequestSuppliersTabComponent = ({
             columns={SUPPLIER_CONTACT}
             totalCount={totalSupplier}
             footer={() =>
-              groupStatus.id !== G_PENDING ||
+              groupStatus.id !== G_PENDING &&
               groupStatus.id !== G_NEGOTIATING ? null : (
                 <Button type="primary" onClick={() => setIsOpenContact(true)}>
                   Add Suppliers
