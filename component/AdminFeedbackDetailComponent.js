@@ -268,9 +268,9 @@ const AdminFeedbackDetailComponent = ({
             ...fileList,
             {
               uid: i,
-              name: feedbackDetailsData.files[i],
+              name: feedbackDetailsData.files[i].description,
               status: 'done',
-              url: getFeedbackFileURL(feedbackDetailsData.files[i])
+              url: getFeedbackFileURL(feedbackDetailsData.files[i].id)
             }
           ]);
         }

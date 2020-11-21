@@ -212,13 +212,13 @@ const UserProfileComponent = ({
             <Descriptions.Item label="at">{companyName}</Descriptions.Item>
             <Descriptions.Item label="Email">
               {email}
-              {(() => {
+              {/* {(() => {
                 if (email) {
                   return <font color="green"> [Verified]</font>;
                 } else {
                   return <font color="red"> [Unverified]</font>;
                 }
-              })()}
+              })()} */}
             </Descriptions.Item>
           </Descriptions>
         </Col>
@@ -333,13 +333,13 @@ const UserProfileComponent = ({
               </Descriptions.Item>
               <Descriptions.Item label="Email">
                 {email || 'None'}
-                {(() => {
+                {/* {(() => {
                   if (email) {
                     return <font color="green"> [Verified]</font>;
                   } else {
                     return <font color="red"> [Unverified]</font>;
                   }
-                })()}
+                })()} */}
               </Descriptions.Item>
             </Descriptions>
           </Col>
