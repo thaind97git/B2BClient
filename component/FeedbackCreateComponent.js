@@ -88,7 +88,8 @@ const connectToRedux = connect(
           status: null
         })
       ),
-    createFeedback: (object,fileList) => dispatch(createFeedback(object,fileList))
+    createFeedback: (object, fileList) =>
+      dispatch(createFeedback(object, fileList))
   })
 );
 const styles = {
@@ -142,10 +143,13 @@ const FeedbackCreateComponent = ({
     ];
   }
   const onFinish = (values) => {
-    let feedback = { title: values.title, description: values.description.value };
+    let feedback = {
+      title: values.title,
+      description: values.description.value
+    };
     switch (values.typeID) {
       case 1:
-        feedback = {... feedback,orderId:values.serviceID}
+        feedback = { ...feedback, orderId: values.serviceID };
         break;
       case 2:
         feedback = { ...feedback, reverseAuctionId: values.serviceID };
@@ -156,7 +160,7 @@ const FeedbackCreateComponent = ({
       default:
         break;
     }
-    createFeedback(feedback,fileList);
+    createFeedback(feedback, fileList);
   };
 
   const checkDescription = (rule, value = {}) => {
@@ -238,11 +242,13 @@ const FeedbackCreateComponent = ({
               marginTop: 16
             }}
           >
-            <Row align="middle">
-              <Col style={styles.colStyle} span={24}>
+            <Row align="middle" justify="center">
+              <Col style={styles.colStyle} span={16}>
+                <div style={{ padding: '4px 0px' }}>
+                  <span style={{ color: 'red' }}>* </span>
+                  <span style={{ color: '#000000D9' }}>Title</span>
+                </div>
                 <FormItem
-                  {...formItemLayout}
-                  label="Title"
                   name="title"
                   rules={[
                     {
@@ -258,12 +264,12 @@ const FeedbackCreateComponent = ({
                 <Row>
                   <Col span={4}></Col>
                   <Col span={8} style={{ padding: '0 8px' }}>
-                    <label>
+                    <div style={{ padding: '4px 0px' }}>
                       <span style={{ color: 'red' }}>* </span>
                       <span style={{ color: '#000000D9' }}>
                         Feedback subject
                       </span>
-                    </label>
+                    </div>
                     <FormItem
                       name="typeID"
                       rules={[
@@ -328,12 +334,12 @@ const FeedbackCreateComponent = ({
                     </FormItem>
                   </Col>
                   <Col span={8} style={{ padding: '0 8px' }}>
-                    <label>
+                    <div style={{ padding: '4px 0px' }}>
                       <span style={{ color: 'red' }}>* </span>
                       <span style={{ color: '#000000D9' }}>
                         Related Service
                       </span>
-                    </label>
+                    </div>
                     <FormItem
                       name="serviceID"
                       rules={[
@@ -383,11 +389,15 @@ const FeedbackCreateComponent = ({
                 </Row>
               </Col>
             </Row>
-            <Row align="middle">
-              <Col style={styles.colStyle} span={24}>
+            <Row align="middle" justify="center">
+              <Col style={styles.colStyle} span={16}>
+                <div style={{ padding: '4px 0px' }}>
+                  <span style={{ color: 'red' }}>* </span>
+                  <span style={{ color: '#000000D9' }}>Description</span>
+                </div>
                 <FormItem
-                  {...formItemLayout}
-                  label="Description"
+                  // {...formItemLayout}
+                  // label="Description"
                   name="description"
                   rules={[
                     {
@@ -429,7 +439,7 @@ const FeedbackCreateComponent = ({
               </Col>
             </Row>
           </Card>
-          <Row justify="center" align="middle">
+          <Row justify="center" align="middle" style={{ marginTop: 12 }}>
             <Col span={6}>
               <Button
                 onClick={() => {}}

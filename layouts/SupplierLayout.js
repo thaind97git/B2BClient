@@ -72,9 +72,9 @@ const PROFILE_MENU = (
         <a>Profile</a>
       </Link>
     </Menu.Item>
-    <Menu.Item>
+    {/* <Menu.Item>
       <a href="#">Company Profile</a>
-    </Menu.Item>
+    </Menu.Item> */}
     <Menu.Item
       danger
       onClick={() => {

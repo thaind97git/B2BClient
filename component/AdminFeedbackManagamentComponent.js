@@ -21,7 +21,7 @@ const { Option } = Select;
 const connectToRedux = connect(
   createStructuredSelector({
     feedbackPagingData: GetFeedbackPagingData,
-    feedbackPagingError: GetFeedbackPagingError,
+    feedbackPagingError: GetFeedbackPagingError
   }),
   (dispatch) => ({
     getFeedback: (pageIndex, pageSize, searchMessage, dateRange, status) => {
@@ -51,20 +51,15 @@ const columns = [
     key: 'user'
   },
   {
-    title: 'Date created',
-    dataIndex: 'dateCreated',
-    key: 'dateCreated'
+    title: 'Date updated',
+    dataIndex: 'dateUpdated',
+    key: 'dateUpdated'
   },
   {
     title: 'Status',
     dataIndex: 'status',
     key: 'status'
   },
-  // {
-  //   title: "Date Created",
-  //   dataIndex: "dateCreated",
-  //   key: "dateCreated",
-  // },
   {
     title: 'Actions',
     dataIndex: 'actions',
@@ -72,13 +67,11 @@ const columns = [
   }
 ];
 
-const AdminFeedbackManagementComponent = (
-  {
-    feedbackPagingData,
-    getFeedback,
-    feedbackPagingError
-  }
-) => {
+const AdminFeedbackManagementComponent = ({
+  feedbackPagingData,
+  getFeedback,
+  feedbackPagingError
+}) => {
   const [searchMessage, setSearchMessage] = useState('');
   const [dateRange, setDateRange] = useState(DEFAULT_DATE_RANGE);
   const [status, setStatus] = useState(null);
@@ -115,9 +108,9 @@ const AdminFeedbackManagementComponent = (
       feedbackData.map((feedback = {}) => ({
         key: feedback.id,
         title: feedback.title,
-        dateCreated: (
+        dateUpdated: (
           <Moment format={DATE_TIME_FORMAT}>
-            {new Date(feedback.dateCreated)}
+            {new Date(feedback.dateUpdated)}
           </Moment>
         ),
         user: feedback.user.email,
@@ -140,7 +133,6 @@ const AdminFeedbackManagementComponent = (
       }))
     );
   };
-
 
   return (
     <div>
