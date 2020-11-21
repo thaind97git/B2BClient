@@ -6,6 +6,7 @@ import {
   PLACE_NEW_BID,
   RESPONSE_AUCTION_INVITATION
 } from './AuctionState';
+import { CREATE_FEEDBACK_RATE } from './FeedbackState';
 import {
   ADD_REQUEST_TO_GROUP,
   ADD_SUPPLIER_TO_GROUP,
@@ -91,6 +92,9 @@ export default {
         case PLACE_NEW_BID:
           msgNotify = 'Place new bid success';
           break;
+        case CREATE_FEEDBACK_RATE:
+          msgNotify = 'Submit rating success';
+          break;
         default:
           break;
       }
@@ -157,6 +161,9 @@ export default {
           break;
         case PLACE_NEW_BID:
           msgNotify = 'Place new bid fail';
+          break;
+        case CREATE_FEEDBACK_RATE:
+          msgNotify = 'Submit rating fail';
           break;
         default:
           break;
