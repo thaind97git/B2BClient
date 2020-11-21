@@ -13,6 +13,7 @@ export const GET_FEEDBACK_DETAILS = 'GetFeedbackDetailsAPI';
 export const GET_FEEDBACK_FILE = 'GetFeedbackFileAPI';
 export const CREATE_FEEDBACK_REPLY = 'CreateFeedbackReplyAPI';
 export const CREATE_FEEDBACK_RATE = 'CreateFeedbackRateAPI';
+export const GET_REQUEST_PAGING_FOR_FEEDBACK = 'GetRequestPagingForFeedbackAPI';
 
 //create feedback
 const onUploadFile = (feedbackId, fileList) => {
@@ -164,3 +165,62 @@ export const getFeedbackFile = (fileId) =>
 export const GetFeedbackFileData = GetFeedbackFileAPI.dataSelector;
 export const GetFeedbackFileError = GetFeedbackFileAPI.errorSelector;
 export const GetFeedbackFileResetter = getResetter(GetFeedbackFileAPI);
+
+// Get Request Paging to feedback
+const GetRequestPagingForFeedbackAPI = makeFetchAction(
+  GET_REQUEST_PAGING_FOR_FEEDBACK,
+  ({
+    status = [],
+    productTitle,
+    fromDate,
+    toDate,
+    pageIndex,
+    pageSize,
+    category,
+    productId
+  }) => {
+    return nfetch({
+      endpoint: `/api/Feedback/Request${generateQuery({
+        statuses: status,
+        productName: productTitle,
+        fromDate,
+        toDate,
+        pageIndex,
+        pageSize,
+        dateDescending: true,
+        categoryId: category,
+        productId
+      })}`,
+      method: 'GET'
+    })();
+  }
+);
+
+export const getRequestPagingForFeedback = ({
+  status = [],
+  productTitle,
+  fromDate,
+  toDate,
+  pageIndex,
+  pageSize,
+  category,
+  productId
+}) =>
+  respondToSuccess(
+    GetRequestPagingForFeedbackAPI.actionCreator({
+      status,
+      productTitle,
+      fromDate,
+      toDate,
+      pageIndex,
+      pageSize,
+      category,
+      productId
+    }),
+    () => {}
+  );
+
+export const GetRequestPagingForFeedbackData = GetRequestPagingForFeedbackAPI.dataSelector;
+export const GetRequestPagingForFeedbackError = GetRequestPagingForFeedbackAPI.errorSelector;
+export const GetRequestPagingForFeedbackResetter = getResetter(GetRequestPagingForFeedbackAPI);
+

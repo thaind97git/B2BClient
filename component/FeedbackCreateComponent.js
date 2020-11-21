@@ -178,7 +178,8 @@ const FeedbackCreateComponent = ({
   useEffect(() => {
     if (requestPagingData) {
       setServiceData(requestPagingData.data);
-      console.log(requestPagingData.data);
+      console.log(requestPagingData.data)
+      console.log(serviceData);
     }
   }, [requestPagingData]);
 
@@ -186,6 +187,7 @@ const FeedbackCreateComponent = ({
     if (auctionData) {
       setServiceData(auctionData.data);
       console.log(auctionData.data);
+      console.log(serviceData);
     }
   }, [auctionData]);
 
@@ -193,6 +195,7 @@ const FeedbackCreateComponent = ({
     if (orderPagingData) {
       setServiceData(orderPagingData.data);
       console.log(orderPagingData.data);
+      console.log(serviceData);
     }
   }, [orderPagingData]);
 
@@ -373,9 +376,9 @@ const FeedbackCreateComponent = ({
                               {form.getFieldValue('typeID') === 3
                                 ? service.quantity +
                                   ' ' +
-                                  service.product.unitType +
+                                  (service.product || {}).unitType +
                                   ' of ' +
-                                  service.product.description
+                                  (service.product || {}).description
                                 : form.getFieldValue('typeID') === 2
                                 ? service.auctionName
                                 : form.getFieldValue('typeID') === 1
