@@ -290,15 +290,15 @@ const UserFeedbackDetailComponent = ({
       }
       if (feedbackDetailsData.files) {
         for (let i = 0; i < feedbackDetailsData.files.length; i++) {
-          getFeedbackFile(feedbackDetailsData.files[i]);
+          getFeedbackFile(feedbackDetailsData.files[i].id);
           //console.log(feedbackFileData.headers);
           setFileList((fileList) => [
             ...fileList,
             {
               uid: i,
-              name: feedbackDetailsData.files[i],
+              name: feedbackDetailsData.files[i].description,
               status: 'done',
-              url: getFeedbackFileURL(feedbackDetailsData.files[i])
+              url: getFeedbackFileURL(feedbackDetailsData.files[i].id)
             }
           ]);
         }

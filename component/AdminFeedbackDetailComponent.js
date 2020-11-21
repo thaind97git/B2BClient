@@ -262,7 +262,7 @@ const AdminFeedbackDetailComponent = ({
       }
       if (feedbackDetailsData.files) {
         for (let i = 0; i < feedbackDetailsData.files.length; i++) {
-          getFeedbackFile(feedbackDetailsData.files[i]);
+          getFeedbackFile(feedbackDetailsData.files[i].id);
           //console.log(feedbackFileData.headers);
           setFileList((fileList) => [
             ...fileList,
