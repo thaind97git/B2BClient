@@ -39,7 +39,7 @@ const GetOrderPagingAPI = makeFetchAction(
     pageSize,
   }) => {
     return nfetch({
-      endpoint: `/api/Order/Fillter${generateQuery({
+      endpoint: `/api/Order/Filter${generateQuery({
         orderStatus: status,
         groupName: groupName,
         fromDate,
