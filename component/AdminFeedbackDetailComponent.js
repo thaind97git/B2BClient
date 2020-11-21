@@ -217,6 +217,7 @@ const AdminFeedbackDetailComponent = ({
     setFileList([]);
     setComments([]);
     if (feedbackDetailsData) {
+      const { feedbackStatus = {} } = feedbackDetailsData;
       if (feedbackDetailsData.reverseAuctionId) {
         getAuctionDetails(feedbackDetailsData.reverseAuctionId);
         setIsFeedbackSystem(false);
@@ -229,55 +230,46 @@ const AdminFeedbackDetailComponent = ({
       }
       if (feedbackDetailsData.feedbackReplies) {
         for (let i = 0; i < feedbackDetailsData.feedbackReplies.length; i++) {
-          if (feedbackDetailsData.feedbackReplies[i].isHappy) {
+          const feedbackItem = feedbackDetailsData.feedbackReplies[i] || {};
+          const { user = {} } = feedbackItem;
+          if (feedbackItem.isHappy) {
             setIsHappy('Happy');
             continue;
-          } else if (feedbackDetailsData.feedbackReplies[i].isHappy === false) {
+          } else if (feedbackItem.isHappy === false) {
             setIsHappy('Not Happy');
             continue;
           }
           setComments((comments) => [
             ...comments,
             {
-              author:
-                feedbackDetailsData.feedbackReplies[i].user.firstName +
-                ' ' +
-                feedbackDetailsData.feedbackReplies[i].user.lastName,
-              avatar: feedbackDetailsData.feedbackReplies[i].user.avatar
-                ? getCurrentUserImage(
-                    feedbackDetailsData.feedbackReplies[i].user.avatar
-                  )
+              author: user.firstName + ' ' + user.lastName,
+              avatar: user.avatar
+                ? getCurrentUserImage(user.avatar)
                 : '/static/images/avatar.png',
-              content: (
-                <Card>
-                  {feedbackDetailsData.feedbackReplies[i].description}
-                </Card>
-              ),
-              datetime: moment(
-                feedbackDetailsData.feedbackReplies[i].dateCreated
-              ).fromNow()
+              content: <Card>{feedbackItem.description}</Card>,
+              datetime: moment(feedbackItem.dateCreated).fromNow()
             }
           ]);
         }
       }
       if (feedbackDetailsData.files) {
         for (let i = 0; i < feedbackDetailsData.files.length; i++) {
-          getFeedbackFile(feedbackDetailsData.files[i].id);
-          //console.log(feedbackFileData.headers);
+          const feedbackItem = feedbackDetailsData.files[i] || {};
+          getFeedbackFile(feedbackItem.id);
           setFileList((fileList) => [
             ...fileList,
             {
               uid: i,
-              name: feedbackDetailsData.files[i].description,
+              name: feedbackItem.description,
               status: 'done',
-              url: getFeedbackFileURL(feedbackDetailsData.files[i].id)
+              url: getFeedbackFileURL(feedbackItem.id)
             }
           ]);
         }
       }
-      if (feedbackDetailsData.feedbackStatus.id === F_OPEN) {
+      if (feedbackStatus.id === F_OPEN) {
         setIsReply(true);
-      } else if (feedbackDetailsData.feedbackStatus.id === F_CLOSED) {
+      } else if (feedbackStatus.id === F_CLOSED) {
         setIsReply(false);
       }
     }
@@ -409,8 +401,6 @@ const AdminFeedbackDetailComponent = ({
                   fileList={fileList}
                   disabled
                   previewFile={false}
-                  // onPreview={this.handlePreview}
-                  // onChange={this.handleChange}
                 ></Upload>
               </Card>
             }
