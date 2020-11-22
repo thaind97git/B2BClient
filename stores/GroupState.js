@@ -115,7 +115,15 @@ export const GetGroupByProductIdResetter = getResetter(GetGroupByProductIdAPI);
 // Get Group Paging
 const GetGroupPagingAPI = makeFetchAction(
   GET_GROUP_PAGING,
-  ({ categoryId, productName, fromDate, toDate, pageIndex, pageSize }) => {
+  ({
+    categoryId,
+    productName,
+    fromDate,
+    toDate,
+    pageIndex,
+    pageSize,
+    status
+  }) => {
     return nfetch({
       endpoint: `/api/Group/Filter${generateQuery({
         categoryId,
@@ -124,7 +132,8 @@ const GetGroupPagingAPI = makeFetchAction(
         toDate,
         pageSize,
         pageIndex,
-        dateDescending: true
+        dateDescending: true,
+        status
       })}`,
       method: 'GET'
     })();
@@ -137,7 +146,8 @@ export const getGroupPaging = ({
   fromDate,
   toDate,
   pageIndex,
-  pageSize
+  pageSize,
+  status
 }) =>
   respondToSuccess(
     GetGroupPagingAPI.actionCreator({
@@ -146,7 +156,8 @@ export const getGroupPaging = ({
       fromDate,
       toDate,
       pageIndex,
-      pageSize
+      pageSize,
+      status
     }),
     () => {}
   );

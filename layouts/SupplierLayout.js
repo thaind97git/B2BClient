@@ -126,7 +126,7 @@ const getMenuNotify = (notify = []) => {
           const { id, description: title } =
             group || request || reverseAuction || invitation;
           const { label, link } = getLabelNotify({
-            type: notificationType.id,
+            type: (notificationType || {}).id,
             id,
             role: SUPPLIER,
             title
@@ -159,7 +159,7 @@ const SupplierLayout = ({
   const [openMessage, setOpenMessage] = useState(false);
   const [firstTime, setFirstTime] = useState(true);
   const [menuNotify, setMenuNotify] = useState([]);
-
+  const [notifyCount, setNotifyCount] = useState(null);
   useEffect(() => {
     if (firstTime) {
       getNotification({});
@@ -175,13 +175,28 @@ const SupplierLayout = ({
 
   useEffect(() => {
     signalR.onListen('NewNotify', (newNotify) => {
-      console.log({ newNotify });
+      if (newNotify && newNotify.id) {
+        console.log({ newNotify });
+        setMenuNotify((prev) => {
+          const tmp = [...prev];
+          tmp.unshift(newNotify);
+          return tmp;
+        });
+      }
     });
   }, []);
 
   useEffect(() => {
     signalR.onListen('NewNotifyCount', (newCount) => {
-      console.log({ newCount });
+      console.log({ newCountBeforeCheck: newCount });
+      if (newCount) {
+        console.log({ newCountAfterCheck: newCount });
+        setNotifyCount((prev) => {
+          console.log({ prev });
+          console.log(prev + newCount);
+          return 10;
+        });
+      }
     });
   }, []);
   useEffect(() => {
@@ -249,9 +264,13 @@ const SupplierLayout = ({
                     visible={openMessage}
                     trigger={['click']}
                   >
-                    <Badge style={{ cursor: 'pointer' }} count={3}>
-                      <BellOutlined />
-                    </Badge>
+                    {notifyCount ? (
+                      <Badge style={{ cursor: 'pointer' }} count={notifyCount}>
+                        <BellOutlined style={{ fontSize: 16 }} />
+                      </Badge>
+                    ) : (
+                      <BellOutlined style={{ fontSize: 16 }} />
+                    )}
                   </Dropdown>
                   <Divider type="vertical" />
                   <Dropdown overlay={PROFILE_MENU}>

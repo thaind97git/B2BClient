@@ -1,22 +1,32 @@
-import React, { useState } from "react";
-import { connect } from "react-redux";
-import Router from "next/router";
-import { compose } from "redux";
-import { Button, Typography, Row } from "antd";
-import ReactTableLayout from "../layouts/ReactTableLayout";
-import { DATE_TIME_FORMAT, DEFAULT_DATE_RANGE } from "../utils";
-import GroupStatusComponent from "./Utils/GroupStatusComponent";
-import { createLink } from "../libs";
-import { createStructuredSelector } from "reselect";
-import { getGroupPaging, GetGroupPagingData } from "../stores/GroupState";
-import AllCategoryComponent from "./AllCategoryComponent";
-import Moment from "react-moment";
+import React, { useState } from 'react';
+import { connect } from 'react-redux';
+import Router from 'next/router';
+import { compose } from 'redux';
+import { Button, Typography, Row, Space, Select } from 'antd';
+import ReactTableLayout from '../layouts/ReactTableLayout';
+import { DATE_TIME_FORMAT, DEFAULT_DATE_RANGE } from '../utils';
+import GroupStatusComponent from './Utils/GroupStatusComponent';
+import { createLink } from '../libs';
+import { createStructuredSelector } from 'reselect';
+import { getGroupPaging, GetGroupPagingData } from '../stores/GroupState';
+import AllCategoryComponent from './AllCategoryComponent';
+import Moment from 'react-moment';
+import {
+  G_BIDDING,
+  G_DONE,
+  G_FAILED,
+  G_NEGOTIATING,
+  G_ORDERED,
+  G_PENDING,
+  G_WAIT_FOR_AUCTION
+} from '../enums/groupStatus';
 
 const { Title } = Typography;
+const { Option } = Select;
 
 const connectToRedux = connect(
   createStructuredSelector({
-    groupPagingData: GetGroupPagingData,
+    groupPagingData: GetGroupPagingData
   }),
   (dispatch) => ({
     getGroupPaging: (
@@ -24,7 +34,8 @@ const connectToRedux = connect(
       pageSize,
       searchMessage,
       dateRange,
-      categoryId
+      categoryId,
+      status
     ) =>
       dispatch(
         getGroupPaging({
@@ -34,8 +45,9 @@ const connectToRedux = connect(
           toDate: dateRange.toDate,
           pageIndex,
           pageSize,
+          status
         })
-      ),
+      )
   })
 );
 
@@ -43,36 +55,37 @@ const enhance = compose(connectToRedux);
 
 const columns = [
   {
-    title: "Group Name",
-    dataIndex: "name",
-    key: "name",
+    title: 'Group Name',
+    dataIndex: 'name',
+    key: 'name'
   },
   {
-    title: "Product Name",
-    dataIndex: "product",
-    key: "product",
+    title: 'Product Name',
+    dataIndex: 'product',
+    key: 'product'
   },
   {
-    title: "Status",
-    dataIndex: "status",
-    key: "status",
+    title: 'Status',
+    dataIndex: 'status',
+    key: 'status'
   },
   {
-    title: "Date Created",
-    dataIndex: "dateCreated",
-    key: "dateCreated",
+    title: 'Date Created',
+    dataIndex: 'dateCreated',
+    key: 'dateCreated'
   },
   {
-    title: "Actions",
-    dataIndex: "actions",
-    key: "actions",
-  },
+    title: 'Actions',
+    dataIndex: 'actions',
+    key: 'actions'
+  }
 ];
 
 const GroupRequestComponent = ({ getGroupPaging, groupPagingData }) => {
-  const [searchMessage, setSearchMessage] = useState("");
-  const [category, setCategory] = useState("all");
+  const [searchMessage, setSearchMessage] = useState('');
+  const [category, setCategory] = useState('all');
   const [dateRange, setDateRange] = useState(DEFAULT_DATE_RANGE);
+  const [status, setStatus] = useState('all');
 
   const getGroupTable = (groupData = []) => {
     return (
@@ -92,7 +105,7 @@ const GroupRequestComponent = ({ getGroupPaging, groupPagingData }) => {
           <Button
             onClick={() => {
               Router.push(
-                createLink(["aggregator", "group", `details?id=${group.id}`])
+                createLink(['aggregator', 'group', `details?id=${group.id}`])
               );
             }}
             size="small"
@@ -100,7 +113,7 @@ const GroupRequestComponent = ({ getGroupPaging, groupPagingData }) => {
           >
             View
           </Button>
-        ),
+        )
       }))
     );
   };
@@ -118,23 +131,41 @@ const GroupRequestComponent = ({ getGroupPaging, groupPagingData }) => {
       <ReactTableLayout
         dispatchAction={getGroupPaging}
         searchProps={{
-          placeholder: "Search By Group Name or Group Name",
+          placeholder: 'Search By Group Name or Group Name',
           searchMessage,
           setSearchMessage,
           exElement: (
-            <AllCategoryComponent
-              onGetLastValue={(value) => {
-                setCategory(value);
-              }}
-              size="large"
-              isSearchStyle={false}
-            />
+            <Space>
+              <Select
+                size="large"
+                placeholder="Filter by status"
+                style={{ width: 140 }}
+                onChange={(value) => setStatus(value)}
+                defaultValue=""
+              >
+                <Option value="">All Status</Option>
+                <Option value={G_PENDING}>Pending</Option>
+                <Option value={G_BIDDING}>Bidding</Option>
+                <Option value={G_NEGOTIATING}>Negotiating</Option>
+                <Option value={G_WAIT_FOR_AUCTION}>Wait for auction</Option>
+                <Option value={G_DONE}>Done</Option>
+                <Option value={G_ORDERED}>Ordered</Option>
+                <Option value={G_FAILED}>Failed</Option>
+              </Select>
+              <AllCategoryComponent
+                onGetLastValue={(value) => {
+                  setCategory(value);
+                }}
+                size="large"
+                isSearchStyle={false}
+              />
+            </Space>
           ),
-          exCondition: [category],
+          exCondition: [category, status]
         }}
         dateRangeProps={{
           dateRange,
-          setDateRange,
+          setDateRange
         }}
         data={getGroupTable(groupData || [])}
         totalCount={total}

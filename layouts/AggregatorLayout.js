@@ -159,22 +159,15 @@ const AggregatorLayout = ({
   const [firstTime, setFirstTime] = useState(true);
   const [menuNotify, setMenuNotify] = useState([]);
   const [notifyCount, setNotifyCount] = useState(null);
-  const [secondTime, setSecondTime] = useState(false);
 
   useEffect(() => {
     if (firstTime) {
       getNotification({});
       getNotificationCount();
       setFirstTime(false);
-      setSecondTime(true);
     }
   }, [getNotification, firstTime, getNotificationCount]);
 
-  useEffect(() => {
-    if (!firstTime && secondTime) {
-      setSecondTime(false);
-    }
-  }, [secondTime, firstTime]);
   useEffect(() => {
     if (notificationData) {
       setMenuNotify(notificationData.data);
@@ -186,14 +179,6 @@ const AggregatorLayout = ({
       setNotifyCount(notificationCountData);
     }
   }, [notificationCountData]);
-
-  // useEffect(() => {
-  //   console.log({ signalR });
-
-  //   signalR.onListen('newNotifyCount', (newNotifyCount) => {
-  //     console.log({ newNotifyCount });
-  //   });
-  // }, [signalR]);
 
   useEffect(() => {
     signalR.onListen('NewNotify', (newNotify) => {
@@ -222,11 +207,6 @@ const AggregatorLayout = ({
     });
   }, []);
 
-  // useEffect(() => {
-  //   return () => {
-  //     signalR.stopConnection();
-  //   };
-  // }, []);
   return (
     <div
       style={{

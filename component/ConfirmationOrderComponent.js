@@ -187,7 +187,7 @@ const ConfirmationOrderComponent = ({
       </Drawer>
       <Col span={24}>
         <Row align="middle" justify="center">
-          <Col sm={20} md={18}>
+          <Col sm={22} md={20}>
             <Row justify="center">
               <Title style={styles.titleStyle} level={2}>
                 Confirmation Order
@@ -203,7 +203,7 @@ const ConfirmationOrderComponent = ({
               }}
             >
               <Row justify="space-between">
-                <Col span={8}>
+                <Col span={16}>
                   <Card bordered={false} size="small">
                     <div
                       style={{
@@ -213,10 +213,17 @@ const ConfirmationOrderComponent = ({
                       }}
                     >
                       <Avatar
+                        size={64}
+                        src={
+                          getCurrentUserImage(avatar) ||
+                          '/static/images/avatar.png'
+                        }
+                      />
+                      {/* <Avatar
                         style={{ width: 64 }}
                         // size={64}
                         src={getCurrentUserImage(avatar) || fallbackImage}
-                      />{' '}
+                      />{' '} */}
                       <span>&nbsp;</span>
                       <div>
                         Company: {companyName}

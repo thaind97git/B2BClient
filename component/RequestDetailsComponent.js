@@ -322,10 +322,10 @@ const RequestDetailsComponent = ({
       </Col>
       <DescriptionItem
         title="Certifications"
-        content={certifications.map((cer) => (
-          <Fragment>
-            <Tag color="processing">{cer.description}</Tag>
-          </Fragment>
+        content={certifications.map((cer, index) => (
+          <Tag key={index} color="processing">
+            {cer.description}
+          </Tag>
         ))}
       />
       <DescriptionItem
@@ -348,7 +348,7 @@ const RequestDetailsComponent = ({
       />
       <DescriptionItem title="Lead Time" content={leadTimeDisplay} />
       {!isSupplier && (
-        <Fragment>
+        <div>
           <Divider />
           <Col span={24}>
             <Title level={5}>RFQ Owner</Title>
@@ -363,7 +363,7 @@ const RequestDetailsComponent = ({
             title="Company Name"
             content={(buyer || {}).companyName}
           />
-        </Fragment>
+        </div>
       )}
 
       <style jsx global>{`

@@ -123,7 +123,7 @@ const getMenuNotify = (notify = []) => {
           const { id, description: title } =
             group || request || reverseAuction || invitation;
           const { label, link } = getLabelNotify({
-            type: notificationType.id,
+            type: (notificationType || {}).id,
             id,
             role: BUYER,
             title
@@ -182,13 +182,27 @@ const SupplierLayout = ({
   }, [notificationCountData]);
 
   useEffect(() => {
-    signalR.onListen('newNotify', (newNotify) => {
-      console.log({ newNotify });
-      if (newNotify && newNotify.length > 0) {
+    signalR.onListen('NewNotify', (newNotify) => {
+      if (newNotify && newNotify.id) {
+        console.log({ newNotify });
         setMenuNotify((prev) => {
           const tmp = [...prev];
           tmp.unshift(newNotify);
           return tmp;
+        });
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    signalR.onListen('NewNotifyCount', (newCount) => {
+      console.log({ newCountBeforeCheck: newCount });
+      if (newCount) {
+        console.log({ newCountAfterCheck: newCount });
+        setNotifyCount((prev) => {
+          console.log({ prev });
+          console.log(prev + newCount);
+          return 10;
         });
       }
     });
