@@ -125,10 +125,9 @@ const UserFeedbackManagementComponent = ({
           <Button
             onClick={() => {
               if (currentUser.role === 'Supplier') {
-                Router.push(`/supplier/feedback/detail?id=${feedback.id}`);
-              }
-              else if (currentUser.role === 'Buyer') {
-                Router.push(`/buyer/feedback/detail?id=${feedback.id}`);
+                Router.push(`/supplier/feedback/details?id=${feedback.id}`);
+              } else if (currentUser.role === 'Buyer') {
+                Router.push(`/buyer/feedback/details?id=${feedback.id}`);
               }
             }}
             size="small"

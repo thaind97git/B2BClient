@@ -1,28 +1,17 @@
 import React, { useEffect, useState } from 'react';
 
-import {
-  Layout,
-  Menu,
-  Row,
-  Dropdown,
-  Badge,
-  Space,
-  Divider,
-  Typography
-} from 'antd';
+import { Layout, Menu, Row, Dropdown, Badge, Space, Divider } from 'antd';
 import {
   DownOutlined,
   LoginOutlined,
   MenuUnfoldOutlined,
   MenuFoldOutlined,
   FileDoneOutlined,
-  FallOutlined,
   BellOutlined,
-  CustomerServiceOutlined,
   ProfileOutlined
 } from '@ant-design/icons';
 import MemberNavComponent from '../component/MemberNavComponent';
-import { currentPath, getLabelNotify } from '../utils';
+import { currentPath } from '../utils';
 import Link from 'next/link';
 import { removeToken } from '../libs/localStorage';
 import Router from 'next/router';
@@ -33,12 +22,15 @@ import {
   getNotification,
   getNotificationCount,
   GetNotificationCountData,
-  GetNotificationData
+  GetNotificationData,
+  seenNotification,
+  SeenNotificationData,
+  SeenNotificationResetter
 } from '../stores/NotificationState';
 import { BUYER } from '../enums/accountRoles';
+import NotifyItem from './NotifyItem';
 
 const { Header, Content, Sider } = Layout;
-const { Title } = Typography;
 const BUYER_MENU = [
   // {
   //   key: "1",
@@ -78,12 +70,15 @@ const BUYER_MENU = [
 const connectToRedux = connect(
   createStructuredSelector({
     notificationData: GetNotificationData,
+    seenNotificationData: SeenNotificationData,
     notificationCountData: GetNotificationCountData
   }),
   (dispatch) => ({
     getNotification: ({ pageIndex, pageSize }) =>
       dispatch(getNotification({ pageIndex, pageSize })),
-    getNotificationCount: () => dispatch(getNotificationCount())
+    getNotificationCount: () => dispatch(getNotificationCount()),
+    seenNotification: () => dispatch(seenNotification()),
+    resetSeenNotify: () => dispatch(SeenNotificationResetter)
   })
 );
 const PROFILE_MENU = (
@@ -93,9 +88,6 @@ const PROFILE_MENU = (
         <a>Profile</a>
       </Link>
     </Menu.Item>
-    {/* <Menu.Item>
-      <a href="#">Company Profile</a>
-    </Menu.Item> */}
     <Menu.Item
       danger
       onClick={() => {
@@ -107,42 +99,6 @@ const PROFILE_MENU = (
     </Menu.Item>
   </Menu>
 );
-const getMenuNotify = (notify = []) => {
-  return (
-    <Menu style={{ width: 360, maxHeight: '90vh', overflowY: 'scroll' }}>
-      <Menu.ItemGroup title={<Title level={4}>Notification</Title>}>
-        {notify.map((item) => {
-          const {
-            group = {},
-            invitation = {},
-            request = {},
-            reverseAuction = {},
-            notificationType = {},
-            id: notifyId
-          } = item || {};
-          const { id, description: title } =
-            group || request || reverseAuction || invitation || {};
-          const { label, link } = getLabelNotify({
-            type: (notificationType || {}).id,
-            id,
-            role: BUYER,
-            title
-          });
-          return (
-            <Menu.Item
-              onClick={() => Router.push(link)}
-              className="dropdown-notify"
-              key={notifyId}
-            >
-              {label}
-              <Menu.Divider />
-            </Menu.Item>
-          );
-        })}
-      </Menu.ItemGroup>
-    </Menu>
-  );
-};
 const signalR = new SignalR({
   hubDomain: 'notificationHub'
 });
@@ -153,13 +109,23 @@ const SupplierLayout = ({
   getNotification,
   notificationData,
   getNotificationCount,
-  notificationCountData
+  notificationCountData,
+  resetSeenNotify,
+  seenNotificationData,
+  seenNotification
 }) => {
   const [collapsed, setCollapsed] = useState(true);
   const [openMessage, setOpenMessage] = useState(false);
   const [firstTime, setFirstTime] = useState(true);
   const [menuNotify, setMenuNotify] = useState([]);
   const [notifyCount, setNotifyCount] = useState(null);
+
+  useEffect(() => {
+    if (seenNotificationData) {
+      setNotifyCount(0);
+      resetSeenNotify();
+    }
+  }, [seenNotificationData, resetSeenNotify]);
 
   useEffect(() => {
     if (firstTime) {
@@ -196,14 +162,8 @@ const SupplierLayout = ({
 
   useEffect(() => {
     signalR.onListen('NewNotifyCount', (newCount) => {
-      console.log({ newCountBeforeCheck: newCount });
       if (newCount) {
-        console.log({ newCountAfterCheck: newCount });
-        setNotifyCount((prev) => {
-          console.log({ prev });
-          console.log(prev + newCount);
-          return 10;
-        });
+        setNotifyCount(newCount);
       }
     });
   }, []);
@@ -211,8 +171,9 @@ const SupplierLayout = ({
   useEffect(() => {
     return () => {
       signalR.stopConnection();
+      resetSeenNotify();
     };
-  }, []);
+  }, [resetSeenNotify]);
   return (
     <div
       style={{
@@ -274,17 +235,26 @@ const SupplierLayout = ({
                 )}
                 <Space style={{ marginRight: 24 }}>
                   <Dropdown
-                    overlay={getMenuNotify(menuNotify || [])}
+                    overlay={
+                      <NotifyItem notify={menuNotify || []} role={BUYER} />
+                    }
                     onVisibleChange={setOpenMessage}
                     visible={openMessage}
                     trigger={['click']}
+                    placement="bottomCenter"
                   >
                     {notifyCount ? (
-                      <Badge style={{ cursor: 'pointer' }} count={notifyCount}>
-                        <BellOutlined />
+                      <Badge
+                        onClick={() => {
+                          notifyCount !== 0 && seenNotification();
+                        }}
+                        style={{ cursor: 'pointer' }}
+                        count={notifyCount}
+                      >
+                        <BellOutlined style={{ fontSize: 16 }} />
                       </Badge>
                     ) : (
-                      <BellOutlined />
+                      <BellOutlined style={{ fontSize: 16 }} />
                     )}
                   </Dropdown>
                   <Divider type="vertical" />

@@ -69,10 +69,26 @@ ul {
 }
 
 .dropdown-notify {
+  height: auto !important;
   white-space: normal !important;
 }
 .table-row-request-canceled:not(button) {
   font-style: italic;
   cursor: not-allowed;
   color: #6262627a;
+}
+.item-notify {
+  line-height: 20px;
+  border-radius: 6px;
+  width: 260px;
+  min-height: 2rem;
+  max-height: 5em;
+  text-align: left;
+  white-space: normal;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  padding: 6px 0px;
 }

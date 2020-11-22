@@ -14,7 +14,8 @@ import {
   N_REQUEST_CANCELED,
   N_REQUEST_GROUPED,
   N_REVERSE_AUCTION_START,
-  N_RFQ_OUT_OF_DATE
+  N_RFQ_OUT_OF_DATE,
+  N_USER_REPLY_FEEDBACK
 } from '../enums/notificationStatus';
 import { ADMIN, BUYER, MODERATOR, SUPPLIER } from '../enums/accountRoles';
 import { Fragment } from 'react';
@@ -348,7 +349,7 @@ export const getLabelNotify = ({ type, role = BUYER, id, title }) => {
             Admin replied your feedback <b>{title}</b>.
           </Fragment>
         );
-        link = `/supplier/feedback/details?feedbackId=${id}`;
+        link = `/supplier/feedback/details?id=${id}`;
         break;
       default:
         break;
@@ -385,20 +386,20 @@ export const getLabelNotify = ({ type, role = BUYER, id, title }) => {
             Admin replied your feedback <b>{title}</b>.
           </Fragment>
         );
-        link = `/buyer/feedback/details?feedbackId=${id}`;
+        link = `/buyer/feedback/details?id=${id}`;
         break;
       default:
         break;
     }
   } else if (role === ADMIN) {
     switch (type) {
-      case N_ADMIN_REPLY_FEEDBACK:
+      case N_USER_REPLY_FEEDBACK:
         label = (
           <Fragment>
             User replied a feedback <b>{title}</b>.
           </Fragment>
         );
-        link = `/admin/feedback/details?feedbackId=${id}`;
+        link = `/admin/feedback/details?id=${id}`;
         break;
       default:
         break;
