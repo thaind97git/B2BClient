@@ -1,18 +1,18 @@
-import { Row, Skeleton, Tree, Typography } from "antd";
-import { get } from "lodash/fp";
-import React, { Fragment, useEffect } from "react";
-import { connect } from "react-redux";
-import { createStructuredSelector } from "reselect";
+import { Row, Skeleton, Tree, Typography } from 'antd';
+import { get } from 'lodash/fp';
+import React, { Fragment, useEffect } from 'react';
+import { connect } from 'react-redux';
+import { createStructuredSelector } from 'reselect';
 import {
   getCategories,
-  GetCategoriesDataSelector,
-} from "../stores/CategoryState";
+  GetCategoriesDataSelector
+} from '../stores/CategoryState';
 const connectToRedux = connect(
   createStructuredSelector({
-    categoryData: GetCategoriesDataSelector,
+    categoryData: GetCategoriesDataSelector
   }),
   (dispatch) => ({
-    getCategories: () => dispatch(getCategories()),
+    getCategories: () => dispatch(getCategories())
   })
 );
 const { Title } = Typography;
@@ -22,17 +22,17 @@ const CategoryHomePageComponent = ({
   categoryData,
   getCategories,
   setCurrentCategorySelected,
-  onSelect,
+  onSelect
 }) => {
-  useEffect(() => {
-    if (!!categoryData) {
-      const firstCate = get("[0]")(categoryData);
-      setCurrentCategorySelected({
-        name: firstCate.description,
-        id: firstCate.id,
-      });
-    }
-  }, [categoryData, setCurrentCategorySelected]);
+  // useEffect(() => {
+  //   if (!!categoryData) {
+  //     const firstCate = get("[0]")(categoryData);
+  //     setCurrentCategorySelected({
+  //       name: firstCate.description,
+  //       id: firstCate.id,
+  //     });
+  //   }
+  // }, [categoryData, setCurrentCategorySelected]);
 
   useEffect(() => {
     getCategories();
@@ -56,7 +56,7 @@ const CategoryHomePageComponent = ({
   return (
     <Fragment>
       <Row>
-        <Title level={4} style={{ padding: "16px 0px 8px 16px" }}>
+        <Title level={4} style={{ padding: '16px 0px 8px 16px' }}>
           ALL CATEGORIES
         </Title>
       </Row>
@@ -65,9 +65,9 @@ const CategoryHomePageComponent = ({
           <Skeleton active />
         ) : (
           <Tree
-            style={{ height: "100%" }}
-            defaultCheckedKeys={get("[0].id")(categoryData)}
-            defaultSelectedKeys={[get("[0].id")(categoryData)]}
+            style={{ height: '100%' }}
+            // defaultCheckedKeys={get('[0].id')(categoryData)}
+            // defaultSelectedKeys={[get('[0].id')(categoryData)]}
             onSelect={onSelect}
             treeData={tree}
           />

@@ -20,7 +20,8 @@ import {
   GetProductByCategoryData,
   GetProductByCategoryError,
   getProductSuggest,
-  GetProductSuggestData
+  GetProductSuggestData,
+  GetProductSuggestError
 } from '../stores/ProductState';
 import CategoryHomePageComponent from './CategoryHomePageComponent';
 import {
@@ -34,7 +35,8 @@ const connectToRedux = connect(
   createStructuredSelector({
     getProductByCategoryData: GetProductByCategoryData,
     getProductByCategoryError: GetProductByCategoryError,
-    getProductSuggestData: GetProductSuggestData
+    getProductSuggestData: GetProductSuggestData,
+    getProductSuggestError: GetProductSuggestError
   }),
   (dispatch) => ({
     getProductByCategory: (id, pageSize, pageIndex, name) =>
@@ -113,6 +115,7 @@ const ProductListHomePageComponent = ({
   getProductByCategoryData,
   getProductByCategoryError,
   getProductSuggest,
+  getProductSuggestError,
   getProductSuggestData
 }) => {
   const [currentCategorySelected, setCurrentCategorySelected] = useState({});
@@ -163,10 +166,20 @@ const ProductListHomePageComponent = ({
   }, [currentCategorySelected]);
 
   useEffect(() => {
-    if (getProductByCategoryError || getProductByCategoryData) {
+    if (
+      getProductByCategoryError ||
+      getProductByCategoryData ||
+      getProductSuggestData ||
+      getProductSuggestError
+    ) {
       setLoading(false);
     }
-  }, [getProductByCategoryData, getProductByCategoryError]);
+  }, [
+    getProductByCategoryData,
+    getProductByCategoryError,
+    getProductSuggestData,
+    getProductSuggestError
+  ]);
 
   const onChange = (pageNumber) => {
     setPageIndex(pageNumber);
@@ -182,8 +195,8 @@ const ProductListHomePageComponent = ({
     count = 0;
   if (!isCategorySelected) {
     if (getProductSuggestData) {
-      productData = getProductByCategoryData.data;
-      count = getProductByCategoryData.total;
+      productData = getProductSuggestData.data;
+      count = getProductSuggestData.total;
     }
   } else {
     if (!!getProductByCategoryData) {

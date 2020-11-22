@@ -342,7 +342,7 @@ const ConfirmationOrderComponent = ({
                         createOrder(
                           { unitPrice: price * quantity, groupId, supplierId },
                           () => {
-                            Router.push('aggregator/order');
+                            Router.push('/aggregator');
                           }
                         );
                       }
