@@ -274,7 +274,7 @@ const UserFeedbackDetailComponent = ({
                 ? getCurrentUserImage(user.avatar)
                 : '/static/images/avatar.png',
               content: <Card>{feedbackItem.description}</Card>,
-              datetime: moment(feedbackItem.dateCreated).fromNow()
+              datetime: moment.utc(feedbackItem.dateCreated).fromNow()
             }
           ]);
         }
@@ -462,7 +462,9 @@ const UserFeedbackDetailComponent = ({
                   .subtract(1, 'days')
                   .format('YYYY-MM-DD HH:mm:ss')}
               >
-                <span>{moment(feedbackDetailsData.dateCreated).fromNow()}</span>
+                <span>
+                  {moment.utc(feedbackDetailsData.dateCreated).fromNow()}
+                </span>
               </Tooltip>
             }
           />

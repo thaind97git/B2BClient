@@ -247,7 +247,7 @@ const AdminFeedbackDetailComponent = ({
                 ? getCurrentUserImage(user.avatar)
                 : '/static/images/avatar.png',
               content: <Card>{feedbackItem.description}</Card>,
-              datetime: moment(feedbackItem.dateCreated).fromNow()
+              datetime: moment.utc(feedbackItem.dateCreated).fromNow()
             }
           ]);
         }
@@ -330,7 +330,7 @@ const AdminFeedbackDetailComponent = ({
                 <br />
                 <div style={{ fontSize: '17px', fontWeight: 'bold' }}>
                   <Moment format={DATE_TIME_FORMAT}>
-                    {new Date(feedbackDetailsData.dateCreated)}
+                    {moment(feedbackDetailsData.dateCreated).utc()}
                   </Moment>
                 </div>
               </Card>
@@ -404,15 +404,7 @@ const AdminFeedbackDetailComponent = ({
                 ></Upload>
               </Card>
             }
-            datetime={
-              <Tooltip
-                title={moment()
-                  .subtract(1, 'days')
-                  .format('YYYY-MM-DD HH:mm:ss')}
-              >
-                <span>{moment(feedbackDetailsData.dateCreated).fromNow()}</span>
-              </Tooltip>
-            }
+            datetime={moment.utc(feedbackDetailsData.dateCreated).fromNow()}
           />
           {comments.length > 0 && <CommentList comments={comments} />}
           {isReply ? (
