@@ -14,6 +14,7 @@ import { DEFAULT_PAGING_INFO, getShortContent } from '../../../utils';
 import { Col, Row, Skeleton, Spin, Tooltip } from 'antd';
 import ScrollToBottom, { useAtTop } from 'react-scroll-to-bottom';
 import { LoadingOutlined } from '@ant-design/icons';
+import { get } from 'lodash/fp';
 
 const connectToRedux = connect(
   createStructuredSelector({

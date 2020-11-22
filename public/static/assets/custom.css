@@ -67,3 +67,7 @@ ul {
   max-width: 0;
   opacity: 0;
 }
+
+.dropdown-notify {
+  white-space: normal !important;
+}

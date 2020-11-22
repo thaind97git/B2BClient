@@ -1,27 +1,36 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
-import { Layout, Menu, Row, Dropdown } from 'antd';
+import { Layout, Menu, Row, Dropdown, Badge, Divider, Typography } from 'antd';
 import {
-  UsergroupAddOutlined,
   DownOutlined,
   LoginOutlined,
   MenuUnfoldOutlined,
   MenuFoldOutlined,
-  ExperimentOutlined,
   FileDoneOutlined,
   FallOutlined,
   DiffOutlined,
-  WechatOutlined,
   ProfileOutlined,
-  MessageOutlined
+  MessageOutlined,
+  BellOutlined
 } from '@ant-design/icons';
 import MemberNavComponent from '../component/MemberNavComponent';
-import { currentPath } from '../utils';
+import { currentPath, getLabelNotify } from '../utils';
 import Link from 'next/link';
 import { removeToken } from '../libs/localStorage';
 import Router from 'next/router';
+import { MODERATOR } from '../enums/accountRoles';
+import { connect } from 'react-redux';
+import { createStructuredSelector } from 'reselect';
+import {
+  getNotification,
+  GetNotificationData,
+  getNotificationCount,
+  GetNotificationCountData
+} from '../stores/NotificationState';
+import SignalR from '../libs/signalR';
 
 const { Header, Content, Sider } = Layout;
+const { Title } = Typography;
 
 const ADMIN_MENU = [
   // {
@@ -65,6 +74,18 @@ const ADMIN_MENU = [
   }
 ];
 
+const connectToRedux = connect(
+  createStructuredSelector({
+    notificationData: GetNotificationData,
+    notificationCountData: GetNotificationCountData
+  }),
+  (dispatch) => ({
+    getNotification: ({ pageIndex, pageSize }) =>
+      dispatch(getNotification({ pageIndex, pageSize })),
+    getNotificationCount: () => dispatch(getNotificationCount())
+  })
+);
+
 const PROFILE_MENU = (
   <Menu>
     <Menu.Item>
@@ -72,9 +93,6 @@ const PROFILE_MENU = (
         <a>Profile</a>
       </Link>
     </Menu.Item>
-    {/* <Menu.Item>
-      <a href="#">Company Profile</a>
-    </Menu.Item> */}
     <Menu.Item
       onClick={() => {
         removeToken();
@@ -87,8 +105,128 @@ const PROFILE_MENU = (
   </Menu>
 );
 
-const AggregatorLayout = ({ children, isChat }) => {
+const getMenuNotify = (notify = []) => {
+  return (
+    <Menu style={{ width: 360, maxHeight: '90vh', overflowY: 'scroll' }}>
+      <Menu.ItemGroup title={<Title level={4}>Notification</Title>}>
+        {notify.map((item) => {
+          const {
+            group = {},
+            invitation = {},
+            request = {},
+            reverseAuction = {},
+            notificationType = {},
+            id: notifyId
+          } = item || {};
+          const { id, description: title } =
+            group || request || reverseAuction || invitation;
+          const { label, link } = getLabelNotify({
+            type: (notificationType || {}).id,
+            id,
+            role: MODERATOR,
+            title
+          });
+          return (
+            <Menu.Item
+              onClick={() => Router.push(link)}
+              className="dropdown-notify"
+              key={notifyId}
+            >
+              {label}
+              {/* <Menu.Divider /> */}
+            </Menu.Item>
+          );
+        })}
+      </Menu.ItemGroup>
+    </Menu>
+  );
+};
+const signalR = new SignalR({
+  hubDomain: 'notificationHub'
+});
+signalR.startConnection();
+
+const AggregatorLayout = ({
+  children,
+  isChat,
+  getNotification,
+  notificationData,
+  getNotificationCount,
+  notificationCountData
+}) => {
   const [collapsed, setCollapsed] = useState(true);
+  const [openMessage, setOpenMessage] = useState(false);
+  const [firstTime, setFirstTime] = useState(true);
+  const [menuNotify, setMenuNotify] = useState([]);
+  const [notifyCount, setNotifyCount] = useState(null);
+  const [secondTime, setSecondTime] = useState(false);
+
+  useEffect(() => {
+    if (firstTime) {
+      getNotification({});
+      getNotificationCount();
+      setFirstTime(false);
+      setSecondTime(true);
+    }
+  }, [getNotification, firstTime, getNotificationCount]);
+
+  useEffect(() => {
+    if (!firstTime && secondTime) {
+      setSecondTime(false);
+    }
+  }, [secondTime, firstTime]);
+  useEffect(() => {
+    if (notificationData) {
+      setMenuNotify(notificationData.data);
+    }
+  }, [notificationData]);
+
+  useEffect(() => {
+    if (notificationCountData) {
+      setNotifyCount(notificationCountData);
+    }
+  }, [notificationCountData]);
+
+  // useEffect(() => {
+  //   console.log({ signalR });
+
+  //   signalR.onListen('newNotifyCount', (newNotifyCount) => {
+  //     console.log({ newNotifyCount });
+  //   });
+  // }, [signalR]);
+
+  useEffect(() => {
+    signalR.onListen('NewNotify', (newNotify) => {
+      if (newNotify && newNotify.id) {
+        console.log({ newNotify });
+        setMenuNotify((prev) => {
+          const tmp = [...prev];
+          tmp.unshift(newNotify);
+          return tmp;
+        });
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    signalR.onListen('NewNotifyCount', (newCount) => {
+      console.log({ newCountBeforeCheck: newCount });
+      if (newCount) {
+        console.log({ newCountAfterCheck: newCount });
+        setNotifyCount((prev) => {
+          console.log({ prev });
+          console.log(prev + newCount);
+          return 10;
+        });
+      }
+    });
+  }, []);
+
+  // useEffect(() => {
+  //   return () => {
+  //     signalR.stopConnection();
+  //   };
+  // }, []);
   return (
     <div
       style={{
@@ -143,6 +281,22 @@ const AggregatorLayout = ({ children, isChat }) => {
                   />
                 )}
                 <div style={{ marginRight: 24 }}>
+                  <Dropdown
+                    overlay={getMenuNotify(menuNotify || [])}
+                    onVisibleChange={setOpenMessage}
+                    visible={openMessage}
+                    trigger={['click']}
+                    placement="bottomCenter"
+                  >
+                    {notifyCount ? (
+                      <Badge style={{ cursor: 'pointer' }} count={notifyCount}>
+                        <BellOutlined style={{ fontSize: 16 }} />
+                      </Badge>
+                    ) : (
+                      <BellOutlined style={{ fontSize: 16 }} />
+                    )}
+                  </Dropdown>
+                  <Divider type="vertical" />
                   <Dropdown overlay={PROFILE_MENU}>
                     <a
                       className="ant-dropdown-link"
@@ -198,4 +352,4 @@ const AggregatorLayout = ({ children, isChat }) => {
   );
 };
 
-export default AggregatorLayout;
+export default connectToRedux(AggregatorLayout);

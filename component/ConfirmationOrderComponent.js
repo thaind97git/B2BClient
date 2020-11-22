@@ -213,7 +213,8 @@ const ConfirmationOrderComponent = ({
                       }}
                     >
                       <Avatar
-                        size={64}
+                        style={{ width: 64 }}
+                        // size={64}
                         src={getCurrentUserImage(avatar) || fallbackImage}
                       />{' '}
                       <span>&nbsp;</span>
