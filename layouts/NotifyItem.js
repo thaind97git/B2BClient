@@ -6,7 +6,15 @@ const { Title } = Typography;
 const moment = require('moment');
 const NotifyItem = ({ notify = [], role = BUYER }) => {
   return (
-    <Menu style={{ width: 360, maxHeight: '90vh', overflowY: 'scroll' }}>
+    <Menu
+      className="shadow"
+      style={{
+        width: 360,
+        paddingBottom: 24,
+        maxHeight: '90vh',
+        overflowY: 'auto'
+      }}
+    >
       <Menu.ItemGroup title={<Title level={4}>Notification</Title>}>
         {notify.map((item) => {
           const {
@@ -22,14 +30,12 @@ const NotifyItem = ({ notify = [], role = BUYER }) => {
 
           const { id, description: title } =
             group || request || reverseAuction || invitation || feedback || {};
-          console.log({ title });
           const { label, link } = getLabelNotify({
             type: (notificationType || {}).id,
             id,
             role,
             title
           });
-          console.log({ label });
           return (
             <Menu.Item
               onClick={() => Router.push(link)}
@@ -38,9 +44,8 @@ const NotifyItem = ({ notify = [], role = BUYER }) => {
             >
               <div className="item-notify" onClick={() => Router.push(link)}>
                 <span>{label}</span>
-                <br />
-                <small>{moment.utc(dateCreated).local().fromNow()}</small>
               </div>
+              <small>{moment.utc(dateCreated).local().fromNow()}</small>
             </Menu.Item>
           );
         })}
