@@ -119,7 +119,7 @@ const getMenuNotify = (notify = []) => {
             id: notifyId
           } = item || {};
           const { id, description: title } =
-            group || request || reverseAuction || invitation;
+            group || request || reverseAuction || invitation || {};
           const { label, link } = getLabelNotify({
             type: (notificationType || {}).id,
             id,

@@ -71,8 +71,8 @@ ul {
 .dropdown-notify {
   white-space: normal !important;
 }
-.table-row-request-canceled {
-  opacity: 0.6;
+.table-row-request-canceled:not(button) {
   font-style: italic;
   cursor: not-allowed;
+  color: #6262627a;
 }
