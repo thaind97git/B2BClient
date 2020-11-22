@@ -11,7 +11,8 @@ import {
   MessageOutlined,
   SolutionOutlined,
   TeamOutlined,
-  CustomerServiceOutlined
+  CustomerServiceOutlined,
+  DashboardOutlined
 } from '@ant-design/icons';
 import MemberNavComponent from '../component/MemberNavComponent';
 import { currentPath } from '../utils';
@@ -22,6 +23,12 @@ import Router from 'next/router';
 const { Header, Content, Sider } = Layout;
 
 const ADMIN_MENU = [
+  {
+    key: '0',
+    icon: <DashboardOutlined />,
+    label: 'Dashboard',
+    link: '/admin'
+  },
   {
     key: '1',
     icon: <AppstoreAddOutlined />,
