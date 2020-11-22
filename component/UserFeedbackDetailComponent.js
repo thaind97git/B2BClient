@@ -245,6 +245,7 @@ const UserFeedbackDetailComponent = ({
     setFileList([]);
     setComments([]);
     if (feedbackDetailsData) {
+      console.log(feedbackDetailsData);
       if (feedbackDetailsData.reverseAuctionId) {
         getAuctionDetails(feedbackDetailsData.reverseAuctionId);
         setIsFeedbackSystem(false);
@@ -274,7 +275,7 @@ const UserFeedbackDetailComponent = ({
                 ? getCurrentUserImage(user.avatar)
                 : '/static/images/avatar.png',
               content: <Card>{feedbackItem.description}</Card>,
-              datetime: moment.utc(feedbackItem.dateCreated).fromNow()
+              datetime: moment(new Date(feedbackDetailsData.dateCreated)).utc().fromNow()
             }
           ]);
         }
@@ -362,7 +363,7 @@ const UserFeedbackDetailComponent = ({
                 <br />
                 <div style={{ fontSize: '17px', fontWeight: 'bold' }}>
                   <Moment format={DATE_TIME_FORMAT}>
-                    {new Date(feedbackDetailsData.dateCreated)}
+                    {moment.utc(new Date(feedbackDetailsData.dateCreated)).local()}
                   </Moment>
                 </div>
               </Card>
@@ -456,17 +457,9 @@ const UserFeedbackDetailComponent = ({
                 ></Upload>
               </Card>
             }
-            datetime={
-              <Tooltip
-                title={moment()
-                  .subtract(1, 'days')
-                  .format('YYYY-MM-DD HH:mm:ss')}
-              >
-                <span>
-                  {moment.utc(feedbackDetailsData.dateCreated).fromNow()}
-                </span>
-              </Tooltip>
-            }
+            datetime={moment(new Date(feedbackDetailsData.dateCreated))
+              .utc()
+              .fromNow()}
           />
           {comments.length > 0 && <CommentList comments={comments} />}
           {isReply ? (

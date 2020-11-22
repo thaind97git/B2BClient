@@ -28,6 +28,7 @@ import {
 } from "../stores/RequestState";
 import Moment from "react-moment";
 import { get } from "lodash/fp";
+import moment from 'moment';
 const { Option } = Select;
 const { Title } = Typography;
 
@@ -130,7 +131,7 @@ const BuyerRequestManagement = ({
             (+request.quantity || 0) + " " + get("product.unitType")(request),
           dueDate: (
             <Moment format={DATE_TIME_FORMAT}>
-              {new Date(request.dueDate)}
+              {moment(new Date(request.dueDate)).utc()}
             </Moment>
           ),
           status: <RequestStatusComponent status={request.requestStatus.id} />,

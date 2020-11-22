@@ -247,7 +247,7 @@ const AdminFeedbackDetailComponent = ({
                 ? getCurrentUserImage(user.avatar)
                 : '/static/images/avatar.png',
               content: <Card>{feedbackItem.description}</Card>,
-              datetime: moment.utc(feedbackItem.dateCreated).fromNow()
+              datetime: moment(feedbackDetailsData.dateCreated).utc().fromNow()
             }
           ]);
         }
@@ -404,7 +404,7 @@ const AdminFeedbackDetailComponent = ({
                 ></Upload>
               </Card>
             }
-            datetime={moment.utc(feedbackDetailsData.dateCreated).fromNow()}
+            datetime={moment(feedbackDetailsData.dateCreated).utc().fromNow()}
           />
           {comments.length > 0 && <CommentList comments={comments} />}
           {isReply ? (
