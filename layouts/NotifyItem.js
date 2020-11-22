@@ -1,5 +1,5 @@
 import Router from 'next/router';
-const { Menu, Typography } = require('antd');
+const { Menu, Typography, Tooltip } = require('antd');
 const { BUYER } = require('../enums/accountRoles');
 const { getLabelNotify } = require('../utils');
 const { Title } = Typography;
@@ -25,11 +25,18 @@ const NotifyItem = ({ notify = [], role = BUYER }) => {
             notificationType = {},
             id: notifyId,
             feedback = {},
-            dateCreated
+            dateCreated,
+            order
           } = item || {};
 
           const { id, description: title } =
-            group || request || reverseAuction || invitation || feedback || {};
+            group ||
+            request ||
+            reverseAuction ||
+            invitation ||
+            feedback ||
+            order ||
+            {};
           const { label, link } = getLabelNotify({
             type: (notificationType || {}).id,
             id,
@@ -42,10 +49,12 @@ const NotifyItem = ({ notify = [], role = BUYER }) => {
               className="dropdown-notify"
               key={notifyId}
             >
-              <div className="item-notify" onClick={() => Router.push(link)}>
-                <span>{label}</span>
-              </div>
-              <small>{moment.utc(dateCreated).local().fromNow()}</small>
+              <Tooltip title={label}>
+                <div className="item-notify" onClick={() => Router.push(link)}>
+                  <span>{label}</span>
+                </div>
+                <small>{moment.utc(dateCreated).local().fromNow()}</small>
+              </Tooltip>
             </Menu.Item>
           );
         })}
