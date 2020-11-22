@@ -9,7 +9,7 @@ import withAuth from '../../../component/HOC/AuthenHOC';
 import { Radio, Row } from 'antd';
 const options = [
   { label: 'View RFQ Group By Product', value: true },
-  { label: 'View Manual RFQ', value: false },
+  { label: 'View Manual RFQ', value: false }
 ];
 const Page = () => {
   const [defaultTab, setDefaultTab] = useState('1');

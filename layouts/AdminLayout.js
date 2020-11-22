@@ -24,13 +24,13 @@ const { Header, Content, Sider } = Layout;
 const ADMIN_MENU = [
   {
     key: '1',
-    icon: <OrderedListOutlined />,
+    icon: <AppstoreAddOutlined />,
     label: 'Product',
     link: '/admin/product'
   },
   {
     key: '5',
-    icon: <AppstoreAddOutlined />,
+    icon: <OrderedListOutlined />,
     label: 'Category',
     link: '/admin/category'
   },

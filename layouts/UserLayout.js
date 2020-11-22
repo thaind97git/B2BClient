@@ -1,5 +1,4 @@
-import React, { Fragment } from 'react';
-import Link from 'next/link';
+import React from 'react';
 
 class UserLayout extends React.PureComponent {
   render() {
@@ -12,16 +11,14 @@ class UserLayout extends React.PureComponent {
         >
           <div className="top">
             <div className="header">
-              <Link href="/">
-                <Fragment>
-                  {/* <img
+              <a href="/">
+                {/* <img
                     alt="logo"
                     className="logo"
                     src="/static/images/logo.png"
                   /> */}
-                  <span className="title">B2BMarket</span>
-                </Fragment>
-              </Link>
+                <span className="title">B2BMarket</span>
+              </a>
             </div>
             <div className="desc">
               Get quotations from the most suitable suppliers
@@ -29,11 +26,6 @@ class UserLayout extends React.PureComponent {
           </div>
           {children}
         </div>
-        {/* <div className="globalFooter">
-          <div className="copyright">
-            Copyright <Icon type="copyright" /> 2020 B2BMarket Team
-          </div>
-        </div> */}
       </div>
     );
   }

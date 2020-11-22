@@ -67,3 +67,12 @@ ul {
   max-width: 0;
   opacity: 0;
 }
+
+.dropdown-notify {
+  white-space: normal !important;
+}
+.table-row-request-canceled {
+  opacity: 0.6;
+  font-style: italic;
+  cursor: not-allowed;
+}

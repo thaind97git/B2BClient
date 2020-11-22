@@ -1,26 +1,42 @@
-import React, { useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 
-import { Layout, Menu, Row, Dropdown, Divider, Badge, Space } from 'antd';
+import {
+  Layout,
+  Menu,
+  Row,
+  Dropdown,
+  Divider,
+  Badge,
+  Space,
+  Typography
+} from 'antd';
 import {
   DownOutlined,
   LoginOutlined,
   MenuUnfoldOutlined,
   MenuFoldOutlined,
-  ExperimentOutlined,
   PicLeftOutlined,
-  WechatOutlined,
   BellOutlined,
   FileDoneOutlined,
   FallOutlined,
   MessageOutlined
 } from '@ant-design/icons';
 import MemberNavComponent from '../component/MemberNavComponent';
-import { currentPath } from '../utils';
+import { currentPath, getLabelNotify } from '../utils';
 import Link from 'next/link';
 import { removeToken } from '../libs/localStorage';
 import Router from 'next/router';
+import SignalR from '../libs/signalR';
+import { connect } from 'react-redux';
+import { createStructuredSelector } from 'reselect';
+import {
+  getNotification,
+  GetNotificationData
+} from '../stores/NotificationState';
+import { SUPPLIER } from '../enums/accountRoles';
 
 const { Header, Content, Sider } = Layout;
+const { Title } = Typography;
 
 const SUPPLIER_MENU = [
   {
@@ -65,6 +81,16 @@ const SUPPLIER_MENU = [
   }
 ];
 
+const connectToRedux = connect(
+  createStructuredSelector({
+    notificationData: GetNotificationData
+  }),
+  (dispatch) => ({
+    getNotification: ({ pageIndex, pageSize }) =>
+      dispatch(getNotification({ pageIndex, pageSize }))
+  })
+);
+
 const PROFILE_MENU = (
   <Menu>
     <Menu.Item>
@@ -72,9 +98,6 @@ const PROFILE_MENU = (
         <a>Profile</a>
       </Link>
     </Menu.Item>
-    {/* <Menu.Item>
-      <a href="#">Company Profile</a>
-    </Menu.Item> */}
     <Menu.Item
       danger
       onClick={() => {
@@ -86,22 +109,101 @@ const PROFILE_MENU = (
     </Menu.Item>
   </Menu>
 );
-const menu = (
-  <Menu>
-    <Menu.Item key="0">
-      <a href="#">Message 01</a>
-    </Menu.Item>
-    <Menu.Divider />
-    <Menu.Item key="1">
-      <a href="#">Message 02</a>
-    </Menu.Item>
-    <Menu.Divider />
-    <Menu.Item key="3">Message 03</Menu.Item>
-  </Menu>
-);
-const SupplierLayout = ({ children, isChat }) => {
+
+const getMenuNotify = (notify = []) => {
+  return (
+    <Menu style={{ width: 360, maxHeight: '90vh', overflowY: 'scroll' }}>
+      <Menu.ItemGroup title={<Title level={4}>Notification</Title>}>
+        {notify.map((item) => {
+          const {
+            group = {},
+            invitation = {},
+            request = {},
+            reverseAuction = {},
+            notificationType = {},
+            id: notifyId
+          } = item || {};
+          const { id, description: title } =
+            group || request || reverseAuction || invitation;
+          const { label, link } = getLabelNotify({
+            type: (notificationType || {}).id,
+            id,
+            role: SUPPLIER,
+            title
+          });
+          return (
+            <Fragment>
+              <Menu.Item key={notifyId}>
+                <a href={link}>{label}</a>
+              </Menu.Item>
+              <Menu.Divider />
+            </Fragment>
+          );
+        })}
+      </Menu.ItemGroup>
+    </Menu>
+  );
+};
+
+const signalR = new SignalR({
+  hubDomain: 'notificationHub'
+});
+signalR.startConnection();
+const SupplierLayout = ({
+  children,
+  isChat,
+  getNotification,
+  notificationData
+}) => {
   const [collapsed, setCollapsed] = useState(true);
   const [openMessage, setOpenMessage] = useState(false);
+  const [firstTime, setFirstTime] = useState(true);
+  const [menuNotify, setMenuNotify] = useState([]);
+  const [notifyCount, setNotifyCount] = useState(null);
+  useEffect(() => {
+    if (firstTime) {
+      getNotification({});
+      setFirstTime(false);
+    }
+  }, [getNotification, firstTime]);
+
+  useEffect(() => {
+    if (notificationData) {
+      setMenuNotify(notificationData.data);
+    }
+  }, [notificationData, firstTime]);
+
+  useEffect(() => {
+    signalR.onListen('NewNotify', (newNotify) => {
+      if (newNotify && newNotify.id) {
+        console.log({ newNotify });
+        setMenuNotify((prev) => {
+          const tmp = [...prev];
+          tmp.unshift(newNotify);
+          return tmp;
+        });
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    signalR.onListen('NewNotifyCount', (newCount) => {
+      console.log({ newCountBeforeCheck: newCount });
+      if (newCount) {
+        console.log({ newCountAfterCheck: newCount });
+        setNotifyCount((prev) => {
+          console.log({ prev });
+          console.log(prev + newCount);
+          return 10;
+        });
+      }
+    });
+  }, []);
+  useEffect(() => {
+    return () => {
+      signalR.stopConnection();
+    };
+  }, []);
   return (
     <div
       style={{
@@ -157,14 +259,18 @@ const SupplierLayout = ({ children, isChat }) => {
                 )}
                 <Space style={{ marginRight: 24 }}>
                   <Dropdown
-                    overlay={menu}
+                    overlay={getMenuNotify(menuNotify || [])}
                     onVisibleChange={setOpenMessage}
                     visible={openMessage}
                     trigger={['click']}
                   >
-                    <Badge style={{ cursor: 'pointer' }} count={3}>
-                      <BellOutlined />
-                    </Badge>
+                    {notifyCount ? (
+                      <Badge style={{ cursor: 'pointer' }} count={notifyCount}>
+                        <BellOutlined style={{ fontSize: 16 }} />
+                      </Badge>
+                    ) : (
+                      <BellOutlined style={{ fontSize: 16 }} />
+                    )}
                   </Dropdown>
                   <Divider type="vertical" />
                   <Dropdown overlay={PROFILE_MENU}>
@@ -222,4 +328,4 @@ const SupplierLayout = ({ children, isChat }) => {
   );
 };
 
-export default SupplierLayout;
+export default connectToRedux(SupplierLayout);
