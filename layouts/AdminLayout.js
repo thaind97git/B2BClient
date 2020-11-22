@@ -185,7 +185,7 @@ const AdminLayout = ({
 
   useEffect(() => {
     return () => {
-      signalR.stopConnection();
+      // signalR.stopConnection();
       resetSeenNotify();
     };
   }, [resetSeenNotify]);

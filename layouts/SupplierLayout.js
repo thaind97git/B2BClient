@@ -180,7 +180,7 @@ const SupplierLayout = ({
   useEffect(() => {
     return () => {
       resetSeenNotify();
-      signalR.stopConnection();
+      // signalR.stopConnection();
     };
   }, [resetSeenNotify]);
   return (

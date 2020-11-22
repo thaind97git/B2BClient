@@ -22,12 +22,14 @@ const NotifyItem = ({ notify = [], role = BUYER }) => {
 
           const { id, description: title } =
             group || request || reverseAuction || invitation || feedback || {};
+          console.log({ title });
           const { label, link } = getLabelNotify({
             type: (notificationType || {}).id,
             id,
             role,
             title
           });
+          console.log({ label });
           return (
             <Menu.Item
               onClick={() => Router.push(link)}
