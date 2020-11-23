@@ -1,4 +1,7 @@
 {
+  "cacheDirectories": [
+    ".next/cache"
+  ],
   "name": "b2b-client",
   "version": "0.1.0",
   "private": true,
@@ -33,6 +36,7 @@
     "lodash": "^4.17.20",
     "moment": "^2.27.0",
     "moment-timezone": "^0.5.32",
+    "netlify-plugin-cache-nextjs": "^1.5.2",
     "next": "9.5.3",
     "next-on-netlify": "^2.6.3",
     "next-redux-wrapper": "^6.0.2",
