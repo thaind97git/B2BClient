@@ -245,7 +245,8 @@ const UserFeedbackDetailComponent = ({
     setFileList([]);
     setComments([]);
     if (feedbackDetailsData) {
-      console.log(feedbackDetailsData);
+      console.log(feedbackDetailsData.user);
+      console.log(currentUser.avatar)
       if (feedbackDetailsData.reverseAuctionId) {
         getAuctionDetails(feedbackDetailsData.reverseAuctionId);
         setIsFeedbackSystem(false);
@@ -284,7 +285,6 @@ const UserFeedbackDetailComponent = ({
         for (let i = 0; i < feedbackDetailsData.files.length; i++) {
           const feedbackFileItem = feedbackDetailsData.files[i];
           getFeedbackFile(feedbackFileItem.id);
-          //console.log(feedbackFileData.headers);
           setFileList((fileList) => [
             ...fileList,
             {
