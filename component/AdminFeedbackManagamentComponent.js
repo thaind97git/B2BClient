@@ -109,7 +109,10 @@ const AdminFeedbackManagementComponent = ({
       feedbackData.map((feedback = {}) => ({
         key: feedback.id,
         title: feedback.title,
-        dateUpdated: moment(feedback.dateCreated).utc(),
+        dateUpdated: moment(new Date(feedback.dateCreated))
+          .utc()
+          .local()
+          .format(DATE_TIME_FORMAT),
         user: feedback.user.email,
         status: (
           <FeedbackStatusComponent

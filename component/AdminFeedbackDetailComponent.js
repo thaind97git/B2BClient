@@ -101,21 +101,28 @@ const CommentList = ({ comments }) => (
   />
 );
 const Editor = ({ onChange, onSubmit, submitting, value }) => (
-  <>
-    <FormItem>
+  <Form
+    autoComplete="new-password"
+    className="register-form"
+    onFinish={onSubmit}
+  >
+    <Form.Item
+      name="reply"
+      rules={[
+        {
+          required: true,
+          message: 'Please Enter Your Reply'
+        }
+      ]}
+    >
       <TextArea rows={4} onChange={onChange} value={value} />
-    </FormItem>
-    <FormItem>
-      <Button
-        htmlType="submit"
-        loading={submitting}
-        onClick={onSubmit}
-        type="primary"
-      >
+    </Form.Item>
+    <Form.Item>
+      <Button htmlType="submit" loading={submitting} type="primary">
         Reply
       </Button>
-    </FormItem>
-  </>
+    </Form.Item>
+  </Form>
 );
 
 const customIcons1 = {
@@ -244,10 +251,12 @@ const AdminFeedbackDetailComponent = ({
             {
               author: user.firstName + ' ' + user.lastName,
               avatar: user.avatar
-                ? getCurrentUserImage(user.avatar)
+                ? getCurrentUserImage(user.id)
                 : '/static/images/avatar.png',
               content: <Card>{feedbackItem.description}</Card>,
-              datetime: moment(feedbackDetailsData.dateCreated).utc().fromNow()
+              datetime: moment(new Date(feedbackDetailsData.dateCreated))
+                .utc()
+                .fromNow()
             }
           ]);
         }
@@ -330,7 +339,9 @@ const AdminFeedbackDetailComponent = ({
                 <br />
                 <div style={{ fontSize: '17px', fontWeight: 'bold' }}>
                   <Moment format={DATE_TIME_FORMAT}>
-                    {moment(feedbackDetailsData.dateCreated).utc()}
+                    {moment
+                      .utc(new Date(feedbackDetailsData.dateCreated))
+                      .local()}
                   </Moment>
                 </div>
               </Card>
@@ -376,7 +387,7 @@ const AdminFeedbackDetailComponent = ({
             }
             avatar={
               feedbackDetailsData.user.avatar
-                ? getCurrentUserImage(feedbackDetailsData.user.avatar)
+                ? getCurrentUserImage(feedbackDetailsData.user.id)
                 : '/static/images/avatar.png'
             }
             content={
@@ -404,7 +415,9 @@ const AdminFeedbackDetailComponent = ({
                 ></Upload>
               </Card>
             }
-            datetime={moment(feedbackDetailsData.dateCreated).utc().fromNow()}
+            datetime={moment(new Date(feedbackDetailsData.dateCreated))
+              .utc()
+              .fromNow()}
           />
           {comments.length > 0 && <CommentList comments={comments} />}
           {isReply ? (
@@ -412,7 +425,7 @@ const AdminFeedbackDetailComponent = ({
               author={currentUser.firstName + ' ' + currentUser.lastName}
               avatar={
                 currentUser.avatar
-                  ? getCurrentUserImage(currentUser.avatar)
+                  ? getCurrentUserImage(currentUser.id)
                   : '/static/images/avatar.png'
               }
               content={
