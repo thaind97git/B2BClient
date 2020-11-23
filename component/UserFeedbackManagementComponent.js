@@ -1,4 +1,4 @@
-import { Button, Row, Typography, Select } from 'antd';
+import { Button, Row, Typography, Select, Space } from 'antd';
 import React, { useState, useEffect } from 'react';
 import ReactTableLayout from '../layouts/ReactTableLayout';
 import { DATE_TIME_FORMAT, DEFAULT_DATE_RANGE, getUtcTime } from '../utils';
@@ -17,6 +17,7 @@ import { CurrentUserData } from '../stores/UserState';
 import FeedbackStatusComponent from './Utils/FeedbackStatusComponent';
 import { get } from 'lodash/fp';
 import Moment from 'react-moment';
+import {F_ORDER,F_RFQ,F_AUCTION,F_SYSTEM} from '../enums/feedbackType'
 const { Title } = Typography;
 const { Option } = Select;
 
@@ -27,7 +28,14 @@ const connectToRedux = connect(
     currentUser: CurrentUserData
   }),
   (dispatch) => ({
-    getFeedback: (pageIndex, pageSize, searchMessage, dateRange, status) => {
+    getFeedback: (
+      pageIndex,
+      pageSize,
+      searchMessage,
+      dateRange,
+      status,
+      systemType
+    ) => {
       dispatch(
         getFeedbackPaging({
           pageIndex,
@@ -35,7 +43,8 @@ const connectToRedux = connect(
           fromDate: dateRange.fromDate,
           toDate: dateRange.toDate,
           title: searchMessage,
-          status
+          status,
+          systemType
         })
       );
     }
@@ -79,6 +88,7 @@ const UserFeedbackManagementComponent = ({
   const [searchMessage, setSearchMessage] = useState('');
   const [dateRange, setDateRange] = useState(DEFAULT_DATE_RANGE);
   const [status, setStatus] = useState(null);
+  const [systemType, setSystemType] = useState(null);
   //zconst [openDetails, setOpenDetails] = useState(false);
   // const [loading, setLoading] = useState(true);
 
@@ -88,8 +98,12 @@ const UserFeedbackManagementComponent = ({
   //     }
   //   }, [productPagingError, productPagingData]);
 
-  function handleChange(value) {
+  function handleStatusChange(value) {
     setStatus(value);
+  }
+
+  function handleServiceChange(value) {
+    setSystemType(value);
   }
 
   useEffect(() => {
@@ -136,31 +150,6 @@ const UserFeedbackManagementComponent = ({
       }))
     );
   };
-
-  // let feedbackData = [
-  //     {
-  //       title: 'About current auction',
-  //       id: '1',
-  //       user: 'quanghnd@gmail.com',
-  //       dateCreated: 'October 22, 2020 17:00 GTM',
-  //       dateUpdated: 'October 22, 2020 17:00 GTM',
-  //       status: 0
-  //     },
-  //     {
-  //       title: 'About supplier ABC',
-  //       id: '2',
-  //       user: 'duyquanghoang@gmail.com',
-  //       dateCreated: 'October 22, 2020 17:00 GTM',
-  //       dateUpdated: 'October 22, 2020 17:00 GTM',
-  //       status: 1
-  //     }
-  //   ],
-  //   totalCount = 0;
-  //   if (productPagingData) {
-  //     productData = productPagingData.data;
-  //     totalCount = productPagingData.total;
-  //   }
-
   return (
     <div>
       <Row justify="space-between">
@@ -182,23 +171,46 @@ const UserFeedbackManagementComponent = ({
         // loading={loading}
         dispatchAction={getFeedback}
         searchProps={{
-          placeholder: 'Search',
+          placeholder:
+            currentUser.role === 'Supplier'
+              ? 'Search by group name'
+              : 'Search by product name',
           searchMessage,
           setSearchMessage,
           exElement: (
-            <Select
-              size="large"
-              placeholder="Filter by status"
-              style={{ width: 200 }}
-              onChange={handleChange}
-              defaultValue=""
-            >
-              <Option value="">All Status</Option>
-              <Option value={F_OPEN}>Opeing</Option>
-              <Option value={F_CLOSED}>Closed</Option>
-            </Select>
+            <Space>
+              <Select
+                size="large"
+                placeholder="Filter by status"
+                style={{ width: 200 }}
+                onChange={handleStatusChange}
+                defaultValue=""
+              >
+                <Option value="">All Status</Option>
+                <Option value={F_OPEN}>Opeing</Option>
+                <Option value={F_CLOSED}>Closed</Option>
+              </Select>
+              <Select
+                size="large"
+                placeholder="Filter by service type"
+                style={{ width: 200 }}
+                onChange={handleServiceChange}
+                defaultValue=""
+              >
+                <Option value="">All Service</Option>
+                {currentUser.role === 'Supplier' ? (
+                  <>
+                    <Option value={F_ORDER}>Order</Option>
+                    <Option value={F_AUCTION}>Auction</Option>
+                  </>
+                ) : (
+                  <Option value={F_RFQ}>Order</Option>
+                )}
+                <Option value={F_SYSTEM}>System</Option>
+              </Select>
+            </Space>
           ),
-          exCondition: [status]
+          exCondition: [status, systemType]
         }}
         dateRangeProps={{
           dateRange,

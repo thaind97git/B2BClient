@@ -45,19 +45,6 @@ import {
   GetFeedbackFileData,
   getFeedbackFile
 } from '../stores/FeedbackState';
-
-import {
-  getAuctionDetails,
-  GetAuctionDetailsData
-} from '../stores/AuctionState';
-import {
-  getRequestDetails,
-  GetRequestDetailsDataSelector
-} from '../stores/RequestState';
-import {
-  getOrderDetails,
-  GetOrderDetailsDataSelector
-} from '../stores/OrderState';
 import Moment from 'react-moment';
 import { SmileOutlined, FrownOutlined } from '@ant-design/icons';
 
@@ -71,9 +58,6 @@ const connectToRedux = connect(
     createFeedbackRateData: CreateFeedbackRateData,
     currentUser: CurrentUserData,
     feedbackFileData: GetFeedbackFileData,
-    orderDetails: GetOrderDetailsDataSelector,
-    requestDetails: GetRequestDetailsDataSelector,
-    auctionDetails: GetAuctionDetailsData
   }),
   (dispatch) => ({
     getFeedbackDetails: (feedbackId) => {
@@ -87,15 +71,6 @@ const connectToRedux = connect(
     },
     getFeedbackFile: (fileId) => {
       dispatch(getFeedbackFile(fileId));
-    },
-    getOrderDetail: (orderId) => {
-      dispatch(getOrderDetails(orderId));
-    },
-    getRequestDetails: (requestId) => {
-      dispatch(getRequestDetails(requestId));
-    },
-    getAuctionDetails: (auctionId) => {
-      dispatch(getAuctionDetails(auctionId));
     },
     resetData: () => dispatch(GetFeedbackDetailsResetter),
     resetCreateFeedbackReply: () => dispatch(CreateFeedbackReplyResetter),
@@ -185,13 +160,7 @@ const UserFeedbackDetailComponent = ({
   createFeedbackRateData,
   resetCreateFeedbackRate,
   getFeedbackFile,
-  feedbackFileData,
-  auctionDetails,
-  getAuctionDetails,
-  requestDetails,
-  getRequestDetails,
-  orderDetails,
-  getOrderDetails
+  feedbackFileData
 }) => {
   const router = useRouter();
   const feedbackId = router.query.id;
@@ -241,41 +210,17 @@ const UserFeedbackDetailComponent = ({
   }, [createFeedbackRateData]);
 
   useEffect(() => {
-    if (requestDetails) {
-      setServiceName(
-        requestDetails.quantity +
-          ' ' +
-          requestDetails.product.unitType +
-          ' of ' +
-          requestDetails.product.description
-      );
-    }
-  }, [requestDetails]);
-
-  useEffect(() => {
-    if (auctionDetails) {
-      setServiceName(auctionDetails.auctionName);
-    }
-  }, [auctionDetails]);
-
-  useEffect(() => {
-    if (orderDetails) {
-      setServiceName(orderDetails.groupName);
-    }
-  }, [orderDetails]);
-
-  useEffect(() => {
     setFileList([]);
     setComments([]);
     if (feedbackDetailsData) {
-      if (feedbackDetailsData.reverseAuctionId) {
-        getAuctionDetails(feedbackDetailsData.reverseAuctionId);
+      if (feedbackDetailsData.reverseAuction) {
+        setServiceName((feedbackDetailsData.reverseAuction ||{}).description);
         setIsFeedbackSystem(false);
-      } else if (feedbackDetailsData.orderId) {
-        getOrderDetails(feedbackDetailsData.orderId);
+      } else if (feedbackDetailsData.order) {
+        setServiceName((feedbackDetailsData.order || {}).description);
         setIsFeedbackSystem(false);
-      } else if (feedbackDetailsData.requestId) {
-        getRequestDetails(feedbackDetailsData.requestId);
+      } else if (feedbackDetailsData.request) {
+        setServiceName((feedbackDetailsData.request || {}).description);
         setIsFeedbackSystem(false);
       }
       if (feedbackDetailsData.feedbackReplies) {
@@ -336,9 +281,9 @@ const UserFeedbackDetailComponent = ({
   }
   const {
     title,
-    orderId,
-    requestId,
-    reverseAuctionId,
+    order,
+    request,
+    reverseAuction,
     dateCreated,
     feedbackStatus = {},
     user = {},
@@ -366,11 +311,11 @@ const UserFeedbackDetailComponent = ({
         <Row span={24} gutter={16} justify="space-between">
           <Col span={isFeedbackSystem ? 8 : 6}>
             <FeedBackCard title="Type">
-              {orderId
+              {order
                 ? 'Order'
-                : requestId
+                : request
                 ? 'Order'
-                : reverseAuctionId
+                : reverseAuction
                 ? 'Auction'
                 : 'System'}
             </FeedBackCard>
@@ -400,18 +345,13 @@ const UserFeedbackDetailComponent = ({
           </Col>
           {!isFeedbackSystem ? (
             <Col span={6}>
-              <Card
-                style={{ backgroundColor: '#199EB8', color: '#FFFFFF' }}
-                bordered={false}
-              >
-                <div style={{ fontSize: '14px' }}>Service Name</div>
-                <br />
+              <FeedBackCard title="Service Name">
                 <Popover content={serviceName}>
                   <div style={{ fontSize: '17px', fontWeight: 'bold' }}>
                     {displayServiceName(serviceName)}
                   </div>
                 </Popover>
-              </Card>
+              </FeedBackCard>
             </Col>
           ) : (
             ''

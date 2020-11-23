@@ -1,4 +1,4 @@
-import { Button, Row, Typography, Select } from 'antd';
+import { Button, Row, Typography, Select, Space } from 'antd';
 import React, { useState, useEffect } from 'react';
 import ReactTableLayout from '../layouts/ReactTableLayout';
 import { DATE_TIME_FORMAT, DEFAULT_DATE_RANGE, getUtcTime } from '../utils';
@@ -16,6 +16,7 @@ import FeedbackStatusComponent from './Utils/FeedbackStatusComponent';
 import { get } from 'lodash/fp';
 import Moment from 'react-moment';
 import moment from 'moment';
+import { F_AUCTION, F_ORDER, F_RFQ, F_SYSTEM } from '../enums/feedbackType';
 const { Title } = Typography;
 const { Option } = Select;
 
@@ -25,7 +26,14 @@ const connectToRedux = connect(
     feedbackPagingError: GetFeedbackPagingError
   }),
   (dispatch) => ({
-    getFeedback: (pageIndex, pageSize, searchMessage, dateRange, status) => {
+    getFeedback: (
+      pageIndex,
+      pageSize,
+      searchMessage,
+      dateRange,
+      status,
+      systemType
+    ) => {
       dispatch(
         getFeedbackPaging({
           pageIndex,
@@ -33,7 +41,8 @@ const connectToRedux = connect(
           fromDate: dateRange.fromDate,
           toDate: dateRange.toDate,
           title: searchMessage,
-          status
+          status,
+          systemType
         })
       );
     }
@@ -76,6 +85,7 @@ const AdminFeedbackManagementComponent = ({
   const [searchMessage, setSearchMessage] = useState('');
   const [dateRange, setDateRange] = useState(DEFAULT_DATE_RANGE);
   const [status, setStatus] = useState(null);
+  const [systemType, setSystemType]= useState(null);
   //zconst [openDetails, setOpenDetails] = useState(false);
   // const [loading, setLoading] = useState(true);
 
@@ -85,8 +95,12 @@ const AdminFeedbackManagementComponent = ({
   //     }
   //   }, [productPagingError, productPagingData]);
 
-  function handleChange(value) {
+  function handleStatusChange(value) {
     setStatus(value);
+  }
+
+  function handleServiceChange(value) {
+    setSystemType(value);
   }
 
   useEffect(() => {
@@ -109,10 +123,7 @@ const AdminFeedbackManagementComponent = ({
       feedbackData.map((feedback = {}) => ({
         key: feedback.id,
         title: feedback.title,
-        dateUpdated: getUtcTime(feedback.dateCreated)
-          .utc()
-          .local()
-          .format(DATE_TIME_FORMAT),
+        dateUpdated: getUtcTime(feedback.dateCreated),
         user: feedback.user.email,
         status: (
           <FeedbackStatusComponent
@@ -147,19 +158,34 @@ const AdminFeedbackManagementComponent = ({
           searchMessage,
           setSearchMessage,
           exElement: (
-            <Select
-              size="large"
-              placeholder="Filter by status"
-              style={{ width: 200 }}
-              onChange={handleChange}
-              defaultValue=""
-            >
-              <Option value="">All Status</Option>
-              <Option value={F_OPEN}>Opeing</Option>
-              <Option value={F_CLOSED}>Closed</Option>
-            </Select>
+            <Space>
+              <Select
+                size="large"
+                placeholder="Filter by status"
+                style={{ width: 200 }}
+                onChange={handleStatusChange}
+                defaultValue=""
+              >
+                <Option value="">All Status</Option>
+                <Option value={F_OPEN}>Opeing</Option>
+                <Option value={F_CLOSED}>Closed</Option>
+              </Select>
+              <Select
+                size="large"
+                placeholder="Filter by service type"
+                style={{ width: 200 }}
+                onChange={handleServiceChange}
+                defaultValue=""
+              >
+                <Option value="">All Service</Option>
+                <Option value={F_ORDER}>Order of suplier</Option>
+                <Option value={F_AUCTION}>Auction</Option>
+                <Option value={F_RFQ}>Order of buyer</Option>
+                <Option value={F_SYSTEM}>System</Option>
+              </Select>
+            </Space>
           ),
-          exCondition: [status]
+          exCondition: [status, systemType]
         }}
         dateRangeProps={{
           dateRange,
