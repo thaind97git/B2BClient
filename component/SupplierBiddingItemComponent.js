@@ -83,7 +83,6 @@ const SupplierBiddingItemComponent = ({
   bidding,
   isInvitation = false,
   closed = false,
-  responseInvitationData,
   responseAuctionInvitation
 }) => {
   if (!bidding) {

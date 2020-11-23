@@ -1,35 +1,36 @@
-import { Button, Drawer } from "antd";
-import React, { Fragment, useEffect, useState } from "react";
-import ReactTableLayout from "../layouts/ReactTableLayout";
+import { Button, Drawer } from 'antd';
+import React, { Fragment, useEffect, useState } from 'react';
+import ReactTableLayout from '../layouts/ReactTableLayout';
 import {
   DATE_TIME_FORMAT,
   DEFAULT_DATE_RANGE,
   displayCurrency,
-} from "../utils";
-import RequestStatusComponent from "./Utils/RequestStatusComponent";
+  getUtcTime
+} from '../utils';
+import RequestStatusComponent from './Utils/RequestStatusComponent';
 import {
   R_CANCELED,
   R_DONE,
   R_ORDERED,
-  R_REJECTED,
-} from "../enums/requestStatus";
-import RequestDetailsComponent from "./RequestDetailsComponent";
-import { connect } from "react-redux";
-import { createStructuredSelector } from "reselect";
+  R_REJECTED
+} from '../enums/requestStatus';
+import RequestDetailsComponent from './RequestDetailsComponent';
+import { connect } from 'react-redux';
+import { createStructuredSelector } from 'reselect';
 import {
   getRequestPaging,
   GetRequestPagingData,
   GetRequestPagingError,
-  GetRequestPagingResetter,
-} from "../stores/RequestState";
-import Moment from "react-moment";
-import { get } from "lodash/fp";
-import AllCategoryComponent from "./AllCategoryComponent";
+  GetRequestPagingResetter
+} from '../stores/RequestState';
+import Moment from 'react-moment';
+import { get } from 'lodash/fp';
+import AllCategoryComponent from './AllCategoryComponent';
 
 const connectToRedux = connect(
   createStructuredSelector({
     requestPagingData: GetRequestPagingData,
-    requestPagingError: GetRequestPagingError,
+    requestPagingError: GetRequestPagingError
   }),
   (dispatch) => ({
     getRequest: (
@@ -49,41 +50,41 @@ const connectToRedux = connect(
           toDate: dateRange.toDate,
           productTitle: searchMessage,
           status,
-          category,
+          category
         })
       );
     },
-    resetData: () => dispatch(GetRequestPagingResetter),
+    resetData: () => dispatch(GetRequestPagingResetter)
   })
 );
 
 const columns = [
   {
-    title: "Product Name",
-    dataIndex: "name",
-    key: "name",
+    title: 'Product Name',
+    dataIndex: 'name',
+    key: 'name'
   },
   {
-    title: "Preferred Unit Price",
-    dataIndex: "price",
-    key: "price",
+    title: 'Preferred Unit Price',
+    dataIndex: 'price',
+    key: 'price'
   },
   {
-    title: "Quantity",
-    dataIndex: "quantity",
-    key: "quantity",
+    title: 'Quantity',
+    dataIndex: 'quantity',
+    key: 'quantity'
   },
   {
-    title: "Status",
-    dataIndex: "status",
-    key: "status",
+    title: 'Status',
+    dataIndex: 'status',
+    key: 'status'
   },
 
   {
-    title: "Actions",
-    dataIndex: "actions",
-    key: "actions",
-  },
+    title: 'Actions',
+    dataIndex: 'actions',
+    key: 'actions'
+  }
 ];
 
 const statusFilter = [R_CANCELED, R_DONE, R_REJECTED, R_ORDERED];
@@ -91,13 +92,13 @@ const statusFilter = [R_CANCELED, R_DONE, R_REJECTED, R_ORDERED];
 const AdminRequestProcessedComponent = ({
   getRequest,
   requestPagingData,
-  resetData,
+  resetData
 }) => {
-  const [searchMessage, setSearchMessage] = useState("");
+  const [searchMessage, setSearchMessage] = useState('');
   const [dateRange, setDateRange] = useState(DEFAULT_DATE_RANGE);
   const [openDetails, setOpenDetails] = useState(false);
   const [currentRequestSelected, setCurrentRequestSelected] = useState({});
-  const [category, setCategory] = useState("all");
+  const [category, setCategory] = useState('all');
 
   useEffect(() => {
     return () => {
@@ -114,9 +115,11 @@ const AdminRequestProcessedComponent = ({
         price: displayCurrency(+request.preferredUnitPrice),
         name: request.product.description,
         quantity:
-          +request.quantity || 0 + " " + get("product.unitType")(request),
+          +request.quantity || 0 + ' ' + get('product.unitType')(request),
         dueDate: (
-          <Moment format={DATE_TIME_FORMAT}>{new Date(request.dueDate)}</Moment>
+          <Moment format={DATE_TIME_FORMAT}>
+            {getUtcTime(request.dueDate)}
+          </Moment>
         ),
         status: <RequestStatusComponent status={request.requestStatus.id} />,
         actions: (
@@ -130,7 +133,7 @@ const AdminRequestProcessedComponent = ({
           >
             View
           </Button>
-        ),
+        )
       }))
     );
   };
@@ -146,7 +149,7 @@ const AdminRequestProcessedComponent = ({
       <ReactTableLayout
         dispatchAction={getRequest}
         searchProps={{
-          placeholder: "Search by product name",
+          placeholder: 'Search by product name',
           searchMessage,
           setSearchMessage,
           exElement: (
@@ -160,11 +163,11 @@ const AdminRequestProcessedComponent = ({
               />
             </Fragment>
           ),
-          exCondition: [statusFilter, category],
+          exCondition: [statusFilter, category]
         }}
         dateRangeProps={{
           dateRange,
-          setDateRange,
+          setDateRange
         }}
         data={getRequestTable(requestData || [])}
         columns={columns}
@@ -173,11 +176,11 @@ const AdminRequestProcessedComponent = ({
       <Drawer
         width={640}
         title="RFQ details"
-        placement={"right"}
+        placement={'right'}
         closable={true}
         onClose={() => setOpenDetails(false)}
         visible={openDetails}
-        key={"right"}
+        key={'right'}
       >
         <RequestDetailsComponent
           isSupplier={false}

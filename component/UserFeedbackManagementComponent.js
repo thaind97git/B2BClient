@@ -1,7 +1,7 @@
 import { Button, Row, Typography, Select } from 'antd';
 import React, { useState, useEffect } from 'react';
 import ReactTableLayout from '../layouts/ReactTableLayout';
-import { DATE_TIME_FORMAT, DEFAULT_DATE_RANGE } from '../utils';
+import { DATE_TIME_FORMAT, DEFAULT_DATE_RANGE, getUtcTime } from '../utils';
 import Router from 'next/router';
 import { connect } from 'react-redux';
 import { F_CLOSED, F_OPEN } from '../enums/feedbackStatus';
@@ -49,9 +49,9 @@ const columns = [
     key: 'title'
   },
   {
-    title: 'Date created',
-    dataIndex: 'dateCreated',
-    key: 'dateCreated'
+    title: 'Date updated',
+    dataIndex: 'dateUpdated',
+    key: 'dateUpdated'
   },
   {
     title: 'Status',
@@ -112,7 +112,7 @@ const UserFeedbackManagementComponent = ({
       feedbackData.map((feedback = {}) => ({
         key: feedback.id,
         title: feedback.title,
-        dateCreated: moment(new Date(feedback.dateCreated)).utc().local().format(DATE_TIME_FORMAT),
+        dateUpdated: getUtcTime(feedback.dateUpdated),
         status: (
           <FeedbackStatusComponent
             status={feedback.feedbackStatus.id}

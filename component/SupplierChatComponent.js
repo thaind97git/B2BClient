@@ -4,6 +4,7 @@ import MessageList from './Chat/MessageList';
 import TabsLayout from '../layouts/TabsLayout';
 import {
   fallbackImage,
+  getFromNowTime,
   getProductImage,
   getShortContent,
   parseBoolean
@@ -78,9 +79,7 @@ const GroupTile = ({
             {contentLabel}
           </small>{' '}
           <span>&nbsp;</span>{' '}
-          <small>
-            {lastMessageTime && moment.utc(lastMessageTime).local().fromNow()}
-          </small>
+          <small>{lastMessageTime && getFromNowTime(lastMessageTime)}</small>
         </div>
       </Col>
     </Col>

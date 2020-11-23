@@ -11,6 +11,7 @@ import {
 } from '../stores/AuctionState';
 import { useRouter } from 'next/router';
 import moment from 'moment';
+import { getUtcTime } from '../utils';
 const { TabPane } = Tabs;
 const { Countdown } = Statistic;
 const { Title } = Typography;
@@ -45,7 +46,7 @@ const SupplierBiddingDetailsComponent = ({
   }
   const { auctionStartTime, minimumDuration } = auctionDetailsData || {};
   const deadline =
-    new Date(moment.utc(auctionStartTime).local()).getTime() +
+    new Date(getUtcTime(auctionStartTime)).getTime() +
     1000 * 60 * minimumDuration;
   return (
     <div>

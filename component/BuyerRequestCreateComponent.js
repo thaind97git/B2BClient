@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState } from 'react';
 import {
   Form,
   Input,
@@ -12,15 +12,15 @@ import {
   Select,
   DatePicker,
   Empty,
-  Skeleton,
-} from "antd";
-import { LeftOutlined } from "@ant-design/icons";
-import { displayCurrency, openNotification } from "../utils";
-import { createStructuredSelector } from "reselect";
-import { connect } from "react-redux";
-import Router, { useRouter } from "next/router";
-import { SET_CATEGORY_SELECTED } from "../stores/initState";
-import { get } from "lodash/fp";
+  Skeleton
+} from 'antd';
+import { LeftOutlined } from '@ant-design/icons';
+import { displayCurrency, openNotification } from '../utils';
+import { createStructuredSelector } from 'reselect';
+import { connect } from 'react-redux';
+import Router, { useRouter } from 'next/router';
+import { SET_CATEGORY_SELECTED } from '../stores/initState';
+import { get } from 'lodash/fp';
 import {
   getCurrency,
   GetCurrencyData,
@@ -54,14 +54,14 @@ import {
   GetUnitOfMeasureResetter,
   getWard,
   GetWardData,
-  GetWardResetter,
-} from "../stores/SupportRequestState";
-import moment from "moment";
+  GetWardResetter
+} from '../stores/SupportRequestState';
+import moment from 'moment';
 import {
   getProductDetails,
   GetProductDetailsData,
-  GetProductDetailsError,
-} from "../stores/ProductState";
+  GetProductDetailsError
+} from '../stores/ProductState';
 import {
   createRequest,
   CreateRequestData,
@@ -69,8 +69,8 @@ import {
   CreateRequestResetter,
   getRequestDetails,
   GetRequestDetailsDataSelector,
-  GetRequestDetailsErrorSelector,
-} from "../stores/RequestState";
+  GetRequestDetailsErrorSelector
+} from '../stores/RequestState';
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -94,7 +94,7 @@ const connectToRedux = connect(
     createRequestData: CreateRequestData,
     createRequestError: CreateRequestError,
     requestDetailsData: GetRequestDetailsDataSelector,
-    requestDetailsError: GetRequestDetailsErrorSelector,
+    requestDetailsError: GetRequestDetailsErrorSelector
   }),
   (dispatch) => ({
     removeCategorySelected: () =>
@@ -127,23 +127,23 @@ const connectToRedux = connect(
       dispatch(GetWardResetter);
       dispatch(GetDistrictResetter);
       dispatch(CreateRequestResetter);
-    },
+    }
   })
 );
 const styles = {
-  colStyle: { padding: "0 8px" },
-  titleStyle: { fontWeight: 500 },
+  colStyle: { padding: '0 8px' },
+  titleStyle: { fontWeight: 500 }
 };
 const formItemLayout = {
   labelCol: { span: 4 },
-  wrapperCol: { span: 16 },
+  wrapperCol: { span: 16 }
 };
 const PriceInput = ({
   value = {},
   onChange,
   price,
   setPrice,
-  currencyData = [],
+  currencyData = []
 }) => {
   const currency = ((currencyData && currencyData[0]) || {}).id;
 
@@ -153,7 +153,7 @@ const PriceInput = ({
         price,
         currency,
         ...value,
-        ...changedValue,
+        ...changedValue
       });
     }
   };
@@ -167,7 +167,7 @@ const PriceInput = ({
     setPrice(newNumber);
 
     triggerChange({
-      price: newNumber,
+      price: newNumber
     });
   };
 
@@ -177,16 +177,16 @@ const PriceInput = ({
         placeholder="Enter the preferred unit price"
         onChange={onNumberChange}
         min={0}
-        style={{ width: "50%" }}
-        formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-        parser={(value) => value.replace(/,*/g, "")}
+        style={{ width: '50%' }}
+        formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+        parser={(value) => value.replace(/,*/g, '')}
       />
       <Input
         value="VND"
         disabled
         style={{
-          width: "48%",
-          margin: "0 4px",
+          width: '48%',
+          margin: '0 4px'
         }}
       />
     </span>
@@ -200,7 +200,7 @@ const QuantityInput = ({ value = {}, onChange, unitOfMeasure }) => {
       onChange({
         number,
         ...value,
-        ...changedValue,
+        ...changedValue
       });
     }
   };
@@ -213,7 +213,7 @@ const QuantityInput = ({ value = {}, onChange, unitOfMeasure }) => {
     }
 
     triggerChange({
-      number: newNumber,
+      number: newNumber
     });
   };
 
@@ -222,7 +222,7 @@ const QuantityInput = ({ value = {}, onChange, unitOfMeasure }) => {
       <InputNumber
         value={value.number || number}
         onChange={onNumberChange}
-        style={{ width: "50%" }}
+        style={{ width: '50%' }}
         min={0}
         placeholder="Enter the product quantity"
       />
@@ -230,8 +230,8 @@ const QuantityInput = ({ value = {}, onChange, unitOfMeasure }) => {
         value={(unitOfMeasure || {}).description}
         disabled
         style={{
-          width: "48%",
-          margin: "0 4px",
+          width: '48%',
+          margin: '0 4px'
         }}
       />
     </span>
@@ -243,7 +243,7 @@ const LeadTimeInput = ({ value = {}, onChange }) => {
     if (onChange) {
       onChange({
         ...value,
-        ...changedValue,
+        ...changedValue
       });
     }
   };
@@ -256,7 +256,7 @@ const LeadTimeInput = ({ value = {}, onChange }) => {
     }
 
     triggerChange({
-      number: newNumber,
+      number: newNumber
     });
   };
 
@@ -272,7 +272,7 @@ const LeadTimeInput = ({ value = {}, onChange }) => {
 
 function disabledDate(current) {
   // Can not select days before today and today
-  return current && current < moment().endOf("day");
+  return current && current < moment().endOf('day');
 }
 
 const BuyerRequestCreateComponent = ({
@@ -304,7 +304,7 @@ const BuyerRequestCreateComponent = ({
   createRequestError,
   resetData,
   isUpdate = false,
-  isLoggedIn,
+  isLoggedIn
 }) => {
   console.log({ isLoggedIn });
   const [price, setPrice] = useState(0);
@@ -332,7 +332,7 @@ const BuyerRequestCreateComponent = ({
     getShippingMethod,
     // getPaymentTerm,
     getSupCertification,
-    getProvince,
+    getProvince
   ]);
 
   useEffect(() => {
@@ -363,7 +363,7 @@ const BuyerRequestCreateComponent = ({
 
   useEffect(() => {
     if (!!createRequestError) {
-      openNotification("error", { message: "Create new request fail" });
+      openNotification('error', { message: 'Create new request fail' });
     }
     return () => {
       resetData();
@@ -371,11 +371,11 @@ const BuyerRequestCreateComponent = ({
   }, [createRequestError, resetData]);
 
   const onFinish = (values) => {
-    values.productId = productId + "";
-    values.preferredUnitPrice = get("preferredUnitPrice.price")(values) + "";
-    values.quantity = values.quantity.number + "";
-    values.dueDate = moment.utc(new Date(values.dueDate)).format();
-    values.currencyId = get("[0].id")(currencyData);
+    values.productId = productId + '';
+    values.preferredUnitPrice = get('preferredUnitPrice.price')(values) + '';
+    values.quantity = values.quantity.number + '';
+    values.dueDate = new Date(values.dueDate);
+    values.currencyId = get('[0].id')(currencyData);
     values.certifications = values.certifications || [];
     values.leadTime = values.leadTime.number;
     createRequest(values);
@@ -386,14 +386,14 @@ const BuyerRequestCreateComponent = ({
       return Promise.resolve();
     }
 
-    return Promise.reject("Price must be greater than zero!");
+    return Promise.reject('Price must be greater than zero!');
   };
   const checkUnit = (rule, value) => {
     if (value && value.number > 0) {
       return Promise.resolve();
     }
 
-    return Promise.reject("Quantity must be greater than zero!");
+    return Promise.reject('Quantity must be greater than zero!');
   };
   if (loadingRFQ) {
     return <Skeleton active />;
@@ -403,8 +403,8 @@ const BuyerRequestCreateComponent = ({
     return (
       <Fragment>
         <Empty description="Can not find any product! Please choose specify product before submit RFQ" />
-        <div style={{ textAlign: "center", paddingTop: 32 }}>
-          <Button onClick={() => Router.push("/")} type="primary">
+        <div style={{ textAlign: 'center', paddingTop: 32 }}>
+          <Button onClick={() => Router.push('/')} type="primary">
             <LeftOutlined /> Back to product list
           </Button>
         </div>
@@ -421,7 +421,7 @@ const BuyerRequestCreateComponent = ({
   return (
     <Row>
       <Row justify="space-between">
-        <Button onClick={() => Router.push("/")} type="primary">
+        <Button onClick={() => Router.push('/')} type="primary">
           <LeftOutlined /> Back to product list
         </Button>
       </Row>
@@ -445,9 +445,9 @@ const BuyerRequestCreateComponent = ({
                 bordered={false}
                 title={<b>Product Basic Information</b>}
                 style={{
-                  width: "100%",
-                  boxShadow: "2px 2px 14px 0 rgba(0,0,0,.1)",
-                  marginTop: 16,
+                  width: '100%',
+                  boxShadow: '2px 2px 14px 0 rgba(0,0,0,.1)',
+                  marginTop: 16
                 }}
               >
                 <Row align="middle">
@@ -463,13 +463,13 @@ const BuyerRequestCreateComponent = ({
                       rules={[
                         {
                           required: true,
-                          message: "Please select Sourcing Type",
-                        },
+                          message: 'Please select Sourcing Type'
+                        }
                       ]}
                     >
                       <Select
                         placeholder="Please select"
-                        style={{ width: "50%" }}
+                        style={{ width: '50%' }}
                       >
                         {!!sourcingTypeData &&
                           sourcingTypeData.map((type) => (
@@ -497,7 +497,7 @@ const BuyerRequestCreateComponent = ({
                     >
                       <Select
                         placeholder="Please select"
-                        style={{ width: "50%" }}
+                        style={{ width: '50%' }}
                       >
                         {!!sourcingPurposeData &&
                           sourcingPurposeData.map((type) => (
@@ -516,25 +516,25 @@ const BuyerRequestCreateComponent = ({
                     <FormItem
                       label={
                         <span>
-                          <span style={{ color: "red" }}>*</span> Quantity
+                          <span style={{ color: 'red' }}>*</span> Quantity
                         </span>
                       }
                       name="quantity"
                       rules={[
                         {
-                          validator: checkUnit,
-                        },
+                          validator: checkUnit
+                        }
                       ]}
                     >
                       <QuantityInput
-                        unitOfMeasure={get("unitOfMeasure")(productDetailsData)}
+                        unitOfMeasure={get('unitOfMeasure')(productDetailsData)}
                       />
                     </FormItem>
                   </Col>
                 </Row>
                 <Row align="middle">
                   <Col span={20}>
-                    <Row style={{ padding: "0px 12px 0px 4px" }} justify="end">
+                    <Row style={{ padding: '0px 12px 0px 4px' }} justify="end">
                       <Space>{displayCurrency(price)} or Lower</Space>
                     </Row>
                   </Col>
@@ -543,14 +543,14 @@ const BuyerRequestCreateComponent = ({
                       name="preferredUnitPrice"
                       label={
                         <span>
-                          <span style={{ color: "red" }}>*</span> Preferred Unit
+                          <span style={{ color: 'red' }}>*</span> Preferred Unit
                           Price:
                         </span>
                       }
                       rules={[
                         {
-                          validator: checkPrice,
-                        },
+                          validator: checkPrice
+                        }
                       ]}
                     >
                       <PriceInput
@@ -567,13 +567,13 @@ const BuyerRequestCreateComponent = ({
                       rules={[
                         {
                           required: true,
-                          message: "Please select trade term",
-                        },
+                          message: 'Please select trade term'
+                        }
                       ]}
                     >
                       <Select
                         placeholder="Please select"
-                        style={{ width: "50%" }}
+                        style={{ width: '50%' }}
                         disabled
                       >
                         {!!tradeTermData &&
@@ -597,17 +597,17 @@ const BuyerRequestCreateComponent = ({
                       rules={[
                         {
                           required: true,
-                          message: "Please select due date",
-                        },
+                          message: 'Please select due date'
+                        }
                       ]}
                     >
                       <DatePicker
                         placeholder="Select due date"
-                        style={{ width: "50%" }}
+                        style={{ width: '50%' }}
                         format="YYYY-MM-DD HH:mm:ss"
                         disabledDate={disabledDate}
                         showTime={{
-                          defaultValue: moment("00:00:00", "HH:mm:ss"),
+                          defaultValue: moment('00:00:00', 'HH:mm:ss')
                         }}
                       />
                     </FormItem>
@@ -619,8 +619,8 @@ const BuyerRequestCreateComponent = ({
                       rules={[
                         {
                           required: true,
-                          message: "Please enter the details",
-                        },
+                          message: 'Please enter the details'
+                        }
                       ]}
                     >
                       <Input.TextArea autoSize={{ minRows: 3 }} />
@@ -640,9 +640,9 @@ const BuyerRequestCreateComponent = ({
                 bordered={false}
                 title={<b>Supplier Capability</b>}
                 style={{
-                  width: "100%",
-                  boxShadow: "2px 2px 14px 0 rgba(0,0,0,.1)",
-                  marginTop: 32,
+                  width: '100%',
+                  boxShadow: '2px 2px 14px 0 rgba(0,0,0,.1)',
+                  marginTop: 32
                 }}
               >
                 <Row align="middle">
@@ -658,7 +658,7 @@ const BuyerRequestCreateComponent = ({
                             .toLowerCase()
                             .indexOf(input.toLowerCase()) >= 0
                         }
-                        style={{ width: "50%" }}
+                        style={{ width: '50%' }}
                       >
                         {!!supCertificationData &&
                           supCertificationData.map((type) => (
@@ -690,10 +690,10 @@ const BuyerRequestCreateComponent = ({
                 bordered={false}
                 title={<b>Shipping and Payment</b>}
                 style={{
-                  width: "100%",
-                  boxShadow: "2px 2px 14px 0 rgba(0,0,0,.1)",
+                  width: '100%',
+                  boxShadow: '2px 2px 14px 0 rgba(0,0,0,.1)',
                   marginTop: 32,
-                  marginBottom: 32,
+                  marginBottom: 32
                 }}
               >
                 <Row align="middle">
@@ -702,15 +702,15 @@ const BuyerRequestCreateComponent = ({
                       rules={[
                         {
                           required: true,
-                          message: "Please select shipping method",
-                        },
+                          message: 'Please select shipping method'
+                        }
                       ]}
                       label="Shipping Method"
                       name="shippingMethodId"
                     >
                       <Select
                         placeholder="Please select"
-                        style={{ width: "50%" }}
+                        style={{ width: '50%' }}
                       >
                         {!!shippingMethodData &&
                           shippingMethodData.map((type) => (
@@ -732,8 +732,8 @@ const BuyerRequestCreateComponent = ({
                       rules={[
                         {
                           required: true,
-                          message: "Please select province",
-                        },
+                          message: 'Please select province'
+                        }
                       ]}
                     >
                       <Select
@@ -741,7 +741,7 @@ const BuyerRequestCreateComponent = ({
                         onChange={(value) => {
                           getDistrict(value);
                           console.log({ form });
-                          form.resetFields(["districtId", "wardId"]);
+                          form.resetFields(['districtId', 'wardId']);
                         }}
                         showSearch
                         filterOption={(input, option) =>
@@ -749,7 +749,7 @@ const BuyerRequestCreateComponent = ({
                             .toLowerCase()
                             .indexOf(input.toLowerCase()) >= 0
                         }
-                        style={{ width: "50%" }}
+                        style={{ width: '50%' }}
                       >
                         {!!provinceData &&
                           provinceData.map((province) => (
@@ -768,15 +768,15 @@ const BuyerRequestCreateComponent = ({
                       rules={[
                         {
                           required: true,
-                          message: "Please select district",
-                        },
+                          message: 'Please select district'
+                        }
                       ]}
                     >
                       <Select
                         placeholder="Please select"
                         onChange={(value) => {
                           getWard(value);
-                          form.resetFields(["wardId"]);
+                          form.resetFields(['wardId']);
                         }}
                         showSearch
                         filterOption={(input, option) =>
@@ -784,7 +784,7 @@ const BuyerRequestCreateComponent = ({
                             .toLowerCase()
                             .indexOf(input.toLowerCase()) >= 0
                         }
-                        style={{ width: "50%" }}
+                        style={{ width: '50%' }}
                       >
                         {!!districtData &&
                           districtData.map((district) => (
@@ -802,13 +802,13 @@ const BuyerRequestCreateComponent = ({
                       rules={[
                         {
                           required: true,
-                          message: "Please select ward",
-                        },
+                          message: 'Please select ward'
+                        }
                       ]}
                     >
                       <Select
                         placeholder="Please select"
-                        style={{ width: "50%" }}
+                        style={{ width: '50%' }}
                       >
                         {!!wardData &&
                           wardData.map((ward) => (
@@ -826,8 +826,8 @@ const BuyerRequestCreateComponent = ({
                       rules={[
                         {
                           required: true,
-                          message: "Please enter the address",
-                        },
+                          message: 'Please enter the address'
+                        }
                       ]}
                     >
                       <Input placeholder="Enter the address shipping" />

@@ -19,7 +19,7 @@ import {
 } from '../enums/notificationStatus';
 import { ADMIN, BUYER, MODERATOR, SUPPLIER } from '../enums/accountRoles';
 import { Fragment } from 'react';
-
+import momentTimeZone from 'moment-timezone';
 export const currentPath = () => !isServer && Router.route;
 
 export const isServer = !process.browser;
@@ -32,6 +32,12 @@ export const DATE_TIME_FORMAT = `${DATE_FORMAT} ${TIME_FORMAT}`;
 
 export const formatDate = (time) =>
   time ? moment(time).format(DATE_FORMAT) : null;
+
+export const getFromNowTime = (time) =>
+  time ? moment.utc(time).fromNow() : null;
+
+export const getUtcTime = (time, format = DATE_TIME_FORMAT) =>
+  time ? momentTimeZone.tz(time, 'Etc/GMT+7').utc().format(format) : null;
 
 export const isValidDateFormat = (value) =>
   value ? moment(value, DATE_FORMAT, true).isValid() : false;

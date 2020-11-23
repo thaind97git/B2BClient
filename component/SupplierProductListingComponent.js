@@ -6,7 +6,7 @@ import {
 import Router from 'next/router';
 import React, { useEffect, useState } from 'react';
 import ReactTableLayout from '../layouts/ReactTableLayout';
-import { DATE_TIME_FORMAT, DEFAULT_DATE_RANGE } from '../utils';
+import { DATE_TIME_FORMAT, DEFAULT_DATE_RANGE, getUtcTime } from '../utils';
 import AllCategoryComponent from './AllCategoryComponent';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
@@ -77,11 +77,11 @@ const SupplierProductListingComponent = ({
       dataIndex: 'productName',
       key: 'productName'
     },
-    // {
-    //   title: 'Date Register',
-    //   dataIndex: 'dateCreated',
-    //   key: 'dateCreated'
-    // },
+    {
+      title: 'Date Register',
+      dataIndex: 'dateCreated',
+      key: 'dateCreated'
+    },
     {
       title: 'Supplying Status',
       dataIndex: 'status',
@@ -113,7 +113,7 @@ const SupplierProductListingComponent = ({
         ),
         dateCreated: (
           <Moment format={DATE_TIME_FORMAT}>
-            {new Date(product.dateCreated)}
+            {getUtcTime(product.dateCreated)}
           </Moment>
         ),
         status: <ProductStatus isDelete={product.isDeleted} />,

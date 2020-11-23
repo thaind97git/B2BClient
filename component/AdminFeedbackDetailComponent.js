@@ -25,7 +25,9 @@ import { F_CLOSED, F_OPEN } from '../enums/feedbackStatus';
 import {
   DATE_TIME_FORMAT,
   getCurrentUserImage,
-  getFeedbackFileURL
+  getFeedbackFileURL,
+  getFromNowTime,
+  getUtcTime
 } from '../utils';
 import { CurrentUserData } from '../stores/UserState';
 import { createStructuredSelector } from 'reselect';
@@ -254,9 +256,7 @@ const AdminFeedbackDetailComponent = ({
                 ? getCurrentUserImage(user.id)
                 : '/static/images/avatar.png',
               content: <Card>{feedbackItem.description}</Card>,
-              datetime: moment(new Date(feedbackDetailsData.dateCreated))
-                .utc()
-                .fromNow()
+              datetime: getFromNowTime(feedbackDetailsData.dateCreated)
             }
           ]);
         }
@@ -339,9 +339,7 @@ const AdminFeedbackDetailComponent = ({
                 <br />
                 <div style={{ fontSize: '17px', fontWeight: 'bold' }}>
                   <Moment format={DATE_TIME_FORMAT}>
-                    {moment
-                      .utc(new Date(feedbackDetailsData.dateCreated))
-                      .local()}
+                    {getUtcTime(feedbackDetailsData.dateCreated)}
                   </Moment>
                 </div>
               </Card>
@@ -415,9 +413,7 @@ const AdminFeedbackDetailComponent = ({
                 ></Upload>
               </Card>
             }
-            datetime={moment(new Date(feedbackDetailsData.dateCreated))
-              .utc()
-              .fromNow()}
+            datetime={getFromNowTime(feedbackDetailsData.dateCreated)}
           />
           {comments.length > 0 && <CommentList comments={comments} />}
           {isReply ? (

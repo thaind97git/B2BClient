@@ -7,7 +7,8 @@ import {
   DATE_TIME_FORMAT,
   DEFAULT_DATE_RANGE,
   DEFAULT_PAGING_INFO,
-  displayCurrency
+  displayCurrency,
+  getUtcTime
 } from '../utils';
 import GroupCreateComponent from './GroupCreateComponent';
 import RequestStatusComponent from './Utils/RequestStatusComponent';
@@ -233,7 +234,9 @@ const AdminRequestDrawerManagement = ({
         quantity:
           +request.quantity || 0 + ' ' + get('product.unitType')(request),
         dueDate: (
-          <Moment format={DATE_TIME_FORMAT}>{new Date(request.dueDate)}</Moment>
+          <Moment format={DATE_TIME_FORMAT}>
+            {getUtcTime(request.dueDate)}
+          </Moment>
         ),
         status: (
           <RequestStatusComponent status={(request.requestStatus || {}).id} />

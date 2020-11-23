@@ -1,7 +1,7 @@
 import Router from 'next/router';
 const { Menu, Typography, Tooltip } = require('antd');
 const { BUYER } = require('../enums/accountRoles');
-const { getLabelNotify } = require('../utils');
+const { getLabelNotify, getFromNowTime } = require('../utils');
 const { Title } = Typography;
 const moment = require('moment');
 const NotifyItem = ({ notify = [], role = BUYER }) => {
@@ -65,7 +65,7 @@ const NotifyItem = ({ notify = [], role = BUYER }) => {
                     >
                       <span>{label}</span>
                     </div>
-                    <small>{moment.utc(dateCreated).local().fromNow()}</small>
+                    <small>{getFromNowTime(dateCreated)}</small>
                   </div>
                 </div>
               </Tooltip>
