@@ -15,6 +15,7 @@ import {
 import FeedbackStatusComponent from './Utils/FeedbackStatusComponent';
 import { get } from 'lodash/fp';
 import Moment from 'react-moment';
+import moment from 'moment';
 const { Title } = Typography;
 const { Option } = Select;
 
@@ -108,11 +109,10 @@ const AdminFeedbackManagementComponent = ({
       feedbackData.map((feedback = {}) => ({
         key: feedback.id,
         title: feedback.title,
-        dateUpdated: (
-          <Moment format={DATE_TIME_FORMAT}>
-            {new Date(feedback.dateUpdated)}
-          </Moment>
-        ),
+        dateUpdated: moment(new Date(feedback.dateCreated))
+          .utc()
+          .local()
+          .format(DATE_TIME_FORMAT),
         user: feedback.user.email,
         status: (
           <FeedbackStatusComponent

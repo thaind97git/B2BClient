@@ -109,21 +109,28 @@ const CommentList = ({ comments }) => (
   />
 );
 const Editor = ({ onChange, onSubmit, submitting, value }) => (
-  <>
-    <FormItem>
+  <Form
+    autoComplete="new-password"
+    className="register-form"
+    onFinish={onSubmit}
+  >
+    <Form.Item
+      name="reply"
+      rules={[
+        {
+          required: true,
+          message: 'Please Enter Your Reply'
+        }
+      ]}
+    >
       <TextArea rows={4} onChange={onChange} value={value} />
-    </FormItem>
-    <FormItem>
-      <Button
-        htmlType="submit"
-        loading={submitting}
-        onClick={onSubmit}
-        type="primary"
-      >
+    </Form.Item>
+    <Form.Item>
+      <Button htmlType="submit" loading={submitting} type="primary">
         Reply
       </Button>
-    </FormItem>
-  </>
+    </Form.Item>
+  </Form>
 );
 const customIcons1 = {
   1: <FrownOutlined />,
@@ -271,10 +278,10 @@ const UserFeedbackDetailComponent = ({
             {
               author: user.firstName + ' ' + user.lastName,
               avatar: user.avatar
-                ? getCurrentUserImage(user.avatar)
+                ? getCurrentUserImage(user.id)
                 : '/static/images/avatar.png',
               content: <Card>{feedbackItem.description}</Card>,
-              datetime: moment(feedbackItem.dateCreated).fromNow()
+              datetime: moment(new Date(feedbackDetailsData.dateCreated)).utc().fromNow()
             }
           ]);
         }
@@ -283,7 +290,6 @@ const UserFeedbackDetailComponent = ({
         for (let i = 0; i < feedbackDetailsData.files.length; i++) {
           const feedbackFileItem = feedbackDetailsData.files[i];
           getFeedbackFile(feedbackFileItem.id);
-          //console.log(feedbackFileData.headers);
           setFileList((fileList) => [
             ...fileList,
             {
@@ -362,7 +368,7 @@ const UserFeedbackDetailComponent = ({
                 <br />
                 <div style={{ fontSize: '17px', fontWeight: 'bold' }}>
                   <Moment format={DATE_TIME_FORMAT}>
-                    {new Date(feedbackDetailsData.dateCreated)}
+                    {moment.utc(new Date(feedbackDetailsData.dateCreated)).local()}
                   </Moment>
                 </div>
               </Card>
@@ -426,7 +432,7 @@ const UserFeedbackDetailComponent = ({
             }
             avatar={
               feedbackDetailsData.user.avatar
-                ? getCurrentUserImage(feedbackDetailsData.user.avatar)
+                ? getCurrentUserImage(feedbackDetailsData.user.id)
                 : '/static/images/avatar.png'
             }
             content={
@@ -456,15 +462,9 @@ const UserFeedbackDetailComponent = ({
                 ></Upload>
               </Card>
             }
-            datetime={
-              <Tooltip
-                title={moment()
-                  .subtract(1, 'days')
-                  .format('YYYY-MM-DD HH:mm:ss')}
-              >
-                <span>{moment(feedbackDetailsData.dateCreated).fromNow()}</span>
-              </Tooltip>
-            }
+            datetime={moment(new Date(feedbackDetailsData.dateCreated))
+              .utc()
+              .fromNow()}
           />
           {comments.length > 0 && <CommentList comments={comments} />}
           {isReply ? (
@@ -472,7 +472,7 @@ const UserFeedbackDetailComponent = ({
               author={currentUser.firstName + ' ' + currentUser.lastName}
               avatar={
                 currentUser.avatar
-                  ? getCurrentUserImage(currentUser.avatar)
+                  ? getCurrentUserImage(currentUser.id)
                   : '/static/images/avatar.png'
               }
               content={
