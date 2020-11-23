@@ -1,27 +1,28 @@
-require("dotenv").config();
-const lessToJS = require("less-vars-to-js");
-const fs = require("fs");
-const path = require("path");
-const withLess = require("@zeit/next-less");
+require('dotenv').config();
+const lessToJS = require('less-vars-to-js');
+const fs = require('fs');
+const path = require('path');
+const withLess = require('@zeit/next-less');
 // const withCSS = require("@zeit/next-css");
-const withPlugins = require("next-compose-plugins");
-const Dotenv = require("dotenv-webpack");
+const withPlugins = require('next-compose-plugins');
+const Dotenv = require('dotenv-webpack');
 
 // Where your antd-custom.less file lives
 const themeVariables = lessToJS(
-  fs.readFileSync(path.resolve(__dirname, "./styles/antd-custom.less"), "utf8")
+  fs.readFileSync(path.resolve(__dirname, './styles/antd-custom.less'), 'utf8')
 );
 
 const nextConfig = {
   env: {},
-  distDir: ".next",
+  distDir: '.next',
+  target: 'serverless'
 };
 
 const plugins = [
   withLess({
     lessLoaderOptions: {
       javascriptEnabled: true,
-      modifyVars: themeVariables,
+      modifyVars: themeVariables
     },
     webpack: (config, { isServer, defaultLoaders }) => {
       config.plugins = config.plugins || [];
@@ -31,9 +32,9 @@ const plugins = [
 
         // Read the .env file
         new Dotenv({
-          path: path.join(__dirname, "env/.env"),
-          systemvars: true,
-        }),
+          path: path.join(__dirname, 'env/.env'),
+          systemvars: true
+        })
       ];
       if (isServer) {
         const antStyles = /antd\/.*?\/style.*?/;
@@ -41,13 +42,13 @@ const plugins = [
         config.externals = [
           (context, request, callback) => {
             if (request.match(antStyles)) return callback();
-            if (typeof origExternals[0] === "function") {
+            if (typeof origExternals[0] === 'function') {
               origExternals[0](context, request, callback);
             } else {
               callback();
             }
           },
-          ...(typeof origExternals[0] === "function" ? [] : origExternals),
+          ...(typeof origExternals[0] === 'function' ? [] : origExternals)
         ];
       }
 
@@ -56,21 +57,21 @@ const plugins = [
         use: [
           defaultLoaders.babel,
           {
-            loader: "html-loader",
+            loader: 'html-loader',
             options: {
-              attrs: [":data-src"],
-            },
-          },
-        ],
+              attrs: [':data-src']
+            }
+          }
+        ]
       });
       config.module.rules.push({
         test: /\.css$/,
-        loaders: ["style-loader", "css-loader?modules"],
+        loaders: ['style-loader', 'css-loader?modules']
       });
 
       return config;
-    },
-  }),
+    }
+  })
   // withCSS({
   //   cssModules: true,
   //   cssLoaderOptions: {
