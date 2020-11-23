@@ -12,7 +12,8 @@ import {
   ProfileOutlined,
   MessageOutlined,
   BellOutlined,
-  LogoutOutlined
+  LogoutOutlined,
+  DashboardOutlined
 } from '@ant-design/icons';
 import MemberNavComponent from '../component/MemberNavComponent';
 import { currentPath } from '../utils';
@@ -38,13 +39,12 @@ import { CurrentUserData } from '../stores/UserState';
 const { Header, Content, Sider } = Layout;
 
 const ADMIN_MENU = [
-  // {
-  //   key: "1",
-  //   icon: <UserOutlined />,
-  //   label: "Dashboard",
-  //   link: "/aggregator",
-  //   subMenu: [],
-  // },
+  {
+    key: '0',
+    icon: <DashboardOutlined />,
+    label: 'Dashboard',
+    link: '/aggregator'
+  },
   {
     key: '2',
     icon: <ProfileOutlined />,
@@ -136,7 +136,8 @@ const AggregatorLayout = ({
   resetSeenNotify,
   seenNotificationData,
   seenNotification,
-  currentUserData
+  currentUserData,
+  hasBackground = true
 }) => {
   const [collapsed, setCollapsed] = useState(true);
   const [openMessage, setOpenMessage] = useState(false);
@@ -289,7 +290,7 @@ const AggregatorLayout = ({
                 padding: 24,
                 minHeight: 280,
                 height: isChat ? 'calc(100vh - 64px - 48px)' : 'auto',
-                background: '#fff'
+                background: hasBackground ? '#fff' : 'transparent'
               }}
             >
               {children}

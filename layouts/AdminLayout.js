@@ -138,7 +138,8 @@ const AdminLayout = ({
   resetSeenNotify,
   seenNotificationData,
   seenNotification,
-  currentUserData
+  currentUserData,
+  hasBackground = true
 }) => {
   const [collapsed, setCollapsed] = useState(true);
   const [openMessage, setOpenMessage] = useState(false);
@@ -290,7 +291,7 @@ const AdminLayout = ({
                 margin: '24px 16px',
                 padding: 24,
                 minHeight: 280,
-                background: '#fff'
+                background: hasBackground ? '#fff' : 'transparent'
               }}
             >
               {children}

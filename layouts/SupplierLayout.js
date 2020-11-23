@@ -12,8 +12,7 @@ import {
   FallOutlined,
   MessageOutlined,
   LogoutOutlined,
-  LogoutTwoTone,
-  HeartTwoTone
+  DashboardOutlined
 } from '@ant-design/icons';
 import MemberNavComponent from '../component/MemberNavComponent';
 import { currentPath } from '../utils';
@@ -40,6 +39,12 @@ const { Header, Content, Sider } = Layout;
 
 const SUPPLIER_MENU = [
   {
+    key: '0',
+    icon: <DashboardOutlined />,
+    label: 'Dashboard',
+    link: '/supplier'
+  },
+  {
     key: '4',
     icon: <MessageOutlined />,
     label: 'Chat',
@@ -55,7 +60,7 @@ const SUPPLIER_MENU = [
   {
     key: '3',
     icon: <FallOutlined />,
-    label: 'Available reverse auctions',
+    label: 'Reverse Auction',
     link: '/supplier/bidding',
     subMenu: []
   },
@@ -136,7 +141,8 @@ const SupplierLayout = ({
   resetSeenNotify,
   notificationCountData,
   getNotificationCount,
-  currentUserData
+  currentUserData,
+  hasBackground = true
 }) => {
   const [collapsed, setCollapsed] = useState(true);
   const [openMessage, setOpenMessage] = useState(false);
@@ -196,6 +202,9 @@ const SupplierLayout = ({
       // signalR.stopConnection();
     };
   }, [resetSeenNotify]);
+  if (!currentUserData) {
+    return null;
+  }
   return (
     <div
       style={{
@@ -293,7 +302,7 @@ const SupplierLayout = ({
                 padding: 24,
                 minHeight: 280,
                 height: isChat ? 'calc(100vh - 64px - 48px)' : 'auto',
-                background: '#fff'
+                background: hasBackground ? '#fff' : 'transparent'
               }}
             >
               {children}
