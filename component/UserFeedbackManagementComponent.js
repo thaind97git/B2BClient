@@ -6,7 +6,6 @@ import Router from 'next/router';
 import { connect } from 'react-redux';
 import { F_CLOSED, F_OPEN } from '../enums/feedbackStatus';
 import { createStructuredSelector } from 'reselect';
-import moment from 'moment';
 import {
   getFeedbackPaging,
   GetFeedbackPagingData,
@@ -112,7 +111,11 @@ const UserFeedbackManagementComponent = ({
       feedbackData.map((feedback = {}) => ({
         key: feedback.id,
         title: feedback.title,
-        dateCreated: moment(new Date(feedback.dateCreated)).utc().local().format(DATE_TIME_FORMAT),
+        dateCreated: (
+          <Moment format={DATE_TIME_FORMAT}>
+            {new Date(feedback.dateCreated)}
+          </Moment>
+        ),
         status: (
           <FeedbackStatusComponent
             status={feedback.feedbackStatus.id}
@@ -122,9 +125,9 @@ const UserFeedbackManagementComponent = ({
           <Button
             onClick={() => {
               if (currentUser.role === 'Supplier') {
-                Router.push(`/supplier/feedback/detail?id=${feedback.id}`);
+                Router.push(`/supplier/feedback/details?id=${feedback.id}`);
               } else if (currentUser.role === 'Buyer') {
-                Router.push(`/buyer/feedback/detail?id=${feedback.id}`);
+                Router.push(`/buyer/feedback/details?id=${feedback.id}`);
               }
             }}
             size="small"

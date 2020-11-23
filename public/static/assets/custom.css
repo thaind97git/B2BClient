@@ -69,10 +69,29 @@ ul {
 }
 
 .dropdown-notify {
+  margin: 19px 0px !important;
+  line-height: 18px !important;
+  height: auto !important;
   white-space: normal !important;
 }
 .table-row-request-canceled:not(button) {
   font-style: italic;
   cursor: not-allowed;
   color: #6262627a;
+}
+.item-notify {
+  line-height: 20px !important;
+  border-radius: 6px;
+  min-height: 1rem;
+  max-height: 5em;
+  text-align: left;
+  white-space: normal;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+.shadow {
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1), 0 6px 6px rgba(0, 0, 0, 0.1) !important;
 }

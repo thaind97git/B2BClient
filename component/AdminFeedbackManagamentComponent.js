@@ -119,7 +119,7 @@ const AdminFeedbackManagementComponent = ({
         actions: (
           <Button
             onClick={() => {
-              Router.push(`/admin/feedback/detail?id=${feedback.id}`);
+              Router.push(`/admin/feedback/details?id=${feedback.id}`);
             }}
             size="small"
             type="link"

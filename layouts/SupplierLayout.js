@@ -1,15 +1,6 @@
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
-import {
-  Layout,
-  Menu,
-  Row,
-  Dropdown,
-  Divider,
-  Badge,
-  Space,
-  Typography
-} from 'antd';
+import { Layout, Menu, Row, Dropdown, Divider, Badge, Space } from 'antd';
 import {
   DownOutlined,
   LoginOutlined,
@@ -22,7 +13,7 @@ import {
   MessageOutlined
 } from '@ant-design/icons';
 import MemberNavComponent from '../component/MemberNavComponent';
-import { currentPath, getLabelNotify } from '../utils';
+import { currentPath } from '../utils';
 import Link from 'next/link';
 import { removeToken } from '../libs/localStorage';
 import Router from 'next/router';
@@ -31,12 +22,17 @@ import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 import {
   getNotification,
-  GetNotificationData
+  getNotificationCount,
+  GetNotificationCountData,
+  GetNotificationData,
+  seenNotification,
+  SeenNotificationData,
+  SeenNotificationResetter
 } from '../stores/NotificationState';
 import { SUPPLIER } from '../enums/accountRoles';
+import NotifyItem from './NotifyItem';
 
 const { Header, Content, Sider } = Layout;
-const { Title } = Typography;
 
 const SUPPLIER_MENU = [
   {
@@ -83,11 +79,16 @@ const SUPPLIER_MENU = [
 
 const connectToRedux = connect(
   createStructuredSelector({
-    notificationData: GetNotificationData
+    notificationData: GetNotificationData,
+    seenNotificationData: SeenNotificationData,
+    notificationCountData: GetNotificationCountData
   }),
   (dispatch) => ({
     getNotification: ({ pageIndex, pageSize }) =>
-      dispatch(getNotification({ pageIndex, pageSize }))
+      dispatch(getNotification({ pageIndex, pageSize })),
+    seenNotification: () => dispatch(seenNotification()),
+    resetSeenNotify: () => dispatch(SeenNotificationResetter),
+    getNotificationCount: () => dispatch(getNotificationCount())
   })
 );
 
@@ -109,42 +110,6 @@ const PROFILE_MENU = (
     </Menu.Item>
   </Menu>
 );
-
-const getMenuNotify = (notify = []) => {
-  return (
-    <Menu style={{ width: 360, maxHeight: '90vh', overflowY: 'scroll' }}>
-      <Menu.ItemGroup title={<Title level={4}>Notification</Title>}>
-        {notify.map((item) => {
-          const {
-            group = {},
-            invitation = {},
-            request = {},
-            reverseAuction = {},
-            notificationType = {},
-            id: notifyId
-          } = item || {};
-          const { id, description: title } =
-            group || request || reverseAuction || invitation || {};
-          const { label, link } = getLabelNotify({
-            type: (notificationType || {}).id,
-            id,
-            role: SUPPLIER,
-            title
-          });
-          return (
-            <Fragment>
-              <Menu.Item key={notifyId}>
-                <a href={link}>{label}</a>
-              </Menu.Item>
-              <Menu.Divider />
-            </Fragment>
-          );
-        })}
-      </Menu.ItemGroup>
-    </Menu>
-  );
-};
-
 const signalR = new SignalR({
   hubDomain: 'notificationHub'
 });
@@ -153,19 +118,39 @@ const SupplierLayout = ({
   children,
   isChat,
   getNotification,
-  notificationData
+  notificationData,
+  seenNotification,
+  seenNotificationData,
+  resetSeenNotify,
+  notificationCountData,
+  getNotificationCount
 }) => {
   const [collapsed, setCollapsed] = useState(true);
   const [openMessage, setOpenMessage] = useState(false);
   const [firstTime, setFirstTime] = useState(true);
   const [menuNotify, setMenuNotify] = useState([]);
   const [notifyCount, setNotifyCount] = useState(null);
+
+  useEffect(() => {
+    if (seenNotificationData) {
+      setNotifyCount(0);
+      resetSeenNotify();
+    }
+  }, [seenNotificationData, resetSeenNotify]);
+
   useEffect(() => {
     if (firstTime) {
+      getNotificationCount();
       getNotification({});
       setFirstTime(false);
     }
-  }, [getNotification, firstTime]);
+  }, [getNotification, firstTime, getNotificationCount]);
+
+  useEffect(() => {
+    if (notificationCountData) {
+      setNotifyCount(notificationCountData);
+    }
+  }, [notificationCountData]);
 
   useEffect(() => {
     if (notificationData) {
@@ -176,7 +161,6 @@ const SupplierLayout = ({
   useEffect(() => {
     signalR.onListen('NewNotify', (newNotify) => {
       if (newNotify && newNotify.id) {
-        console.log({ newNotify });
         setMenuNotify((prev) => {
           const tmp = [...prev];
           tmp.unshift(newNotify);
@@ -188,22 +172,17 @@ const SupplierLayout = ({
 
   useEffect(() => {
     signalR.onListen('NewNotifyCount', (newCount) => {
-      console.log({ newCountBeforeCheck: newCount });
       if (newCount) {
-        console.log({ newCountAfterCheck: newCount });
-        setNotifyCount((prev) => {
-          console.log({ prev });
-          console.log(prev + newCount);
-          return 10;
-        });
+        setNotifyCount(newCount);
       }
     });
   }, []);
   useEffect(() => {
     return () => {
-      signalR.stopConnection();
+      resetSeenNotify();
+      // signalR.stopConnection();
     };
-  }, []);
+  }, [resetSeenNotify]);
   return (
     <div
       style={{
@@ -259,13 +238,22 @@ const SupplierLayout = ({
                 )}
                 <Space style={{ marginRight: 24 }}>
                   <Dropdown
-                    overlay={getMenuNotify(menuNotify || [])}
+                    overlay={
+                      <NotifyItem notify={menuNotify || []} role={SUPPLIER} />
+                    }
                     onVisibleChange={setOpenMessage}
                     visible={openMessage}
                     trigger={['click']}
+                    placement="bottomCenter"
                   >
                     {notifyCount ? (
-                      <Badge style={{ cursor: 'pointer' }} count={notifyCount}>
+                      <Badge
+                        onClick={() => {
+                          notifyCount !== 0 && seenNotification();
+                        }}
+                        style={{ cursor: 'pointer' }}
+                        count={notifyCount}
+                      >
                         <BellOutlined style={{ fontSize: 16 }} />
                       </Badge>
                     ) : (

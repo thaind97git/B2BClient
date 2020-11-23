@@ -1,6 +1,6 @@
 import Router from 'next/router';
 import { useEffect } from 'react';
-import AdminDashBoardComponent from '../../component/AdminDashBoardComponent';
+import AdminDashboardComponent from '../../component/AdminDashboardComponent';
 import AdminLayout from '../../layouts/AdminLayout';
 const Page = () => {
   // useEffect(() => {
@@ -9,7 +9,7 @@ const Page = () => {
   return (
     <AdminLayout>
       <div id="container">
-        <AdminDashBoardComponent />
+        <AdminDashboardComponent />
       </div>
     </AdminLayout>
   );
