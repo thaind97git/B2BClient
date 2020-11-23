@@ -1,6 +1,5 @@
-import React, { useState, useRef } from "react";
-import { connect } from "react-redux";
-import { compose } from "redux";
+import React, { useState, useRef, useEffect } from 'react';
+import { connect } from 'react-redux';
 import {
   Descriptions,
   Row,
@@ -14,12 +13,24 @@ import {
   Button,
   Skeleton,
   Input
-} from "antd";
-import { UploadOutlined, LockOutlined } from "@ant-design/icons";
+} from 'antd';
+import { UploadOutlined, LockOutlined } from '@ant-design/icons';
 // import UserProfileEditComponent from "./UserProfileEditComponent";
-import { createStructuredSelector } from "reselect";
-import { CurrentUserData, userUploadAvatar, userUpdatePassword } from "../stores/UserState";
-import { acceptFileMimes, acceptFileTypes, openNotification, fallbackImage, getCurrentUserImage } from "../utils";
+import { createStructuredSelector } from 'reselect';
+import {
+  CurrentUserData,
+  userUploadAvatar,
+  userUpdatePassword,
+  getUser,
+  getUserData,
+  getUserResetter
+} from '../stores/UserState';
+import {
+  acceptFileMimes,
+  acceptFileTypes,
+  openNotification,
+  getCurrentUserImage
+} from '../utils';
 import ImgCrop from 'antd-img-crop';
 const { Title } = Typography;
 const DescriptionItem = ({ title, content }) => (
@@ -48,114 +59,117 @@ function getBase64(file) {
 
 const connectToRedux = connect(
   createStructuredSelector({
-    currentUser: CurrentUserData
+    currentUser: CurrentUserData,
+    getUserData: getUserData
   }),
   (dispatch) => ({
-    uploadAvatar: (fileList) =>
-      dispatch(userUploadAvatar(fileList)),
+    uploadAvatar: (fileList) => dispatch(userUploadAvatar(fileList)),
     updatePassword: ({ oldPassword, newPassword }) =>
       dispatch(userUpdatePassword({ oldPassword, newPassword })),
+    getUser: (id) => dispatch(getUser(id)),
+    resetGetUser: () => dispatch(getUserResetter)
   })
 );
 
-const USER_PROFILE = {
-  email: "duyquanghoang27@gmail.com",
-  firstName: "Duy",
-  lastName: "Quang",
-  companyName: "B2S Corp",
-  address: "string",
-  telephone: "0919727775",
-  isEmailVerified: false,
-  fax: "None",
-  alternativeEmail: "None",
-  mobile: "None",
-  tradeTerms: "FOB",
-  certifi: "ISO/TS16949",
-};
-const UserProfileComponent = ({ isDrawer, userId, currentUser, uploadAvatar, updatePassword }) => {
+// const USER_PROFILE = {
+//   email: 'duyquanghoang27@gmail.com',
+//   firstName: 'Duy',
+//   lastName: 'Quang',
+//   companyName: 'B2S Corp',
+//   address: 'string',
+//   telephone: '0919727775',
+//   isEmailVerified: false,
+//   fax: 'None',
+//   alternativeEmail: 'None',
+//   mobile: 'None',
+//   tradeTerms: 'FOB',
+//   certifi: 'ISO/TS16949'
+// };
+const UserProfileComponent = ({
+  isDrawer,
+  userId,
+  currentUser,
+  uploadAvatar,
+  updatePassword,
+  getUser,
+  getUserData,
+  resetGetUser
+}) => {
   const [changePasswordVisible, setChangePasswordVisible] = useState(false);
-  const [imageUrl, setImageUrl] = useState(currentUser.avatar ? getCurrentUserImage(  currentUser.avatar) : "/static/images/avatar.png");
-  const [loading, setLoading] = useState(false);
+  const [imageUrl, setImageUrl] = useState(
+    currentUser.avatar
+      ? getCurrentUserImage(currentUser.avatar)
+      : '/static/images/avatar.png'
+  );
+  const [loading, setLoading] = useState(true);
   const [preview, setPreview] = useState({
     previewVisible: false,
-    previewImage: "",
+    previewImage: ''
   });
   const updatePasswordRef = useRef();
   const [fileList, setList] = useState([
     {
-      uid: "-1",
-      name: "image.png",
-      status: "done",
-      url: imageUrl 
+      uid: '-1',
+      name: 'image.png',
+      status: 'done',
+      url: imageUrl
     }
   ]);
+  useEffect(() => {
+    if (userId) {
+      setLoading(true);
+      getUser(userId);
+    }
+  }, [userId, getUser]);
+
+  useEffect(() => {
+    if (getUserData) {
+      setLoading(false);
+    }
+  }, [getUserData]);
+
   const showChangePasswordModal = () => {
     setChangePasswordVisible(true);
   };
 
-  const handleChangePasswordOk = (e) => {
+  useEffect(() => {
+    return () => {
+      resetGetUser();
+    };
+  }, [resetGetUser]);
+
+  const handleChangePasswordOk = () => {
     updatePasswordRef.current.submit();
   };
   //handle User Profile Edit Cancel
-  const handleChangePasswordCancel = (e) => {
+  const handleChangePasswordCancel = () => {
     setChangePasswordVisible(false);
   };
 
   //Finish Update Password form
   const onUpdatePasswordFinish = (values) => {
-    updatePassword({ oldPassword: values[`old-password`], newPassword: values[`new-password`] });
+    updatePassword({
+      oldPassword: values[`old-password`],
+      newPassword: values[`new-password`]
+    });
     setChangePasswordVisible(false);
-  }
-
-  // const checkPassword = (rule, value = {}) => {
-  //   if (value.value) {
-  //     return Promise.resolve();
-  //   }
-
-  //   return Promise.reject("Please enter the password !");
-  // };
+  };
 
   const checkNewPassword = (rule, value = {}) => {
     const form = updatePasswordRef.current;
-    if (!value || form.getFieldValue("new-password") === value) {
+    if (!value || form.getFieldValue('new-password') === value) {
       return Promise.resolve();
     }
-    return Promise.reject("Confirm password not match !");
+    return Promise.reject('Confirm password not match !');
   };
 
   //handle After upload avatar
   const handleAvatarChange = (info) => {
-
-    // if (info.file.status === 'uploading') {
-    //   setLoading(true)
-    //   return;
-    // }
-    // if (info.file.status === 'done') {
-    //   // Get this url from response in real world.
-    //   getBase64(info.file.originFileObj, imageUrl => {
-    //     setImageUrl(imageUrl);
-    //     setLoading(false);
-    //   }
-    //   );
-    // }
-
     let fileList = [...info.fileList];
     fileList = fileList.slice(-1);
-    // 2. Read from response and show file link
-    // fileList = fileList.map((file) => {
-    //   if (file.response) {
-    //     // Component will show file.url as link
-    //     file.url = file.response.url;
-    //   }
-    //   return file;
-    // });
     uploadAvatar(fileList);
     setList(fileList);
   };
-
-  if (loading) {
-    return <Skeleton active />;
-  }
 
   //Handle Picture Preview
   const handlePreviewCancel = () => setPreview({ previewVisible: false });
@@ -168,40 +182,43 @@ const UserProfileComponent = ({ isDrawer, userId, currentUser, uploadAvatar, upd
       previewImage: file.url || file.preview,
       previewVisible: true,
       previewTitle:
-        file.name || file.url.substring(file.url.lastIndexOf("/") + 1),
+        file.name || file.url.substring(file.url.lastIndexOf('/') + 1)
     });
   };
 
-  // const uploadButton = (
-  //   <div>
-  //     {loading ? <LoadingOutlined /> : <PlusOutlined />}
-  //     <div style={{ marginTop: 8 }}>Upload</div>
-  //   </div>
-  // );
-
   if (isDrawer) {
+    const {
+      address,
+      avatar,
+      companyName,
+      email,
+      firstName,
+      lastName,
+      phoneNumber
+    } = getUserData || {};
+    if (loading) {
+      return <Skeleton active />;
+    }
     return (
       <Row span={24}>
         <Col span={6}>
-          <Avatar size={120} src="/static/images/avatar.png" />
+          <Avatar
+            size={120}
+            src={getCurrentUserImage(avatar) || '/static/images/avatar.png'}
+          />
         </Col>
         <Col span={18}>
-          <Descriptions
-            title={USER_PROFILE.firstName + " " + USER_PROFILE.lastName}
-            column={1}
-          >
-            <Descriptions.Item label="at">
-              {USER_PROFILE.companyName}
-            </Descriptions.Item>
+          <Descriptions title={firstName + ' ' + lastName} column={1}>
+            <Descriptions.Item label="at">{companyName}</Descriptions.Item>
             <Descriptions.Item label="Email">
-              {USER_PROFILE.email}
-              {(() => {
-                if (USER_PROFILE.isEmailVerified) {
+              {email}
+              {/* {(() => {
+                if (email) {
                   return <font color="green"> [Verified]</font>;
                 } else {
                   return <font color="red"> [Unverified]</font>;
                 }
-              })()}
+              })()} */}
             </Descriptions.Item>
           </Descriptions>
         </Col>
@@ -209,11 +226,11 @@ const UserProfileComponent = ({ isDrawer, userId, currentUser, uploadAvatar, upd
         <Col span={24}>
           <Title level={5}>Supplier Basic Information</Title>
         </Col>
-        <DescriptionItem title="Email" content={USER_PROFILE.email} />
-        <DescriptionItem title="Mobile" content={USER_PROFILE.mobile} />
-        <DescriptionItem title="Address" content={USER_PROFILE.address} />
+        <DescriptionItem title="Email" content={email} />
+        <DescriptionItem title="Mobile" content={phoneNumber} />
+        <DescriptionItem title="Address" content={address} />
         <Divider />
-        <Col span={24}>
+        {/* <Col span={24}>
           <Title level={5}>Company Information</Title>
         </Col>
         <DescriptionItem
@@ -221,7 +238,7 @@ const UserProfileComponent = ({ isDrawer, userId, currentUser, uploadAvatar, upd
           content={USER_PROFILE.certifi}
         />
         <DescriptionItem title="Trade Term" content={USER_PROFILE.tradeTerms} />
-        <Divider />
+        <Divider /> */}
 
         <style jsx global>{`
           .site-description-item-profile-wrapper {
@@ -231,7 +248,7 @@ const UserProfileComponent = ({ isDrawer, userId, currentUser, uploadAvatar, upd
             line-height: 1.5715;
           }
 
-          [data-theme="compact"] .site-description-item-profile-wrapper {
+          [data-theme='compact'] .site-description-item-profile-wrapper {
             font-size: 24px;
             line-height: 1.66667;
           }
@@ -244,7 +261,7 @@ const UserProfileComponent = ({ isDrawer, userId, currentUser, uploadAvatar, upd
             line-height: 1.5715;
           }
 
-          [data-theme="compact"]
+          [data-theme='compact']
             .ant-drawer-body
             p.site-description-item-profile-p {
             font-size: 14px;
@@ -259,7 +276,16 @@ const UserProfileComponent = ({ isDrawer, userId, currentUser, uploadAvatar, upd
         `}</style>
       </Row>
     );
-  } else
+  } else {
+    const {
+      address,
+      avatar,
+      companyName,
+      email,
+      firstName,
+      lastName,
+      phoneNumber
+    } = currentUser || {};
     return (
       <Form>
         <Row span={24}>
@@ -294,7 +320,7 @@ const UserProfileComponent = ({ isDrawer, userId, currentUser, uploadAvatar, upd
           </Col>
           <Col span={20}>
             <Descriptions
-              title={currentUser.firstName + ' ' + currentUser.lastName}
+              title={firstName + ' ' + lastName}
               extra={
                 <Button type="primary" onClick={showChangePasswordModal}>
                   Change Password
@@ -303,31 +329,29 @@ const UserProfileComponent = ({ isDrawer, userId, currentUser, uploadAvatar, upd
               column={1}
             >
               <Descriptions.Item label="at">
-                {currentUser.companyName ? currentUser.companyName : 'None'}
+                {companyName || 'None'}
               </Descriptions.Item>
               <Descriptions.Item label="Email">
-                {currentUser.email ? currentUser.email : 'None'}
-                {(() => {
-                  if (USER_PROFILE.isEmailVerified) {
+                {email || 'None'}
+                {/* {(() => {
+                  if (email) {
                     return <font color="green"> [Verified]</font>;
                   } else {
                     return <font color="red"> [Unverified]</font>;
                   }
-                })()}
+                })()} */}
               </Descriptions.Item>
             </Descriptions>
           </Col>
         </Row>
         <Divider dashed />
         <Descriptions title="Contact Information">
-          <Descriptions.Item label="Email">
-            {currentUser.email ? currentUser.email : 'None'}
-          </Descriptions.Item>
+          <Descriptions.Item label="Email">{email || 'None'}</Descriptions.Item>
           <Descriptions.Item label="Mobile">
-            {currentUser.phoneNumber ? currentUser.phoneNumber : 'None'}
+            {phoneNumber || 'None'}
           </Descriptions.Item>
           <Descriptions.Item label="Address">
-            {currentUser.address ? currentUser.address : 'None'}
+            {address || 'None'}
           </Descriptions.Item>
         </Descriptions>
         <Divider dashed />
@@ -449,5 +473,6 @@ const UserProfileComponent = ({ isDrawer, userId, currentUser, uploadAvatar, upd
         `}</style>
       </Form>
     );
+  }
 };
 export default connectToRedux(UserProfileComponent);

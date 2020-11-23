@@ -35,13 +35,14 @@ import RequestStatusComponent from './Utils/RequestStatusComponent';
 
 import ReactTableLayout from '../layouts/ReactTableLayout';
 import { G_NEGOTIATING, G_PENDING } from '../enums/groupStatus';
+import { R_CANCELED } from '../enums/requestStatus';
 
 const { Title } = Typography;
 const groupRequestColumns = [
-  // { title: "Product Name", dataIndex: "category", key: "category" },
   { title: 'Preferred Unit Price', dataIndex: 'price', key: 'price' },
   { title: 'Quantity', dataIndex: 'quantity', key: 'quantity' },
   { title: 'Due Date', dataIndex: 'dueDate', key: 'dueDate' },
+  { title: 'Status', dataIndex: 'status', key: 'status' },
   { title: 'Actions', dataIndex: 'actions', key: 'actions' }
 ];
 
@@ -75,53 +76,58 @@ const getRequestTable = ({
   return (
     requestData &&
     requestData.length > 0 &&
-    requestData.map((request = {}) => ({
-      key: request.id,
-      price: displayCurrency(+request.preferredUnitPrice),
-      name: request.product.description,
-      quantity: +request.quantity || 0,
-      dueDate: (
-        <Moment format={DATE_TIME_FORMAT}>{new Date(request.dueDate)}</Moment>
-      ),
-      status: <RequestStatusComponent status={request.requestStatus.id} />,
-      actions: (
-        <Space>
-          {(status === G_PENDING || status === G_NEGOTIATING) && isCanRemove && (
+    requestData.map((request = {}) => {
+      console.log({ request });
+      const { requestStatus = {} } = request;
+      return {
+        key: request.id,
+        price: displayCurrency(+request.preferredUnitPrice),
+        name: request.product.description,
+        quantity: +request.quantity || 0,
+        dueDate: (
+          <Moment format={DATE_TIME_FORMAT}>{new Date(request.dueDate)}</Moment>
+        ),
+        status: <RequestStatusComponent status={requestStatus.id} />,
+        statusId: requestStatus.id,
+        actions: (
+          <Space>
+            {(status === G_PENDING || status === G_NEGOTIATING) && isCanRemove && (
+              <Button
+                onClick={() => {
+                  Modal.confirm({
+                    title: 'Do you want remove this request?',
+                    icon: <ExclamationCircleOutlined />,
+                    okText: 'Remove',
+                    cancelText: 'Cancel',
+                    onOk: () => {
+                      removeRequestFromGroup({
+                        groupId,
+                        requestId: request.id,
+                        callback: callbackGetRequestList
+                      });
+                    }
+                  });
+                }}
+                size="small"
+                danger
+              >
+                Remove
+              </Button>
+            )}
             <Button
               onClick={() => {
-                Modal.confirm({
-                  title: 'Do you want remove this request?',
-                  icon: <ExclamationCircleOutlined />,
-                  okText: 'Remove',
-                  cancelText: 'Cancel',
-                  onOk: () => {
-                    removeRequestFromGroup({
-                      groupId,
-                      requestId: request.id,
-                      callback: callbackGetRequestList
-                    });
-                  }
-                });
+                setCurrentRequestSelected(request);
+                setOpenRequestDetail(true);
               }}
               size="small"
-              danger
+              type="link"
             >
-              Remove
+              View
             </Button>
-          )}
-          <Button
-            onClick={() => {
-              setCurrentRequestSelected(request);
-              setOpenRequestDetail(true);
-            }}
-            size="small"
-            type="link"
-          >
-            View
-          </Button>
-        </Space>
-      )
-    }))
+          </Space>
+        )
+      };
+    })
   );
 };
 
@@ -242,6 +248,11 @@ const GroupRequestDetailsTabComponent = ({
         >
           <div>
             <ReactTableLayout
+              rowClassName={(record) => {
+                return record.statusId === R_CANCELED
+                  ? 'table-row-request-canceled'
+                  : '';
+              }}
               hasAction={false}
               dispatchAction={getRequestByGroupId}
               searchProps={{

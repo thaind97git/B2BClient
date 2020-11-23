@@ -10,7 +10,9 @@ import Router from 'next/router';
 export const CREATE_FEEDBACK = 'CreateFeedbackAPI';
 export const GET_FEEDBACK_PAGING = 'GetFeedbackPagingAPI';
 export const GET_FEEDBACK_DETAILS = 'GetFeedbackDetailsAPI';
+export const GET_FEEDBACK_FILE = 'GetFeedbackFileAPI';
 export const CREATE_FEEDBACK_REPLY = 'CreateFeedbackReplyAPI';
+export const CREATE_FEEDBACK_RATE = 'CreateFeedbackRateAPI';
 
 //create feedback
 const onUploadFile = (feedbackId, fileList) => {
@@ -25,7 +27,7 @@ const onUploadFile = (feedbackId, fileList) => {
   var requestOptions = {
     method: 'PUT',
     headers: myHeaders,
-    body:formData
+    body: formData
   };
 
   fetch(
@@ -40,7 +42,7 @@ const CreateFeedbackAPI = makeFetchAction(CREATE_FEEDBACK, (object) =>
   })(object)
 );
 
-export const createFeedback = (object,fileList) =>
+export const createFeedback = (object, fileList) =>
   respondToSuccess(CreateFeedbackAPI.actionCreator(object), (resp) => {
     if (resp) {
       openNotification('success', {
@@ -112,23 +114,53 @@ export const getFeedbackDetails = (feedbackId) =>
     GetFeedbackDetailsAPI.actionCreator(feedbackId),
     (resp, _, store) => {}
   );
-export const GetFeedbackDetailsData =
-  GetFeedbackDetailsAPI.dataSelector;
-export const GetFeedbackDetailsError =
-  GetFeedbackDetailsAPI.errorSelector;
+export const GetFeedbackDetailsData = GetFeedbackDetailsAPI.dataSelector;
+export const GetFeedbackDetailsError = GetFeedbackDetailsAPI.errorSelector;
 export const GetFeedbackDetailsResetter = getResetter(GetFeedbackDetailsAPI);
 
 //create feedback reply
-const CreateFeedbackReplyAPI = makeFetchAction(CREATE_FEEDBACK_REPLY, (object) =>
-  nfetch({
-    endpoint: '/api/Feedback/Reply'
-  })(object)
+const CreateFeedbackReplyAPI = makeFetchAction(
+  CREATE_FEEDBACK_REPLY,
+  (object) =>
+    nfetch({
+      endpoint: '/api/Feedback/Reply'
+    })(object)
 );
 
 export const createFeedbackReply = (object) =>
-  respondToSuccess(CreateFeedbackReplyAPI.actionCreator(object), (resp) => {
-    
-  });
+  respondToSuccess(CreateFeedbackReplyAPI.actionCreator(object), (resp) => {});
 export const CreateFeedbackReplyData = CreateFeedbackReplyAPI.dataSelector;
 export const CreateFeedbackReplyError = CreateFeedbackReplyAPI.errorSelector;
 export const CreateFeedbackReplyResetter = getResetter(CreateFeedbackReplyAPI);
+
+//create feedback rate
+const CreateFeedbackRateAPI = makeFetchAction(CREATE_FEEDBACK_RATE, (object) =>
+  nfetch({
+    endpoint: '/api/Feedback/Rate'
+  })(object)
+);
+
+export const createFeedbackRate = (object) =>
+  respondToSuccess(CreateFeedbackRateAPI.actionCreator(object), (resp) => {});
+export const CreateFeedbackRateData = CreateFeedbackRateAPI.dataSelector;
+export const CreateFeedbackRateError = CreateFeedbackRateAPI.errorSelector;
+export const CreateFeedbackRateResetter = getResetter(CreateFeedbackRateAPI);
+
+//get feedback file
+const GetFeedbackFileAPI = makeFetchAction(GET_FEEDBACK_FILE, (fileId) =>
+  nfetch({
+    endpoint: `/api/Feedback/FeedbackFile/${fileId}`,
+    method: 'GET'
+  })()
+);
+
+export const getFeedbackFile = (fileId) =>
+  respondToSuccess(
+    GetFeedbackFileAPI.actionCreator(fileId),
+    (resp, _, store) => {
+      //console.log(resp.headers.get('Content - Disposition'));
+    }
+  );
+export const GetFeedbackFileData = GetFeedbackFileAPI.dataSelector;
+export const GetFeedbackFileError = GetFeedbackFileAPI.errorSelector;
+export const GetFeedbackFileResetter = getResetter(GetFeedbackFileAPI);

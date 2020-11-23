@@ -6,6 +6,19 @@ import Router from 'next/router';
 import { notification } from 'antd';
 import brn from 'brn';
 import { B_CANCELED, B_CLOSED, B_DONE, B_FAILED } from '../enums/biddingStatus';
+import {
+  N_ADMIN_REPLY_FEEDBACK,
+  N_AUCTION_WINNER,
+  N_INVITATION,
+  N_ORDER_CREATED,
+  N_REQUEST_CANCELED,
+  N_REQUEST_GROUPED,
+  N_REVERSE_AUCTION_START,
+  N_RFQ_OUT_OF_DATE,
+  N_USER_REPLY_FEEDBACK
+} from '../enums/notificationStatus';
+import { ADMIN, BUYER, MODERATOR, SUPPLIER } from '../enums/accountRoles';
+import { Fragment } from 'react';
 
 export const currentPath = () => !isServer && Router.route;
 
@@ -201,7 +214,7 @@ export const getProductImage = (image) =>
   image
     ? `${process.env.API_SERVER_URL}/api/Product/ProductImage/${image}`
     : null;
-export const getFeedbackFile = (file) =>
+export const getFeedbackFileURL = (file) =>
   file
     ? `${process.env.API_SERVER_URL}/api/Feedback/FeedbackFile/${file}`
     : null;
@@ -262,4 +275,138 @@ export const getBadgeAuctionLabel = (
     text = 'A next few weeks';
   }
   return text;
+};
+
+export const getLabelNotify = ({ type, role = BUYER, id, title }) => {
+  let label, link;
+  if (role === MODERATOR) {
+    switch (type) {
+      case N_REQUEST_CANCELED:
+        label = (
+          <Fragment>
+            A request canceled in group <b>{title}</b>.
+          </Fragment>
+        );
+        link = `/aggregator/group/details?id=${id}`;
+        break;
+      case N_RFQ_OUT_OF_DATE:
+        label = (
+          <Fragment>
+            A RFQ is out of date in group <b>{title}</b>.
+          </Fragment>
+        );
+        link = `/aggregator/group/details?id=${id}`;
+        break;
+      case N_REVERSE_AUCTION_START:
+        label = (
+          <Fragment>
+            The reverse auction <b>{title}</b> started.
+          </Fragment>
+        );
+        link = `/aggregator/bidding/details?id=${id}`;
+        break;
+
+      default:
+        break;
+    }
+  } else if (role === SUPPLIER) {
+    switch (type) {
+      case N_INVITATION:
+        label = (
+          <Fragment>
+            You invited to reverse auction <b>{title}</b>.
+          </Fragment>
+        );
+        link = `/supplier/bidding`;
+        break;
+      case N_REVERSE_AUCTION_START:
+        label = (
+          <Fragment>
+            Reverse auction <b>{title}</b> started.
+          </Fragment>
+        );
+        link = `/supplier/bidding`;
+        break;
+      case N_AUCTION_WINNER:
+        label = (
+          <Fragment>
+            You winned reverse auction <b>{title}</b>.
+          </Fragment>
+        );
+        link = `/supplier/bidding/details?id=${id}`;
+        break;
+      case N_ORDER_CREATED:
+        label = (
+          <Fragment>
+            An order of <b>{title}</b> created for you.
+          </Fragment>
+        );
+        link = `/supplier/order/details?id=${id}`;
+        break;
+      case N_ADMIN_REPLY_FEEDBACK:
+        label = (
+          <Fragment>
+            Admin replied your feedback <b>{title}</b>.
+          </Fragment>
+        );
+        link = `/supplier/feedback/details?id=${id}`;
+        break;
+      default:
+        break;
+    }
+  } else if (role === BUYER) {
+    switch (type) {
+      case N_RFQ_OUT_OF_DATE:
+        label = (
+          <Fragment>
+            Your RFQ is out of date, <b>{title}</b>.
+          </Fragment>
+        );
+        link = `/buyer/rfq`;
+        break;
+      case N_REQUEST_GROUPED:
+        label = (
+          <Fragment>
+            One your RFQ grouped, <b>{title}</b>.
+          </Fragment>
+        );
+        link = `/buyer/rfq`;
+        break;
+      case N_ORDER_CREATED:
+        label = (
+          <Fragment>
+            An order of <b>{title}</b> created for you.
+          </Fragment>
+        );
+        link = `/buyer/order/details?id=${id}`;
+        break;
+      case N_ADMIN_REPLY_FEEDBACK:
+        label = (
+          <Fragment>
+            Admin replied your feedback <b>{title}</b>.
+          </Fragment>
+        );
+        link = `/buyer/feedback/details?id=${id}`;
+        break;
+      default:
+        break;
+    }
+  } else if (role === ADMIN) {
+    switch (type) {
+      case N_USER_REPLY_FEEDBACK:
+        label = (
+          <Fragment>
+            User replied a feedback <b>{title}</b>.
+          </Fragment>
+        );
+        link = `/admin/feedback/details?id=${id}`;
+        break;
+      default:
+        break;
+    }
+  }
+  return {
+    label,
+    link
+  };
 };

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 import {
   Card,
   Row,
@@ -8,34 +8,41 @@ import {
   Divider,
   Empty,
   Popover,
-  Spin,
-} from "antd";
-import Search from "antd/lib/input/Search";
-import Router from "next/router";
-import { connect } from "react-redux";
-import { createStructuredSelector } from "reselect";
+  Spin
+} from 'antd';
+import Search from 'antd/lib/input/Search';
+import Router from 'next/router';
+import { connect } from 'react-redux';
+import { createStructuredSelector } from 'reselect';
 
 import {
   getProductByCategory,
   GetProductByCategoryData,
   GetProductByCategoryError,
-} from "../stores/ProductState";
-import CategoryHomePageComponent from "./CategoryHomePageComponent";
+  getProductSuggest,
+  GetProductSuggestData,
+  GetProductSuggestError
+} from '../stores/ProductState';
+import CategoryHomePageComponent from './CategoryHomePageComponent';
 import {
   DEFAULT_PAGING_INFO,
   getDefaultProductImage,
-  getProductImage,
-} from "../utils";
+  getProductImage
+} from '../utils';
 const { Meta } = Card;
 
 const connectToRedux = connect(
   createStructuredSelector({
     getProductByCategoryData: GetProductByCategoryData,
     getProductByCategoryError: GetProductByCategoryError,
+    getProductSuggestData: GetProductSuggestData,
+    getProductSuggestError: GetProductSuggestError
   }),
   (dispatch) => ({
     getProductByCategory: (id, pageSize, pageIndex, name) =>
       dispatch(getProductByCategory(id, pageSize, pageIndex, name)),
+    getProductSuggest: (pageIndex, pageSize) =>
+      dispatch(getProductSuggest({ pageIndex, pageSize }))
   })
 );
 
@@ -48,7 +55,7 @@ const ProductCard = ({ product }) => {
         <i>
           <div
             dangerouslySetInnerHTML={{
-              __html: product.description,
+              __html: product.description
             }}
           />
         </i>
@@ -67,7 +74,7 @@ const ProductCard = ({ product }) => {
               padding: 8,
               maxHeight: 280,
               maxWidth: 280,
-              margin: "auto",
+              margin: 'auto'
             }}
             alt="example"
             src={getProductImage(
@@ -107,27 +114,37 @@ const ProductListHomePageComponent = ({
   getProductByCategory,
   getProductByCategoryData,
   getProductByCategoryError,
+  getProductSuggest,
+  getProductSuggestError,
+  getProductSuggestData
 }) => {
   const [currentCategorySelected, setCurrentCategorySelected] = useState({});
   const [pageIndex, setPageIndex] = useState(1);
   const [loading, setLoading] = useState(true);
-  const [searchValue, setSearchValue] = useState("");
-  const [firstCall, setFirstCall] = useState(true);
+  const [searchValue, setSearchValue] = useState('');
+  const [isCategorySelected, setIsCategorySelected] = useState(false);
 
   const onSelect = (selectedKeys, info) => {
+    setIsCategorySelected(true);
     setCurrentCategorySelected({
       name: info.node.title,
-      id: info.node.key,
+      id: info.node.key
     });
     getProductByCategory(info.node.key, pageSize, 1, searchValue);
     setLoading(true);
   };
 
   useEffect(() => {
+    if (!isCategorySelected) {
+      getProductSuggest(pageIndex, pageSize);
+    }
+  }, [isCategorySelected, getProductSuggest, pageIndex]);
+
+  useEffect(() => {
     if (
       (currentCategorySelected || {}).id &&
-      (currentCategorySelected || {}).id !== "all" &&
-      firstCall === true
+      (currentCategorySelected || {}).id !== 'all' &&
+      isCategorySelected
     ) {
       getProductByCategory(
         (currentCategorySelected || {}).id,
@@ -135,19 +152,34 @@ const ProductListHomePageComponent = ({
         pageIndex
       );
       setLoading(true);
-      setFirstCall(false);
+      // setFirstCall(false);
     }
-  }, [pageIndex, currentCategorySelected, getProductByCategory, firstCall]);
+  }, [
+    pageIndex,
+    currentCategorySelected,
+    getProductByCategory,
+    isCategorySelected
+  ]);
 
   useEffect(() => {
     setPageIndex(1);
   }, [currentCategorySelected]);
 
   useEffect(() => {
-    if (getProductByCategoryError || getProductByCategoryData) {
+    if (
+      getProductByCategoryError ||
+      getProductByCategoryData ||
+      getProductSuggestData ||
+      getProductSuggestError
+    ) {
       setLoading(false);
     }
-  }, [getProductByCategoryData, getProductByCategoryError]);
+  }, [
+    getProductByCategoryData,
+    getProductByCategoryError,
+    getProductSuggestData,
+    getProductSuggestError
+  ]);
 
   const onChange = (pageNumber) => {
     setPageIndex(pageNumber);
@@ -161,9 +193,16 @@ const ProductListHomePageComponent = ({
   };
   let productData = [],
     count = 0;
-  if (!!getProductByCategoryData) {
-    productData = getProductByCategoryData.data;
-    count = getProductByCategoryData.total;
+  if (!isCategorySelected) {
+    if (getProductSuggestData) {
+      productData = getProductSuggestData.data;
+      count = getProductSuggestData.total;
+    }
+  } else {
+    if (!!getProductByCategoryData) {
+      productData = getProductByCategoryData.data;
+      count = getProductByCategoryData.total;
+    }
   }
   return (
     <div>
@@ -171,12 +210,12 @@ const ProductListHomePageComponent = ({
         <Col
           span={5}
           style={{
-            background: "white",
-            boxShadow: "0 0 20px rgba(0,0,0,.1)",
+            background: 'white',
+            boxShadow: '0 0 20px rgba(0,0,0,.1)',
             minHeight: 600,
             maxHeight: 1339,
-            overflow: "hidden",
-            overflowY: "auto",
+            overflow: 'hidden',
+            overflowY: 'auto'
           }}
         >
           <CategoryHomePageComponent
@@ -193,7 +232,7 @@ const ProductListHomePageComponent = ({
                 </Col>
                 <Col span={8}>
                   <Search
-                    value={searchValue || ""}
+                    value={searchValue || ''}
                     onChange={(event) => setSearchValue(event.target.value)}
                     onSearch={(value) => {
                       setPageIndex(DEFAULT_PAGING_INFO.page);
@@ -219,7 +258,7 @@ const ProductListHomePageComponent = ({
               <Row
                 justify="center"
                 align="middle"
-                style={{ height: 400, margin: "auto" }}
+                style={{ height: 400, margin: 'auto' }}
               >
                 <Spin />
               </Row>

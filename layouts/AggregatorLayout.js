@@ -1,25 +1,37 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
-import { Layout, Menu, Row, Dropdown } from 'antd';
+import { Layout, Menu, Row, Dropdown, Badge, Divider } from 'antd';
 import {
-  UsergroupAddOutlined,
   DownOutlined,
   LoginOutlined,
   MenuUnfoldOutlined,
   MenuFoldOutlined,
-  ExperimentOutlined,
   FileDoneOutlined,
   FallOutlined,
   DiffOutlined,
-  WechatOutlined,
   ProfileOutlined,
-  MessageOutlined
+  MessageOutlined,
+  BellOutlined
 } from '@ant-design/icons';
 import MemberNavComponent from '../component/MemberNavComponent';
 import { currentPath } from '../utils';
 import Link from 'next/link';
 import { removeToken } from '../libs/localStorage';
 import Router from 'next/router';
+import { MODERATOR } from '../enums/accountRoles';
+import { connect } from 'react-redux';
+import { createStructuredSelector } from 'reselect';
+import {
+  getNotification,
+  GetNotificationData,
+  getNotificationCount,
+  GetNotificationCountData,
+  seenNotification,
+  SeenNotificationResetter,
+  SeenNotificationData
+} from '../stores/NotificationState';
+import SignalR from '../libs/signalR';
+import NotifyItem from './NotifyItem';
 
 const { Header, Content, Sider } = Layout;
 
@@ -65,15 +77,27 @@ const ADMIN_MENU = [
   }
 ];
 
+const connectToRedux = connect(
+  createStructuredSelector({
+    notificationData: GetNotificationData,
+    seenNotificationData: SeenNotificationData,
+    notificationCountData: GetNotificationCountData
+  }),
+  (dispatch) => ({
+    getNotification: ({ pageIndex, pageSize }) =>
+      dispatch(getNotification({ pageIndex, pageSize })),
+    getNotificationCount: () => dispatch(getNotificationCount()),
+    seenNotification: () => dispatch(seenNotification()),
+    resetSeenNotify: () => dispatch(SeenNotificationResetter)
+  })
+);
+
 const PROFILE_MENU = (
   <Menu>
     <Menu.Item>
       <Link href="/aggregator/user-profile">
         <a>Profile</a>
       </Link>
-    </Menu.Item>
-    <Menu.Item>
-      <a href="#">Company Profile</a>
     </Menu.Item>
     <Menu.Item
       onClick={() => {
@@ -87,8 +111,76 @@ const PROFILE_MENU = (
   </Menu>
 );
 
-const AggregatorLayout = ({ children, isChat }) => {
+const signalR = new SignalR({
+  hubDomain: 'notificationHub'
+});
+signalR.startConnection();
+
+const AggregatorLayout = ({
+  children,
+  isChat,
+  getNotification,
+  notificationData,
+  getNotificationCount,
+  notificationCountData,
+  resetSeenNotify,
+  seenNotificationData,
+  seenNotification
+}) => {
   const [collapsed, setCollapsed] = useState(true);
+  const [openMessage, setOpenMessage] = useState(false);
+  const [firstTime, setFirstTime] = useState(true);
+  const [menuNotify, setMenuNotify] = useState([]);
+  const [notifyCount, setNotifyCount] = useState(null);
+
+  useEffect(() => {
+    if (seenNotificationData) {
+      setNotifyCount(0);
+      resetSeenNotify();
+    }
+  }, [seenNotificationData, resetSeenNotify]);
+
+  useEffect(() => {
+    if (firstTime) {
+      getNotification({});
+      getNotificationCount();
+      setFirstTime(false);
+    }
+  }, [getNotification, firstTime, getNotificationCount]);
+
+  useEffect(() => {
+    if (notificationData) {
+      setMenuNotify(notificationData.data);
+    }
+  }, [notificationData]);
+
+  useEffect(() => {
+    if (notificationCountData) {
+      setNotifyCount(notificationCountData);
+    }
+  }, [notificationCountData]);
+
+  useEffect(() => {
+    signalR.onListen('NewNotify', (newNotify) => {
+      if (newNotify && newNotify.id) {
+        setMenuNotify((prev) => {
+          const tmp = [...prev];
+          tmp.unshift(newNotify);
+          return tmp;
+        });
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    signalR.onListen('NewNotifyCount', (newCount) => {
+      if (newCount) {
+        setNotifyCount(newCount);
+        resetSeenNotify();
+      }
+    });
+  }, [resetSeenNotify]);
+
   return (
     <div
       style={{
@@ -143,6 +235,30 @@ const AggregatorLayout = ({ children, isChat }) => {
                   />
                 )}
                 <div style={{ marginRight: 24 }}>
+                  <Dropdown
+                    overlay={
+                      <NotifyItem notify={menuNotify || []} role={MODERATOR} />
+                    }
+                    onVisibleChange={setOpenMessage}
+                    visible={openMessage}
+                    trigger={['click']}
+                    placement="bottomCenter"
+                  >
+                    {notifyCount ? (
+                      <Badge
+                        onClick={() => {
+                          notifyCount !== 0 && seenNotification();
+                        }}
+                        style={{ cursor: 'pointer' }}
+                        count={notifyCount}
+                      >
+                        <BellOutlined style={{ fontSize: 16 }} />
+                      </Badge>
+                    ) : (
+                      <BellOutlined style={{ fontSize: 16 }} />
+                    )}
+                  </Dropdown>
+                  <Divider type="vertical" />
                   <Dropdown overlay={PROFILE_MENU}>
                     <a
                       className="ant-dropdown-link"
@@ -198,4 +314,4 @@ const AggregatorLayout = ({ children, isChat }) => {
   );
 };
 
-export default AggregatorLayout;
+export default connectToRedux(AggregatorLayout);

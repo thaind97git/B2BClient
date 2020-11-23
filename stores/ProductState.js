@@ -14,6 +14,7 @@ const CREATE_PRODUCT = 'CreateProductAPI';
 const UPDATE_PRODUCT = 'UpdateProductAPI';
 const GET_PRODUCT_BY_SUPPLIER = 'GetProductBySupplierAPI';
 const GET_PRODUCT_FOR_SUPPLIER = 'GetProductForSupplierAPI';
+const GET_PRODUCT_SUGGEST = 'GetProductSuggestAPI';
 
 const GetProductByCategoryAPI = makeFetchAction(
   GET_PRODUCT_BY_CATEGORY,
@@ -78,6 +79,33 @@ export const getProductPaging = ({
 export const GetProductPagingData = GetProductPagingAPI.dataSelector;
 export const GetProductPagingError = GetProductPagingAPI.errorSelector;
 export const getProductPagingResetter = getResetter(GetProductPagingAPI);
+
+//Get Product Suggest
+const GetProductSuggestAPI = makeFetchAction(
+  GET_PRODUCT_SUGGEST,
+  ({ pageSize, pageIndex }) => {
+    return nfetch({
+      endpoint: `/api/Product/Suggest${generateQuery({
+        pageSize,
+        pageIndex
+      })}`,
+      method: 'GET'
+    })();
+  }
+);
+
+export const getProductSuggest = ({ pageSize, pageIndex }) =>
+  respondToSuccess(
+    GetProductSuggestAPI.actionCreator({
+      pageSize,
+      pageIndex
+    }),
+    () => {}
+  );
+
+export const GetProductSuggestData = GetProductSuggestAPI.dataSelector;
+export const GetProductSuggestError = GetProductSuggestAPI.errorSelector;
+export const GetProductSuggestResetter = getResetter(GetProductSuggestAPI);
 
 // Product Details
 const GetProductDetailsAPI = makeFetchAction(GET_PRODUCT_DETAILS, (id) =>

@@ -1,0 +1,9 @@
+export const N_RFQ_OUT_OF_DATE = 1;
+export const N_REQUEST_CANCELED = 2;
+export const N_REQUEST_GROUPED = 3;
+export const N_INVITATION = 4;
+export const N_REVERSE_AUCTION_START = 5;
+export const N_AUCTION_WINNER = 6;
+export const N_ORDER_CREATED = 7;
+export const N_USER_REPLY_FEEDBACK = 8;
+export const N_ADMIN_REPLY_FEEDBACK = 9;

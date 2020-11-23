@@ -31,9 +31,20 @@ class SignalR {
 
   async onListen(eventName, callback) {
     if (this.connection && this.connection.connectionStarted) {
+      console.log({ eventName });
       this.connection.on(eventName, (data) => {
         typeof callback === 'function' && callback(data);
       });
+    } else {
+      const connectionTimer = setInterval(() => {
+        if (this.connection && this.connection.connectionStarted) {
+          console.log({ eventNameTimeOut: eventName });
+          this.connection.on(eventName, (data) => {
+            typeof callback === 'function' && callback(data);
+          });
+          clearInterval(connectionTimer);
+        }
+      }, 10);
     }
   }
 

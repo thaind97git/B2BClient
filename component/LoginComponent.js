@@ -10,7 +10,6 @@ import {
   userLoginResetter
 } from '../stores/UserState';
 import { compose } from 'redux';
-import { openNotification } from '../utils';
 const FormItem = Form.Item;
 
 const connectToRedux = connect(
@@ -26,7 +25,7 @@ const connectToRedux = connect(
 
 const enhance = compose(connectToRedux);
 
-const LoginComponent = ({ loginUser, userLoginError, resetData }) => {
+const LoginComponent = ({ loginUser, resetData }) => {
   const onFinish = (values) => {
     loginUser(values);
   };
@@ -35,12 +34,6 @@ const LoginComponent = ({ loginUser, userLoginError, resetData }) => {
       resetData();
     };
   }, [resetData]);
-
-  // useEffect(() => {
-  //   if (userLoginError) {
-  //     openNotification("error", { message: userLoginError });
-  //   }
-  // }, [userLoginError]);
 
   return (
     <Form

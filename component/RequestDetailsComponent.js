@@ -8,38 +8,43 @@ import {
   Skeleton,
   Space,
   Tag,
-  Typography,
-} from "antd";
-import React, { Fragment, useEffect, useState } from "react";
-import { R_CANCELED, R_GROUPED, R_PENDING } from "../enums/requestStatus";
-import RequestStatusComponent from "./Utils/RequestStatusComponent";
-import { DATE_TIME_FORMAT, displayCurrency } from "../utils";
-import { connect } from "react-redux";
-import { createStructuredSelector } from "reselect";
+  Typography
+} from 'antd';
+import React, { Fragment, useEffect, useState } from 'react';
+import {
+  R_CANCELED,
+  R_GROUPED,
+  R_NEGOTIATING,
+  R_PENDING
+} from '../enums/requestStatus';
+import RequestStatusComponent from './Utils/RequestStatusComponent';
+import { DATE_TIME_FORMAT, displayCurrency } from '../utils';
+import { connect } from 'react-redux';
+import { createStructuredSelector } from 'reselect';
 import {
   CancelRequestData,
   getRequestDetails,
   GetRequestDetailsDataSelector,
   getRequestDetailsResetter,
-  RejectRequestData,
-} from "../stores/RequestState";
-import Moment from "react-moment";
-import Router from "next/router";
-import RequestCancelComponent from "./RequestCancelComponent";
-import RequestRejectComponent from "./RequestRejectComponent";
+  RejectRequestData
+} from '../stores/RequestState';
+import Moment from 'react-moment';
+import Router from 'next/router';
+import RequestCancelComponent from './RequestCancelComponent';
+import RequestRejectComponent from './RequestRejectComponent';
 const { Title } = Typography;
 
 const connectToRedux = connect(
   createStructuredSelector({
     requestDetailsData: GetRequestDetailsDataSelector,
     cancelRequestData: CancelRequestData,
-    rejectRequestData: RejectRequestData,
+    rejectRequestData: RejectRequestData
   }),
   (dispatch) => ({
     getRequestDetails: (id) => dispatch(getRequestDetails(id)),
     resetData: () => {
       dispatch(getRequestDetailsResetter);
-    },
+    }
   })
 );
 
@@ -65,7 +70,7 @@ const RequestDetailsComponent = ({
   cancelRequestData,
   rejectRequestData,
   setOpenDetails,
-  isRemove = true,
+  isRemove = true
 }) => {
   const [loading, setLoading] = useState(true);
   const [openCancel, setOpenCancel] = useState(false);
@@ -89,13 +94,13 @@ const RequestDetailsComponent = ({
   useEffect(() => {
     if (cancelRequestData) {
       setOpenCancel(false);
-      typeof setOpenDetails === "function" && setOpenDetails(false);
+      typeof setOpenDetails === 'function' && setOpenDetails(false);
     }
   }, [cancelRequestData, setOpenDetails]);
   useEffect(() => {
     if (rejectRequestData) {
       setOpenReject(false);
-      typeof setOpenDetails === "function" && setOpenDetails(false);
+      typeof setOpenDetails === 'function' && setOpenDetails(false);
     }
   }, [rejectRequestData, setOpenDetails]);
 
@@ -125,7 +130,7 @@ const RequestDetailsComponent = ({
     cancelReason,
     buyer = {},
     otherRequirements,
-    group = {},
+    group = {}
   } = requestDetailsData || {};
   const getButtonActionsByStatus = (status) => {
     let result = [];
@@ -134,54 +139,72 @@ const RequestDetailsComponent = ({
         if (!isSupplier) {
           result = [
             {
-              label: "Reject",
+              label: 'Reject',
               buttonProps: {
-                danger: true,
+                danger: true
               },
               action: () => {
                 setOpenReject(true);
-              },
-            },
+              }
+            }
           ];
         } else {
           result = [
             {
-              label: "Edit",
+              label: 'Edit',
               action: () =>
                 Router.push(
                   `/buyer/rfq/update?id=${(requestDetailsData || {}).id}`
-                ),
+                )
             },
             {
-              label: "Cancel",
+              label: 'Cancel',
               buttonProps: {
-                danger: true,
+                danger: true
               },
               action: () => {
                 setOpenCancel(true);
-              },
-            },
+              }
+            }
           ];
         }
         break;
       case R_GROUPED:
         if (!isSupplier) {
           if (isRemove) {
-            // result = [
-            //   {
-            //     label: "Remove",
-            //     buttonProps: {
-            //       danger: true,
-            //     },
-            //     action: () => {
-            //       // setOpenReject(true);
-            //     },
-            //   },
-            // ];
             result = [];
           }
         } else {
-          result = [];
+          result = [
+            {
+              label: 'Cancel',
+              buttonProps: {
+                danger: true
+              },
+              action: () => {
+                setOpenCancel(true);
+              }
+            }
+          ];
+        }
+        break;
+      case R_NEGOTIATING:
+        if (!isSupplier) {
+          if (isRemove) {
+            result = [];
+          }
+        } else {
+          result = [
+            {
+              label: 'Cancel',
+              buttonProps: {
+                danger: true
+              },
+              action: () => {
+                setOpenCancel(true);
+              }
+            }
+          ];
         }
         break;
       default:
@@ -193,7 +216,7 @@ const RequestDetailsComponent = ({
 
   const leadTimeDisplay = `Ship in ${leadTime} day(s) after supplier receives the initial payment`;
   return (
-    <Row style={{ width: "100%" }}>
+    <Row style={{ width: '100%' }}>
       <Modal
         onOk={() => setOpenCancel(false)}
         onCancel={() => setOpenCancel(false)}
@@ -230,22 +253,22 @@ const RequestDetailsComponent = ({
           }
         />
       )}
-      <Col style={{ padding: "12px 0px" }} span={24}>
+      <Col style={{ padding: '12px 0px' }} span={24}>
         Status: <RequestStatusComponent status={requestStatus.id} />
       </Col>
       {requestStatus.id === R_CANCELED && (
-        <Col style={{ padding: "12px 0px" }} span={24}>
-          Cancel reason: <b>{cancelReason || "N/A"}</b>
+        <Col style={{ padding: '12px 0px' }} span={24}>
+          Cancel reason: <b>{cancelReason || 'N/A'}</b>
         </Col>
       )}
-      <Col style={{ padding: "12px 0px" }} span={24}>
+      <Col style={{ padding: '12px 0px' }} span={24}>
         <Space>
           {(getButtonActionsByStatus(requestStatus.id) || []).map(
             (button, index) => (
               <Button
                 key={index}
                 onClick={() => {
-                  typeof button.action === "function" && button.action();
+                  typeof button.action === 'function' && button.action();
                 }}
                 size="small"
                 {...button.buttonProps}
@@ -277,7 +300,7 @@ const RequestDetailsComponent = ({
       />
       <DescriptionItem
         title="Sourcing Purpose"
-        content={sourcingPurpose.description || "N/A"}
+        content={sourcingPurpose.description || 'N/A'}
       />
       <DescriptionItem
         title="Quantity"
@@ -299,15 +322,15 @@ const RequestDetailsComponent = ({
       </Col>
       <DescriptionItem
         title="Certifications"
-        content={certifications.map((cer) => (
-          <Fragment>
-            <Tag color="processing">{cer.description}</Tag>
-          </Fragment>
+        content={certifications.map((cer, index) => (
+          <Tag key={index} color="processing">
+            {cer.description}
+          </Tag>
         ))}
       />
       <DescriptionItem
         title="Other Requirements"
-        content={otherRequirements || "N/A"}
+        content={otherRequirements || 'N/A'}
       />
       <Divider />
       <Col span={24}>
@@ -325,7 +348,7 @@ const RequestDetailsComponent = ({
       />
       <DescriptionItem title="Lead Time" content={leadTimeDisplay} />
       {!isSupplier && (
-        <Fragment>
+        <div>
           <Divider />
           <Col span={24}>
             <Title level={5}>RFQ Owner</Title>
@@ -340,7 +363,7 @@ const RequestDetailsComponent = ({
             title="Company Name"
             content={(buyer || {}).companyName}
           />
-        </Fragment>
+        </div>
       )}
 
       <style jsx global>{`
@@ -351,7 +374,7 @@ const RequestDetailsComponent = ({
           line-height: 1.5715;
         }
 
-        [data-theme="compact"] .site-description-item-profile-wrapper {
+        [data-theme='compact'] .site-description-item-profile-wrapper {
           font-size: 24px;
           line-height: 1.66667;
         }
@@ -364,7 +387,7 @@ const RequestDetailsComponent = ({
           line-height: 1.5715;
         }
 
-        [data-theme="compact"]
+        [data-theme='compact']
           .ant-drawer-body
           p.site-description-item-profile-p {
           font-size: 14px;

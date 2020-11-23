@@ -21,7 +21,7 @@ const { Option } = Select;
 const connectToRedux = connect(
   createStructuredSelector({
     feedbackPagingData: GetFeedbackPagingData,
-    feedbackPagingError: GetFeedbackPagingError,
+    feedbackPagingError: GetFeedbackPagingError
   }),
   (dispatch) => ({
     getFeedback: (pageIndex, pageSize, searchMessage, dateRange, status) => {
@@ -51,20 +51,15 @@ const columns = [
     key: 'user'
   },
   {
-    title: 'Date created',
-    dataIndex: 'dateCreated',
-    key: 'dateCreated'
+    title: 'Date updated',
+    dataIndex: 'dateUpdated',
+    key: 'dateUpdated'
   },
   {
     title: 'Status',
     dataIndex: 'status',
     key: 'status'
   },
-  // {
-  //   title: "Date Created",
-  //   dataIndex: "dateCreated",
-  //   key: "dateCreated",
-  // },
   {
     title: 'Actions',
     dataIndex: 'actions',
@@ -72,13 +67,11 @@ const columns = [
   }
 ];
 
-const AdminFeedbackManagementComponent = (
-  {
-    feedbackPagingData,
-    getFeedback,
-    feedbackPagingError
-  }
-) => {
+const AdminFeedbackManagementComponent = ({
+  feedbackPagingData,
+  getFeedback,
+  feedbackPagingError
+}) => {
   const [searchMessage, setSearchMessage] = useState('');
   const [dateRange, setDateRange] = useState(DEFAULT_DATE_RANGE);
   const [status, setStatus] = useState(null);
@@ -115,9 +108,9 @@ const AdminFeedbackManagementComponent = (
       feedbackData.map((feedback = {}) => ({
         key: feedback.id,
         title: feedback.title,
-        dateCreated: (
+        dateUpdated: (
           <Moment format={DATE_TIME_FORMAT}>
-            {new Date(feedback.dateCreated)}
+            {new Date(feedback.dateUpdated)}
           </Moment>
         ),
         user: feedback.user.email,
@@ -129,7 +122,7 @@ const AdminFeedbackManagementComponent = (
         actions: (
           <Button
             onClick={() => {
-              Router.push(`/admin/feedback/detail?id=${feedback.id}`);
+              Router.push(`/admin/feedback/details?id=${feedback.id}`);
             }}
             size="small"
             type="link"
@@ -141,30 +134,6 @@ const AdminFeedbackManagementComponent = (
     );
   };
 
-  // let feedbackData = [
-  //     {
-  //       title: 'About current auction',
-  //       id: '1',
-  //       user: 'quanghnd@gmail.com',
-  //       dateCreated: 'October 22, 2020 17:00 GTM',
-  //       dateUpdated: 'October 22, 2020 17:00 GTM',
-  //       status: 0
-  //     },
-  //     {
-  //       title: 'About supplier ABC',
-  //       id: '2',
-  //       user: 'duyquanghoang@gmail.com',
-  //       dateCreated: 'October 22, 2020 17:00 GTM',
-  //       dateUpdated: 'October 22, 2020 17:00 GTM',
-  //       status: 1
-  //     }
-  //   ],
-  //   totalCount = 0;
-  //   if (productPagingData) {
-  //     productData = productPagingData.data;
-  //     totalCount = productPagingData.total;
-  //   }
-
   return (
     <div>
       <Row justify="space-between">
@@ -174,7 +143,7 @@ const AdminFeedbackManagementComponent = (
         // loading={loading}
         dispatchAction={getFeedback}
         searchProps={{
-          placeholder: 'Search',
+          placeholder: 'Search by title',
           searchMessage,
           setSearchMessage,
           exElement: (

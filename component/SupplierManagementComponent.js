@@ -23,6 +23,7 @@ import {
   U_REJECT
 } from '../enums/accountStatus';
 import Modal from 'antd/lib/modal/Modal';
+import UserProfileComponent from './UserProfileComponent';
 const { Option } = Select;
 const { Title } = Typography;
 
@@ -199,7 +200,10 @@ const SupplierManagementComponent = ({
           visible={openDetails}
           key={'right'}
         >
-          null
+          <UserProfileComponent
+            isDrawer
+            userId={(currentSupplierSelected || {}).id}
+          />
         </Drawer>
         <Title level={4}>Supplier Management</Title>
       </Row>
