@@ -1,7 +1,7 @@
 import Router from 'next/router';
 const { Menu, Typography, Tooltip } = require('antd');
 const { BUYER } = require('../enums/accountRoles');
-const { getLabelNotify } = require('../utils');
+const { getLabelNotify, getFromNowTime } = require('../utils');
 const { Title } = Typography;
 const moment = require('moment');
 const NotifyItem = ({ notify = [], role = BUYER }) => {
@@ -50,10 +50,24 @@ const NotifyItem = ({ notify = [], role = BUYER }) => {
               key={notifyId}
             >
               <Tooltip title={label}>
-                <div className="item-notify" onClick={() => Router.push(link)}>
-                  <span>{label}</span>
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    alignItems: 'start'
+                  }}
+                >
+                  <span className="dot-notify"></span>
+                  <div>
+                    <div
+                      className="item-notify"
+                      onClick={() => Router.push(link)}
+                    >
+                      <span>{label}</span>
+                    </div>
+                    <small>{getFromNowTime(dateCreated)}</small>
+                  </div>
                 </div>
-                <small>{moment.utc(dateCreated).local().fromNow()}</small>
               </Tooltip>
             </Menu.Item>
           );

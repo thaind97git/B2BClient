@@ -1,12 +1,13 @@
-import { Button, Drawer, Popover, Row, Select, Typography } from "antd";
-import React, { useEffect, useState } from "react";
-import ReactTableLayout from "../layouts/ReactTableLayout";
+import { Button, Drawer, Popover, Row, Select, Typography } from 'antd';
+import React, { useEffect, useState } from 'react';
+import ReactTableLayout from '../layouts/ReactTableLayout';
 import {
   DATE_TIME_FORMAT,
   DEFAULT_DATE_RANGE,
   displayCurrency,
-} from "../utils";
-import RequestStatusComponent from "./Utils/RequestStatusComponent";
+  getUtcTime
+} from '../utils';
+import RequestStatusComponent from './Utils/RequestStatusComponent';
 import {
   R_BIDDING,
   R_CANCELED,
@@ -16,25 +17,26 @@ import {
   R_ORDERED,
   R_PENDING,
   R_REJECTED,
-  R_WAIT_FOR_AUCTION,
-} from "../enums/requestStatus";
-import RequestDetailsComponent from "./RequestDetailsComponent";
-import { connect } from "react-redux";
-import { createStructuredSelector } from "reselect";
+  R_WAIT_FOR_AUCTION
+} from '../enums/requestStatus';
+import RequestDetailsComponent from './RequestDetailsComponent';
+import { connect } from 'react-redux';
+import { createStructuredSelector } from 'reselect';
 import {
   getRequestPaging,
   GetRequestPagingData,
-  GetRequestPagingError,
-} from "../stores/RequestState";
-import Moment from "react-moment";
-import { get } from "lodash/fp";
+  GetRequestPagingError
+} from '../stores/RequestState';
+import Moment from 'react-moment';
+import { get } from 'lodash/fp';
+import moment from 'moment';
 const { Option } = Select;
 const { Title } = Typography;
 
 const connectToRedux = connect(
   createStructuredSelector({
     requestPagingData: GetRequestPagingData,
-    requestPagingError: GetRequestPagingError,
+    requestPagingError: GetRequestPagingError
   }),
   (dispatch) => ({
     getRequest: (pageIndex, pageSize, searchMessage, dateRange, status) => {
@@ -45,56 +47,56 @@ const connectToRedux = connect(
           fromDate: dateRange.fromDate,
           toDate: dateRange.toDate,
           productTitle: searchMessage,
-          status: [status],
+          status: [status]
         })
       );
-    },
+    }
   })
 );
 
 const columns = [
   {
-    title: "Product Name",
-    dataIndex: "name",
-    key: "name",
+    title: 'Product Name',
+    dataIndex: 'name',
+    key: 'name'
   },
   {
-    title: "Preferred Unit Price",
-    dataIndex: "price",
-    key: "price",
+    title: 'Preferred Unit Price',
+    dataIndex: 'price',
+    key: 'price'
   },
   {
-    title: "Quantity",
-    dataIndex: "quantity",
-    key: "quantity",
+    title: 'Quantity',
+    dataIndex: 'quantity',
+    key: 'quantity'
   },
   {
-    title: "Due Date",
-    dataIndex: "dueDate",
-    key: "dueDate",
+    title: 'Due Date',
+    dataIndex: 'dueDate',
+    key: 'dueDate'
   },
   {
-    title: "Status",
-    dataIndex: "status",
-    key: "status",
+    title: 'Status',
+    dataIndex: 'status',
+    key: 'status'
   },
 
   {
-    title: "Details",
-    dataIndex: "actions",
-    key: "actions",
-  },
+    title: 'Details',
+    dataIndex: 'actions',
+    key: 'actions'
+  }
 ];
 
 const displayProductName = (name) =>
-  name ? (name.length > 100 ? name.slice(0, 80) + " ..." : name) : "";
+  name ? (name.length > 100 ? name.slice(0, 80) + ' ...' : name) : '';
 
 const BuyerRequestManagement = ({
   getRequest,
   requestPagingData,
-  requestPagingError,
+  requestPagingError
 }) => {
-  const [searchMessage, setSearchMessage] = useState("");
+  const [searchMessage, setSearchMessage] = useState('');
   const [dateRange, setDateRange] = useState(DEFAULT_DATE_RANGE);
   const [openDetails, setOpenDetails] = useState(false);
   const [currentRequestSelected, setCurrentRequestSelected] = useState({});
@@ -120,17 +122,17 @@ const BuyerRequestManagement = ({
               <a
                 target="_blank"
                 rel="noreferrer"
-                href={`/product-details?id=${get("product.id")(request)}`}
+                href={`/product-details?id=${get('product.id')(request)}`}
               >
                 {displayProductName(request.product.description)}
               </a>
             </Popover>
           ),
           quantity:
-            (+request.quantity || 0) + " " + get("product.unitType")(request),
+            (+request.quantity || 0) + ' ' + get('product.unitType')(request),
           dueDate: (
             <Moment format={DATE_TIME_FORMAT}>
-              {new Date(request.dueDate)}
+              {getUtcTime(request.dueDate)}
             </Moment>
           ),
           status: <RequestStatusComponent status={request.requestStatus.id} />,
@@ -145,7 +147,7 @@ const BuyerRequestManagement = ({
             >
               View
             </Button>
-          ),
+          )
         }))
       : [];
   };
@@ -162,11 +164,11 @@ const BuyerRequestManagement = ({
         <Drawer
           width={640}
           title="RFQ details"
-          placement={"right"}
+          placement={'right'}
           closable={true}
           onClose={() => setOpenDetails(false)}
           visible={openDetails}
-          key={"right"}
+          key={'right'}
         >
           {openDetails ? (
             <RequestDetailsComponent
@@ -187,7 +189,7 @@ const BuyerRequestManagement = ({
         loading={loading}
         dispatchAction={getRequest}
         searchProps={{
-          placeholder: "Search by product name",
+          placeholder: 'Search by product name',
           searchMessage,
           setSearchMessage,
           exElement: (
@@ -210,11 +212,11 @@ const BuyerRequestManagement = ({
               <Option value={R_NEGOTIATING}>Negotiating</Option>
             </Select>
           ),
-          exCondition: [status],
+          exCondition: [status]
         }}
         dateRangeProps={{
           dateRange,
-          setDateRange,
+          setDateRange
         }}
         data={getRequestTable(requestData || [])}
         columns={columns}

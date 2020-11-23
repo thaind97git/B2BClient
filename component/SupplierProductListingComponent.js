@@ -6,7 +6,7 @@ import {
 import Router from 'next/router';
 import React, { useEffect, useState } from 'react';
 import ReactTableLayout from '../layouts/ReactTableLayout';
-import { DATE_TIME_FORMAT, DEFAULT_DATE_RANGE } from '../utils';
+import { DATE_TIME_FORMAT, DEFAULT_DATE_RANGE, getUtcTime } from '../utils';
 import AllCategoryComponent from './AllCategoryComponent';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
@@ -56,9 +56,9 @@ const connectToRedux = connect(
 
 const ProductStatus = ({ isDelete }) =>
   isDelete ? (
-    <Tag color="error">UnSupplied</Tag>
+    <Tag color="error">Not Available</Tag>
   ) : (
-    <Tag color="success">Supplying</Tag>
+    <Tag color="success">Available</Tag>
   );
 const SupplierProductListingComponent = ({
   getProductBySupplier,
@@ -83,7 +83,7 @@ const SupplierProductListingComponent = ({
       key: 'dateCreated'
     },
     {
-      title: 'Status',
+      title: 'Supplying Status',
       dataIndex: 'status',
       key: 'status'
     },
@@ -113,7 +113,7 @@ const SupplierProductListingComponent = ({
         ),
         dateCreated: (
           <Moment format={DATE_TIME_FORMAT}>
-            {new Date(product.dateCreated)}
+            {getUtcTime(product.dateCreated)}
           </Moment>
         ),
         status: <ProductStatus isDelete={product.isDeleted} />,
@@ -121,9 +121,9 @@ const SupplierProductListingComponent = ({
           <Button
             onClick={() => {
               Modal.confirm({
-                title: 'Do you want active this product?',
+                title: 'Do you want Re-Supply this product?',
                 icon: <ExclamationCircleOutlined />,
-                okText: 'Active',
+                okText: 'Re-Supply',
                 cancelText: 'Cancel',
                 onOk: () => {
                   activeSupplierProduct((product.product || {}).id);
@@ -139,9 +139,9 @@ const SupplierProductListingComponent = ({
           <Button
             onClick={() => {
               Modal.confirm({
-                title: 'Do you want deactive this product?',
+                title: 'Do you want Un-Supply this product?',
                 icon: <ExclamationCircleOutlined />,
-                okText: 'Deactive',
+                okText: 'Un-Supply',
                 cancelText: 'Cancel',
                 onOk: () => {
                   deleteSupplierProduct((product.product || {}).id);
@@ -186,7 +186,7 @@ const SupplierProductListingComponent = ({
       </Row>
       <Col span={24}>
         <Row justify="space-between">
-          <Title level={4}>Product Company Management</Title>
+          <Title level={4}>Registered Product</Title>
           <Button
             icon={<ShoppingCartOutlined />}
             onClick={() => Router.push('/supplier/product/register')}

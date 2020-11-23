@@ -15,7 +15,8 @@ import GroupStatusComponent from './Utils/GroupStatusComponent';
 import {
   DATE_TIME_FORMAT,
   DEFAULT_PAGING_INFO,
-  displayCurrency
+  displayCurrency,
+  getUtcTime
 } from '../utils';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
@@ -85,7 +86,9 @@ const getRequestTable = ({
         name: request.product.description,
         quantity: +request.quantity || 0,
         dueDate: (
-          <Moment format={DATE_TIME_FORMAT}>{new Date(request.dueDate)}</Moment>
+          <Moment format={DATE_TIME_FORMAT}>
+            {getUtcTime(request.dueDate)}
+          </Moment>
         ),
         status: <RequestStatusComponent status={requestStatus.id} />,
         statusId: requestStatus.id,

@@ -1,4 +1,4 @@
-import React, { Fragment, useCallback, useEffect, useState } from "react";
+import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import {
   Form,
   Input,
@@ -12,15 +12,15 @@ import {
   Select,
   DatePicker,
   Empty,
-  Skeleton,
-} from "antd";
-import { LeftOutlined } from "@ant-design/icons";
-import { displayCurrency, openNotification } from "../utils";
-import { createStructuredSelector } from "reselect";
-import { connect } from "react-redux";
-import Router, { useRouter } from "next/router";
-import { SET_CATEGORY_SELECTED } from "../stores/initState";
-import { get } from "lodash/fp";
+  Skeleton
+} from 'antd';
+import { LeftOutlined } from '@ant-design/icons';
+import { displayCurrency, getUtcTime, openNotification } from '../utils';
+import { createStructuredSelector } from 'reselect';
+import { connect } from 'react-redux';
+import Router, { useRouter } from 'next/router';
+import { SET_CATEGORY_SELECTED } from '../stores/initState';
+import { get } from 'lodash/fp';
 import {
   getCurrency,
   GetCurrencyData,
@@ -54,9 +54,9 @@ import {
   GetUnitOfMeasureResetter,
   getWard,
   GetWardData,
-  GetWardResetter,
-} from "../stores/SupportRequestState";
-import moment from "moment";
+  GetWardResetter
+} from '../stores/SupportRequestState';
+import moment from 'moment';
 import {
   CreateRequestData,
   CreateRequestError,
@@ -67,8 +67,8 @@ import {
   updateRequest,
   UpdateRequestData,
   UpdateRequestError,
-  UpdateRequestResetter,
-} from "../stores/RequestState";
+  UpdateRequestResetter
+} from '../stores/RequestState';
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -92,7 +92,7 @@ const connectToRedux = connect(
     requestDetailsData: GetRequestDetailsDataSelector,
     requestDetailsError: GetRequestDetailsErrorSelector,
     updateRequestData: UpdateRequestData,
-    updateRequestError: UpdateRequestError,
+    updateRequestError: UpdateRequestError
   }),
   (dispatch) => ({
     removeCategorySelected: () =>
@@ -125,23 +125,23 @@ const connectToRedux = connect(
       dispatch(GetDistrictResetter);
       dispatch(CreateRequestResetter);
       dispatch(UpdateRequestResetter);
-    },
+    }
   })
 );
 const styles = {
-  colStyle: { padding: "0 8px" },
-  titleStyle: { fontWeight: 500 },
+  colStyle: { padding: '0 8px' },
+  titleStyle: { fontWeight: 500 }
 };
 const formItemLayout = {
   labelCol: { span: 4 },
-  wrapperCol: { span: 16 },
+  wrapperCol: { span: 16 }
 };
 const PriceInput = ({
   value = {},
   onChange,
   price,
   setPrice,
-  currencyData = [],
+  currencyData = []
 }) => {
   const currency = ((currencyData && currencyData[0]) || {}).id;
 
@@ -151,7 +151,7 @@ const PriceInput = ({
         price,
         currency,
         ...value,
-        ...changedValue,
+        ...changedValue
       });
     }
   }, []);
@@ -169,7 +169,7 @@ const PriceInput = ({
     setPrice(newNumber);
 
     triggerChange({
-      price: newNumber,
+      price: newNumber
     });
   };
 
@@ -180,16 +180,16 @@ const PriceInput = ({
         placeholder="Enter the preferred unit price"
         onChange={onNumberChange}
         min={0}
-        style={{ width: "50%" }}
-        formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-        parser={(value) => value.replace(/,*/g, "")}
+        style={{ width: '50%' }}
+        formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+        parser={(value) => value.replace(/,*/g, '')}
       />
       <Input
         value="VND"
         disabled
         style={{
-          width: "48%",
-          margin: "0 4px",
+          width: '48%',
+          margin: '0 4px'
         }}
       />
     </span>
@@ -207,7 +207,7 @@ const QuantityInput = ({ value = {}, onChange, unitOfMeasure, quantity }) => {
     }
 
     triggerChange({
-      number: newNumber,
+      number: newNumber
     });
   };
   const triggerChange = useCallback((changedValue) => {
@@ -215,7 +215,7 @@ const QuantityInput = ({ value = {}, onChange, unitOfMeasure, quantity }) => {
       onChange({
         number,
         ...value,
-        ...changedValue,
+        ...changedValue
       });
     }
   }, []);
@@ -228,7 +228,7 @@ const QuantityInput = ({ value = {}, onChange, unitOfMeasure, quantity }) => {
       <InputNumber
         value={value.number || number}
         onChange={onNumberChange}
-        style={{ width: "50%" }}
+        style={{ width: '50%' }}
         min={0}
         placeholder="Enter the product quantity"
       />
@@ -236,8 +236,8 @@ const QuantityInput = ({ value = {}, onChange, unitOfMeasure, quantity }) => {
         value={unitOfMeasure}
         disabled
         style={{
-          width: "48%",
-          margin: "0 4px",
+          width: '48%',
+          margin: '0 4px'
         }}
       />
     </span>
@@ -249,7 +249,7 @@ const LeadTimeInput = ({ value = {}, onChange, leadTime }) => {
     if (onChange) {
       onChange({
         ...value,
-        ...changedValue,
+        ...changedValue
       });
     }
   };
@@ -262,7 +262,7 @@ const LeadTimeInput = ({ value = {}, onChange, leadTime }) => {
     }
 
     triggerChange({
-      number: newNumber,
+      number: newNumber
     });
   };
 
@@ -283,7 +283,7 @@ const LeadTimeInput = ({ value = {}, onChange, leadTime }) => {
 
 function disabledDate(current) {
   // Can not select days before today and today
-  return current && current < moment().endOf("day");
+  return current && current < moment().endOf('day');
 }
 
 const BuyerRequestUpdateComponent = ({
@@ -313,7 +313,7 @@ const BuyerRequestUpdateComponent = ({
   requestDetailsData,
   requestDetailsError,
   getRequestDetails,
-  updateRequestError,
+  updateRequestError
 }) => {
   const [price, setPrice] = useState(0);
   const router = useRouter();
@@ -343,7 +343,7 @@ const BuyerRequestUpdateComponent = ({
     getShippingMethod,
     getPaymentTerm,
     getSupCertification,
-    getProvince,
+    getProvince
   ]);
 
   useEffect(() => {
@@ -361,7 +361,7 @@ const BuyerRequestUpdateComponent = ({
 
   useEffect(() => {
     if (!!updateRequestError) {
-      openNotification("error", { message: "Update request fail" });
+      openNotification('error', { message: 'Update request fail' });
     }
     return () => {
       resetData();
@@ -378,37 +378,37 @@ const BuyerRequestUpdateComponent = ({
 
   useEffect(() => {
     let initForm = {};
-    initForm.productName = get("product.description")(requestDetailsData);
-    initForm.sourcingPurposeId = get("sourcingPurpose.id")(requestDetailsData);
-    initForm.sourcingTypeId = get("sourcingType.id")(requestDetailsData);
-    initForm.quantity = +get("quantity")(requestDetailsData);
-    initForm.preferredUnitPrice = +get("preferredUnitPrice")(
+    initForm.productName = get('product.description')(requestDetailsData);
+    initForm.sourcingPurposeId = get('sourcingPurpose.id')(requestDetailsData);
+    initForm.sourcingTypeId = get('sourcingType.id')(requestDetailsData);
+    initForm.quantity = +get('quantity')(requestDetailsData);
+    initForm.preferredUnitPrice = +get('preferredUnitPrice')(
       requestDetailsData
     );
-    initForm.tradeTermId = get("tradeTerm.id")(requestDetailsData);
+    initForm.tradeTermId = get('tradeTerm.id')(requestDetailsData);
     initForm.dueDate =
-      get("dueDate")(requestDetailsData) &&
-      moment(get("dueDate")(requestDetailsData));
-    initForm.description = get("description")(requestDetailsData);
+      get('dueDate')(requestDetailsData) &&
+      getUtcTime(get('dueDate')(requestDetailsData));
+    initForm.description = get('description')(requestDetailsData);
     initForm.certifications = (
-      get("certifications")(requestDetailsData) || []
+      get('certifications')(requestDetailsData) || []
     ).map((cer) => cer.id);
-    initForm.otherRequirements = get("otherRequirements")(requestDetailsData);
-    initForm.shippingMethodId = get("shippingMethod.id")(requestDetailsData);
-    initForm.provinceId = get("province.id")(requestDetailsData);
+    initForm.otherRequirements = get('otherRequirements')(requestDetailsData);
+    initForm.shippingMethodId = get('shippingMethod.id')(requestDetailsData);
+    initForm.provinceId = get('province.id')(requestDetailsData);
     setCurrentProvince(initForm.provinceId);
-    initForm.districtId = get("district.id")(requestDetailsData);
+    initForm.districtId = get('district.id')(requestDetailsData);
     setCurrentDistrict(initForm.districtId);
-    initForm.wardId = get("ward.id")(requestDetailsData);
-    initForm.address = get("address")(requestDetailsData);
-    initForm.leadTime = get("leadTime")(requestDetailsData);
-    initForm.paymentTermId = get("paymentTerm.id")(requestDetailsData);
+    initForm.wardId = get('ward.id')(requestDetailsData);
+    initForm.address = get('address')(requestDetailsData);
+    initForm.leadTime = get('leadTime')(requestDetailsData);
+    initForm.paymentTermId = get('paymentTerm.id')(requestDetailsData);
     setInitForm(initForm);
   }, [requestDetailsData]);
   const onFinish = (values) => {
-    values.preferredUnitPrice = get("preferredUnitPrice.price")(values) + "";
-    values.quantity = values.quantity.number + "";
-    values.dueDate = moment.utc(new Date(values.dueDate)).format();
+    values.preferredUnitPrice = get('preferredUnitPrice.price')(values) + '';
+    values.quantity = values.quantity.number + '';
+    values.dueDate = new Date(values.dueDate);
     values.currencyId = (currencyData || [])[0].id;
     values.certifications = values.certifications || [];
     values.leadTime = values.leadTime.number;
@@ -420,14 +420,14 @@ const BuyerRequestUpdateComponent = ({
       return Promise.resolve();
     }
 
-    return Promise.reject("Price must be greater than zero!");
+    return Promise.reject('Price must be greater than zero!');
   };
   const checkUnit = (rule, value) => {
     if (value && value.number > 0) {
       return Promise.resolve();
     }
 
-    return Promise.reject("Quantity must be greater than zero!");
+    return Promise.reject('Quantity must be greater than zero!');
   };
   if (loadingRFQ) {
     return <Skeleton active />;
@@ -437,8 +437,8 @@ const BuyerRequestUpdateComponent = ({
     return (
       <Fragment>
         <Empty description="Can not find any request! Make sure you choose specify request" />
-        <div style={{ textAlign: "center", paddingTop: 32 }}>
-          <Button onClick={() => Router.push("/buyer/rfq")} type="primary">
+        <div style={{ textAlign: 'center', paddingTop: 32 }}>
+          <Button onClick={() => Router.push('/buyer/rfq')} type="primary">
             <LeftOutlined /> Back to RFQ list
           </Button>
         </div>
@@ -451,7 +451,7 @@ const BuyerRequestUpdateComponent = ({
   return (
     <Row>
       <Row justify="space-between">
-        <Button onClick={() => Router.push("/")} type="primary">
+        <Button onClick={() => Router.push('/')} type="primary">
           <LeftOutlined /> Back to product list
         </Button>
       </Row>
@@ -475,9 +475,9 @@ const BuyerRequestUpdateComponent = ({
                 bordered={false}
                 title={<b>Product Basic Information</b>}
                 style={{
-                  width: "100%",
-                  boxShadow: "2px 2px 14px 0 rgba(0,0,0,.1)",
-                  marginTop: 16,
+                  width: '100%',
+                  boxShadow: '2px 2px 14px 0 rgba(0,0,0,.1)',
+                  marginTop: 16
                 }}
               >
                 <Row align="middle">
@@ -493,13 +493,13 @@ const BuyerRequestUpdateComponent = ({
                       rules={[
                         {
                           required: true,
-                          message: "Please select Sourcing Type",
-                        },
+                          message: 'Please select Sourcing Type'
+                        }
                       ]}
                     >
                       <Select
                         placeholder="Please select"
-                        style={{ width: "50%" }}
+                        style={{ width: '50%' }}
                       >
                         {!!sourcingTypeData &&
                           sourcingTypeData.map((type) => (
@@ -527,7 +527,7 @@ const BuyerRequestUpdateComponent = ({
                     >
                       <Select
                         placeholder="Please select"
-                        style={{ width: "50%" }}
+                        style={{ width: '50%' }}
                       >
                         {!!sourcingPurposeData &&
                           sourcingPurposeData.map((type) => (
@@ -546,19 +546,19 @@ const BuyerRequestUpdateComponent = ({
                     <FormItem
                       label={
                         <span>
-                          <span style={{ color: "red" }}>*</span> Quantity
+                          <span style={{ color: 'red' }}>*</span> Quantity
                         </span>
                       }
                       name="quantity"
                       rules={[
                         {
-                          validator: checkUnit,
-                        },
+                          validator: checkUnit
+                        }
                       ]}
                     >
                       <QuantityInput
-                        quantity={get("quantity")(requestDetailsData)}
-                        unitOfMeasure={get("product.unitType")(
+                        quantity={get('quantity')(requestDetailsData)}
+                        unitOfMeasure={get('product.unitType')(
                           requestDetailsData
                         )}
                       />
@@ -567,7 +567,7 @@ const BuyerRequestUpdateComponent = ({
                 </Row>
                 <Row align="middle">
                   <Col span={20}>
-                    <Row style={{ padding: "0px 12px 0px 4px" }} justify="end">
+                    <Row style={{ padding: '0px 12px 0px 4px' }} justify="end">
                       <Space>{displayCurrency(price)} or Lower</Space>
                     </Row>
                   </Col>
@@ -576,14 +576,14 @@ const BuyerRequestUpdateComponent = ({
                       name="preferredUnitPrice"
                       label={
                         <span>
-                          <span style={{ color: "red" }}>*</span> Preferred Unit
+                          <span style={{ color: 'red' }}>*</span> Preferred Unit
                           Price:
                         </span>
                       }
                       rules={[
                         {
-                          validator: checkPrice,
-                        },
+                          validator: checkPrice
+                        }
                       ]}
                     >
                       <PriceInput
@@ -600,13 +600,13 @@ const BuyerRequestUpdateComponent = ({
                       rules={[
                         {
                           required: true,
-                          message: "Please select trade term",
-                        },
+                          message: 'Please select trade term'
+                        }
                       ]}
                     >
                       <Select
                         placeholder="Please select"
-                        style={{ width: "50%" }}
+                        style={{ width: '50%' }}
                       >
                         {!!tradeTermData &&
                           tradeTermData.map((type) => (
@@ -628,17 +628,17 @@ const BuyerRequestUpdateComponent = ({
                       rules={[
                         {
                           required: true,
-                          message: "Please select due date",
-                        },
+                          message: 'Please select due date'
+                        }
                       ]}
                     >
                       <DatePicker
                         placeholder="Select due date"
-                        style={{ width: "50%" }}
+                        style={{ width: '50%' }}
                         format="YYYY-MM-DD HH:mm:ss"
                         disabledDate={disabledDate}
                         showTime={{
-                          defaultValue: moment("00:00:00", "HH:mm:ss"),
+                          defaultValue: moment('00:00:00', 'HH:mm:ss')
                         }}
                       />
                     </FormItem>
@@ -650,8 +650,8 @@ const BuyerRequestUpdateComponent = ({
                       rules={[
                         {
                           required: true,
-                          message: "Please enter the details",
-                        },
+                          message: 'Please enter the details'
+                        }
                       ]}
                     >
                       <Input.TextArea autoSize={{ minRows: 3 }} />
@@ -663,9 +663,9 @@ const BuyerRequestUpdateComponent = ({
                 bordered={false}
                 title={<b>Supplier Capability</b>}
                 style={{
-                  width: "100%",
-                  boxShadow: "2px 2px 14px 0 rgba(0,0,0,.1)",
-                  marginTop: 32,
+                  width: '100%',
+                  boxShadow: '2px 2px 14px 0 rgba(0,0,0,.1)',
+                  marginTop: 32
                 }}
               >
                 <Row align="middle">
@@ -681,7 +681,7 @@ const BuyerRequestUpdateComponent = ({
                             .toLowerCase()
                             .indexOf(input.toLowerCase()) >= 0
                         }
-                        style={{ width: "50%" }}
+                        style={{ width: '50%' }}
                       >
                         {!!supCertificationData &&
                           supCertificationData.map((type) => (
@@ -713,10 +713,10 @@ const BuyerRequestUpdateComponent = ({
                 bordered={false}
                 title={<b>Shipping and Payment</b>}
                 style={{
-                  width: "100%",
-                  boxShadow: "2px 2px 14px 0 rgba(0,0,0,.1)",
+                  width: '100%',
+                  boxShadow: '2px 2px 14px 0 rgba(0,0,0,.1)',
                   marginTop: 32,
-                  marginBottom: 32,
+                  marginBottom: 32
                 }}
               >
                 <Row align="middle">
@@ -725,15 +725,15 @@ const BuyerRequestUpdateComponent = ({
                       rules={[
                         {
                           required: true,
-                          message: "Please select shipping method",
-                        },
+                          message: 'Please select shipping method'
+                        }
                       ]}
                       label="Shipping Method"
                       name="shippingMethodId"
                     >
                       <Select
                         placeholder="Please select"
-                        style={{ width: "50%" }}
+                        style={{ width: '50%' }}
                       >
                         {!!shippingMethodData &&
                           shippingMethodData.map((type) => (
@@ -755,8 +755,8 @@ const BuyerRequestUpdateComponent = ({
                       rules={[
                         {
                           required: true,
-                          message: "Please select province",
-                        },
+                          message: 'Please select province'
+                        }
                       ]}
                     >
                       <Select
@@ -764,7 +764,7 @@ const BuyerRequestUpdateComponent = ({
                         onChange={(value) => {
                           getDistrict(value);
                           console.log({ form });
-                          form.resetFields(["districtId", "wardId"]);
+                          form.resetFields(['districtId', 'wardId']);
                         }}
                         showSearch
                         filterOption={(input, option) =>
@@ -772,7 +772,7 @@ const BuyerRequestUpdateComponent = ({
                             .toLowerCase()
                             .indexOf(input.toLowerCase()) >= 0
                         }
-                        style={{ width: "50%" }}
+                        style={{ width: '50%' }}
                       >
                         {!!provinceData &&
                           provinceData.map((province) => (
@@ -791,15 +791,15 @@ const BuyerRequestUpdateComponent = ({
                       rules={[
                         {
                           required: true,
-                          message: "Please select district",
-                        },
+                          message: 'Please select district'
+                        }
                       ]}
                     >
                       <Select
                         placeholder="Please select"
                         onChange={(value) => {
                           getWard(value);
-                          form.resetFields(["wardId"]);
+                          form.resetFields(['wardId']);
                         }}
                         showSearch
                         filterOption={(input, option) =>
@@ -807,7 +807,7 @@ const BuyerRequestUpdateComponent = ({
                             .toLowerCase()
                             .indexOf(input.toLowerCase()) >= 0
                         }
-                        style={{ width: "50%" }}
+                        style={{ width: '50%' }}
                       >
                         {!!districtData &&
                           districtData.map((district) => (
@@ -825,13 +825,13 @@ const BuyerRequestUpdateComponent = ({
                       rules={[
                         {
                           required: true,
-                          message: "Please select ward",
-                        },
+                          message: 'Please select ward'
+                        }
                       ]}
                     >
                       <Select
                         placeholder="Please select"
-                        style={{ width: "50%" }}
+                        style={{ width: '50%' }}
                       >
                         {!!wardData &&
                           wardData.map((ward) => (
@@ -849,8 +849,8 @@ const BuyerRequestUpdateComponent = ({
                       rules={[
                         {
                           required: true,
-                          message: "Please enter the address",
-                        },
+                          message: 'Please enter the address'
+                        }
                       ]}
                     >
                       <Input placeholder="Enter the address shipping" />
@@ -859,7 +859,7 @@ const BuyerRequestUpdateComponent = ({
                   <Col style={styles.colStyle} span={24}>
                     <FormItem label="Lead Time" name="leadTime">
                       <LeadTimeInput
-                        leadTime={get("leadTime")(requestDetailsData)}
+                        leadTime={get('leadTime')(requestDetailsData)}
                       />
                     </FormItem>
                   </Col>
@@ -870,13 +870,13 @@ const BuyerRequestUpdateComponent = ({
                       rules={[
                         {
                           required: true,
-                          message: "Please select payment term",
-                        },
+                          message: 'Please select payment term'
+                        }
                       ]}
                     >
                       <Select
                         placeholder="Please select"
-                        style={{ width: "50%" }}
+                        style={{ width: '50%' }}
                       >
                         {!!paymentTermData &&
                           paymentTermData.map((type) => (

@@ -10,7 +10,9 @@ import {
   BellOutlined,
   FileDoneOutlined,
   FallOutlined,
-  MessageOutlined
+  MessageOutlined,
+  LogoutOutlined,
+  DashboardOutlined
 } from '@ant-design/icons';
 import MemberNavComponent from '../component/MemberNavComponent';
 import { currentPath } from '../utils';
@@ -31,10 +33,17 @@ import {
 } from '../stores/NotificationState';
 import { SUPPLIER } from '../enums/accountRoles';
 import NotifyItem from './NotifyItem';
+import { CurrentUserData } from '../stores/UserState';
 
 const { Header, Content, Sider } = Layout;
 
 const SUPPLIER_MENU = [
+  {
+    key: '0',
+    icon: <DashboardOutlined />,
+    label: 'Dashboard',
+    link: '/supplier'
+  },
   {
     key: '4',
     icon: <MessageOutlined />,
@@ -45,13 +54,13 @@ const SUPPLIER_MENU = [
   {
     key: '2',
     icon: <PicLeftOutlined />,
-    label: 'Product Listing',
+    label: 'Product Registered',
     link: '/supplier/product/listing'
   },
   {
     key: '3',
     icon: <FallOutlined />,
-    label: 'Available reverse auctions',
+    label: 'Reverse Auction',
     link: '/supplier/bidding',
     subMenu: []
   },
@@ -74,6 +83,13 @@ const SUPPLIER_MENU = [
     ),
     label: 'Feedback',
     link: '/supplier/feedback'
+  },
+  {
+    key: '7',
+    icon: <LogoutOutlined style={{ color: 'red' }} />,
+    label: 'Logout',
+    action: () => removeToken(),
+    link: '/login'
   }
 ];
 
@@ -81,7 +97,8 @@ const connectToRedux = connect(
   createStructuredSelector({
     notificationData: GetNotificationData,
     seenNotificationData: SeenNotificationData,
-    notificationCountData: GetNotificationCountData
+    notificationCountData: GetNotificationCountData,
+    currentUserData: CurrentUserData
   }),
   (dispatch) => ({
     getNotification: ({ pageIndex, pageSize }) =>
@@ -123,7 +140,9 @@ const SupplierLayout = ({
   seenNotificationData,
   resetSeenNotify,
   notificationCountData,
-  getNotificationCount
+  getNotificationCount,
+  currentUserData,
+  hasBackground = true
 }) => {
   const [collapsed, setCollapsed] = useState(true);
   const [openMessage, setOpenMessage] = useState(false);
@@ -183,6 +202,9 @@ const SupplierLayout = ({
       // signalR.stopConnection();
     };
   }, [resetSeenNotify]);
+  if (!currentUserData) {
+    return null;
+  }
   return (
     <div
       style={{
@@ -266,7 +288,8 @@ const SupplierLayout = ({
                       className="ant-dropdown-link"
                       onClick={(e) => e.preventDefault()}
                     >
-                      My Account <DownOutlined />
+                      Hi, {(currentUserData || {}).firstName}{' '}
+                      {(currentUserData || {}).lastName} <DownOutlined />
                     </a>
                   </Dropdown>
                 </Space>
@@ -279,7 +302,7 @@ const SupplierLayout = ({
                 padding: 24,
                 minHeight: 280,
                 height: isChat ? 'calc(100vh - 64px - 48px)' : 'auto',
-                background: '#fff'
+                background: hasBackground ? '#fff' : 'transparent'
               }}
             >
               {children}

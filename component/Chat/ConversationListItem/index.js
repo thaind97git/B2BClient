@@ -1,6 +1,7 @@
 import React from 'react';
 import { AudioMutedOutlined } from '@ant-design/icons';
 import moment from 'moment';
+import { getFromNowTime } from '../../../utils';
 
 export default function ConversationListItem({ data, isIgnored }) {
   const { photo, name, text = '', lastMessageTime } = data;
@@ -18,7 +19,7 @@ export default function ConversationListItem({ data, isIgnored }) {
             <p className="conversation-snippet">
               {!!text && text.trim() ? text : 'N/A'}{' '}
               <span>&nbsp;&nbsp;&nbsp;</span>
-              {lastMessageTime && moment.utc(lastMessageTime).local().fromNow()}
+              {lastMessageTime && getFromNowTime(lastMessageTime)}
             </p>
           </span>
         </div>

@@ -151,7 +151,11 @@ const SupplierBiddingComponent = ({
           {!!auctionData && auctionData.length > 0 ? (
             auctionData.map((event, index) => {
               return new Date(event.auctionStartTime) > Date.now() ? (
-                <SupplierBiddingItemComponent bidding={event} key={index} />
+                <SupplierBiddingItemComponent
+                  bidding={event}
+                  key={index}
+                  isInvitation={true}
+                />
               ) : null;
             })
           ) : (

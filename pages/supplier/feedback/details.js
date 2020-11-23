@@ -5,7 +5,7 @@ import withAuth from '../../../component/HOC/AuthenHOC';
 
 function Page() {
   return (
-    <SupplierLayout>
+    <SupplierLayout hasBackground={false}>
       <UserFeedbackDetailComponent />
     </SupplierLayout>
   );

@@ -1,7 +1,7 @@
 import { Button, Row, Typography, Select } from 'antd';
 import React, { useState, useEffect } from 'react';
 import ReactTableLayout from '../layouts/ReactTableLayout';
-import { DATE_TIME_FORMAT, DEFAULT_DATE_RANGE } from '../utils';
+import { DATE_TIME_FORMAT, DEFAULT_DATE_RANGE, getUtcTime } from '../utils';
 import Router from 'next/router';
 import { connect } from 'react-redux';
 import { F_CLOSED, F_OPEN } from '../enums/feedbackStatus';
@@ -15,6 +15,7 @@ import {
 import FeedbackStatusComponent from './Utils/FeedbackStatusComponent';
 import { get } from 'lodash/fp';
 import Moment from 'react-moment';
+import moment from 'moment';
 const { Title } = Typography;
 const { Option } = Select;
 
@@ -108,11 +109,10 @@ const AdminFeedbackManagementComponent = ({
       feedbackData.map((feedback = {}) => ({
         key: feedback.id,
         title: feedback.title,
-        dateUpdated: (
-          <Moment format={DATE_TIME_FORMAT}>
-            {new Date(feedback.dateUpdated)}
-          </Moment>
-        ),
+        dateUpdated: getUtcTime(feedback.dateCreated)
+          .utc()
+          .local()
+          .format(DATE_TIME_FORMAT),
         user: feedback.user.email,
         status: (
           <FeedbackStatusComponent

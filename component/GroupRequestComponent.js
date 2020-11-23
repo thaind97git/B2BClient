@@ -4,7 +4,7 @@ import Router from 'next/router';
 import { compose } from 'redux';
 import { Button, Typography, Row, Space, Select } from 'antd';
 import ReactTableLayout from '../layouts/ReactTableLayout';
-import { DATE_TIME_FORMAT, DEFAULT_DATE_RANGE } from '../utils';
+import { DATE_TIME_FORMAT, DEFAULT_DATE_RANGE, getUtcTime } from '../utils';
 import GroupStatusComponent from './Utils/GroupStatusComponent';
 import { createLink } from '../libs';
 import { createStructuredSelector } from 'reselect';
@@ -97,7 +97,7 @@ const GroupRequestComponent = ({ getGroupPaging, groupPagingData }) => {
         product: group.product.description,
         dateCreated: (
           <Moment format={DATE_TIME_FORMAT}>
-            {new Date(group.dateCreated)}
+            {getUtcTime(group.dateCreated)}
           </Moment>
         ),
         status: <GroupStatusComponent status={group.groupStatus.id} />,

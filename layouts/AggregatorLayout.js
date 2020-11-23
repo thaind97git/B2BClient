@@ -11,7 +11,9 @@ import {
   DiffOutlined,
   ProfileOutlined,
   MessageOutlined,
-  BellOutlined
+  BellOutlined,
+  LogoutOutlined,
+  DashboardOutlined
 } from '@ant-design/icons';
 import MemberNavComponent from '../component/MemberNavComponent';
 import { currentPath } from '../utils';
@@ -32,17 +34,17 @@ import {
 } from '../stores/NotificationState';
 import SignalR from '../libs/signalR';
 import NotifyItem from './NotifyItem';
+import { CurrentUserData } from '../stores/UserState';
 
 const { Header, Content, Sider } = Layout;
 
 const ADMIN_MENU = [
-  // {
-  //   key: "1",
-  //   icon: <UserOutlined />,
-  //   label: "Dashboard",
-  //   link: "/aggregator",
-  //   subMenu: [],
-  // },
+  {
+    key: '0',
+    icon: <DashboardOutlined />,
+    label: 'Dashboard',
+    link: '/aggregator'
+  },
   {
     key: '2',
     icon: <ProfileOutlined />,
@@ -74,6 +76,13 @@ const ADMIN_MENU = [
     icon: <FileDoneOutlined />,
     label: 'Order',
     link: '/aggregator/order'
+  },
+  {
+    key: '7',
+    icon: <LogoutOutlined style={{ color: 'red' }} />,
+    label: 'Logout',
+    action: () => removeToken(),
+    link: '/login'
   }
 ];
 
@@ -81,7 +90,8 @@ const connectToRedux = connect(
   createStructuredSelector({
     notificationData: GetNotificationData,
     seenNotificationData: SeenNotificationData,
-    notificationCountData: GetNotificationCountData
+    notificationCountData: GetNotificationCountData,
+    currentUserData: CurrentUserData
   }),
   (dispatch) => ({
     getNotification: ({ pageIndex, pageSize }) =>
@@ -125,7 +135,9 @@ const AggregatorLayout = ({
   notificationCountData,
   resetSeenNotify,
   seenNotificationData,
-  seenNotification
+  seenNotification,
+  currentUserData,
+  hasBackground = true
 }) => {
   const [collapsed, setCollapsed] = useState(true);
   const [openMessage, setOpenMessage] = useState(false);
@@ -264,7 +276,8 @@ const AggregatorLayout = ({
                       className="ant-dropdown-link"
                       onClick={(e) => e.preventDefault()}
                     >
-                      My Account <DownOutlined />
+                      Hi, {(currentUserData || {}).firstName}{' '}
+                      {(currentUserData || {}).lastName} <DownOutlined />
                     </a>
                   </Dropdown>
                 </div>
@@ -277,7 +290,7 @@ const AggregatorLayout = ({
                 padding: 24,
                 minHeight: 280,
                 height: isChat ? 'calc(100vh - 64px - 48px)' : 'auto',
-                background: '#fff'
+                background: hasBackground ? '#fff' : 'transparent'
               }}
             >
               {children}

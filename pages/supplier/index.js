@@ -1,10 +1,16 @@
-import Router from "next/router";
-import React, { useEffect } from "react";
-import SupplierLayout from "../../layouts/SupplierLayout";
+import Router from 'next/router';
+import React, { useEffect } from 'react';
+import withAuth from '../../component/HOC/AuthenHOC';
+import SupplierDashboardComponent from '../../component/SupplierDashboardComponent';
+import SupplierLayout from '../../layouts/SupplierLayout';
 const DashboardPage = () => {
-  useEffect(() => {
-    Router.push("/supplier/chat");
-  }, []);
-  return null; //<SupplierLayout>Dashboard member</SupplierLayout>;
+  // useEffect(() => {
+  //   Router.push("/supplier/chat");
+  // }, []);
+  return (
+    <SupplierLayout hasBackground={false}>
+      <SupplierDashboardComponent />
+    </SupplierLayout>
+  );
 };
-export default DashboardPage;
+export default withAuth(DashboardPage);

@@ -1,4 +1,4 @@
-import { Tabs, Tooltip } from 'antd';
+import { Empty, Tabs, Tooltip } from 'antd';
 import React, { useEffect } from 'react';
 
 const { TabPane } = Tabs;
@@ -7,6 +7,7 @@ const TabsLayout = ({
   tabs = [],
   defaultTab = 0,
   setDefaultTab,
+  emptyLabel = 'No Data',
   ...others
 }) => {
   const [value, setValue] = React.useState(defaultTab);
@@ -18,6 +19,9 @@ const TabsLayout = ({
     setValue(key);
     typeof setDefaultTab === 'function' && setDefaultTab(key);
   };
+  if (tabs.length <= 0) {
+    return <Empty description={emptyLabel} />;
+  }
   return (
     <Tabs
       destroyInactiveTabPane={true}

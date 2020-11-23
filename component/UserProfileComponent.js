@@ -98,7 +98,7 @@ const UserProfileComponent = ({
   const [changePasswordVisible, setChangePasswordVisible] = useState(false);
   const [imageUrl, setImageUrl] = useState(
     currentUser.avatar
-      ? getCurrentUserImage(currentUser.avatar)
+      ? getCurrentUserImage(currentUser.id)
       : '/static/images/avatar.png'
   );
   const [loading, setLoading] = useState(true);

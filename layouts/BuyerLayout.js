@@ -8,7 +8,8 @@ import {
   MenuFoldOutlined,
   FileDoneOutlined,
   BellOutlined,
-  ProfileOutlined
+  ProfileOutlined,
+  LogoutOutlined
 } from '@ant-design/icons';
 import MemberNavComponent from '../component/MemberNavComponent';
 import { currentPath } from '../utils';
@@ -29,6 +30,7 @@ import {
 } from '../stores/NotificationState';
 import { BUYER } from '../enums/accountRoles';
 import NotifyItem from './NotifyItem';
+import { CurrentUserData } from '../stores/UserState';
 
 const { Header, Content, Sider } = Layout;
 const BUYER_MENU = [
@@ -65,13 +67,21 @@ const BUYER_MENU = [
     ),
     label: 'Feedback',
     link: '/buyer/feedback'
+  },
+  {
+    key: '6',
+    icon: <LogoutOutlined style={{ color: 'red' }} />,
+    label: 'Logout',
+    action: () => removeToken(),
+    link: '/login'
   }
 ];
 const connectToRedux = connect(
   createStructuredSelector({
     notificationData: GetNotificationData,
     seenNotificationData: SeenNotificationData,
-    notificationCountData: GetNotificationCountData
+    notificationCountData: GetNotificationCountData,
+    currentUserData: CurrentUserData
   }),
   (dispatch) => ({
     getNotification: ({ pageIndex, pageSize }) =>
@@ -112,7 +122,9 @@ const SupplierLayout = ({
   notificationCountData,
   resetSeenNotify,
   seenNotificationData,
-  seenNotification
+  seenNotification,
+  currentUserData,
+  hasBackground = true
 }) => {
   const [collapsed, setCollapsed] = useState(true);
   const [openMessage, setOpenMessage] = useState(false);
@@ -263,7 +275,8 @@ const SupplierLayout = ({
                       className="ant-dropdown-link"
                       onClick={(e) => e.preventDefault()}
                     >
-                      My Account <DownOutlined />
+                      Hi, {(currentUserData || {}).firstName}{' '}
+                      {(currentUserData || {}).lastName} <DownOutlined />
                     </a>
                   </Dropdown>
                 </Space>
@@ -275,7 +288,7 @@ const SupplierLayout = ({
                 margin: '24px 16px',
                 padding: 24,
                 minHeight: 280,
-                background: '#fff'
+                background: hasBackground ? '#fff' : 'transparent'
               }}
             >
               {children}

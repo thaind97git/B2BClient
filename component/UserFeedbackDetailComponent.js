@@ -15,7 +15,8 @@ import {
   Upload,
   Divider,
   Rate,
-  Popover
+  Popover,
+  Tag
 } from 'antd';
 import { LeftOutlined, WarningOutlined } from '@ant-design/icons';
 import moment from 'moment';
@@ -25,7 +26,9 @@ import { F_CLOSED, F_OPEN } from '../enums/feedbackStatus';
 import {
   DATE_TIME_FORMAT,
   getCurrentUserImage,
-  getFeedbackFileURL
+  getFeedbackFileURL,
+  getFromNowTime,
+  getUtcTime
 } from '../utils';
 import { CurrentUserData } from '../stores/UserState';
 import { createStructuredSelector } from 'reselect';
@@ -109,22 +112,42 @@ const CommentList = ({ comments }) => (
   />
 );
 const Editor = ({ onChange, onSubmit, submitting, value }) => (
-  <>
-    <FormItem>
+  <Form
+    autoComplete="new-password"
+    className="register-form"
+    onFinish={onSubmit}
+  >
+    <Form.Item
+      name="reply"
+      rules={[
+        {
+          required: true,
+          message: 'Please Enter Your Reply'
+        }
+      ]}
+    >
       <TextArea rows={4} onChange={onChange} value={value} />
-    </FormItem>
-    <FormItem>
-      <Button
-        htmlType="submit"
-        loading={submitting}
-        onClick={onSubmit}
-        type="primary"
-      >
+    </Form.Item>
+    <Form.Item>
+      <Button htmlType="submit" loading={submitting} type="primary">
         Reply
       </Button>
-    </FormItem>
-  </>
+    </Form.Item>
+  </Form>
 );
+
+const FeedBackCard = ({ children, title }) => {
+  return (
+    <Card
+    // style={{ backgroundColor: '#199EB8', color: '#FFFFFF' }}
+    // bordered={false}
+    >
+      <div style={{ fontSize: '14px' }}>{title}</div>
+      <br />
+      <div style={{ fontSize: '17px', fontWeight: 'bold' }}>{children}</div>
+    </Card>
+  );
+};
 const customIcons1 = {
   1: <FrownOutlined />,
   2: '',
@@ -271,10 +294,10 @@ const UserFeedbackDetailComponent = ({
             {
               author: user.firstName + ' ' + user.lastName,
               avatar: user.avatar
-                ? getCurrentUserImage(user.avatar)
+                ? getCurrentUserImage(user.id)
                 : '/static/images/avatar.png',
               content: <Card>{feedbackItem.description}</Card>,
-              datetime: moment(feedbackItem.dateCreated).fromNow()
+              datetime: getFromNowTime(feedbackItem.dateCreated)
             }
           ]);
         }
@@ -283,7 +306,6 @@ const UserFeedbackDetailComponent = ({
         for (let i = 0; i < feedbackDetailsData.files.length; i++) {
           const feedbackFileItem = feedbackDetailsData.files[i];
           getFeedbackFile(feedbackFileItem.id);
-          //console.log(feedbackFileData.headers);
           setFileList((fileList) => [
             ...fileList,
             {
@@ -312,12 +334,22 @@ const UserFeedbackDetailComponent = ({
   if (!feedbackDetailsData) {
     return <Skeleton active />;
   }
-
+  const {
+    title,
+    orderId,
+    requestId,
+    reverseAuctionId,
+    dateCreated,
+    feedbackStatus = {},
+    user = {},
+    description
+  } = feedbackDetailsData || {};
+  console.log({ format: getFromNowTime(dateCreated), dateCreated });
   return (
     <Fragment>
       <Row style={{ paddingBottom: 24 }} justify="space-between" align="middle">
         <Button
-          type="primary"
+          type="link"
           onClick={() => {
             if (currentUser.role === 'Supplier') {
               Router.push(`/supplier/feedback`);
@@ -329,77 +361,63 @@ const UserFeedbackDetailComponent = ({
           <LeftOutlined /> Back to feedback list
         </Button>
       </Row>
-      <Row justify="space-between">
-        <Title level={4}>{feedbackDetailsData.title}</Title>
-      </Row>
+
       <Space direction="vertical" style={{ width: '100%' }}>
-        <Card style={{ width: '100%' }}>
-          <Row span={24} gutter={16} justify="space-between">
-            <Col span={isFeedbackSystem ? 8 : 6}>
-              <Card
-                style={{ backgroundColor: '#199EB8', color: '#FFFFFF' }}
-                bordered={false}
-              >
-                <div style={{ fontSize: '14px' }}>Type</div>
-                <br />
-                <div style={{ fontSize: '17px', fontWeight: 'bold' }}>
-                  {feedbackDetailsData.orderId
-                    ? 'Order'
-                    : feedbackDetailsData.requestId
-                    ? 'Order'
-                    : feedbackDetailsData.reverseAuctionId
-                    ? 'Auction'
-                    : 'System'}
-                </div>
-              </Card>
-            </Col>
-            <Col span={isFeedbackSystem ? 8 : 6}>
-              <Card
-                style={{ backgroundColor: '#199EB8', color: '#FFFFFF' }}
-                bordered={false}
-              >
-                <div style={{ fontSize: '14px' }}>Date Created</div>
-                <br />
-                <div style={{ fontSize: '17px', fontWeight: 'bold' }}>
-                  <Moment format={DATE_TIME_FORMAT}>
-                    {new Date(feedbackDetailsData.dateCreated)}
-                  </Moment>
-                </div>
-              </Card>
-            </Col>
-            <Col span={isFeedbackSystem ? 8 : 6}>
-              <Card
-                style={{ backgroundColor: '#199EB8', color: '#FFFFFF' }}
-                bordered={false}
-              >
-                <div style={{ fontSize: '14px' }}>Status</div>
-                <br />
-                <div style={{ fontSize: '17px', fontWeight: 'bold' }}>
-                  {feedbackDetailsData.feedbackStatus.description}
-                </div>
-              </Card>
-            </Col>
-            {!isFeedbackSystem ? (
-              <Col span={6}>
-                <Card
-                  style={{ backgroundColor: '#199EB8', color: '#FFFFFF' }}
-                  bordered={false}
+        <Row span={24} gutter={16} justify="space-between">
+          <Col span={isFeedbackSystem ? 8 : 6}>
+            <FeedBackCard title="Type">
+              {orderId
+                ? 'Order'
+                : requestId
+                ? 'Order'
+                : reverseAuctionId
+                ? 'Auction'
+                : 'System'}
+            </FeedBackCard>
+          </Col>
+          <Col span={isFeedbackSystem ? 8 : 6}>
+            <FeedBackCard title="Date Created">
+              <Moment format={DATE_TIME_FORMAT}>
+                {getUtcTime(dateCreated)}
+              </Moment>
+            </FeedBackCard>
+          </Col>
+          <Col span={isFeedbackSystem ? 8 : 6}>
+            <FeedBackCard title="Status">
+              {feedbackStatus.id === F_CLOSED ? (
+                <Tag style={{ fontSize: 16, padding: '4px 12px' }} color="#f50">
+                  {feedbackStatus.description}
+                </Tag>
+              ) : (
+                <Tag
+                  style={{ fontSize: 16, padding: '4px 12px' }}
+                  color="#108ee9"
                 >
-                  <div style={{ fontSize: '14px' }}>Service Name</div>
-                  <br />
-                  <Popover content={serviceName}>
-                    <div style={{ fontSize: '17px', fontWeight: 'bold' }}>
-                      {displayServiceName(serviceName)}
-                    </div>
-                  </Popover>
-                </Card>
-              </Col>
-            ) : (
-              ''
-            )}
-          </Row>
-        </Card>
-        {feedbackDetailsData.feedbackStatus.id === F_CLOSED ? (
+                  {feedbackStatus.description}
+                </Tag>
+              )}
+            </FeedBackCard>
+          </Col>
+          {!isFeedbackSystem ? (
+            <Col span={6}>
+              <Card
+                style={{ backgroundColor: '#199EB8', color: '#FFFFFF' }}
+                bordered={false}
+              >
+                <div style={{ fontSize: '14px' }}>Service Name</div>
+                <br />
+                <Popover content={serviceName}>
+                  <div style={{ fontSize: '17px', fontWeight: 'bold' }}>
+                    {displayServiceName(serviceName)}
+                  </div>
+                </Popover>
+              </Card>
+            </Col>
+          ) : (
+            ''
+          )}
+        </Row>
+        {feedbackStatus.id === F_CLOSED ? (
           <Card
             bodyStyle={{
               color: 'rgb(184 165 109)',
@@ -417,23 +435,22 @@ const UserFeedbackDetailComponent = ({
         ) : (
           ''
         )}
-        <Card style={{ width: '100%' }}>
+        <Card
+          title={<Title level={5}>Title: {title}</Title>}
+          style={{ width: '100%' }}
+        >
           <Comment
-            author={
-              feedbackDetailsData.user.firstName +
-              ' ' +
-              feedbackDetailsData.user.lastName
-            }
+            author={user.firstName + ' ' + user.lastName}
             avatar={
-              feedbackDetailsData.user.avatar
-                ? getCurrentUserImage(feedbackDetailsData.user.avatar)
+              user.avatar
+                ? getCurrentUserImage(user.id)
                 : '/static/images/avatar.png'
             }
             content={
               <Card>
                 <div
                   dangerouslySetInnerHTML={{
-                    __html: (feedbackDetailsData || {}).description
+                    __html: description
                   }}
                 />
                 {fileList.length > 0 ? (
@@ -456,15 +473,7 @@ const UserFeedbackDetailComponent = ({
                 ></Upload>
               </Card>
             }
-            datetime={
-              <Tooltip
-                title={moment()
-                  .subtract(1, 'days')
-                  .format('YYYY-MM-DD HH:mm:ss')}
-              >
-                <span>{moment(feedbackDetailsData.dateCreated).fromNow()}</span>
-              </Tooltip>
-            }
+            datetime={getFromNowTime(dateCreated)}
           />
           {comments.length > 0 && <CommentList comments={comments} />}
           {isReply ? (
@@ -472,7 +481,7 @@ const UserFeedbackDetailComponent = ({
               author={currentUser.firstName + ' ' + currentUser.lastName}
               avatar={
                 currentUser.avatar
-                  ? getCurrentUserImage(currentUser.avatar)
+                  ? getCurrentUserImage(currentUser.id)
                   : '/static/images/avatar.png'
               }
               content={
@@ -487,8 +496,7 @@ const UserFeedbackDetailComponent = ({
           ) : (
             ''
           )}
-          {isHappy === 'None' &&
-          feedbackDetailsData.feedbackStatus.id === F_CLOSED ? (
+          {isHappy === 'None' && feedbackStatus.id === F_CLOSED ? (
             <div align="center">
               <p style={{ fontSize: '20px', marginBottom: '-20px' }}>
                 Are you satisfied with this support content?

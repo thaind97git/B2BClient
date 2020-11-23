@@ -10,7 +10,11 @@ import {
   GetMessagesData,
   GetMessagesResetter
 } from '../../../stores/ConversationState';
-import { DEFAULT_PAGING_INFO, getShortContent } from '../../../utils';
+import {
+  DEFAULT_PAGING_INFO,
+  getShortContent,
+  getUtcTime
+} from '../../../utils';
 import { Col, Row, Skeleton, Spin, Tooltip } from 'antd';
 import ScrollToBottom, { useAtTop } from 'react-scroll-to-bottom';
 import { LoadingOutlined } from '@ant-design/icons';
@@ -59,7 +63,7 @@ const RenderMessages = React.memo(({ messagesData }) => {
     let next = messagesData[i + 1];
 
     let isMine = current.yourMessage;
-    let currentMoment = moment(current.dateCreated).utc();
+    let currentMoment = getUtcTime(current.dateCreated);
     let prevBySameAuthor = false;
     let nextBySameAuthor = false;
     let startsSequence = true;
@@ -67,7 +71,7 @@ const RenderMessages = React.memo(({ messagesData }) => {
     let showTimestamp = true;
 
     if (previous) {
-      let previousMoment = moment(previous.dateCreated).utc();
+      let previousMoment = getUtcTime(previous.dateCreated);
       let previousDuration = moment.duration(
         currentMoment.diff(previousMoment)
       );
@@ -82,7 +86,7 @@ const RenderMessages = React.memo(({ messagesData }) => {
     }
 
     if (next) {
-      let nextMoment = moment(next.dateCreated).utc();
+      let nextMoment = getUtcTime(next.dateCreated);
       let nextDuration = moment.duration(nextMoment.diff(currentMoment));
       nextBySameAuthor = next.yourMessage === current.yourMessage;
 

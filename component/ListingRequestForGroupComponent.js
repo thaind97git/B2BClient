@@ -1,25 +1,26 @@
-import React, { useEffect, useState } from "react";
-import { Space, Divider, Tag } from "antd";
-import { connect } from "react-redux";
-import { createStructuredSelector } from "reselect";
+import React, { useEffect, useState } from 'react';
+import { Space, Divider, Tag } from 'antd';
+import { connect } from 'react-redux';
+import { createStructuredSelector } from 'reselect';
 import {
   getRequestSuggestByProductIdResetter,
   getRequestSuggestByProductId,
-  getRequestSuggestByProductIdData,
-} from "../stores/RequestState";
+  getRequestSuggestByProductIdData
+} from '../stores/RequestState';
 import {
   DATE_TIME_FORMAT,
   DEFAULT_PAGING_INFO,
   displayCurrency,
-} from "../utils";
-import ReactTableLayout from "../layouts/ReactTableLayout";
-import { get } from "lodash/fp";
-import Moment from "react-moment";
-import { AddRequestToGroupResetter } from "../stores/GroupState";
+  getUtcTime
+} from '../utils';
+import ReactTableLayout from '../layouts/ReactTableLayout';
+import { get } from 'lodash/fp';
+import Moment from 'react-moment';
+import { AddRequestToGroupResetter } from '../stores/GroupState';
 
 const connectToRedux = connect(
   createStructuredSelector({
-    requestByProductIdData: getRequestSuggestByProductIdData,
+    requestByProductIdData: getRequestSuggestByProductIdData
   }),
   (dispatch) => ({
     getRequestByProductId: (pageIndex, pageSize, productId) =>
@@ -29,31 +30,31 @@ const connectToRedux = connect(
     resetData: () => {
       dispatch(getRequestSuggestByProductIdResetter);
       dispatch(AddRequestToGroupResetter);
-    },
+    }
   })
 );
 
 const columns = [
   {
-    title: "Quantity",
-    dataIndex: "quantity",
-    key: "quantity",
+    title: 'Quantity',
+    dataIndex: 'quantity',
+    key: 'quantity'
   },
   {
-    title: "Preferred Unit Price",
-    dataIndex: "price",
-    key: "price",
+    title: 'Preferred Unit Price',
+    dataIndex: 'price',
+    key: 'price'
   },
   {
-    title: "Create By",
-    dataIndex: "createBy",
-    key: "createBy",
+    title: 'Create By',
+    dataIndex: 'createBy',
+    key: 'createBy'
   },
   {
-    title: "Due Date",
-    dataIndex: "dueDate",
-    key: "dueDate",
-  },
+    title: 'Due Date',
+    dataIndex: 'dueDate',
+    key: 'dueDate'
+  }
 ];
 
 const ListingRequestForGroupComponent = ({
@@ -61,7 +62,7 @@ const ListingRequestForGroupComponent = ({
   requestByProductIdData,
   resetData,
   productId,
-  setRequestIdSelected,
+  setRequestIdSelected
 }) => {
   const [recordSelected, setRecordSelected] = useState([]);
 
@@ -83,15 +84,17 @@ const ListingRequestForGroupComponent = ({
       requestData &&
       requestData.length > 0 &&
       requestData.map((request = {}) => ({
-        productId: get("product.id")(request),
+        productId: get('product.id')(request),
         key: request.id,
         price: displayCurrency(+request.preferredUnitPrice),
         quantity:
-          (+request.quantity || 0) + " " + get("product.unitType")(request),
+          (+request.quantity || 0) + ' ' + get('product.unitType')(request),
         dueDate: (
-          <Moment format={DATE_TIME_FORMAT}>{new Date(request.dueDate)}</Moment>
+          <Moment format={DATE_TIME_FORMAT}>
+            {getUtcTime(request.dueDate)}
+          </Moment>
         ),
-        createBy: request.buyer.fullName,
+        createBy: request.buyer.fullName
       }))
     );
   };
@@ -100,27 +103,27 @@ const ListingRequestForGroupComponent = ({
     onChange: (selectedRowKeys, selectedRows) => {
       setRecordSelected(selectedRows);
       const arrayRequestId = (selectedRows || []).map((row) => row.key);
-      typeof setRequestIdSelected === "function" &&
+      typeof setRequestIdSelected === 'function' &&
         setRequestIdSelected(arrayRequestId);
     },
     getCheckboxProps: (record) => ({
-      name: record.name,
-    }),
+      name: record.name
+    })
   };
   return (
     <div>
       <ReactTableLayout
         dispatchAction={getRequestByProductId}
         rowSelection={{
-          type: "checkbox",
-          ...rowSelection,
+          type: 'checkbox',
+          ...rowSelection
         }}
         hasAction={false}
         data={getRequestTable(requestData || [])}
         columns={columns}
         totalCount={total}
         searchProps={{
-          exCondition: [productId],
+          exCondition: [productId]
         }}
       />
     </div>
