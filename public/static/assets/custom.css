@@ -69,7 +69,7 @@ ul {
 }
 
 .dropdown-notify {
-  margin: 19px 0px !important;
+  margin: 0px 0px 19px 0px !important;
   line-height: 18px !important;
   height: auto !important;
   white-space: normal !important;
@@ -80,6 +80,7 @@ ul {
   color: #6262627a;
 }
 .item-notify {
+  width: 290px;
   line-height: 20px !important;
   border-radius: 6px;
   min-height: 1rem;
@@ -94,4 +95,14 @@ ul {
 }
 .shadow {
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1), 0 6px 6px rgba(0, 0, 0, 0.1) !important;
+}
+.dot-notify {
+  margin-right: 8px;
+  content: '\A';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #21212142;
+  display: inline-block;
+  margin-top: 8px;
 }

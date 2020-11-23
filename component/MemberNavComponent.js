@@ -1,7 +1,7 @@
-import { Menu } from "antd";
-import React, { useState } from "react";
-import Link from "next/link";
-import { isServer } from "../utils";
+import { Menu } from 'antd';
+import React, { useState } from 'react';
+import Link from 'next/link';
+import { isServer } from '../utils';
 const { SubMenu } = Menu;
 const findMenuByPath = (path, menuItem = []) =>
   menuItem.find((item) => item.link === path);
@@ -68,8 +68,12 @@ const MemberNavComponent = ({ path, menus = [] }) => {
       {menus.map((menu) => {
         if (!menu.subMenu || menu.subMenu.length === 0) {
           return (
-            <Menu.Item key={menu.key} icon={menu.icon}>
-              <Link href={!!menu.link ? menu.link : ""}>
+            <Menu.Item
+              onClick={() => typeof menu.action === 'function' && menu.action()}
+              key={menu.key}
+              icon={menu.icon}
+            >
+              <Link href={!!menu.link ? menu.link : ''}>
                 <a>{menu.label}</a>
               </Link>
             </Menu.Item>
@@ -80,7 +84,7 @@ const MemberNavComponent = ({ path, menus = [] }) => {
             {menu.subMenu.map((subMenu) => {
               return (
                 <Menu.Item key={subMenu.subKey} icon={subMenu.subIcon}>
-                  <Link href={!!subMenu.subLink ? subMenu.subLink : ""}>
+                  <Link href={!!subMenu.subLink ? subMenu.subLink : ''}>
                     <a>{subMenu.subLabel}</a>
                   </Link>
                 </Menu.Item>

@@ -11,7 +11,8 @@ import {
   SolutionOutlined,
   TeamOutlined,
   DashboardOutlined,
-  BellOutlined
+  BellOutlined,
+  LogoutOutlined
 } from '@ant-design/icons';
 import MemberNavComponent from '../component/MemberNavComponent';
 import { currentPath } from '../utils';
@@ -32,6 +33,7 @@ import {
 import SignalR from '../libs/signalR';
 import NotifyItem from './NotifyItem';
 import { ADMIN } from '../enums/accountRoles';
+import { CurrentUserData } from '../stores/UserState';
 
 const { Header, Content, Sider } = Layout;
 
@@ -79,6 +81,13 @@ const ADMIN_MENU = [
     ),
     label: 'Feedback',
     link: '/admin/feedback'
+  },
+  {
+    key: '7',
+    icon: <LogoutOutlined style={{ color: 'red' }} />,
+    label: 'Logout',
+    action: () => removeToken(),
+    link: '/login'
   }
 ];
 
@@ -86,7 +95,8 @@ const connectToRedux = connect(
   createStructuredSelector({
     notificationData: GetNotificationData,
     seenNotificationData: SeenNotificationData,
-    notificationCountData: GetNotificationCountData
+    notificationCountData: GetNotificationCountData,
+    currentUserData: CurrentUserData
   }),
   (dispatch) => ({
     getNotification: ({ pageIndex, pageSize }) =>
@@ -127,7 +137,8 @@ const AdminLayout = ({
   notificationCountData,
   resetSeenNotify,
   seenNotificationData,
-  seenNotification
+  seenNotification,
+  currentUserData
 }) => {
   const [collapsed, setCollapsed] = useState(true);
   const [openMessage, setOpenMessage] = useState(false);
@@ -266,7 +277,8 @@ const AdminLayout = ({
                       className="ant-dropdown-link"
                       onClick={(e) => e.preventDefault()}
                     >
-                      My Account <DownOutlined />
+                      Hi, {(currentUserData || {}).firstName}{' '}
+                      {(currentUserData || {}).lastName} <DownOutlined />
                     </a>
                   </Dropdown>
                 </div>

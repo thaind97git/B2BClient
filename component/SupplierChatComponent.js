@@ -49,7 +49,8 @@ const GroupTile = ({
         <div
           style={{
             width: 260,
-            height: '5em',
+            minHeight: '2em',
+            maxheight: '5em',
             textAlign: 'left',
             whiteSpace: 'normal',
             overflow: 'hidden',
@@ -104,7 +105,7 @@ const SupplierChatComponent = ({
 
   let GROUP_NEGOTIATING_TABS = [];
 
-  if (supplierGroupChatData) {
+  if (supplierGroupChatData && supplierGroupChatData.length > 0) {
     GROUP_NEGOTIATING_TABS = supplierGroupChatData.map((group) => {
       const {
         id,
@@ -169,6 +170,7 @@ const SupplierChatComponent = ({
       key: '1',
       content: (
         <TabsLayout
+          emptyLabel="Not found any conversation"
           onTabClick={(key) => setCurrentGroupIdSelected(key)}
           className="supplier-chat"
           tabPosition={'left'}
@@ -198,6 +200,7 @@ const SupplierChatComponent = ({
       style={{ height: '100%', overflowY: 'hidden', position: 'relative' }}
     >
       <TabsLayout
+        emptyLabel="Not found any conversation"
         onTabClick={(key) => {
           setIsNegotiating(key);
         }}
