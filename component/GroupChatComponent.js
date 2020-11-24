@@ -181,7 +181,7 @@ const TabsConversation = ({
       })}
     </Tabs>
   ) : (
-    <Empty description="Not found any group" />
+    <Empty description="Not found any conversation" />
   );
 };
 
@@ -275,13 +275,10 @@ const GroupChatComponent = ({
   useEffect(() => {
     if (GetSupplierChatByGroupData && GetSupplierChatByGroupData.length > 0) {
       setConversationData(GetSupplierChatByGroupData);
+    } else {
+      setConversationData([]);
     }
   }, [GetSupplierChatByGroupData]);
-  useEffect(() => {
-    signalR.onListen('GroupPushing', (data) => {
-      console.log({ GroupPushing: data });
-    });
-  }, []);
 
   useEffect(() => {
     if (groupId && isFirstCall) {

@@ -16,6 +16,12 @@ export const USER_ACTIVE_CODE = 'UserActiveCodeAPI';
 export const USER_UPDATE_PASSWORD_BY_CODE = 'UserUpdatePasswordByCodeAPI';
 const GET_USER = 'GetUserAPI';
 
+export const checkMessageLogin = (errorSelector) => {
+  if (errorSelector && errorSelector.includes('banned')) {
+    Router.push('/banned');
+  }
+};
+
 //Login
 export const UserLoginAPI = makeFetchAction(USER_LOGIN, ({ email, password }) =>
   nfetch({

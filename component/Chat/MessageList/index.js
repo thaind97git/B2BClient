@@ -63,7 +63,7 @@ const RenderMessages = React.memo(({ messagesData }) => {
     let next = messagesData[i + 1];
 
     let isMine = current.yourMessage;
-    let currentMoment = getUtcTime(current.dateCreated);
+    let currentMoment = moment(current.dateCreated);
     let prevBySameAuthor = false;
     let nextBySameAuthor = false;
     let startsSequence = true;
@@ -71,7 +71,7 @@ const RenderMessages = React.memo(({ messagesData }) => {
     let showTimestamp = true;
 
     if (previous) {
-      let previousMoment = getUtcTime(previous.dateCreated);
+      let previousMoment = moment(previous.dateCreated);
       let previousDuration = moment.duration(
         currentMoment.diff(previousMoment)
       );
@@ -86,7 +86,7 @@ const RenderMessages = React.memo(({ messagesData }) => {
     }
 
     if (next) {
-      let nextMoment = getUtcTime(next.dateCreated);
+      let nextMoment = moment(next.dateCreated);
       let nextDuration = moment.duration(nextMoment.diff(currentMoment));
       nextBySameAuthor = next.yourMessage === current.yourMessage;
 
