@@ -8,7 +8,7 @@ const OrderStatusComponent = ({ status }) => {
       case O_DONE:
         return '#2db7f5';
       case O_ORDERED:
-        return '#f50';
+        return '#87d068';
       default:
         break;
     }
@@ -16,9 +16,9 @@ const OrderStatusComponent = ({ status }) => {
   const getLabelByStatus = (status) => {
     switch (status) {
       case O_DONE:
-        return 'Done';
+        return 'DONE';
       case O_ORDERED:
-        return 'Ordered';
+        return 'ORDERED';
       default:
         break;
     }

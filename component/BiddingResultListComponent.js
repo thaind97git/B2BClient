@@ -13,6 +13,7 @@ import {
 import { get } from 'lodash/fp';
 import moment from 'moment';
 import ScrollToBottom from 'react-scroll-to-bottom';
+import { B_DONE } from '../enums/biddingStatus';
 const { Panel } = Collapse;
 const { Link } = Typography;
 
@@ -64,7 +65,7 @@ const columns = [
         <span>
           {displayCurrency(saving)} (
           <span style={{ color: 'green' }}>
-            {percentageSaving.toFixed(2)} %
+            {percentageSaving ? percentageSaving.toFixed(2) : 0} %
           </span>
           )
         </span>
@@ -78,17 +79,16 @@ const columns = [
   }
 ];
 
-
-const getActiveSupplier = ({biddingHistory = []}) => {
+const getActiveSupplier = ({ biddingHistory = [] }) => {
   let suppliers = [];
   biddingHistory.forEach((bid = {}) => {
-    const supId = (bid.supplier || {}).id
+    const supId = (bid.supplier || {}).id;
     if (!suppliers.includes(supId)) {
-      suppliers.push(supId)
+      suppliers.push(supId);
     }
-  })
-  return suppliers.length
-}
+  });
+  return suppliers.length;
+};
 const getRecordHistory = ({ auctionData = [] }) => {
   return (
     (auctionData &&
@@ -108,17 +108,18 @@ const getRecordHistory = ({ auctionData = [] }) => {
 const BiddingResultListComponent = ({
   getAuctionHistory,
   auctionHistoryData,
-  auction
+  auction,
+  reverseAuctionId
 }) => {
   const [biddingHistory, setBiddingHistory] = useState([]);
-  const [result, setResult] = useState({})
+  const [result, setResult] = useState({});
   const [firstTime, setFirstTime] = useState(true);
-
+  console.log({ auction });
   useEffect(() => {
     if (auction && firstTime) {
       const { id } = auction;
       getAuctionHistory(id);
-      setFirstTime(false)
+      setFirstTime(false);
     }
   }, [auction, getAuctionHistory, firstTime]);
 
@@ -126,31 +127,29 @@ const BiddingResultListComponent = ({
   useEffect(() => {
     if (auctionHistoryData && auction) {
       setBiddingHistory(auctionHistoryData);
-      const lastBid = auctionHistoryData[auctionHistoryData.length - 1] || {}
+      const lastBid = auctionHistoryData[auctionHistoryData.length - 1] || {};
       const src = {
         currentValue: auction.currentPrice,
         noBids: auctionHistoryData.length,
         bestBid: Math.floor(lastBid.price),
         leadSupplier: (lastBid.supplier || {}).description,
-        active: getActiveSupplier({biddingHistory: auctionHistoryData})
-      }
-      setResult(src)
+        active: getActiveSupplier({ biddingHistory: auctionHistoryData })
+      };
+      setResult(src);
     }
   }, [auctionHistoryData, auction]);
 
-
   useEffect(() => {
     if (biddingHistory && biddingHistory.length > 0 && !firstTime) {
-
-      const lastBid = biddingHistory[biddingHistory.length - 1] || {}
+      const lastBid = biddingHistory[biddingHistory.length - 1] || {};
       const src = {
         currentValue: auction.currentPrice,
         noBids: biddingHistory.length,
         bestBid: Math.floor(lastBid.price),
         leadSupplier: (lastBid.supplier || {}).description,
-        active: getActiveSupplier({biddingHistory})
-      }
-      setResult(src)
+        active: getActiveSupplier({ biddingHistory })
+      };
+      setResult(src);
     }
   }, [biddingHistory, firstTime, auction.currentPrice]);
 
@@ -164,7 +163,8 @@ const BiddingResultListComponent = ({
       ) {
         if (
           biddingHistory[biddingHistory.length - 1].reverseAuctionHistoryId !==
-          history.reverseAuctionHistoryId && history.reverseAuctionId === auction.id
+            history.reverseAuctionHistoryId &&
+          history.reverseAuctionId === auction.id
         ) {
           const cloneHistory = [...biddingHistory];
           cloneHistory.push(history);
@@ -210,9 +210,14 @@ const BiddingResultListComponent = ({
       />
       <Row justify="start" style={{ marginTop: 32 }}>
         <Button
+          disabled={
+            get('reverseAuctionStatus.id')(auction) === B_DONE ? false : true
+          }
           type="primary"
           onClick={() => {
-            Router.push(`/aggregator/order/confirmation?groupId=${1}`);
+            Router.push(
+              `/aggregator/order/confirmation?reverseAuctionId=${reverseAuctionId}`
+            );
           }}
         >
           Closing Deal

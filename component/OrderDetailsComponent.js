@@ -1,305 +1,95 @@
 import {
-  Form,
   Button,
   Row,
   Col,
   Typography,
-  InputNumber,
   Space,
   Card,
   Table,
   Drawer,
-  Modal
+  Empty,
+  Avatar
 } from 'antd';
-import {
-  PhoneOutlined,
-  UserOutlined,
-  MobileOutlined,
-  LeftOutlined
-} from '@ant-design/icons';
-import React, { useState } from 'react';
+import { PhoneOutlined, MailOutlined, LeftOutlined } from '@ant-design/icons';
+import React, { useEffect, useState } from 'react';
 import RequestDetailsComponent from './RequestDetailsComponent';
-import { displayCurrency } from '../utils';
-import Router from 'next/router';
-import { CurrentUserData } from '../stores/UserState';
-import { createStructuredSelector } from 'reselect';
+import {
+  DATE_TIME_FORMAT,
+  displayCurrency,
+  getCurrentUserImage
+} from '../utils';
 import { connect } from 'react-redux';
+import { createStructuredSelector } from 'reselect';
+import { GetGroupDetailsResetter } from '../stores/GroupState';
+import Router, { useRouter } from 'next/router';
+
+import Moment from 'react-moment';
+import {
+  getOrderDetails,
+  GetOrderDetailsDataSelector,
+  GetOrderDetailsErrorSelector
+} from '../stores/OrderState';
+import OrderStatusComponent from './Utils/OrderStatusComponent';
+import RequestStatusComponent from './Utils/RequestStatusComponent';
+import { get } from 'lodash/fp';
 const { Title } = Typography;
-const formItemLayout = {
-  labelCol: { span: 4 },
-  wrapperCol: { span: 16 }
-};
 
 const connectToRedux = connect(
   createStructuredSelector({
-    // productPagingData: GetProductPagingData,
-    // productPagingError: GetProductPagingError,
-    currentUser: CurrentUserData
+    orderDetailsData: GetOrderDetailsDataSelector,
+    orderDetailsError: GetOrderDetailsErrorSelector
+  }),
+  (dispatch) => ({
+    getOrderDetails: (id) => dispatch(getOrderDetails(id)),
+
+    resetData: () => {
+      dispatch(GetGroupDetailsResetter);
+    }
   })
-  //   (dispatch) => ({
-  //     getProduct: (pageIndex, pageSize, searchMessage, dateRange, category) => {
-  //       dispatch(
-  //         getProductPaging({
-  //           pageIndex,
-  //           pageSize,
-  //           categoryID: category,
-  //           productName: searchMessage,
-  //         })
-  //       );
-  //     },
 );
 
-const styles = {
-  colStyle: { padding: '0 8px' },
-  titleStyle: { fontWeight: 500 }
-};
-
-const SUPPLIER_DETAIL = {
-  name: 'Supplier 1',
-  companyName: 'FPT company',
-  companyPhone: '38835287',
-  address: '7 đường 10A, khu dân cư Vĩnh Lộc',
-  ward: 'phường Bình Hưng Hòa B',
-  district: 'quận Bình Tân',
-  province: 'thành phố Hồ Chí Minh',
-  phoneNumber: '0919727775',
-  email: 'duyquanghoang27@gmail.com'
-};
 const groupRequestColumns = [
   { title: 'Created By', dataIndex: 'createdBy', key: 'createdBy' },
   { title: 'Preferred Unit Price', dataIndex: 'price', key: 'price' },
   { title: 'Quantity', dataIndex: 'quantity', key: 'quantity' },
   { title: 'Date Created', dataIndex: 'dateCreated', key: 'dateCreated' },
-  { title: 'Actions', dataIndex: 'actions', key: 'actions' }
+  { title: 'RFQ Status', dataIndex: 'status', key: 'status' },
+  { title: 'View Details', dataIndex: 'actions', key: 'actions' }
 ];
 
-const REQUEST_LIST = [
-  {
-    key: '1',
-    price: '1.190.000 đ',
-    category: 'Iphone 7S 64Gb',
-    quantity: 50,
-    createdBy: 'Buyer 1',
-    dateCreated: '30/09/2020 02:07:26 PM',
-    actions: (
-      <Space>
-        <Button
-          type="link"
-          onClick={() => {
-            // setOpenRequestDetail(true);
-          }}
-        >
-          {' '}
-          Details
-        </Button>
-      </Space>
-    )
-  },
-  {
-    key: '2',
-    price: '1.180.000 đ',
-    category: 'Iphone 7S 64Gb',
-    quantity: 140,
-    createdBy: 'Buyer 1',
-    dateCreated: '30/09/2020 02:07:26 PM',
-    actions: (
-      <Space>
-        <Button
-          type="link"
-          onClick={() => {
-            // setOpenRequestDetail(true);
-          }}
-        >
-          {' '}
-          Details
-        </Button>
-      </Space>
-    )
-  },
-  {
-    key: '3',
-    price: '1.200.000 đ',
-    category: 'Iphone 7s 64Gb',
-    quantity: 30,
-    createdBy: 'Buyer 1',
-    dateCreated: '30/09/2020 02:07:26 PM'
+const OrderDetailsComponent = ({ orderDetailsData, getOrderDetails }) => {
+  const [openRequestDetails, setOpenRequestDetails] = useState(false);
+  const [currentRequestSelected, setCurrentRequestSelected] = useState({});
+  const router = useRouter();
+  const { id: orderId } = router.query;
+
+  useEffect(() => {
+    if (orderId) {
+      getOrderDetails(orderId);
+    }
+  }, [orderId, getOrderDetails]);
+
+  if (!orderDetailsData) {
+    return <Empty description="Can not find any order details!" />;
   }
-];
-
-const getRequestTable = (requestList = [], role) => {
-  return requestList
-    ? requestList.map((request = {}) => ({
-        key: request.id,
-        createdBy: request.createdBy,
-        price: request.price,
-        quantity: request.quantity,
-        dateCreated: request.dateCreated,
-        actions: (
-          <Space>
-            <Button
-              type="link"
-              onClick={() => {
-                // setOpenRequestDetail(true);
-              }}
-            >
-              {' '}
-              View
-            </Button>
-            { role==="Supplier"?
-              <Button
-                type="primary"
-                onClick={() => {
-                  // setOpenRequestDetail(true);
-                }}
-              >
-                Delivered
-              </Button>:""
-            }
-          </Space>
-        )
-      }))
-    : [];
-};
-
-const totalQuantity = 220;
-
-const SupplierDetail = () => {
-  return (
-    <Card
-      bordered={false}
-      title={<b>Supplier: {SUPPLIER_DETAIL.name}</b>}
-      style={{
-        width: '100%',
-        boxShadow: '2px 2px 14px 0 rgba(0,0,0,.1)',
-        marginTop: 16
-      }}
-    >
-      <Row justify="space-between">
-        <Col span={8}>
-          <Card bordered={false} size="small">
-            <b>Company information</b>
-            <br />
-            {SUPPLIER_DETAIL.companyName}
-            <br />
-            {SUPPLIER_DETAIL.address}
-            <br />
-            {SUPPLIER_DETAIL.ward} - {SUPPLIER_DETAIL.district} -{' '}
-            {SUPPLIER_DETAIL.province}
-          </Card>
-        </Col>
-        <Col span={8}>
-          <Card bordered={false} size="small">
-            <b>Company contact</b>
-            <br />
-            <PhoneOutlined />
-            {SUPPLIER_DETAIL.companyPhone}
-            <br />
-            {/* <PrinterOutlined />
-                      <br />
-                      <GlobalOutlined />
-                      <br />
-                      <MailOutlined /> */}
-          </Card>
-        </Col>
-        <Col span={8}>
-          <Card bordered={false} size="small">
-            <b>Supplier contact</b>
-            <br />
-            <UserOutlined />
-            {SUPPLIER_DETAIL.email}
-            <br />
-            <MobileOutlined />
-            {SUPPLIER_DETAIL.phoneNumber}
-            <br />
-            {/* <UserOutlined />
-                      <br />
-                      <MobileOutlined /> */}
-          </Card>
-        </Col>
-      </Row>
-    </Card>
-  );
-};
-
-const RequestList = ({ role }) => {
-  const [openRequestDetail, setOpenRequestDetail] = useState(false);
-  return (
-    <div>
-      <Card
-        bordered={false}
-        title={<b>Request List</b>}
-        style={{
-          width: '100%',
-          boxShadow: '2px 2px 14px 0 rgba(0,0,0,.1)',
-          marginTop: 10
-        }}
-      >
-        <Table
-          bordered
-          columns={
-            role === 'Aggregator'
-              ? groupRequestColumns
-              : [
-                  groupRequestColumns[0],
-                  groupRequestColumns[2],
-                  groupRequestColumns[3],
-                  groupRequestColumns[4]
-                ]
-          }
-          dataSource={getRequestTable(REQUEST_LIST || [],role)}
-          rowKey="id"
-          pagination={false}
-        />
-      </Card>
-      <Drawer
-        width={640}
-        title="RFQ details"
-        placement={'right'}
-        closable={true}
-        onClose={() => setOpenRequestDetail(false)}
-        visible={openRequestDetail}
-        key={'right'}
-      >
-        <RequestDetailsComponent
-          buttonActions={[
-            {
-              label: 'Remove',
-              buttonProps: {
-                danger: true
-              }
-            }
-          ]}
-        />
-      </Drawer>
-    </div>
-  );
-};
-
-const OrderDetailsComponent = ({ isNegotiating = false, currentUser }) => {
-  const [price, setPrice] = useState(0);
-  const [form] = Form.useForm();
-
+  const {
+    product = {},
+    groupName,
+    orderStatus = {},
+    requests,
+    unitPrice,
+    supplier = {}
+  } = orderDetailsData;
+  const totalQuantity = (requests || []).reduce((prev, current) => {
+    return prev + +current.quantity;
+  }, 0);
+  const { unitOfMeasure = {} } = product;
   const productDetailsColumns = [
     { title: 'Product Name', dataIndex: 'productName', key: 'productName' },
     {
       title: 'Unit Price',
       dataIndex: 'productPrice',
-      key: 'productPrice',
-      render: (text) => {
-        return isNegotiating ? (
-          <InputNumber
-            style={{ width: 150 }}
-            min={0}
-            formatter={(value) =>
-              `đ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-            }
-            parser={(value) => value.replace(/\đ\s?|(,*)/g, '')}
-            onChange={(value) => setPrice(value)}
-          />
-        ) : (
-          text
-        );
-      }
+      key: 'productPrice'
     },
     {
       title: 'Total Quantity',
@@ -309,100 +99,204 @@ const OrderDetailsComponent = ({ isNegotiating = false, currentUser }) => {
   ];
   const PRODUCT_DETAIL = [
     {
-      productName:
-        'IR Night Vision Hidden Camera Watch Sport Wear Watch Camera WIFI',
-      productPrice: isNegotiating ? price : displayCurrency(1170000),
-      totalQuantity:
-        REQUEST_LIST.reduce((prev, current) => {
-          return prev + current.quantity;
-        }, 0) + ' Pieces'
+      productName: (
+        <a
+          target="_blank"
+          rel="noreferrer"
+          href={`/product-details?id=${product.id}`}
+        >
+          {product.productName}
+        </a>
+      ),
+
+      productPrice: displayCurrency(unitPrice),
+      totalQuantity: `${totalQuantity} ${unitOfMeasure.description}`
     }
   ];
 
+  const {
+    email,
+    address,
+    avatar,
+    companyName,
+    firstName,
+    lastName,
+    phoneNumber
+  } = supplier || {};
+
   return (
     <div>
+      <Drawer
+        width={640}
+        title="RFQ details"
+        placement={'right'}
+        closable={true}
+        onClose={() => setOpenRequestDetails(false)}
+        visible={openRequestDetails}
+        key={'right'}
+      >
+        {openRequestDetails ? (
+          <RequestDetailsComponent
+            requestId={(currentRequestSelected || {}).id}
+            isSupplier={false}
+          />
+        ) : null}
+      </Drawer>
       <Col span={24}>
-        <Row
-          style={{ paddingBottom: 24 }}
-          justify="space-between"
-          align="middle"
-        >
-          <Button
-            type="primary"
-            onClick={() => {
-              let path = '';
-              switch (currentUser.role) {
-                case 'Aggregator':
-                  path = '/aggregator/order';
-                  break;
-                case 'Buyer':
-                  path = '/buyer/order';
-                  break;
-                case 'Supplier':
-                  path = '/supplier/order';
-                  break;
-                default:
-                  break;
-              }
-              Router.push(path);
-            }}
-          >
-            <LeftOutlined /> Back to Order list
-          </Button>
-        </Row>
         <Row align="middle" justify="center">
-          <Col sm={20} md={18}>
-            <Form
-              form={form}
-              {...formItemLayout}
-              className="register-form"
-              initialValues={PRODUCT_DETAIL}
+          <Col sm={22} md={20}>
+            <Button
+              type="link"
+              onClick={() => {
+                Router.push(`/aggregator/order`);
+              }}
             >
-              <Row justify="center">
-                <Title style={styles.titleStyle} level={2}>
-                  Order Details
-                </Title>
-              </Row>
-              {currentUser.role === 'Aggregator' ||
-              currentUser.role === 'Buyer' ? (
-                <SupplierDetail />
-              ) : (
-                ''
-              )}
-              <Card
-                bordered={false}
-                title={<b>Invoice Item</b>}
-                style={{
-                  width: '100%',
-                  boxShadow: '2px 2px 14px 0 rgba(0,0,0,.1)',
-                  marginTop: 10
-                }}
-              >
-                <Table
-                  bordered
-                  columns={productDetailsColumns}
-                  dataSource={PRODUCT_DETAIL}
-                  rowKey="id"
-                  pagination={false}
-                  footer={() => (
-                    <div align="right" style={{ height: '20px' }}>
-                      <p style={{ color: '#199eb8', fontSize: 18 }}>
-                        Total{' '}
-                        {isNegotiating
-                          ? displayCurrency(price * totalQuantity)
-                          : displayCurrency(257400000)}
-                      </p>
+              <LeftOutlined /> Back to order list
+            </Button>
+          </Col>
+          <Col sm={22} md={20}>
+            <Row justify="center">
+              <Title level={3}>Order Details</Title>
+            </Row>
+            <Card
+              bordered={false}
+              title={<b>Supplier: {`${firstName} ${lastName}`}</b>}
+              style={{
+                width: '100%',
+                boxShadow: '2px 2px 14px 0 rgba(0,0,0,.1)',
+                marginTop: 16
+              }}
+            >
+              <Row justify="space-between">
+                <Col span={16}>
+                  <Card bordered={false} size="small">
+                    <div
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                        alignItems: 'center'
+                      }}
+                    >
+                      <Avatar
+                        size={64}
+                        src={
+                          getCurrentUserImage(avatar) ||
+                          '/static/images/avatar.png'
+                        }
+                      />
+
+                      <span>&nbsp;</span>
+                      <div>
+                        Company: {companyName}
+                        <br />
+                        Address: {address}
+                      </div>
                     </div>
-                  )}
-                />
-              </Card>
-              {currentUser.role === 'Aggregator' ||
-              currentUser.role === 'Supplier' ? (
-                <RequestList role={currentUser.role} />
-              ) : (
-                ''
-              )}
-            </Form>
+                  </Card>
+                </Col>
+                <Col span={8}>
+                  <Card bordered={false} size="small">
+                    <div style={{ textAlign: 'right' }}>
+                      <Space>
+                        {email}
+                        <MailOutlined />
+                      </Space>
+                      <br />
+                      <Space>
+                        {phoneNumber}
+                        <PhoneOutlined />
+                      </Space>
+                      <br />
+                    </div>
+                  </Card>
+                </Col>
+              </Row>
+            </Card>
+            <Card
+              bordered={false}
+              title={
+                <Row justify="space-between">
+                  <b>Order Item</b>
+                  <Row dir="row" align="middle">
+                    <Title style={{ marginBottom: 0 }} level={5}>
+                      Order Status:{' '}
+                    </Title>
+                    <OrderStatusComponent status={orderStatus.id} />
+                  </Row>
+                </Row>
+              }
+              style={{
+                width: '100%',
+                boxShadow: '2px 2px 14px 0 rgba(0,0,0,.1)',
+                marginTop: 10
+              }}
+            >
+              <Table
+                bordered
+                columns={productDetailsColumns}
+                dataSource={PRODUCT_DETAIL}
+                rowKey="id"
+                pagination={false}
+                footer={() => (
+                  <div align="right" style={{ height: '20px' }}>
+                    <p style={{ color: '#199eb8', fontSize: 18 }}>
+                      Total {displayCurrency(unitPrice * totalQuantity)}
+                    </p>
+                  </div>
+                )}
+              />
+            </Card>
+            <Card
+              bordered={false}
+              title={<b>Request List</b>}
+              style={{
+                width: '100%',
+                boxShadow: '2px 2px 14px 0 rgba(0,0,0,.1)',
+                marginTop: 10
+              }}
+            >
+              <Table
+                bordered
+                columns={groupRequestColumns}
+                dataSource={(requests || []).map((request) => {
+                  const {
+                    id,
+                    buyer = {},
+                    quantity,
+                    product = {},
+                    dateCreated,
+                    preferredUnitPrice
+                  } = request;
+                  return {
+                    key: id,
+                    createdBy: buyer.fullName,
+                    price: displayCurrency(preferredUnitPrice),
+                    quantity: `${quantity} ${product.unitType}`,
+                    dateCreated: (
+                      <Moment format={DATE_TIME_FORMAT}>{dateCreated}</Moment>
+                    ),
+                    status: (
+                      <RequestStatusComponent
+                        status={get('requestStatus.id')(request)}
+                      />
+                    ),
+                    actions: (
+                      <Button
+                        onClick={() => {
+                          setCurrentRequestSelected(request);
+                          setOpenRequestDetails(true);
+                        }}
+                        type="link"
+                      >
+                        View
+                      </Button>
+                    )
+                  };
+                })}
+                rowKey="key"
+                pagination={false}
+              />
+            </Card>
           </Col>
         </Row>
       </Col>
