@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 import {
+  checkMessageLogin,
   userLogin,
   userLoginDataErrorSelector,
   userLoginResetter
@@ -25,10 +26,16 @@ const connectToRedux = connect(
 
 const enhance = compose(connectToRedux);
 
-const LoginComponent = ({ loginUser, resetData }) => {
+const LoginComponent = ({ loginUser, resetData, userLoginError }) => {
   const onFinish = (values) => {
     loginUser(values);
   };
+
+  useEffect(() => {
+    if (userLoginError) {
+      checkMessageLogin(userLoginError);
+    }
+  }, [userLoginError]);
   useEffect(() => {
     return () => {
       resetData();

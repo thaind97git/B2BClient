@@ -3,18 +3,6 @@ import { ExclamationCircleOutlined } from '@ant-design/icons';
 import React, { useEffect, useState } from 'react';
 import ReactTableLayout from '../layouts/ReactTableLayout';
 import { DEFAULT_DATE_RANGE } from '../utils';
-import {
-  R_BIDDING,
-  R_CANCELED,
-  R_DONE,
-  R_GROUPED,
-  R_NEGOTIATING,
-  R_ORDERED,
-  R_PENDING,
-  R_REJECTED,
-  R_WAIT_FOR_AUCTION
-} from '../enums/requestStatus';
-import RequestDetailsComponent from './RequestDetailsComponent';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 

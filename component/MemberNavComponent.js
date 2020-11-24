@@ -1,4 +1,4 @@
-import { Menu } from 'antd';
+import { Menu, Modal } from 'antd';
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { isServer } from '../utils';
@@ -67,12 +67,26 @@ const MemberNavComponent = ({ path, menus = [] }) => {
     >
       {menus.map((menu) => {
         if (!menu.subMenu || menu.subMenu.length === 0) {
-          return (
+          return typeof menu.action === 'function' ? (
             <Menu.Item
-              onClick={() => typeof menu.action === 'function' && menu.action()}
+              onClick={() => {
+                typeof menu.action === 'function' &&
+                  Modal.confirm({
+                    title: 'Do you want to logout?',
+                    okText: 'Yes',
+                    cancelText: 'No',
+                    onOk: () => {
+                      menu.action();
+                    }
+                  });
+              }}
               key={menu.key}
               icon={menu.icon}
             >
+              <a>{menu.label}</a>
+            </Menu.Item>
+          ) : (
+            <Menu.Item key={menu.key} icon={menu.icon}>
               <Link href={!!menu.link ? menu.link : ''}>
                 <a>{menu.label}</a>
               </Link>

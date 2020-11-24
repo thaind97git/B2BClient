@@ -41,7 +41,6 @@ const connectToRedux = connect(
       status,
       category
     ) => {
-      console.log({ category });
       dispatch(
         getRequestPaging({
           pageSize,

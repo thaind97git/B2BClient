@@ -9,7 +9,7 @@ import {
   B_FEATURE
 } from '../../enums/biddingStatus';
 import {
-  ExclamationCircleOutlined,
+  ClockCircleOutlined,
   CheckOutlined,
   CheckCircleOutlined,
   CloseOutlined,
@@ -57,7 +57,7 @@ const BiddingStatusComponent = ({ status }) => {
   const getIconByStatus = (status) => {
     switch (status) {
       case B_FEATURE:
-        return <ExclamationCircleOutlined />;
+        return <ClockCircleOutlined />;
       case B_ACTIVE:
         return <CheckOutlined />;
       case B_DONE:

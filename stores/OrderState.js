@@ -20,7 +20,7 @@ export const createNewOrder = ({ unitPrice, groupId, supplierId }, callback) =>
   respondToSuccess(
     CreateNewOrderAPI.actionCreator({ unitPrice, groupId, supplierId }),
     () => {
-      typeof callback === 'function' && callback()
+      typeof callback === 'function' && callback();
     }
   );
 export const CreateNewOrderData = CreateNewOrderAPI.dataSelector;
@@ -30,15 +30,8 @@ export const CreateNewOrderResetter = getResetter(CreateNewOrderAPI);
 //Get order by filter
 const GetOrderPagingAPI = makeFetchAction(
   GET_ORDER_PAGING,
-  ({
-    status ,
-    groupName,
-    fromDate,
-    toDate,
-    pageIndex,
-    pageSize,
-  }) => {
-    return nfetch({
+  ({ status, groupName, fromDate, toDate, pageIndex, pageSize }) =>
+    nfetch({
       endpoint: `/api/Order/Filter${generateQuery({
         orderStatus: status,
         groupName: groupName,
@@ -46,11 +39,10 @@ const GetOrderPagingAPI = makeFetchAction(
         toDate,
         pageIndex,
         pageSize,
-        orderByDescending: true,
+        orderByDescending: true
       })}`,
       method: 'GET'
-    })();
-  }
+    })()
 );
 
 export const getOrderPaging = ({
@@ -81,17 +73,13 @@ export const GetOrderPagingResetter = getResetter(GetOrderPagingAPI);
 const GetOrderDetailsAPI = makeFetchAction(GET_ORDER_DETAILS, (orderId) =>
   nfetch({
     endpoint: `/api/Order/${orderId}`,
-    method: "GET",
+    method: 'GET'
   })()
 );
 
 export const getOrderDetails = (orderId) =>
-  respondToSuccess(
-    GetOrderDetailsAPI.actionCreator(orderId),
-    (resp, _, store) => {}
-  );
+  respondToSuccess(GetOrderDetailsAPI.actionCreator(orderId));
 export const GetOrderDetailsDataSelector = GetOrderDetailsAPI.dataSelector;
-export const GetOrderDetailsErrorSelector =
-  GetOrderDetailsAPI.errorSelector;
+export const GetOrderDetailsErrorSelector = GetOrderDetailsAPI.errorSelector;
 
 export const GetOrderDetailsResetter = getResetter(GetOrderDetailsAPI);

@@ -8,6 +8,7 @@ import {
   auctionFilter,
   AuctionFilterData,
   AuctionFilterError,
+  AuctionFilterResetter,
   ResponseAuctionInvitationData,
   ResponseAuctionInvitationResetter
 } from '../stores/AuctionState';
@@ -44,7 +45,8 @@ const connectToRedux = connect(
           orderByDateDescending: isDescending
         })
       ),
-    resetResponseInvitation: () => dispatch(ResponseAuctionInvitationResetter)
+    resetResponseInvitation: () => dispatch(ResponseAuctionInvitationResetter),
+    resetAuctionFilter: () => dispatch(AuctionFilterResetter)
   })
 );
 const callAuctionFilter = ({
@@ -77,7 +79,8 @@ const SupplierBiddingComponent = ({
   auctionFilter,
   auctionFilterData,
   responseInvitationData,
-  resetResponseInvitation
+  resetResponseInvitation,
+  resetAuctionFilter
 }) => {
   const [currentTab, setCurrentTab] = useState('1');
   const [category, setCategory] = useState('all');
@@ -115,6 +118,7 @@ const SupplierBiddingComponent = ({
     auctionData = auctionFilterData.data;
     totalCount = auctionFilterData.total;
   }
+  console.log({ auctionData });
   return (
     <Fragment>
       <Row justify="end">
@@ -138,7 +142,13 @@ const SupplierBiddingComponent = ({
           </Select>
         </Space>
       </Row>
-      <Tabs defaultActiveKey="1" onChange={(key) => setCurrentTab(key)}>
+      <Tabs
+        defaultActiveKey="1"
+        onChange={(key) => {
+          resetAuctionFilter();
+          setCurrentTab(key);
+        }}
+      >
         <TabPane
           tab={
             <span>

@@ -1,11 +1,11 @@
-import React, { createElement } from "react";
-import classNames from "classnames";
-import { Button } from "antd";
-import config from "./typeConfig";
+import React, { createElement } from 'react';
+import classNames from 'classnames';
+import { Button } from 'antd';
+import config from './typeConfig';
 const ExceptionComponent = ({
   className,
-  backText = "back to home",
-  linkElement = "a",
+  backText = 'back to home',
+  linkElement = 'a',
   type,
   title,
   desc,
@@ -13,8 +13,8 @@ const ExceptionComponent = ({
   actions,
   ...rest
 }) => {
-  const pageType = type in config ? type : "404";
-  const clsString = classNames("exception", className);
+  const pageType = type in config ? type : '404';
+  const clsString = classNames('exception', className);
   return (
     <div className={clsString} {...rest}>
       <div className="imgBlock">
@@ -23,7 +23,7 @@ const ExceptionComponent = ({
           style={{ backgroundImage: `url(${img || config[pageType].img})` }}
         />
       </div>
-      <div className="content">
+      <div style={{ background: 'transparent' }} className="content">
         <h1>{title || config[pageType].title}</h1>
         <div className="desc">{desc || config[pageType].desc}</div>
         <div className="actions">
@@ -31,8 +31,8 @@ const ExceptionComponent = ({
             createElement(
               linkElement,
               {
-                to: "/",
-                href: "/",
+                to: '/',
+                href: '/'
               },
               <Button type="primary">{backText}</Button>
             )}

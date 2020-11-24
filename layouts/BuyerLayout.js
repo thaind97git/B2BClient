@@ -72,8 +72,10 @@ const BUYER_MENU = [
     key: '6',
     icon: <LogoutOutlined style={{ color: 'red' }} />,
     label: 'Logout',
-    action: () => removeToken(),
-    link: '/login'
+    action: () => {
+      Router.push('/login');
+      removeToken();
+    }
   }
 ];
 const connectToRedux = connect(

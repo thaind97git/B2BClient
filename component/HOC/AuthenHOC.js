@@ -1,6 +1,6 @@
-import { connect } from "react-redux";
-import { createStructuredSelector } from "reselect";
-import React from "react";
+import { connect } from 'react-redux';
+import { createStructuredSelector } from 'reselect';
+import React from 'react';
 
 import {
   CurrentUserData,
@@ -8,24 +8,25 @@ import {
   verifyScopeAndRole,
   CurrentUserError,
   CurrentUserResetter,
-} from "../../stores/UserState";
-import { isServer } from "../../utils";
-import { Row, Spin } from "antd";
-import { flow, nth, split } from "lodash/fp";
-import Router from "next/router";
+  checkMessageLogin
+} from '../../stores/UserState';
+import { isServer } from '../../utils';
+import { Row, Spin } from 'antd';
+import { flow, nth, split } from 'lodash/fp';
+import Router from 'next/router';
 
 const connectWithRedux = connect(
   createStructuredSelector({
     currentUser: CurrentUserData,
-    currentUserError: CurrentUserError,
+    currentUserError: CurrentUserError
   }),
   (dispatch) => ({
     resetData: () => dispatch(CurrentUserResetter),
-    getCurrentUser: ({ scope }) => dispatch(getCurrentUser({ scope })),
+    getCurrentUser: ({ scope }) => dispatch(getCurrentUser({ scope }))
   })
 );
 
-const getScopeByUrl = flow(split("/"), nth(1));
+const getScopeByUrl = flow(split('/'), nth(1));
 
 function withAuth(AuthComponent) {
   class AuthenHOC extends React.Component {
@@ -44,6 +45,7 @@ function withAuth(AuthComponent) {
 
     componentDidUpdate() {
       if (this.props.currentUserError) {
+        checkMessageLogin(this.props.currentUserError);
         Router.push(
           `/login?returnUrl=${Router.pathname}${window.location.search}`
         );
@@ -64,7 +66,7 @@ function withAuth(AuthComponent) {
           {currentUser && verifyScopeAndRole(scope, currentUser.role) ? (
             <AuthComponent {...this.props} isLoggedIn={true} />
           ) : (
-            <Row justify="center" style={{ height: "100vh" }} align="middle">
+            <Row justify="center" style={{ height: '100vh' }} align="middle">
               <Spin size="large" />
             </Row>
           )}

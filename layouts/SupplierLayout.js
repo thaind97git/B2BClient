@@ -88,8 +88,10 @@ const SUPPLIER_MENU = [
     key: '7',
     icon: <LogoutOutlined style={{ color: 'red' }} />,
     label: 'Logout',
-    action: () => removeToken(),
-    link: '/login'
+    action: () => {
+      Router.push('/login');
+      removeToken();
+    }
   }
 ];
 
