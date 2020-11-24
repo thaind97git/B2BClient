@@ -82,7 +82,7 @@ const columns = [
     key: 'status'
   },
   {
-    title: 'Actions',
+    title: 'Details',
     dataIndex: 'actions',
     key: 'actions'
   }

@@ -71,20 +71,6 @@ const connectToRedux = connect(
   })
 );
 
-// const USER_PROFILE = {
-//   email: 'duyquanghoang27@gmail.com',
-//   firstName: 'Duy',
-//   lastName: 'Quang',
-//   companyName: 'B2S Corp',
-//   address: 'string',
-//   telephone: '0919727775',
-//   isEmailVerified: false,
-//   fax: 'None',
-//   alternativeEmail: 'None',
-//   mobile: 'None',
-//   tradeTerms: 'FOB',
-//   certifi: 'ISO/TS16949'
-// };
 const UserProfileComponent = ({
   isDrawer,
   userId,
@@ -93,7 +79,8 @@ const UserProfileComponent = ({
   updatePassword,
   getUser,
   getUserData,
-  resetGetUser
+  resetGetUser,
+  isSupplier = true
 }) => {
   const [changePasswordVisible, setChangePasswordVisible] = useState(false);
   const [imageUrl, setImageUrl] = useState(
@@ -189,7 +176,7 @@ const UserProfileComponent = ({
   if (isDrawer) {
     const {
       address,
-      avatar,
+      id,
       companyName,
       email,
       firstName,
@@ -204,22 +191,13 @@ const UserProfileComponent = ({
         <Col span={6}>
           <Avatar
             size={120}
-            src={getCurrentUserImage(avatar) || '/static/images/avatar.png'}
+            src={getCurrentUserImage(id) || '/static/images/avatar.png'}
           />
         </Col>
         <Col span={18}>
           <Descriptions title={firstName + ' ' + lastName} column={1}>
             <Descriptions.Item label="at">{companyName}</Descriptions.Item>
-            <Descriptions.Item label="Email">
-              {email}
-              {/* {(() => {
-                if (email) {
-                  return <font color="green"> [Verified]</font>;
-                } else {
-                  return <font color="red"> [Unverified]</font>;
-                }
-              })()} */}
-            </Descriptions.Item>
+            <Descriptions.Item label="Email">{email}</Descriptions.Item>
           </Descriptions>
         </Col>
         <Divider />
@@ -230,15 +208,6 @@ const UserProfileComponent = ({
         <DescriptionItem title="Mobile" content={phoneNumber} />
         <DescriptionItem title="Address" content={address} />
         <Divider />
-        {/* <Col span={24}>
-          <Title level={5}>Company Information</Title>
-        </Col>
-        <DescriptionItem
-          title="Certifications"
-          content={USER_PROFILE.certifi}
-        />
-        <DescriptionItem title="Trade Term" content={USER_PROFILE.tradeTerms} />
-        <Divider /> */}
 
         <style jsx global>{`
           .site-description-item-profile-wrapper {

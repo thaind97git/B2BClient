@@ -1,5 +1,5 @@
-import { Tag } from "antd";
-import React from "react";
+import { Tag } from 'antd';
+import React from 'react';
 import {
   R_CANCELED,
   R_DONE,
@@ -10,29 +10,32 @@ import {
   R_WAIT_FOR_AUCTION,
   R_BIDDING,
   R_ORDERED,
-} from "../../enums/requestStatus";
+  R_OUT_OF_DATE
+} from '../../enums/requestStatus';
 
 const RequestStatusComponent = ({ status }) => {
   const getColorByStatus = (status) => {
     switch (status) {
       case R_PENDING:
-        return "default";
+        return 'default';
       case R_GROUPED:
-        return "#2db7f5";
+        return '#2db7f5';
       case R_DONE:
-        return "success";
+        return 'success';
       case R_CANCELED:
-        return "error";
+        return 'error';
       case R_REJECTED:
-        return "error";
+        return 'error';
       case R_NEGOTIATING:
-        return "blue";
+        return 'blue';
       case R_WAIT_FOR_AUCTION:
-        return "processing";
+        return 'processing';
       case R_BIDDING:
-        return "cyan";
+        return 'cyan';
       case R_ORDERED:
-        return "#87d068";
+        return '#87d068';
+      case R_OUT_OF_DATE:
+        return 'error';
       default:
         break;
     }
@@ -40,23 +43,25 @@ const RequestStatusComponent = ({ status }) => {
   const getLabelByStatus = (status) => {
     switch (status) {
       case R_PENDING:
-        return "PENDING";
+        return 'PENDING';
       case R_GROUPED:
-        return "GROUPING";
+        return 'GROUPING';
       case R_DONE:
-        return "DONE";
+        return 'DONE';
       case R_CANCELED:
-        return "CANCELED";
+        return 'CANCELED';
       case R_REJECTED:
-        return "REJECTED";
+        return 'REJECTED';
       case R_NEGOTIATING:
-        return "NEGOTIATING";
+        return 'NEGOTIATING';
       case R_WAIT_FOR_AUCTION:
-        return "WAIT FOR AUCTION";
+        return 'WAIT FOR AUCTION';
       case R_BIDDING:
-        return "BIDDING";
+        return 'BIDDING';
       case R_ORDERED:
-        return "ORDERED";
+        return 'ORDERED';
+      case R_OUT_OF_DATE:
+        return 'OUT OF DATE';
       default:
         break;
     }
