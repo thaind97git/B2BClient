@@ -12,7 +12,7 @@ export const GET_FEEDBACK_PAGING = 'GetFeedbackPagingAPI';
 export const GET_FEEDBACK_DETAILS = 'GetFeedbackDetailsAPI';
 export const GET_FEEDBACK_FILE = 'GetFeedbackFileAPI';
 export const CREATE_FEEDBACK_REPLY = 'CreateFeedbackReplyAPI';
-export const CREATE_FEEDBACK_RATE = 'CreateFeedbackRateAPI';
+export const UPDATE_FEEDBACK_RATE = 'UpdateFeedbackRateAPI';
 export const GET_REQUEST_PAGING_FOR_FEEDBACK = 'GetRequestPagingForFeedbackAPI';
 
 //create feedback
@@ -138,17 +138,23 @@ export const CreateFeedbackReplyError = CreateFeedbackReplyAPI.errorSelector;
 export const CreateFeedbackReplyResetter = getResetter(CreateFeedbackReplyAPI);
 
 //create feedback rate
-const CreateFeedbackRateAPI = makeFetchAction(CREATE_FEEDBACK_RATE, (object) =>
-  nfetch({
-    endpoint: '/api/Feedback/Rate'
-  })(object)
+const UpdateFeedbackRateAPI = makeFetchAction(
+  UPDATE_FEEDBACK_RATE,
+  ({feedbackReplyId, isHappy}) =>
+    nfetch({
+      endpoint: `/api/Feedback/Rate`,
+      method: 'PUT'
+    })({feedbackReplyId, isHappy})
 );
 
-export const createFeedbackRate = (object) =>
-  respondToSuccess(CreateFeedbackRateAPI.actionCreator(object), (resp) => {});
-export const CreateFeedbackRateData = CreateFeedbackRateAPI.dataSelector;
-export const CreateFeedbackRateError = CreateFeedbackRateAPI.errorSelector;
-export const CreateFeedbackRateResetter = getResetter(CreateFeedbackRateAPI);
+export const updateFeedbackRate = ( {feedbackReplyId, isHappy }) =>
+  respondToSuccess(
+    UpdateFeedbackRateAPI.actionCreator({ feedbackReplyId, isHappy} ),
+    (resp) => {}
+  );
+export const UpdateFeedbackRateData = UpdateFeedbackRateAPI.dataSelector;
+export const UpdateFeedbackRateError = UpdateFeedbackRateAPI.errorSelector;
+export const UpdateFeedbackRateResetter = getResetter(UpdateFeedbackRateAPI);
 
 //get feedback file
 const GetFeedbackFileAPI = makeFetchAction(GET_FEEDBACK_FILE, (fileId) =>

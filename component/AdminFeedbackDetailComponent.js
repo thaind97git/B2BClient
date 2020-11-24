@@ -53,7 +53,7 @@ const connectToRedux = connect(
     feedbackDetailsData: GetFeedbackDetailsData,
     createFeedbackReplyData: CreateFeedbackReplyData,
     currentUser: CurrentUserData,
-    feedbackFileData: GetFeedbackFileData,
+    feedbackFileData: GetFeedbackFileData
   }),
   (dispatch) => ({
     getFeedbackDetails: (feedbackId) => {
@@ -66,8 +66,27 @@ const connectToRedux = connect(
       dispatch(getFeedbackFile(fileId));
     },
     resetData: () => dispatch(GetFeedbackDetailsResetter),
-    resetCreateFeedbackReply: () => dispatch(CreateFeedbackReplyResetter)
+    resetCreateFeedbackReply: () => dispatch(CreateFeedbackReplyResetter),
   })
+);
+
+const Happy = ({ isHappy }) => (
+  <img
+    alt=""
+    src="/static/images/vote-up.png"
+    value={true}
+    height={20}
+    style={isHappy === true ? { opacity: '1' } : { opacity: '0.3' }}
+  />
+);
+
+const Unhappy = ({ isHappy }) => (
+  <img
+    alt=""
+    src="/static/images/vote-down.png"
+    height={20}
+    style={isHappy === false ? { opacity: '1' } : { opacity: '0.3' }}
+  />
 );
 
 const CommentList = ({ comments }) => (
@@ -116,20 +135,6 @@ const FeedBackCard = ({ children, title }) => {
   );
 };
 
-const customIcons1 = {
-  1: <FrownOutlined />,
-  2: '',
-  3: '',
-  4: '',
-  5: ''
-};
-const customIcons2 = {
-  1: '',
-  2: <SmileOutlined />,
-  3: '',
-  4: '',
-  5: ''
-};
 
 const desc1 = ['Not Happy', '', '', '', ''];
 const desc2 = ['', 'Happy', '', '', ''];
@@ -154,7 +159,6 @@ const AdminFeedbackDetailComponent = ({
   const [submitting, setSubmitting] = useState(false);
   const [value, setValue] = useState('');
   const [isReply, setIsReply] = useState(false);
-  const [isHappy, setIsHappy] = useState('None');
   const [fileList, setFileList] = useState([]);
   const [serviceName, setServiceName] = useState('');
   const [isFeedbackSystem, setIsFeedbackSystem] = useState(true);
@@ -176,6 +180,7 @@ const AdminFeedbackDetailComponent = ({
       feedbackId: feedbackDetailsData.id
     });
   };
+
 
   const handleChange = (e) => {
     setValue(e.target.value);
@@ -211,13 +216,6 @@ const AdminFeedbackDetailComponent = ({
         for (let i = 0; i < feedbackDetailsData.feedbackReplies.length; i++) {
           const feedbackItem = feedbackDetailsData.feedbackReplies[i] || {};
           const { user = {} } = feedbackItem;
-          if (feedbackItem.isHappy) {
-            setIsHappy('Happy');
-            continue;
-          } else if (feedbackItem.isHappy === false) {
-            setIsHappy('Not Happy');
-            continue;
-          }
           setComments((comments) => [
             ...comments,
             {
@@ -226,7 +224,27 @@ const AdminFeedbackDetailComponent = ({
                 ? getCurrentUserImage(user.id)
                 : '/static/images/avatar.png',
               content: <Card>{feedbackItem.description}</Card>,
-              datetime: getFromNowTime(feedbackDetailsData.dateCreated)
+              datetime: getFromNowTime(feedbackDetailsData.dateCreated),
+              actions: [
+                !feedbackItem.isUser ? (
+                  <Tooltip key="comment-basic-like" title="Happy">
+                    <span>
+                      <Happy isHappy={feedbackItem.isHappy} />
+                    </span>
+                  </Tooltip>
+                ) : (
+                  ''
+                ),
+                !feedbackItem.isUser ? (
+                  <Tooltip key="comment-basic-dislike" title="Not Happy">
+                    <span>
+                      <Unhappy isHappy={feedbackItem.isHappy} />
+                    </span>
+                  </Tooltip>
+                ) : (
+                  ''
+                )
+              ]
             }
           ]);
         }
@@ -385,37 +403,6 @@ const AdminFeedbackDetailComponent = ({
               />
             }
           />
-        ) : (
-          ''
-        )}
-        {isHappy === 'Not Happy' ? (
-          <div align="center">
-            <p style={{ fontSize: '20px', marginBottom: '-20px' }}>User rate</p>
-            <br />
-            <Rate
-              tooltips={desc1}
-              defaultValue={2}
-              disabled
-              style={{ paddingLeft: '32px', fontSize: '100px' }}
-              character={({ index }) => {
-                return customIcons1[index + 1];
-              }}
-            />
-          </div>
-        ) : isHappy === 'Happy' ? (
-          <div align="center">
-            <p style={{ fontSize: '20px', marginBottom: '-20px' }}>User rate</p>
-            <br />
-            <Rate
-              tooltips={desc2}
-              defaultValue={2}
-              disabled
-              style={{ paddingLeft: '32px', fontSize: '100px' }}
-              character={({ index }) => {
-                return customIcons2[index + 1];
-              }}
-            />
-          </div>
         ) : (
           ''
         )}

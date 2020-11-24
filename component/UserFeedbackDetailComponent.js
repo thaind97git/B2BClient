@@ -18,7 +18,10 @@ import {
   Popover,
   Tag
 } from 'antd';
-import { LeftOutlined, WarningOutlined } from '@ant-design/icons';
+import {
+  LeftOutlined,
+  WarningOutlined,
+} from '@ant-design/icons';
 import moment from 'moment';
 import Router, { useRouter } from 'next/router';
 import React, { Fragment, useState, useEffect } from 'react';
@@ -39,14 +42,13 @@ import {
   createFeedbackReply,
   CreateFeedbackReplyData,
   CreateFeedbackReplyResetter,
-  createFeedbackRate,
-  CreateFeedbackRateData,
-  CreateFeedbackRateResetter,
+  updateFeedbackRate,
+  UpdateFeedbackRateData,
+  UpdateFeedbackRateResetter,
   GetFeedbackFileData,
   getFeedbackFile
 } from '../stores/FeedbackState';
 import Moment from 'react-moment';
-import { SmileOutlined, FrownOutlined } from '@ant-design/icons';
 
 const { TextArea } = Input;
 const { Title } = Typography;
@@ -55,7 +57,7 @@ const connectToRedux = connect(
   createStructuredSelector({
     feedbackDetailsData: GetFeedbackDetailsData,
     createFeedbackReplyData: CreateFeedbackReplyData,
-    createFeedbackRateData: CreateFeedbackRateData,
+    updateFeedbackRateData: UpdateFeedbackRateData,
     currentUser: CurrentUserData,
     feedbackFileData: GetFeedbackFileData,
   }),
@@ -66,15 +68,15 @@ const connectToRedux = connect(
     replyFeedback: (object) => {
       dispatch(createFeedbackReply(object));
     },
-    rateFeedback: (object) => {
-      dispatch(createFeedbackRate(object));
+    rateFeedback: ({feedbackReplyId,isHappy}) => {
+      dispatch(updateFeedbackRate( {feedbackReplyId, isHappy} ));
     },
     getFeedbackFile: (fileId) => {
       dispatch(getFeedbackFile(fileId));
     },
     resetData: () => dispatch(GetFeedbackDetailsResetter),
     resetCreateFeedbackReply: () => dispatch(CreateFeedbackReplyResetter),
-    resetCreateFeedbackRate: () => dispatch(CreateFeedbackRateResetter)
+    resetUpdateFeedbackRate: () => dispatch(UpdateFeedbackRateResetter)
   })
 );
 
@@ -123,20 +125,25 @@ const FeedBackCard = ({ children, title }) => {
     </Card>
   );
 };
-const customIcons1 = {
-  1: <FrownOutlined />,
-  2: '',
-  3: '',
-  4: '',
-  5: ''
-};
-const customIcons2 = {
-  1: '',
-  2: <SmileOutlined />,
-  3: '',
-  4: '',
-  5: ''
-};
+
+const Happy = ({ isHappy }) => (
+  <img
+    alt=""
+    src="/static/images/vote-up.png"
+    value={true}
+    height={20}
+    style={isHappy===true ? { opacity: '1' } : { opacity: '0.3' }}
+  />
+);
+
+const Unhappy = ({ isHappy }) => (
+  <img
+    alt=""
+    src="/static/images/vote-down.png"
+    height={20}
+    style={isHappy===false ? { opacity: '1' } : { opacity: '0.3' }}
+  />
+);
 
 const displayServiceName = (serviceName) =>
   serviceName
@@ -145,8 +152,6 @@ const displayServiceName = (serviceName) =>
       : serviceName
     : '';
 
-const desc1 = ['Not Happy', '', '', '', ''];
-const desc2 = ['', 'Happy', '', '', ''];
 
 const UserFeedbackDetailComponent = ({
   currentUser,
@@ -157,8 +162,8 @@ const UserFeedbackDetailComponent = ({
   createFeedbackReplyData,
   resetCreateFeedbackReply,
   rateFeedback,
-  createFeedbackRateData,
-  resetCreateFeedbackRate,
+  updateFeedbackRateData,
+  resetUpdateFeedbackRate,
   getFeedbackFile,
   feedbackFileData
 }) => {
@@ -168,21 +173,17 @@ const UserFeedbackDetailComponent = ({
   const [submitting, setSubmitting] = useState(false);
   const [value, setValue] = useState('');
   const [isReply, setIsReply] = useState(false);
-  const [isHappy, setIsHappy] = useState('None');
   const [fileList, setFileList] = useState([]);
   const [isFeedbackSystem, setIsFeedbackSystem] = useState(true);
   const [serviceName, setServiceName] = useState('');
 
+  const rate = (feedbackItem, isHappy) => {
+    rateFeedback({feedbackReplyId:(feedbackItem||{}).id,isHappy:isHappy});
+  };
+
   const handleSubmit = () => {
     replyFeedback({
       description: value,
-      feedbackId: feedbackDetailsData.id
-    });
-  };
-
-  const handleRate = (value) => {
-    rateFeedback({
-      isHappy: value,
       feedbackId: feedbackDetailsData.id
     });
   };
@@ -203,18 +204,18 @@ const UserFeedbackDetailComponent = ({
   }, [createFeedbackReplyData]);
 
   useEffect(() => {
-    if (createFeedbackRateData) {
+    if (updateFeedbackRateData) {
       getFeedbackDetails(feedbackId);
-      resetCreateFeedbackRate();
+      resetUpdateFeedbackRate();
     }
-  }, [createFeedbackRateData]);
+  }, [updateFeedbackRateData]);
 
   useEffect(() => {
     setFileList([]);
     setComments([]);
     if (feedbackDetailsData) {
       if (feedbackDetailsData.reverseAuction) {
-        setServiceName((feedbackDetailsData.reverseAuction ||{}).description);
+        setServiceName((feedbackDetailsData.reverseAuction || {}).description);
         setIsFeedbackSystem(false);
       } else if (feedbackDetailsData.order) {
         setServiceName((feedbackDetailsData.order || {}).description);
@@ -227,13 +228,6 @@ const UserFeedbackDetailComponent = ({
         for (let i = 0; i < feedbackDetailsData.feedbackReplies.length; i++) {
           const feedbackItem = feedbackDetailsData.feedbackReplies[i];
           const { user = {} } = feedbackItem;
-          if (feedbackItem.isHappy) {
-            setIsHappy('Happy');
-            continue;
-          } else if (feedbackItem.isHappy === false) {
-            setIsHappy('Not Happy');
-            continue;
-          }
           setComments((comments) => [
             ...comments,
             {
@@ -241,8 +235,40 @@ const UserFeedbackDetailComponent = ({
               avatar: user.avatar
                 ? getCurrentUserImage(user.id)
                 : '/static/images/avatar.png',
-              content: <Card>{feedbackItem.description}</Card>,
-              datetime: getFromNowTime(feedbackItem.dateCreated)
+              content: (
+                <div>
+                  <Card>{feedbackItem.description}</Card>
+                </div>
+              ),
+              datetime: getFromNowTime(feedbackItem.dateCreated),
+              actions: [
+                !feedbackItem.isUser ? (
+                  <Tooltip key="comment-basic-like" title="Happy">
+                    <span
+                      onClick={() => {
+                        rate(feedbackItem, true);
+                      }}
+                    >
+                      <Happy isHappy={feedbackItem.isHappy} />
+                    </span>
+                  </Tooltip>
+                ) : (
+                  ''
+                ),
+                !feedbackItem.isUser ? (
+                  <Tooltip key="comment-basic-dislike" title="Not Happy">
+                    <span
+                      onClick={() => {
+                        rate(feedbackItem, false);
+                      }}
+                    >
+                      <Unhappy isHappy={feedbackItem.isHappy} />
+                    </span>
+                  </Tooltip>
+                ) : (
+                  ''
+                )
+              ]
             }
           ]);
         }
@@ -433,36 +459,6 @@ const UserFeedbackDetailComponent = ({
                 />
               }
             />
-          ) : (
-            ''
-          )}
-          {isHappy === 'None' && feedbackStatus.id === F_CLOSED ? (
-            <div align="center">
-              <p style={{ fontSize: '20px', marginBottom: '-20px' }}>
-                Are you satisfied with this support content?
-              </p>
-              <br />
-              <Rate
-                tooltips={desc1}
-                style={{ fontSize: '100px' }}
-                onChange={(value) => {
-                  handleRate(false);
-                }}
-                character={({ index }) => {
-                  return customIcons1[index + 1];
-                }}
-              />
-              <Rate
-                tooltips={desc2}
-                style={{ fontSize: '100px' }}
-                onChange={(value) => {
-                  handleRate(true);
-                }}
-                character={({ index }) => {
-                  return customIcons2[index + 1];
-                }}
-              />
-            </div>
           ) : (
             ''
           )}
