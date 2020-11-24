@@ -60,10 +60,11 @@ export const CreateFeedbackResetter = getResetter(CreateFeedbackAPI);
 //get feedback paging
 const GetFeedbackPagingAPI = makeFetchAction(
   GET_FEEDBACK_PAGING,
-  ({ status, title, fromDate, toDate, pageIndex, pageSize }) => {
+  ({ status, systemType, title, fromDate, toDate, pageIndex, pageSize }) => {
     return nfetch({
       endpoint: `/api/Feedback/Filter${generateQuery({
         statusId: status,
+        systemType,
         title,
         fromDate,
         toDate,
@@ -78,6 +79,7 @@ const GetFeedbackPagingAPI = makeFetchAction(
 
 export const getFeedbackPaging = ({
   status,
+  systemType,
   title,
   fromDate,
   toDate,
@@ -87,6 +89,7 @@ export const getFeedbackPaging = ({
   respondToSuccess(
     GetFeedbackPagingAPI.actionCreator({
       status,
+      systemType,
       title,
       fromDate,
       toDate,

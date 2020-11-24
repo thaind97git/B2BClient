@@ -15,7 +15,8 @@ import {
   Upload,
   Divider,
   Rate,
-  Popover
+  Popover,
+  Tag
 } from 'antd';
 import { LeftOutlined } from '@ant-design/icons';
 import moment from 'moment';
@@ -41,19 +42,6 @@ import {
   GetFeedbackFileData,
   getFeedbackFile
 } from '../stores/FeedbackState';
-
-import {
-  getAuctionDetails,
-  GetAuctionDetailsData
-} from '../stores/AuctionState';
-import {
-  getRequestDetails,
-  GetRequestDetailsDataSelector
-} from '../stores/RequestState';
-import {
-  getOrderDetails,
-  GetOrderDetailsDataSelector
-} from '../stores/OrderState';
 import Moment from 'react-moment';
 import { SmileOutlined, FrownOutlined } from '@ant-design/icons';
 
@@ -66,9 +54,6 @@ const connectToRedux = connect(
     createFeedbackReplyData: CreateFeedbackReplyData,
     currentUser: CurrentUserData,
     feedbackFileData: GetFeedbackFileData,
-    orderDetails: GetOrderDetailsDataSelector,
-    requestDetails: GetRequestDetailsDataSelector,
-    auctionDetails: GetAuctionDetailsData
   }),
   (dispatch) => ({
     getFeedbackDetails: (feedbackId) => {
@@ -79,15 +64,6 @@ const connectToRedux = connect(
     },
     getFeedbackFile: (fileId) => {
       dispatch(getFeedbackFile(fileId));
-    },
-    getOrderDetail: (orderId) => {
-      dispatch(getOrderDetails(orderId));
-    },
-    getRequestDetails: (requestId) => {
-      dispatch(getRequestDetails(requestId));
-    },
-    getAuctionDetails: (auctionId) => {
-      dispatch(getAuctionDetails(auctionId));
     },
     resetData: () => dispatch(GetFeedbackDetailsResetter),
     resetCreateFeedbackReply: () => dispatch(CreateFeedbackReplyResetter)
@@ -127,6 +103,19 @@ const Editor = ({ onChange, onSubmit, submitting, value }) => (
   </Form>
 );
 
+const FeedBackCard = ({ children, title }) => {
+  return (
+    <Card
+    // style={{ backgroundColor: '#199EB8', color: '#FFFFFF' }}
+    // bordered={false}
+    >
+      <div style={{ fontSize: '14px' }}>{title}</div>
+      <br />
+      <div style={{ fontSize: '17px', fontWeight: 'bold' }}>{children}</div>
+    </Card>
+  );
+};
+
 const customIcons1 = {
   1: <FrownOutlined />,
   2: '',
@@ -158,12 +147,6 @@ const AdminFeedbackDetailComponent = ({
   resetCreateFeedbackReply,
   getFeedbackFile,
   feedbackFileData,
-  auctionDetails,
-  getAuctionDetails,
-  requestDetails,
-  getRequestDetails,
-  orderDetails,
-  getOrderDetails
 }) => {
   const router = useRouter();
   const feedbackId = router.query.id;
@@ -175,6 +158,17 @@ const AdminFeedbackDetailComponent = ({
   const [fileList, setFileList] = useState([]);
   const [serviceName, setServiceName] = useState('');
   const [isFeedbackSystem, setIsFeedbackSystem] = useState(true);
+
+  const {
+    title,
+    order,
+    request,
+    reverseAuction,
+    dateCreated,
+    feedbackStatus = {},
+    user = {},
+    description
+  } = feedbackDetailsData || {};
 
   const handleSubmit = () => {
     replyFeedback({
@@ -199,42 +193,18 @@ const AdminFeedbackDetailComponent = ({
   }, [createFeedbackReplyData]);
 
   useEffect(() => {
-    if (requestDetails) {
-      setServiceName(
-        requestDetails.quantity +
-          ' ' +
-          requestDetails.product.unitType +
-          ' of ' +
-          requestDetails.product.description
-      );
-    }
-  }, [requestDetails]);
-
-  useEffect(() => {
-    if (auctionDetails) {
-      setServiceName(auctionDetails.auctionName);
-    }
-  }, [auctionDetails]);
-
-  useEffect(() => {
-    if (orderDetails) {
-      setServiceName(orderDetails.groupName);
-    }
-  }, [orderDetails]);
-
-  useEffect(() => {
     setFileList([]);
     setComments([]);
     if (feedbackDetailsData) {
       const { feedbackStatus = {} } = feedbackDetailsData;
-      if (feedbackDetailsData.reverseAuctionId) {
-        getAuctionDetails(feedbackDetailsData.reverseAuctionId);
+      if (feedbackDetailsData.reverseAuction) {
+        setServiceName((feedbackDetailsData.reverseAuction || {}).description);
         setIsFeedbackSystem(false);
-      } else if (feedbackDetailsData.orderId) {
-        getOrderDetails(feedbackDetailsData.orderId);
+      } else if (feedbackDetailsData.order) {
+        setServiceName((feedbackDetailsData.order || {}).description);
         setIsFeedbackSystem(false);
-      } else if (feedbackDetailsData.requestId) {
-        getRequestDetails(feedbackDetailsData.requestId);
+      } else if (feedbackDetailsData.request) {
+        setServiceName((feedbackDetailsData.request || {}).description);
         setIsFeedbackSystem(false);
       }
       if (feedbackDetailsData.feedbackReplies) {
@@ -310,167 +280,145 @@ const AdminFeedbackDetailComponent = ({
         <Title level={4}>{feedbackDetailsData.title}</Title>
       </Row>
       <Space direction="vertical" style={{ width: '100%' }}>
-        <Card style={{ width: '100%' }}>
-          <Row span={24} gutter={16} justify="space-between">
-            <Col span={isFeedbackSystem ? 8 : 6}>
-              <Card
-                style={{ backgroundColor: '#199EB8', color: '#FFFFFF' }}
-                bordered={false}
-              >
-                <div style={{ fontSize: '14px' }}>Type</div>
-                <br />
-                <div style={{ fontSize: '17px', fontWeight: 'bold' }}>
-                  {feedbackDetailsData.orderId
-                    ? 'Order'
-                    : feedbackDetailsData.requestId
-                    ? 'Order'
-                    : feedbackDetailsData.reverseAuctionId
-                    ? 'Auction'
-                    : 'System'}
-                </div>
-              </Card>
-            </Col>
-            <Col span={isFeedbackSystem ? 8 : 6}>
-              <Card
-                style={{ backgroundColor: '#199EB8', color: '#FFFFFF' }}
-                bordered={false}
-              >
-                <div style={{ fontSize: '14px' }}>Date Created</div>
-                <br />
-                <div style={{ fontSize: '17px', fontWeight: 'bold' }}>
-                  <Moment format={DATE_TIME_FORMAT}>
-                    {getUtcTime(feedbackDetailsData.dateCreated)}
-                  </Moment>
-                </div>
-              </Card>
-            </Col>
-            <Col span={isFeedbackSystem ? 8 : 6}>
-              <Card
-                style={{ backgroundColor: '#199EB8', color: '#FFFFFF' }}
-                bordered={false}
-              >
-                <div style={{ fontSize: '14px' }}>Status</div>
-                <br />
-                <div style={{ fontSize: '17px', fontWeight: 'bold' }}>
-                  {feedbackDetailsData.feedbackStatus.description}
-                </div>
-              </Card>
-            </Col>
-            {!isFeedbackSystem ? (
-              <Col span={6}>
-                <Card
-                  style={{ backgroundColor: '#199EB8', color: '#FFFFFF' }}
-                  bordered={false}
+        <Row span={24} gutter={16} justify="space-between">
+          <Col span={isFeedbackSystem ? 8 : 6}>
+            <FeedBackCard title="Type">
+              {order
+                ? 'Order'
+                : request
+                ? 'Order'
+                : reverseAuction
+                ? 'Auction'
+                : 'System'}
+            </FeedBackCard>
+          </Col>
+          <Col span={isFeedbackSystem ? 8 : 6}>
+            <FeedBackCard title="Date Created">
+              <Moment format={DATE_TIME_FORMAT}>
+                {getUtcTime(dateCreated)}
+              </Moment>
+            </FeedBackCard>
+          </Col>
+          <Col span={isFeedbackSystem ? 8 : 6}>
+            <FeedBackCard title="Status">
+              {feedbackStatus.id === F_CLOSED ? (
+                <Tag style={{ fontSize: 16, padding: '4px 12px' }} color="#f50">
+                  {feedbackStatus.description}
+                </Tag>
+              ) : (
+                <Tag
+                  style={{ fontSize: 16, padding: '4px 12px' }}
+                  color="#108ee9"
                 >
-                  <div style={{ fontSize: '14px' }}>Service Name</div>
-                  <br />
-                  <Popover content={serviceName}>
-                    <div style={{ fontSize: '17px', fontWeight: 'bold' }}>
-                      {displayServiceName(serviceName)}
-                    </div>
-                  </Popover>
-                </Card>
-              </Col>
-            ) : (
-              ''
-            )}
-          </Row>
-        </Card>
-        <Card style={{ width: '100%' }}>
+                  {feedbackStatus.description}
+                </Tag>
+              )}
+            </FeedBackCard>
+          </Col>
+          {!isFeedbackSystem ? (
+            <Col span={6}>
+              <FeedBackCard title="Service Name">
+                <Popover content={serviceName}>
+                  <div style={{ fontSize: '17px', fontWeight: 'bold' }}>
+                    {displayServiceName(serviceName)}
+                  </div>
+                </Popover>
+              </FeedBackCard>
+            </Col>
+          ) : (
+            ''
+          )}
+        </Row>
+        <Card
+          title={<Title level={5}>Title: {title}</Title>}
+          style={{ width: '100%' }}
+        >
+        <Comment
+          author={user.firstName + ' ' + user.lastName}
+          avatar={
+            user.avatar
+              ? getCurrentUserImage(user.id)
+              : '/static/images/avatar.png'
+          }
+          content={
+            <Card>
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: (feedbackDetailsData || {}).description
+                }}
+              />
+              {fileList.length > 0 ? (
+                <div>
+                  <Divider />
+                  File Attachment
+                </div>
+              ) : (
+                ''
+              )}
+              <Upload
+                title="File Attachment List"
+                action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+                listType="text"
+                fileList={fileList}
+                disabled
+                previewFile={false}
+              ></Upload>
+            </Card>
+          }
+          datetime={getFromNowTime(feedbackDetailsData.dateCreated)}
+        />
+        {comments.length > 0 && <CommentList comments={comments} />}
+        {isReply ? (
           <Comment
-            author={
-              feedbackDetailsData.user.firstName +
-              ' ' +
-              feedbackDetailsData.user.lastName
-            }
+            author={currentUser.firstName + ' ' + currentUser.lastName}
             avatar={
-              feedbackDetailsData.user.avatar
-                ? getCurrentUserImage(feedbackDetailsData.user.id)
+              currentUser.avatar
+                ? getCurrentUserImage(currentUser.id)
                 : '/static/images/avatar.png'
             }
             content={
-              <Card>
-                <div
-                  dangerouslySetInnerHTML={{
-                    __html: (feedbackDetailsData || {}).description
-                  }}
-                />
-                {fileList.length > 0 ? (
-                  <div>
-                    <Divider />
-                    File Attachment
-                  </div>
-                ) : (
-                  ''
-                )}
-                <Upload
-                  title="File Attachment List"
-                  action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-                  listType="text"
-                  fileList={fileList}
-                  disabled
-                  previewFile={false}
-                ></Upload>
-              </Card>
+              <Editor
+                onChange={handleChange}
+                onSubmit={handleSubmit}
+                submitting={submitting}
+                value={value}
+              />
             }
-            datetime={getFromNowTime(feedbackDetailsData.dateCreated)}
           />
-          {comments.length > 0 && <CommentList comments={comments} />}
-          {isReply ? (
-            <Comment
-              author={currentUser.firstName + ' ' + currentUser.lastName}
-              avatar={
-                currentUser.avatar
-                  ? getCurrentUserImage(currentUser.id)
-                  : '/static/images/avatar.png'
-              }
-              content={
-                <Editor
-                  onChange={handleChange}
-                  onSubmit={handleSubmit}
-                  submitting={submitting}
-                  value={value}
-                />
-              }
+        ) : (
+          ''
+        )}
+        {isHappy === 'Not Happy' ? (
+          <div align="center">
+            <p style={{ fontSize: '20px', marginBottom: '-20px' }}>User rate</p>
+            <br />
+            <Rate
+              tooltips={desc1}
+              defaultValue={2}
+              disabled
+              style={{ paddingLeft: '32px', fontSize: '100px' }}
+              character={({ index }) => {
+                return customIcons1[index + 1];
+              }}
             />
-          ) : (
-            ''
-          )}
-          {isHappy === 'Not Happy' ? (
-            <div align="center">
-              <p style={{ fontSize: '20px', marginBottom: '-20px' }}>
-                User rate
-              </p>
-              <br />
-              <Rate
-                tooltips={desc1}
-                defaultValue={2}
-                disabled
-                style={{ paddingLeft: '32px', fontSize: '100px' }}
-                character={({ index }) => {
-                  return customIcons1[index + 1];
-                }}
-              />
-            </div>
-          ) : isHappy === 'Happy' ? (
-            <div align="center">
-              <p style={{ fontSize: '20px', marginBottom: '-20px' }}>
-                User rate
-              </p>
-              <br />
-              <Rate
-                tooltips={desc2}
-                defaultValue={2}
-                disabled
-                style={{ paddingLeft: '32px', fontSize: '100px' }}
-                character={({ index }) => {
-                  return customIcons2[index + 1];
-                }}
-              />
-            </div>
-          ) : (
-            ''
-          )}
+          </div>
+        ) : isHappy === 'Happy' ? (
+          <div align="center">
+            <p style={{ fontSize: '20px', marginBottom: '-20px' }}>User rate</p>
+            <br />
+            <Rate
+              tooltips={desc2}
+              defaultValue={2}
+              disabled
+              style={{ paddingLeft: '32px', fontSize: '100px' }}
+              character={({ index }) => {
+                return customIcons2[index + 1];
+              }}
+            />
+          </div>
+        ) : (
+          ''
+        )}
         </Card>
       </Space>
       <style jsx global>{`
