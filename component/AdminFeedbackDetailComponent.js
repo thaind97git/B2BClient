@@ -66,7 +66,7 @@ const connectToRedux = connect(
       dispatch(getFeedbackFile(fileId));
     },
     resetData: () => dispatch(GetFeedbackDetailsResetter),
-    resetCreateFeedbackReply: () => dispatch(CreateFeedbackReplyResetter),
+    resetCreateFeedbackReply: () => dispatch(CreateFeedbackReplyResetter)
   })
 );
 
@@ -135,7 +135,6 @@ const FeedBackCard = ({ children, title }) => {
   );
 };
 
-
 const desc1 = ['Not Happy', '', '', '', ''];
 const desc2 = ['', 'Happy', '', '', ''];
 
@@ -151,7 +150,7 @@ const AdminFeedbackDetailComponent = ({
   createFeedbackReplyData,
   resetCreateFeedbackReply,
   getFeedbackFile,
-  feedbackFileData,
+  feedbackFileData
 }) => {
   const router = useRouter();
   const feedbackId = router.query.id;
@@ -180,7 +179,6 @@ const AdminFeedbackDetailComponent = ({
       feedbackId: feedbackDetailsData.id
     });
   };
-
 
   const handleChange = (e) => {
     setValue(e.target.value);
@@ -286,7 +284,7 @@ const AdminFeedbackDetailComponent = ({
     <Fragment>
       <Row style={{ paddingBottom: 24 }} justify="space-between" align="middle">
         <Button
-          type="primary"
+          type="link"
           onClick={() => {
             Router.push(`/admin/feedback`);
           }}
@@ -351,61 +349,61 @@ const AdminFeedbackDetailComponent = ({
           title={<Title level={5}>Title: {title}</Title>}
           style={{ width: '100%' }}
         >
-        <Comment
-          author={user.firstName + ' ' + user.lastName}
-          avatar={
-            user.avatar
-              ? getCurrentUserImage(user.id)
-              : '/static/images/avatar.png'
-          }
-          content={
-            <Card>
-              <div
-                dangerouslySetInnerHTML={{
-                  __html: (feedbackDetailsData || {}).description
-                }}
-              />
-              {fileList.length > 0 ? (
-                <div>
-                  <Divider />
-                  File Attachment
-                </div>
-              ) : (
-                ''
-              )}
-              <Upload
-                title="File Attachment List"
-                action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-                listType="text"
-                fileList={fileList}
-                disabled
-                previewFile={false}
-              ></Upload>
-            </Card>
-          }
-          datetime={getFromNowTime(feedbackDetailsData.dateCreated)}
-        />
-        {comments.length > 0 && <CommentList comments={comments} />}
-        {isReply ? (
           <Comment
-            author={currentUser.firstName + ' ' + currentUser.lastName}
+            author={user.firstName + ' ' + user.lastName}
             avatar={
-              currentUser.avatar
-                ? getCurrentUserImage(currentUser.id)
+              user.avatar
+                ? getCurrentUserImage(user.id)
                 : '/static/images/avatar.png'
             }
             content={
-              <Editor
-                onChange={handleChange}
-                onSubmit={handleSubmit}
-                submitting={submitting}
-                value={value}
-              />
+              <Card>
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: (feedbackDetailsData || {}).description
+                  }}
+                />
+                {fileList.length > 0 ? (
+                  <div>
+                    <Divider />
+                    File Attachment
+                  </div>
+                ) : (
+                  ''
+                )}
+                <Upload
+                  title="File Attachment List"
+                  action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+                  listType="text"
+                  fileList={fileList}
+                  disabled
+                  previewFile={false}
+                ></Upload>
+              </Card>
             }
+            datetime={getFromNowTime(feedbackDetailsData.dateCreated)}
           />
-        ) : (
-          ''
-        )}
+          {comments.length > 0 && <CommentList comments={comments} />}
+          {isReply ? (
+            <Comment
+              author={currentUser.firstName + ' ' + currentUser.lastName}
+              avatar={
+                currentUser.avatar
+                  ? getCurrentUserImage(currentUser.id)
+                  : '/static/images/avatar.png'
+              }
+              content={
+                <Editor
+                  onChange={handleChange}
+                  onSubmit={handleSubmit}
+                  submitting={submitting}
+                  value={value}
+                />
+              }
+            />
+          ) : (
+            ''
+          )}
         </Card>
       </Space>
       <style jsx global>{`

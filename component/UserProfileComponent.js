@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, Fragment } from 'react';
 import { connect } from 'react-redux';
 import {
   Descriptions,
@@ -32,6 +32,8 @@ import {
   getCurrentUserImage
 } from '../utils';
 import ImgCrop from 'antd-img-crop';
+import UserStatusComponent from './Utils/UserStatusComponent';
+import { U_BANNED } from '../enums/accountStatus';
 const { Title } = Typography;
 const DescriptionItem = ({ title, content }) => (
   <Col span={24}>
@@ -80,7 +82,8 @@ const UserProfileComponent = ({
   getUser,
   getUserData,
   resetGetUser,
-  isSupplier = true
+  isSupplier = true,
+  isAdmin = false
 }) => {
   const [changePasswordVisible, setChangePasswordVisible] = useState(false);
   const [imageUrl, setImageUrl] = useState(
@@ -181,7 +184,9 @@ const UserProfileComponent = ({
       email,
       firstName,
       lastName,
-      phoneNumber
+      phoneNumber,
+      userStatus = {},
+      bannedReason
     } = getUserData || {};
     if (loading) {
       return <Skeleton active />;
@@ -198,6 +203,18 @@ const UserProfileComponent = ({
           <Descriptions title={firstName + ' ' + lastName} column={1}>
             <Descriptions.Item label="at">{companyName}</Descriptions.Item>
             <Descriptions.Item label="Email">{email}</Descriptions.Item>
+            {isAdmin && (
+              <Fragment>
+                <Descriptions.Item label="Account Status">
+                  <UserStatusComponent status={userStatus.id} />
+                </Descriptions.Item>
+                {userStatus.id === U_BANNED && (
+                  <Descriptions.Item label="Ban Reason">
+                    {bannedReason || 'N/A'}
+                  </Descriptions.Item>
+                )}
+              </Fragment>
+            )}
           </Descriptions>
         </Col>
         <Divider />
@@ -253,7 +270,8 @@ const UserProfileComponent = ({
       email,
       firstName,
       lastName,
-      phoneNumber
+      phoneNumber,
+      userStatus = {}
     } = currentUser || {};
     return (
       <Form>
@@ -302,13 +320,6 @@ const UserProfileComponent = ({
               </Descriptions.Item>
               <Descriptions.Item label="Email">
                 {email || 'None'}
-                {/* {(() => {
-                  if (email) {
-                    return <font color="green"> [Verified]</font>;
-                  } else {
-                    return <font color="red"> [Unverified]</font>;
-                  }
-                })()} */}
               </Descriptions.Item>
             </Descriptions>
           </Col>

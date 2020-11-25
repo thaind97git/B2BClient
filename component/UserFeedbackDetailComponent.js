@@ -18,10 +18,7 @@ import {
   Popover,
   Tag
 } from 'antd';
-import {
-  LeftOutlined,
-  WarningOutlined,
-} from '@ant-design/icons';
+import { LeftOutlined, WarningOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import Router, { useRouter } from 'next/router';
 import React, { Fragment, useState, useEffect } from 'react';
@@ -49,6 +46,7 @@ import {
   getFeedbackFile
 } from '../stores/FeedbackState';
 import Moment from 'react-moment';
+import FeedbackTypeComponent from './Utils/FeedbackTypeComponent';
 
 const { TextArea } = Input;
 const { Title } = Typography;
@@ -59,7 +57,7 @@ const connectToRedux = connect(
     createFeedbackReplyData: CreateFeedbackReplyData,
     updateFeedbackRateData: UpdateFeedbackRateData,
     currentUser: CurrentUserData,
-    feedbackFileData: GetFeedbackFileData,
+    feedbackFileData: GetFeedbackFileData
   }),
   (dispatch) => ({
     getFeedbackDetails: (feedbackId) => {
@@ -68,8 +66,8 @@ const connectToRedux = connect(
     replyFeedback: (object) => {
       dispatch(createFeedbackReply(object));
     },
-    rateFeedback: ({feedbackReplyId,isHappy}) => {
-      dispatch(updateFeedbackRate( {feedbackReplyId, isHappy} ));
+    rateFeedback: ({ feedbackReplyId, isHappy }) => {
+      dispatch(updateFeedbackRate({ feedbackReplyId, isHappy }));
     },
     getFeedbackFile: (fileId) => {
       dispatch(getFeedbackFile(fileId));
@@ -132,7 +130,7 @@ const Happy = ({ isHappy }) => (
     src="/static/images/vote-up.png"
     value={true}
     height={20}
-    style={isHappy===true ? { opacity: '1' } : { opacity: '0.3' }}
+    style={isHappy === true ? { opacity: '1' } : { opacity: '0.3' }}
   />
 );
 
@@ -141,7 +139,7 @@ const Unhappy = ({ isHappy }) => (
     alt=""
     src="/static/images/vote-down.png"
     height={20}
-    style={isHappy===false ? { opacity: '1' } : { opacity: '0.3' }}
+    style={isHappy === false ? { opacity: '1' } : { opacity: '0.3' }}
   />
 );
 
@@ -151,7 +149,6 @@ const displayServiceName = (serviceName) =>
       ? serviceName.slice(0, 38) + ' ...'
       : serviceName
     : '';
-
 
 const UserFeedbackDetailComponent = ({
   currentUser,
@@ -178,7 +175,10 @@ const UserFeedbackDetailComponent = ({
   const [serviceName, setServiceName] = useState('');
 
   const rate = (feedbackItem, isHappy) => {
-    rateFeedback({feedbackReplyId:(feedbackItem||{}).id,isHappy:isHappy});
+    rateFeedback({
+      feedbackReplyId: (feedbackItem || {}).id,
+      isHappy: isHappy
+    });
   };
 
   const handleSubmit = () => {
@@ -337,13 +337,7 @@ const UserFeedbackDetailComponent = ({
         <Row span={24} gutter={16} justify="space-between">
           <Col span={isFeedbackSystem ? 8 : 6}>
             <FeedBackCard title="Type">
-              {order
-                ? 'Order'
-                : request
-                ? 'Order'
-                : reverseAuction
-                ? 'Auction'
-                : 'System'}
+              <FeedbackTypeComponent feedback={feedbackDetailsData} />
             </FeedBackCard>
           </Col>
           <Col span={isFeedbackSystem ? 8 : 6}>
