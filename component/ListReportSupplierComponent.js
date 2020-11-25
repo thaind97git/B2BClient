@@ -12,7 +12,7 @@ import {
   GetFeedbackReportedForSupplierResetter
 } from '../stores/FeedbackState';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
-import { DEFAULT_DATE_RANGE, getUtcTime, openNotification } from '../utils';
+import { openNotification } from '../utils';
 import FeedbackStatusComponent from './Utils/FeedbackStatusComponent';
 import FeedbackTypeComponent from './Utils/FeedbackTypeComponent';
 import { getUser, getUserData } from '../stores/UserState';
@@ -103,6 +103,7 @@ const ListReportSupplierComponent = ({
 
   useEffect(() => {
     if (banUserData) {
+      setBanReason('');
       setOpenBan(false);
       resetBanAndUnBan();
       getReport(0, 10, '', {}, supplierId);
@@ -112,6 +113,7 @@ const ListReportSupplierComponent = ({
 
   useEffect(() => {
     if (unBanUserData) {
+      setBanReason('');
       resetBanAndUnBan();
       getReport(0, 10, '', {}, supplierId);
       getUser(supplierId);
