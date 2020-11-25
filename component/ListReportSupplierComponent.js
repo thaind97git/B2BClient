@@ -25,6 +25,7 @@ import {
   UnBanUserResetter
 } from '../stores/SupplierState';
 import { get } from 'lodash/fp';
+import { F_AUCTION, F_ORDER, F_RFQ, F_SYSTEM } from '../enums/feedbackType';
 const { Title } = Typography;
 const connectToRedux = connect(
   createStructuredSelector({
@@ -136,7 +137,19 @@ const ListReportSupplierComponent = ({
       feedbackData.map((feedback = {}) => ({
         key: feedback.id,
         title: feedback.title,
-        service: <FeedbackTypeComponent feedback={feedback} />,
+        service: (
+          <FeedbackTypeComponent
+            status={
+              feedback.request
+                ? F_RFQ
+                : feedback.reverseAuction
+                ? F_AUCTION
+                : feedback.order
+                ? F_ORDER
+                : F_SYSTEM
+            }
+          />
+        ),
         status: (
           <FeedbackStatusComponent
             status={feedback.feedbackStatus.id}
