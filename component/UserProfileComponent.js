@@ -180,14 +180,14 @@ const UserProfileComponent = ({
     const {
       id,
       address,
-      id,
       companyName,
       email,
       firstName,
       lastName,
       phoneNumber,
       userStatus = {},
-      bannedReason
+      bannedReason,
+      avatar
     } = getUserData || {};
     if (loading) {
       return <Skeleton active />;
@@ -197,11 +197,7 @@ const UserProfileComponent = ({
         <Col span={6}>
           <Avatar
             size={120}
-<<<<<<< HEAD
-            src={getCurrentUserImage(id) || '/static/images/avatar.png'}
-=======
-            src={avatar? getCurrentUserImage(id) : '/static/images/avatar.png'}
->>>>>>> origin/dev_quang
+            src={avatar ? getCurrentUserImage(id) : '/static/images/avatar.png'}
           />
         </Col>
         <Col span={18}>

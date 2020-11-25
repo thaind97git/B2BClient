@@ -48,7 +48,6 @@ import {
   getFeedbackFile
 } from '../stores/FeedbackState';
 import Moment from 'react-moment';
-import FeedbackTypeComponent from './Utils/FeedbackTypeComponent';
 
 const { TextArea } = Input;
 const { Title } = Typography;
@@ -133,15 +132,11 @@ const Happy = ({ isHappy }) => (
     src="/static/images/vote-up.png"
     value={true}
     height={20}
-<<<<<<< HEAD
-    style={isHappy === true ? { opacity: '1' } : { opacity: '0.3' }}
-=======
     style={
       isHappy === true || isHappy === null
         ? { opacity: '1' }
         : { opacity: '0.3' }
     }
->>>>>>> origin/dev_quang
   />
 );
 
@@ -151,11 +146,11 @@ const Unhappy = ({ isHappy }) => (
     className="rate"
     src="/static/images/vote-down.png"
     height={20}
-<<<<<<< HEAD
-    style={isHappy === false ? { opacity: '1' } : { opacity: '0.3' }}
-=======
-    style={isHappy===false || isHappy === null ? { opacity: '1' } : { opacity: '0.3' }}
->>>>>>> origin/dev_quang
+    style={
+      isHappy === false || isHappy === null
+        ? { opacity: '1' }
+        : { opacity: '0.3' }
+    }
   />
 );
 
@@ -260,8 +255,10 @@ const UserFeedbackDetailComponent = ({
               actions: [
                 !feedbackItem.isUser ? (
                   <>
-                    <span style={{fontSize:'15',color:'black'}}>How would you rate on this reply?</span>
-                    <br/>
+                    <span style={{ fontSize: '15', color: 'black' }}>
+                      How would you rate on this reply?
+                    </span>
+                    <br />
                     <Space>
                       <Tooltip key="comment-basic-like" title="Happy">
                         <span
@@ -355,9 +352,6 @@ const UserFeedbackDetailComponent = ({
         <Row span={24} gutter={16} justify="space-between">
           <Col span={isFeedbackSystem ? 8 : 6}>
             <FeedBackCard title="Type">
-<<<<<<< HEAD
-              <FeedbackTypeComponent feedback={feedbackDetailsData} />
-=======
               <FeedbackTypeComponent
                 status={
                   request
@@ -369,7 +363,6 @@ const UserFeedbackDetailComponent = ({
                     : F_SYSTEM
                 }
               ></FeedbackTypeComponent>
->>>>>>> origin/dev_quang
             </FeedBackCard>
           </Col>
           <Col span={isFeedbackSystem ? 8 : 6}>
@@ -382,15 +375,9 @@ const UserFeedbackDetailComponent = ({
           <Col span={isFeedbackSystem ? 8 : 6}>
             <FeedBackCard title="Status">
               {feedbackStatus.id === F_CLOSED ? (
-                <Tag color="#f50">
-                  {feedbackStatus.description}
-                </Tag>
+                <Tag color="#f50">{feedbackStatus.description}</Tag>
               ) : (
-                <Tag
-                  color="#108ee9"
-                >
-                  {feedbackStatus.description}
-                </Tag>
+                <Tag color="#108ee9">{feedbackStatus.description}</Tag>
               )}
             </FeedBackCard>
           </Col>
