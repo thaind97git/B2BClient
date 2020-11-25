@@ -252,12 +252,22 @@ const UserFeedbackDetailComponent = ({
               actions: [
                 !feedbackItem.isUser ? (
                   <>
-                    <span style={{fontSize:'15',color:'black'}}>How would you rate on this reply?</span>
-                    <br/>
+                    {feedbackItem.isHappy === null ? (
+                      <span style={{ fontSize: '15', color: 'black' }}>
+                        How would you rate on this reply?
+                        <br />
+                      </span>
+                    ) : (
+                      <span style={{ fontSize: '15', color: 'black' }}>
+                        Your rate
+                        <br />
+                      </span>
+                    )}
                     <Space>
                       <Tooltip key="comment-basic-like" title="Happy">
                         <span
                           onClick={() => {
+                            if (feedbackItem.isHappy !== null) return;
                             rate(feedbackItem, true);
                           }}
                         >
@@ -267,6 +277,7 @@ const UserFeedbackDetailComponent = ({
                       <Tooltip key="comment-basic-dislike" title="Not Happy">
                         <span
                           onClick={() => {
+                            if (feedbackItem.isHappy !== null) return;
                             rate(feedbackItem, false);
                           }}
                         >
