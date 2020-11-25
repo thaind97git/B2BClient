@@ -10,8 +10,7 @@
     "build": "next build",
     "start": "NODE_ENV=production node server.js",
     "lint": "eslint",
-    "heroku-postbuild": "npm run build",
-    "postbuild": "next-on-netlify"
+    "heroku-postbuild": "npm run build"
   },
   "dependencies": {
     "@ant-design/charts": "^1.0.9",
