@@ -84,7 +84,7 @@ const dataTable = [
   }
 ];
 
-const LeaderboardProductComponent = () => {
+const LeaderboardProductSupplierComponent = () => {
   return (
     <Table
       bordered
@@ -95,4 +95,4 @@ const LeaderboardProductComponent = () => {
   );
 };
 
-export default LeaderboardProductComponent;
+export default LeaderboardProductSupplierComponent;

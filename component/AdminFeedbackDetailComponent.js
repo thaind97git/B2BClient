@@ -24,7 +24,7 @@ import moment from 'moment';
 import Router, { useRouter } from 'next/router';
 import React, { Fragment, useState, useEffect } from 'react';
 import { F_CLOSED, F_OPEN } from '../enums/feedbackStatus';
-import { F_ORDER, F_AUCTION, F_RFQ, F_SYSTEM} from '../enums/feedbackType';
+import { F_ORDER, F_AUCTION, F_RFQ, F_SYSTEM } from '../enums/feedbackType';
 import FeedbackTypeComponent from './Utils/FeedbackTypeComponent';
 import {
   DATE_TIME_FORMAT,
@@ -70,7 +70,7 @@ const connectToRedux = connect(
       dispatch(getFeedbackFile(fileId));
     },
     resetData: () => dispatch(GetFeedbackDetailsResetter),
-    resetCreateFeedbackReply: () => dispatch(CreateFeedbackReplyResetter),
+    resetCreateFeedbackReply: () => dispatch(CreateFeedbackReplyResetter)
   })
 );
 
@@ -141,7 +141,6 @@ const FeedBackCard = ({ children, title }) => {
   );
 };
 
-
 const desc1 = ['Not Happy', '', '', '', ''];
 const desc2 = ['', 'Happy', '', '', ''];
 
@@ -157,7 +156,7 @@ const AdminFeedbackDetailComponent = ({
   createFeedbackReplyData,
   resetCreateFeedbackReply,
   getFeedbackFile,
-  feedbackFileData,
+  feedbackFileData
 }) => {
   const router = useRouter();
   const feedbackId = router.query.id;
@@ -188,7 +187,6 @@ const AdminFeedbackDetailComponent = ({
       feedbackId: feedbackDetailsData.id
     });
   };
-
 
   const handleChange = (e) => {
     setValue(e.target.value);
@@ -321,7 +319,7 @@ const AdminFeedbackDetailComponent = ({
       </Drawer>
       <Row style={{ paddingBottom: 24 }} justify="space-between" align="middle">
         <Button
-          type="primary"
+          type="link"
           onClick={() => {
             Router.push(`/admin/feedback`);
           }}
@@ -359,15 +357,9 @@ const AdminFeedbackDetailComponent = ({
           <Col span={isFeedbackSystem ? 8 : 6}>
             <FeedBackCard title="Status">
               {feedbackStatus.id === F_CLOSED ? (
-                <Tag color="#f50">
-                  {feedbackStatus.description}
-                </Tag>
+                <Tag color="#f50">{feedbackStatus.description}</Tag>
               ) : (
-                <Tag
-                  color="#108ee9"
-                >
-                  {feedbackStatus.description}
-                </Tag>
+                <Tag color="#108ee9">{feedbackStatus.description}</Tag>
               )}
             </FeedBackCard>
           </Col>

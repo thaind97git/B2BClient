@@ -4,7 +4,7 @@ import withAuth from '../../../component/HOC/AuthenHOC';
 import SupplierLayout from '../../../layouts/SupplierLayout';
 const DetailsPage = () => {
   return (
-    <SupplierLayout>
+    <SupplierLayout hasBackground={false}>
       <OrderDetailsComponent />
     </SupplierLayout>
   );

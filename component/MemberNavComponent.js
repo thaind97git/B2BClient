@@ -72,7 +72,7 @@ const MemberNavComponent = ({ path, menus = [] }) => {
               onClick={() => {
                 typeof menu.action === 'function' &&
                   Modal.confirm({
-                    title: 'Do you want to logout?',
+                    title: 'Are you sure you want to log out ?',
                     okText: 'Yes',
                     cancelText: 'No',
                     onOk: () => {

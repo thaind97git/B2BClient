@@ -1,10 +1,22 @@
-import { Button, Row, Typography, Tag, Col, Drawer, Modal } from 'antd';
+import {
+  Button,
+  Row,
+  Typography,
+  Tag,
+  Col,
+  Drawer,
+  Modal,
+  Tooltip,
+  Avatar
+} from 'antd';
 import {
   ShoppingCartOutlined,
-  ExclamationCircleOutlined
+  ExclamationCircleOutlined,
+  UserOutlined,
+  AntDesignOutlined
 } from '@ant-design/icons';
 import Router from 'next/router';
-import React, { useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import ReactTableLayout from '../layouts/ReactTableLayout';
 import { DATE_TIME_FORMAT, DEFAULT_DATE_RANGE, getUtcTime } from '../utils';
 import AllCategoryComponent from './AllCategoryComponent';
@@ -21,15 +33,18 @@ import AdminProductDetailsComponent from './AdminProductDetailsComponent';
 import {
   activeSupplierProduct,
   deleteSupplierProduct,
-  DeleteSupplierProductData
+  DeleteSupplierProductData,
+  SupplierRegisterProductData
 } from '../stores/SupplierState';
+import QuotationDisplayComponent from './Utils/QuotationDisplayComponent';
 const { Title } = Typography;
 
 const connectToRedux = connect(
   createStructuredSelector({
     productBySupplierData: GetProductBySupplierData,
     productBySupplierError: GetProductBySupplierError,
-    deleteSupplierProductData: DeleteSupplierProductData
+    deleteSupplierProductData: DeleteSupplierProductData,
+    registerProductData: SupplierRegisterProductData
   }),
   (dispatch) => ({
     getProductBySupplier: (
@@ -64,13 +79,19 @@ const SupplierProductListingComponent = ({
   getProductBySupplier,
   productBySupplierData,
   deleteSupplierProduct,
-  activeSupplierProduct
+  activeSupplierProduct,
+  registerProductData
 }) => {
   const [searchMessage, setSearchMessage] = useState('');
   const [dateRange, setDateRange] = useState(DEFAULT_DATE_RANGE);
   const [category, setCategory] = useState('all');
   const [openDetails, setOpenDetails] = useState(false);
   const [currentProductSelected, setCurrentProductSelected] = useState({});
+  useEffect(() => {
+    if (registerProductData) {
+      getProductBySupplier(0, 10, searchMessage, {}, category);
+    }
+  }, [registerProductData, searchMessage, category, getProductBySupplier]);
   const columns = [
     {
       title: 'Product Name',
@@ -78,9 +99,9 @@ const SupplierProductListingComponent = ({
       key: 'productName'
     },
     {
-      title: 'Date Register',
-      dataIndex: 'dateCreated',
-      key: 'dateCreated'
+      title: 'Quotation',
+      dataIndex: 'quotation',
+      key: 'quotation'
     },
     {
       title: 'Supplying Status',
@@ -99,63 +120,94 @@ const SupplierProductListingComponent = ({
     return (
       productData &&
       productData.length > 0 &&
-      productData.map((product = {}) => ({
-        key: get('product.id')(product),
-        productName: (
-          <b
-            onClick={() => {
-              setCurrentProductSelected(product.product);
-              setOpenDetails(true);
-            }}
-          >
-            <a>{get('product.description')(product)}</a>
-          </b>
-        ),
-        dateCreated: (
-          <Moment format={DATE_TIME_FORMAT}>
-            {getUtcTime(product.dateCreated)}
-          </Moment>
-        ),
-        status: <ProductStatus isDelete={product.isDeleted} />,
-        action: product.isDeleted ? (
-          <Button
-            onClick={() => {
-              Modal.confirm({
-                title: 'Do you want Re-Supply this product?',
-                icon: <ExclamationCircleOutlined />,
-                okText: 'Re-Supply',
-                cancelText: 'Cancel',
-                onOk: () => {
-                  activeSupplierProduct((product.product || {}).id);
-                }
-              });
-            }}
-            size="small"
-            type="primary"
-          >
-            Supply
-          </Button>
-        ) : (
-          <Button
-            onClick={() => {
-              Modal.confirm({
-                title: 'Do you want Un-Supply this product?',
-                icon: <ExclamationCircleOutlined />,
-                okText: 'Un-Supply',
-                cancelText: 'Cancel',
-                onOk: () => {
-                  deleteSupplierProduct((product.product || {}).id);
-                }
-              });
-            }}
-            size="small"
-            type="primary"
-            danger
-          >
-            UnSupply
-          </Button>
-        )
-      }))
+      productData.map((product = {}) => {
+        const { description = [] } = product;
+        const tooltipFirstQuotation = description.slice(1, description.length);
+        const tooltipSecondQuotation = description.slice(2, description.length);
+        return {
+          key: get('product.id')(product),
+          productName: (
+            <b
+              onClick={() => {
+                setCurrentProductSelected(product.product);
+                setOpenDetails(true);
+              }}
+            >
+              <a>{get('product.description')(product)}</a>
+            </b>
+          ),
+          dateCreated: (
+            <Moment format={DATE_TIME_FORMAT}>
+              {getUtcTime(product.dateCreated)}
+            </Moment>
+          ),
+          quotation:
+            description.length > 0 ? (
+              <Avatar.Group
+                maxCount={1}
+                maxStyle={{ color: '#f56a00', backgroundColor: '#fde3cf' }}
+              >
+                <QuotationDisplayComponent quotation={description[0]} />
+                {tooltipFirstQuotation.length > 0 && (
+                  <Fragment>
+                    <Tooltip title="Other Quotation" placement="top">
+                      <QuotationDisplayComponent quotation={description[1]} />
+                    </Tooltip>
+                    {tooltipSecondQuotation.map((quotation, index) => {
+                      return (
+                        <QuotationDisplayComponent
+                          key={index}
+                          quotation={quotation}
+                        />
+                      );
+                    })}
+                  </Fragment>
+                )}
+              </Avatar.Group>
+            ) : (
+              'N/A'
+            ),
+          status: <ProductStatus isDelete={product.isDeleted} />,
+          action: product.isDeleted ? (
+            <Button
+              onClick={() => {
+                Modal.confirm({
+                  title: 'Are you sure you want to Resupply this product?',
+                  icon: <ExclamationCircleOutlined />,
+                  okText: 'Re-Supply',
+                  cancelText: 'Cancel',
+                  onOk: () => {
+                    activeSupplierProduct((product.product || {}).id);
+                  }
+                });
+              }}
+              size="small"
+              type="primary"
+            >
+              Supply
+            </Button>
+          ) : (
+            <Button
+              onClick={() => {
+                Modal.confirm({
+                  title: 'Are you sure you want to Unsupply this product?',
+                  icon: <ExclamationCircleOutlined />,
+                  okText: 'Un-Supply',
+                  cancelText: 'Cancel',
+                  onOk: () => {
+                    deleteSupplierProduct((product.product || {}).id);
+                  }
+                });
+              }}
+              size="small"
+              type="primary"
+              danger
+            >
+              Unsupply
+            </Button>
+          )
+        };
+      })
     );
   };
 

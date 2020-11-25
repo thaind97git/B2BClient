@@ -335,7 +335,7 @@ const ConfirmationOrderComponent = ({
                       return;
                     }
                     Modal.confirm({
-                      title: 'Do you want submit order?',
+                      title: 'Are you sure you want to submit order?',
                       okText: 'Submit',
                       cancelText: 'Cancel',
                       onOk: () => {

@@ -1,32 +1,33 @@
-import { makeFetchAction } from "redux-api-call";
-import { respondToSuccess } from "../middlewares/api-reaction";
-import nfetch from "../libs/nfetch";
-import { getResetter, generateQuery } from "../libs";
-import Router from "next/router";
-import { R_PENDING } from "../enums/requestStatus";
-import { openNotification } from "../utils";
+import { makeFetchAction } from 'redux-api-call';
+import { respondToSuccess } from '../middlewares/api-reaction';
+import nfetch from '../libs/nfetch';
+import { getResetter, generateQuery } from '../libs';
+import Router from 'next/router';
+import { R_PENDING } from '../enums/requestStatus';
+import { openNotification } from '../utils';
 
-const CREATE_REQUEST = "CreateRequestAPI";
-const GET_REQUEST_PAGING = "GetRequestPagingAPI";
-const GET_REQUEST_DETAILS = "GetRequestDetailsAPI";
-export const CANCEL_REQUEST = "CancelRequestAPI";
-export const REJECT_REQUEST = "RejectRequestAPI";
-const UPDATE_REQUEST = "UpdateRequestAPI";
-const GET_REQUEST_BY_GROUP_ID = "GetRequestByGroupIdAPI";
-const GET_REQUEST_SUGGEST_BY_PRODUCT_ID = "GetRequestSuggestByProductIdAPI";
-const GET_REQUEST_GROUP_BY = 'GetRequestGroupByAPI'
+const CREATE_REQUEST = 'CreateRequestAPI';
+const GET_REQUEST_PAGING = 'GetRequestPagingAPI';
+const GET_REQUEST_DETAILS = 'GetRequestDetailsAPI';
+export const CANCEL_REQUEST = 'CancelRequestAPI';
+export const REJECT_REQUEST = 'RejectRequestAPI';
+const UPDATE_REQUEST = 'UpdateRequestAPI';
+const GET_REQUEST_BY_GROUP_ID = 'GetRequestByGroupIdAPI';
+const GET_REQUEST_SUGGEST_BY_PRODUCT_ID = 'GetRequestSuggestByProductIdAPI';
+const GET_REQUEST_GROUP_BY = 'GetRequestGroupByAPI';
+const GET_REQUEST_CANCELED_BY_USER = 'GetRequestCanceledByUserAPI';
 
 // Create new Request
 const CreateRequestAPI = makeFetchAction(CREATE_REQUEST, (object) =>
   nfetch({
-    endpoint: "/api/Request",
+    endpoint: '/api/Request'
   })(object)
 );
 
 export const createRequest = (object) =>
   respondToSuccess(CreateRequestAPI.actionCreator(object), (resp) => {
     if (resp) {
-      Router.push("/buyer/rfq");
+      Router.push('/buyer/rfq');
     }
   });
 export const CreateRequestData = CreateRequestAPI.dataSelector;
@@ -58,7 +59,7 @@ const GetRequestPagingAPI = makeFetchAction(
         categoryId: category,
         productId
       })}`,
-      method: "GET",
+      method: 'GET'
     })();
   }
 );
@@ -91,6 +92,39 @@ export const GetRequestPagingData = GetRequestPagingAPI.dataSelector;
 export const GetRequestPagingError = GetRequestPagingAPI.errorSelector;
 export const GetRequestPagingResetter = getResetter(GetRequestPagingAPI);
 
+// Get Request Canceled By User
+const GetRequestCanceledByUserAPI = makeFetchAction(
+  GET_REQUEST_CANCELED_BY_USER,
+  ({ pageIndex, pageSize, buyerId }) => {
+    return nfetch({
+      endpoint: `/api/Request/FilterByCancelRequest${generateQuery({
+        pageIndex,
+        pageSize,
+        buyerId
+      })}`,
+      method: 'GET'
+    })();
+  }
+);
+
+export const getRequestCanceledByUser = ({ pageIndex, pageSize, buyerId }) =>
+  respondToSuccess(
+    GetRequestCanceledByUserAPI.actionCreator({
+      pageIndex,
+      pageSize,
+      buyerId
+    }),
+    () => {}
+  );
+
+export const GetRequestCanceledByUserData =
+  GetRequestCanceledByUserAPI.dataSelector;
+export const GetRequestCanceledByUserError =
+  GetRequestCanceledByUserAPI.errorSelector;
+export const GetRequestCanceledByUserResetter = getResetter(
+  GetRequestCanceledByUserAPI
+);
+
 // Get Request Group By
 const GetRequestGroupByAPI = makeFetchAction(
   GET_REQUEST_GROUP_BY,
@@ -101,7 +135,7 @@ const GetRequestGroupByAPI = makeFetchAction(
     toDate,
     pageIndex,
     pageSize,
-    category,
+    category
   }) => {
     return nfetch({
       endpoint: `/api/Request/FilterByProductGroup${generateQuery({
@@ -112,9 +146,9 @@ const GetRequestGroupByAPI = makeFetchAction(
         pageIndex,
         pageSize,
         dateDescending: true,
-        categoryId: category,
+        categoryId: category
       })}`,
-      method: "GET",
+      method: 'GET'
     })();
   }
 );
@@ -126,7 +160,7 @@ export const getRequestGroupBy = ({
   toDate,
   pageIndex,
   pageSize,
-  category,
+  category
 }) =>
   respondToSuccess(
     GetRequestGroupByAPI.actionCreator({
@@ -136,7 +170,7 @@ export const getRequestGroupBy = ({
       toDate,
       pageIndex,
       pageSize,
-      category,
+      category
     }),
     () => {}
   );
@@ -149,7 +183,7 @@ export const GetRequestGroupByResetter = getResetter(GetRequestGroupByAPI);
 const GetRequestDetailsAPI = makeFetchAction(GET_REQUEST_DETAILS, (requestId) =>
   nfetch({
     endpoint: `/api/Request/${requestId}`,
-    method: "GET",
+    method: 'GET'
   })()
 );
 
@@ -168,10 +202,10 @@ export const getRequestDetailsResetter = getResetter(GetRequestDetailsAPI);
 const CancelRequestAPI = makeFetchAction(CANCEL_REQUEST, (id, desc) =>
   nfetch({
     endpoint: `/api/Request/Cancel`,
-    method: "DELETE",
+    method: 'DELETE'
   })({
     id,
-    description: desc,
+    description: desc
   })
 );
 
@@ -181,10 +215,10 @@ export const cancelRequest = (id, desc) =>
     (resp, _, store) => {
       store.dispatch(
         getRequestPaging({
-          status: "",
-          productTitle: "",
+          status: '',
+          productTitle: '',
           pageIndex: 1,
-          pageSize: 10,
+          pageSize: 10
         })
       );
     }
@@ -198,10 +232,10 @@ export const CancelRequestResetter = getResetter(CancelRequestAPI);
 const RejectRequestAPI = makeFetchAction(REJECT_REQUEST, (id, desc) =>
   nfetch({
     endpoint: `/api/Request/Reject`,
-    method: "DELETE",
+    method: 'DELETE'
   })({
     id,
-    description: desc,
+    description: desc
   })
 );
 
@@ -212,9 +246,9 @@ export const rejectRequest = (id, desc) =>
       store.dispatch(
         getRequestPaging({
           status: [R_PENDING],
-          productTitle: "",
+          productTitle: '',
           pageIndex: 1,
-          pageSize: 10,
+          pageSize: 10
         })
       );
     }
@@ -227,16 +261,16 @@ export const RejectRequestResetter = getResetter(RejectRequestAPI);
 // Update Request
 const UpdateRequestAPI = makeFetchAction(UPDATE_REQUEST, (object) =>
   nfetch({
-    endpoint: "/api/Request",
-    method: "PUT",
+    endpoint: '/api/Request',
+    method: 'PUT'
   })(object)
 );
 
 export const updateRequest = (object) =>
   respondToSuccess(UpdateRequestAPI.actionCreator(object), (resp) => {
     if (resp) {
-      openNotification("success", { message: "Update request success!" });
-      Router.push("/buyer/rfq");
+      openNotification('success', { message: 'Update request success!' });
+      Router.push('/buyer/rfq');
     }
   });
 export const UpdateRequestData = UpdateRequestAPI.dataSelector;
@@ -251,9 +285,9 @@ const GetRequestByGroupIdAPI = makeFetchAction(
       endpoint: `/api/Group/Requests${generateQuery({
         groupId,
         pageIndex,
-        pageSize,
+        pageSize
       })}`,
-      method: "GET",
+      method: 'GET'
     })()
 );
 
@@ -274,22 +308,22 @@ const GetRequestSuggestByProductIdAPI = makeFetchAction(
         statuses,
         productId,
         pageIndex,
-        pageSize,
+        pageSize
       })}`,
-      method: "GET",
+      method: 'GET'
     })()
 );
 
 export const getRequestSuggestByProductId = ({
   productId,
   pageIndex,
-  pageSize,
+  pageSize
 }) =>
   respondToSuccess(
     GetRequestSuggestByProductIdAPI.actionCreator({
       productId,
       pageIndex,
-      pageSize,
+      pageSize
     })
   );
 export const getRequestSuggestByProductIdData =

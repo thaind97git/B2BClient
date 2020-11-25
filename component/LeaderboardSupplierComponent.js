@@ -1,49 +1,96 @@
 import { Table } from 'antd';
+import { displayCurrency } from '../utils';
 
 const columns = [
   {
-    title: 'Product Name',
+    title: 'Supplier Name',
     dataIndex: 'name',
     key: 'name'
   },
   {
-    title: 'Total RFQ',
-    dataIndex: 'totalRfq',
-    key: 'totalRfq'
+    title: 'Total Order',
+    dataIndex: 'totalOrder',
+    key: 'totalOrder'
   },
   {
-    title: 'Address',
-    dataIndex: 'address',
-    key: 'address'
+    title: 'Total Price',
+    dataIndex: 'totalPrice',
+    key: 'totalPrice'
   }
 ];
 
 const dataTable = [
   {
     key: '1',
-    name: 'John Brown',
-    age: 32,
-    address: 'New York No. 1 Lake Park',
-    tags: ['nice', 'developer']
+    name: 'Supplier 1',
+    totalOrder: 32,
+    totalPrice: displayCurrency(2700000)
   },
   {
     key: '2',
-    name: 'Jim Green',
-    age: 42,
-    address: 'London No. 1 Lake Park',
-    tags: ['loser']
+    name: 'Supplier 2',
+    totalOrder: 42,
+    totalPrice: displayCurrency(2600000)
   },
   {
     key: '3',
-    name: 'Joe Black',
-    age: 32,
-    address: 'Sidney No. 1 Lake Park',
-    tags: ['cool', 'teacher']
+    name: 'Supplier 3',
+    totalOrder: 32,
+    totalPrice: displayCurrency(2500000)
+  },
+  {
+    key: '1',
+    name: 'Supplier 4',
+    totalOrder: 32,
+    totalPrice: displayCurrency(2400000)
+  },
+  {
+    key: '2',
+    name: 'Supplier 5',
+    totalOrder: 42,
+    totalPrice: displayCurrency(2300000)
+  },
+  {
+    key: '3',
+    name: 'Supplier 6',
+    totalOrder: 32,
+    totalPrice: displayCurrency(2200000)
+  },
+  {
+    key: '1',
+    name: 'Supplier 7',
+    totalOrder: 32,
+    totalPrice: displayCurrency(2000000)
+  },
+  {
+    key: '2',
+    name: 'Supplier 8',
+    totalOrder: 42,
+    totalPrice: displayCurrency(2000000)
+  },
+  {
+    key: '3',
+    name: 'Supplier 9',
+    totalOrder: 32,
+    totalPrice: displayCurrency(2000000)
+  },
+  {
+    key: '3',
+    name: 'Supplier 10',
+    totalOrder: 32,
+    totalPrice: displayCurrency(2000000)
   }
 ];
 
 const LeaderboardSupplierComponent = () => {
-  return <Table columns={columns} dataSource={dataTable} />;
+  return (
+    <Table
+      bordered
+      pagination={false}
+      columns={columns}
+      dataSource={dataTable}
+    />
+  );
 };
 
 export default LeaderboardSupplierComponent;

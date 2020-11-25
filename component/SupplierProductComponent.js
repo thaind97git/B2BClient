@@ -33,7 +33,8 @@ import {
   supplierRegisterProduct,
   SupplierRegisterProductData,
   supplierUpdateQuotation,
-  SupplierUpdateQuotationData
+  SupplierUpdateQuotationData,
+  SupplierUpdateQuotationResetter
 } from '../stores/SupplierState';
 const { Title } = Typography;
 const connectToRedux = connect(

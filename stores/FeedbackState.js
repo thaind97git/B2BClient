@@ -14,6 +14,7 @@ export const GET_FEEDBACK_FILE = 'GetFeedbackFileAPI';
 export const CREATE_FEEDBACK_REPLY = 'CreateFeedbackReplyAPI';
 export const UPDATE_FEEDBACK_RATE = 'UpdateFeedbackRateAPI';
 export const GET_REQUEST_PAGING_FOR_FEEDBACK = 'GetRequestPagingForFeedbackAPI';
+const GET_FEEDBACK_REPORTED_FOR_SUPPLIER = 'GetFeedbackReportedForSupplierAPI';
 
 //create feedback
 const onUploadFile = (feedbackId, fileList) => {
@@ -122,6 +123,40 @@ export const GetFeedbackDetailsData = GetFeedbackDetailsAPI.dataSelector;
 export const GetFeedbackDetailsError = GetFeedbackDetailsAPI.errorSelector;
 export const GetFeedbackDetailsResetter = getResetter(GetFeedbackDetailsAPI);
 
+//get feedback reported for supplier
+const GetFeedbackReportedForSupplierAPI = makeFetchAction(
+  GET_FEEDBACK_REPORTED_FOR_SUPPLIER,
+  ({ supplierId, pageIndex, pageSize }) =>
+    nfetch({
+      endpoint: `/api/Feedback/FilterReportedSupplier${generateQuery({
+        supplierId,
+        pageIndex,
+        pageSize
+      })}`,
+      method: 'GET'
+    })()
+);
+
+export const getFeedbackReportedForSupplier = ({
+  supplierId,
+  pageIndex,
+  pageSize
+}) =>
+  respondToSuccess(
+    GetFeedbackReportedForSupplierAPI.actionCreator({
+      supplierId,
+      pageIndex,
+      pageSize
+    })
+  );
+export const GetFeedbackReportedForSupplierData =
+  GetFeedbackReportedForSupplierAPI.dataSelector;
+export const GetFeedbackReportedForSupplierError =
+  GetFeedbackReportedForSupplierAPI.errorSelector;
+export const GetFeedbackReportedForSupplierResetter = getResetter(
+  GetFeedbackReportedForSupplierAPI
+);
+
 //create feedback reply
 const CreateFeedbackReplyAPI = makeFetchAction(
   CREATE_FEEDBACK_REPLY,
@@ -140,16 +175,16 @@ export const CreateFeedbackReplyResetter = getResetter(CreateFeedbackReplyAPI);
 //create feedback rate
 const UpdateFeedbackRateAPI = makeFetchAction(
   UPDATE_FEEDBACK_RATE,
-  ({feedbackReplyId, isHappy}) =>
+  ({ feedbackReplyId, isHappy }) =>
     nfetch({
       endpoint: `/api/Feedback/Rate`,
       method: 'PUT'
-    })({feedbackReplyId, isHappy})
+    })({ feedbackReplyId, isHappy })
 );
 
-export const updateFeedbackRate = ( {feedbackReplyId, isHappy }) =>
+export const updateFeedbackRate = ({ feedbackReplyId, isHappy }) =>
   respondToSuccess(
-    UpdateFeedbackRateAPI.actionCreator({ feedbackReplyId, isHappy} ),
+    UpdateFeedbackRateAPI.actionCreator({ feedbackReplyId, isHappy }),
     (resp) => {}
   );
 export const UpdateFeedbackRateData = UpdateFeedbackRateAPI.dataSelector;
@@ -229,7 +264,10 @@ export const getRequestPagingForFeedback = ({
     () => {}
   );
 
-export const GetRequestPagingForFeedbackData = GetRequestPagingForFeedbackAPI.dataSelector;
-export const GetRequestPagingForFeedbackError = GetRequestPagingForFeedbackAPI.errorSelector;
-export const GetRequestPagingForFeedbackResetter = getResetter(GetRequestPagingForFeedbackAPI);
-
+export const GetRequestPagingForFeedbackData =
+  GetRequestPagingForFeedbackAPI.dataSelector;
+export const GetRequestPagingForFeedbackError =
+  GetRequestPagingForFeedbackAPI.errorSelector;
+export const GetRequestPagingForFeedbackResetter = getResetter(
+  GetRequestPagingForFeedbackAPI
+);
