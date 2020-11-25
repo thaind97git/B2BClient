@@ -98,7 +98,7 @@ const getRequestTable = ({
               <Button
                 onClick={() => {
                   Modal.confirm({
-                    title: 'Do you want remove this request?',
+                    title: 'Are you sure you want to remove this request?',
                     icon: <ExclamationCircleOutlined />,
                     okText: 'Remove',
                     cancelText: 'Cancel',

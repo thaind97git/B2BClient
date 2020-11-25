@@ -81,16 +81,16 @@ const ADMIN_MENU = [
     ),
     label: 'Feedback',
     link: '/admin/feedback'
-  },
-  {
-    key: '7',
-    icon: <LogoutOutlined style={{ color: 'red' }} />,
-    label: 'Logout',
-    action: () => {
-      Router.push('/login');
-      removeToken();
-    }
   }
+  // {
+  //   key: '7',
+  //   icon: <LogoutOutlined style={{ color: 'red' }} />,
+  //   label: 'Logout',
+  //   action: () => {
+  //     Router.push('/login');
+  //     removeToken();
+  //   }
+  // }
 ];
 
 const connectToRedux = connect(

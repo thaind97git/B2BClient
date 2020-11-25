@@ -211,7 +211,7 @@ const ListReportSupplierComponent = ({
               onClick={() => {
                 setOpenBan(true);
                 // Modal.confirm({
-                //   title: 'Do you want ban this account?',
+                //   title: 'Are you sure you want to ban this account?',
                 //   icon: <ExclamationCircleOutlined />,
                 //   okText: 'Ban',
                 //   cancelText: 'Cancel',
@@ -231,7 +231,7 @@ const ListReportSupplierComponent = ({
               type="primary"
               onClick={() => {
                 Modal.confirm({
-                  title: 'Do you want active this account?',
+                  title: 'Are you sure you want to active this account?',
                   icon: <ExclamationCircleOutlined />,
                   okText: 'Active',
                   cancelText: 'Cancel',

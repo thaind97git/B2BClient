@@ -33,7 +33,8 @@ import AdminProductDetailsComponent from './AdminProductDetailsComponent';
 import {
   activeSupplierProduct,
   deleteSupplierProduct,
-  DeleteSupplierProductData
+  DeleteSupplierProductData,
+  SupplierRegisterProductData
 } from '../stores/SupplierState';
 import QuotationDisplayComponent from './Utils/QuotationDisplayComponent';
 const { Title } = Typography;
@@ -42,7 +43,8 @@ const connectToRedux = connect(
   createStructuredSelector({
     productBySupplierData: GetProductBySupplierData,
     productBySupplierError: GetProductBySupplierError,
-    deleteSupplierProductData: DeleteSupplierProductData
+    deleteSupplierProductData: DeleteSupplierProductData,
+    registerProductData: SupplierRegisterProductData
   }),
   (dispatch) => ({
     getProductBySupplier: (
@@ -77,13 +79,19 @@ const SupplierProductListingComponent = ({
   getProductBySupplier,
   productBySupplierData,
   deleteSupplierProduct,
-  activeSupplierProduct
+  activeSupplierProduct,
+  registerProductData
 }) => {
   const [searchMessage, setSearchMessage] = useState('');
   const [dateRange, setDateRange] = useState(DEFAULT_DATE_RANGE);
   const [category, setCategory] = useState('all');
   const [openDetails, setOpenDetails] = useState(false);
   const [currentProductSelected, setCurrentProductSelected] = useState({});
+  useEffect(() => {
+    if (registerProductData) {
+      getProductBySupplier(0, 10, searchMessage, {}, category);
+    }
+  }, [registerProductData, searchMessage, category, getProductBySupplier]);
   const columns = [
     {
       title: 'Product Name',
@@ -116,10 +124,6 @@ const SupplierProductListingComponent = ({
         const { description = [] } = product;
         const tooltipFirstQuotation = description.slice(1, description.length);
         const tooltipSecondQuotation = description.slice(2, description.length);
-        console.log({
-          description,
-          slice: description.slice(1, description.length)
-        });
         return {
           key: get('product.id')(product),
           productName: (
@@ -168,7 +172,7 @@ const SupplierProductListingComponent = ({
             <Button
               onClick={() => {
                 Modal.confirm({
-                  title: 'Do you want Re-Supply this product?',
+                  title: 'Are you sure you want to Resupply this product?',
                   icon: <ExclamationCircleOutlined />,
                   okText: 'Re-Supply',
                   cancelText: 'Cancel',
@@ -186,7 +190,7 @@ const SupplierProductListingComponent = ({
             <Button
               onClick={() => {
                 Modal.confirm({
-                  title: 'Do you want Un-Supply this product?',
+                  title: 'Are you sure you want to Unsupply this product?',
                   icon: <ExclamationCircleOutlined />,
                   okText: 'Un-Supply',
                   cancelText: 'Cancel',
@@ -199,7 +203,7 @@ const SupplierProductListingComponent = ({
               type="primary"
               danger
             >
-              UnSupply
+              Unsupply
             </Button>
           )
         };
