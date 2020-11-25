@@ -161,17 +161,6 @@ const AdminFeedbackManagementComponent = ({
             <Space>
               <Select
                 size="large"
-                placeholder="Filter by status"
-                style={{ width: 200 }}
-                onChange={handleStatusChange}
-                defaultValue=""
-              >
-                <Option value="">All Status</Option>
-                <Option value={F_OPEN}>Opeing</Option>
-                <Option value={F_CLOSED}>Closed</Option>
-              </Select>
-              <Select
-                size="large"
                 placeholder="Filter by service type"
                 style={{ width: 200 }}
                 onChange={handleServiceChange}
@@ -182,6 +171,17 @@ const AdminFeedbackManagementComponent = ({
                 <Option value={F_AUCTION}>Auction</Option>
                 <Option value={F_RFQ}>Order of buyer</Option>
                 <Option value={F_SYSTEM}>System</Option>
+              </Select>
+              <Select
+                size="large"
+                placeholder="Filter by status"
+                style={{ width: 200 }}
+                onChange={handleStatusChange}
+                defaultValue=""
+              >
+                <Option value="">All Status</Option>
+                <Option value={F_OPEN}>Opeing</Option>
+                <Option value={F_CLOSED}>Closed</Option>
               </Select>
             </Space>
           ),

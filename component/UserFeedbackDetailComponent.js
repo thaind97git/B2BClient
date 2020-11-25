@@ -129,19 +129,25 @@ const FeedBackCard = ({ children, title }) => {
 const Happy = ({ isHappy }) => (
   <img
     alt=""
+    className="rate"
     src="/static/images/vote-up.png"
     value={true}
     height={20}
-    style={isHappy===true ? { opacity: '1' } : { opacity: '0.3' }}
+    style={
+      isHappy === true || isHappy === null
+        ? { opacity: '1' }
+        : { opacity: '0.3' }
+    }
   />
 );
 
 const Unhappy = ({ isHappy }) => (
   <img
     alt=""
+    className="rate"
     src="/static/images/vote-down.png"
     height={20}
-    style={isHappy===false ? { opacity: '1' } : { opacity: '0.3' }}
+    style={isHappy===false || isHappy === null ? { opacity: '1' } : { opacity: '0.3' }}
   />
 );
 
@@ -243,15 +249,18 @@ const UserFeedbackDetailComponent = ({
               datetime: getFromNowTime(feedbackItem.dateCreated),
               actions: [
                 !feedbackItem.isUser ? (
-                  <Tooltip key="comment-basic-like" title="Happy">
-                    <span
-                      onClick={() => {
-                        rate(feedbackItem, true);
-                      }}
-                    >
-                      <Happy isHappy={feedbackItem.isHappy} />
-                    </span>
-                  </Tooltip>
+                  <div>
+                    How would you rate on this reply?
+                    <Tooltip key="comment-basic-like" title="Happy">
+                      <span
+                        onClick={() => {
+                          rate(feedbackItem, true);
+                        }}
+                      >
+                        <Happy isHappy={feedbackItem.isHappy} />
+                      </span>
+                    </Tooltip>
+                  </div>
                 ) : (
                   ''
                 ),
@@ -470,6 +479,12 @@ const UserFeedbackDetailComponent = ({
         }
         .ant-col .ant-card-body {
           font-size: 15px;
+        }
+        .rate {
+          transition: all 0.2s ease-in-out;
+        }
+        .rate:hover {
+          transform: scale(1.5);
         }
       `}</style>
     </Fragment>

@@ -73,6 +73,7 @@ const connectToRedux = connect(
 const Happy = ({ isHappy }) => (
   <img
     alt=""
+    className="rate"
     src="/static/images/vote-up.png"
     value={true}
     height={20}
@@ -83,6 +84,7 @@ const Happy = ({ isHappy }) => (
 const Unhappy = ({ isHappy }) => (
   <img
     alt=""
+    className="rate"
     src="/static/images/vote-down.png"
     height={20}
     style={isHappy === false ? { opacity: '1' } : { opacity: '0.3' }}
@@ -351,61 +353,61 @@ const AdminFeedbackDetailComponent = ({
           title={<Title level={5}>Title: {title}</Title>}
           style={{ width: '100%' }}
         >
-        <Comment
-          author={user.firstName + ' ' + user.lastName}
-          avatar={
-            user.avatar
-              ? getCurrentUserImage(user.id)
-              : '/static/images/avatar.png'
-          }
-          content={
-            <Card>
-              <div
-                dangerouslySetInnerHTML={{
-                  __html: (feedbackDetailsData || {}).description
-                }}
-              />
-              {fileList.length > 0 ? (
-                <div>
-                  <Divider />
-                  File Attachment
-                </div>
-              ) : (
-                ''
-              )}
-              <Upload
-                title="File Attachment List"
-                action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-                listType="text"
-                fileList={fileList}
-                disabled
-                previewFile={false}
-              ></Upload>
-            </Card>
-          }
-          datetime={getFromNowTime(feedbackDetailsData.dateCreated)}
-        />
-        {comments.length > 0 && <CommentList comments={comments} />}
-        {isReply ? (
           <Comment
-            author={currentUser.firstName + ' ' + currentUser.lastName}
+            author={user.firstName + ' ' + user.lastName}
             avatar={
-              currentUser.avatar
-                ? getCurrentUserImage(currentUser.id)
+              user.avatar
+                ? getCurrentUserImage(user.id)
                 : '/static/images/avatar.png'
             }
             content={
-              <Editor
-                onChange={handleChange}
-                onSubmit={handleSubmit}
-                submitting={submitting}
-                value={value}
-              />
+              <Card>
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: (feedbackDetailsData || {}).description
+                  }}
+                />
+                {fileList.length > 0 ? (
+                  <div>
+                    <Divider />
+                    File Attachment
+                  </div>
+                ) : (
+                  ''
+                )}
+                <Upload
+                  title="File Attachment List"
+                  action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+                  listType="text"
+                  fileList={fileList}
+                  disabled
+                  previewFile={false}
+                ></Upload>
+              </Card>
             }
+            datetime={getFromNowTime(feedbackDetailsData.dateCreated)}
           />
-        ) : (
-          ''
-        )}
+          {comments.length > 0 && <CommentList comments={comments} />}
+          {isReply ? (
+            <Comment
+              author={currentUser.firstName + ' ' + currentUser.lastName}
+              avatar={
+                currentUser.avatar
+                  ? getCurrentUserImage(currentUser.id)
+                  : '/static/images/avatar.png'
+              }
+              content={
+                <Editor
+                  onChange={handleChange}
+                  onSubmit={handleSubmit}
+                  submitting={submitting}
+                  value={value}
+                />
+              }
+            />
+          ) : (
+            ''
+          )}
         </Card>
       </Space>
       <style jsx global>{`
@@ -414,6 +416,12 @@ const AdminFeedbackDetailComponent = ({
         }
         .ant-col .ant-card-body {
           font-size: 15px;
+        }
+        .rate {
+          transition: all 0.2s ease-in-out;
+        }
+        .rate:hover {
+          transform: scale(1.5);
         }
       `}</style>
     </Fragment>
