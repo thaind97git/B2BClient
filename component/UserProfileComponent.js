@@ -178,6 +178,7 @@ const UserProfileComponent = ({
 
   if (isDrawer) {
     const {
+      id,
       address,
       id,
       companyName,
@@ -196,7 +197,11 @@ const UserProfileComponent = ({
         <Col span={6}>
           <Avatar
             size={120}
+<<<<<<< HEAD
             src={getCurrentUserImage(id) || '/static/images/avatar.png'}
+=======
+            src={avatar? getCurrentUserImage(id) : '/static/images/avatar.png'}
+>>>>>>> origin/dev_quang
           />
         </Col>
         <Col span={18}>

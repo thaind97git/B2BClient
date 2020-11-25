@@ -13,6 +13,7 @@ import {
 } from '../stores/FeedbackState';
 //import AdminProductDetailsComponent from "./AdminProductDetailsComponent";
 import FeedbackStatusComponent from './Utils/FeedbackStatusComponent';
+import FeedbackTypeComponent from './Utils/FeedbackTypeComponent';
 import { get } from 'lodash/fp';
 import Moment from 'react-moment';
 import moment from 'moment';
@@ -61,9 +62,9 @@ const columns = [
     key: 'user'
   },
   {
-    title: 'Date updated',
-    dataIndex: 'dateUpdated',
-    key: 'dateUpdated'
+    title: 'Service Type',
+    dataIndex: 'serviceType',
+    key: 'serviceType'
   },
   {
     title: 'Status',
@@ -123,7 +124,12 @@ const AdminFeedbackManagementComponent = ({
       feedbackData.map((feedback = {}) => ({
         key: feedback.id,
         title: feedback.title,
-        dateUpdated: getUtcTime(feedback.dateCreated),
+        serviceType: (
+          <FeedbackTypeComponent
+            status={feedback.request? F_RFQ : feedback.reverseAuction? F_AUCTION : feedback.order? F_ORDER : F_SYSTEM}
+          ></FeedbackTypeComponent>
+        ),
+        //dateUpdated: getUtcTime(feedback.dateCreated),
         user: feedback.user.email,
         status: (
           <FeedbackStatusComponent
@@ -161,17 +167,6 @@ const AdminFeedbackManagementComponent = ({
             <Space>
               <Select
                 size="large"
-                placeholder="Filter by status"
-                style={{ width: 200 }}
-                onChange={handleStatusChange}
-                defaultValue=""
-              >
-                <Option value="">All Status</Option>
-                <Option value={F_OPEN}>Opeing</Option>
-                <Option value={F_CLOSED}>Closed</Option>
-              </Select>
-              <Select
-                size="large"
                 placeholder="Filter by service type"
                 style={{ width: 200 }}
                 onChange={handleServiceChange}
@@ -182,6 +177,17 @@ const AdminFeedbackManagementComponent = ({
                 <Option value={F_AUCTION}>Auction</Option>
                 <Option value={F_RFQ}>Order of buyer</Option>
                 <Option value={F_SYSTEM}>System</Option>
+              </Select>
+              <Select
+                size="large"
+                placeholder="Filter by status"
+                style={{ width: 200 }}
+                onChange={handleStatusChange}
+                defaultValue=""
+              >
+                <Option value="">All Status</Option>
+                <Option value={F_OPEN}>Opeing</Option>
+                <Option value={F_CLOSED}>Closed</Option>
               </Select>
             </Space>
           ),

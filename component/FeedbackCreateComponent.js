@@ -33,7 +33,8 @@ import {
 } from '../stores/OrderState';
 import {
   createFeedback,
-  CreateFeedbackData
+  CreateFeedbackData,
+  CreateFeedbackResetter
   //AuctionFilterError
 } from '../stores/FeedbackState';
 import { UploadOutlined } from '@ant-design/icons';
@@ -89,7 +90,8 @@ const connectToRedux = connect(
         })
       ),
     createFeedback: (object, fileList) =>
-      dispatch(createFeedback(object, fileList))
+      dispatch(createFeedback(object, fileList)),
+    resetCreateFeedback: () => dispatch(CreateFeedbackResetter)
   })
 );
 const styles = {
@@ -118,7 +120,8 @@ const FeedbackCreateComponent = ({
   getOrder,
   orderPagingData,
   createFeedback,
-  createFeedbackData
+  createFeedbackData,
+  resetCreateFeedback
 }) => {
   const [fileList, setFileList] = useState([]);
   const [serviceData, setServiceData] = useState([]);
@@ -201,6 +204,7 @@ const FeedbackCreateComponent = ({
 
   useEffect(() => {
     if (createFeedbackData) {
+      resetCreateFeedback();
       Router.push(`/${currentUser.role.toLowerCase()}/feedback`);
     }
   }, [createFeedbackData]);
