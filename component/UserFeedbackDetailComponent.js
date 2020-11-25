@@ -26,6 +26,8 @@ import moment from 'moment';
 import Router, { useRouter } from 'next/router';
 import React, { Fragment, useState, useEffect } from 'react';
 import { F_CLOSED, F_OPEN } from '../enums/feedbackStatus';
+import { F_ORDER, F_AUCTION, F_RFQ, F_SYSTEM } from '../enums/feedbackType';
+import FeedbackTypeComponent from './Utils/FeedbackTypeComponent';
 import {
   DATE_TIME_FORMAT,
   getCurrentUserImage,
@@ -249,31 +251,30 @@ const UserFeedbackDetailComponent = ({
               datetime: getFromNowTime(feedbackItem.dateCreated),
               actions: [
                 !feedbackItem.isUser ? (
-                  <div>
-                    How would you rate on this reply?
-                    <Tooltip key="comment-basic-like" title="Happy">
-                      <span
-                        onClick={() => {
-                          rate(feedbackItem, true);
-                        }}
-                      >
-                        <Happy isHappy={feedbackItem.isHappy} />
-                      </span>
-                    </Tooltip>
-                  </div>
-                ) : (
-                  ''
-                ),
-                !feedbackItem.isUser ? (
-                  <Tooltip key="comment-basic-dislike" title="Not Happy">
-                    <span
-                      onClick={() => {
-                        rate(feedbackItem, false);
-                      }}
-                    >
-                      <Unhappy isHappy={feedbackItem.isHappy} />
-                    </span>
-                  </Tooltip>
+                  <>
+                    <span style={{fontSize:'15',color:'black'}}>How would you rate on this reply?</span>
+                    <br/>
+                    <Space>
+                      <Tooltip key="comment-basic-like" title="Happy">
+                        <span
+                          onClick={() => {
+                            rate(feedbackItem, true);
+                          }}
+                        >
+                          <Happy isHappy={feedbackItem.isHappy} />
+                        </span>
+                      </Tooltip>
+                      <Tooltip key="comment-basic-dislike" title="Not Happy">
+                        <span
+                          onClick={() => {
+                            rate(feedbackItem, false);
+                          }}
+                        >
+                          <Unhappy isHappy={feedbackItem.isHappy} />
+                        </span>
+                      </Tooltip>
+                    </Space>
+                  </>
                 ) : (
                   ''
                 )
@@ -346,13 +347,17 @@ const UserFeedbackDetailComponent = ({
         <Row span={24} gutter={16} justify="space-between">
           <Col span={isFeedbackSystem ? 8 : 6}>
             <FeedBackCard title="Type">
-              {order
-                ? 'Order'
-                : request
-                ? 'Order'
-                : reverseAuction
-                ? 'Auction'
-                : 'System'}
+              <FeedbackTypeComponent
+                status={
+                  request
+                    ? F_RFQ
+                    : reverseAuction
+                    ? F_AUCTION
+                    : order
+                    ? F_ORDER
+                    : F_SYSTEM
+                }
+              ></FeedbackTypeComponent>
             </FeedBackCard>
           </Col>
           <Col span={isFeedbackSystem ? 8 : 6}>
@@ -365,12 +370,11 @@ const UserFeedbackDetailComponent = ({
           <Col span={isFeedbackSystem ? 8 : 6}>
             <FeedBackCard title="Status">
               {feedbackStatus.id === F_CLOSED ? (
-                <Tag style={{ fontSize: 16, padding: '4px 12px' }} color="#f50">
+                <Tag color="#f50">
                   {feedbackStatus.description}
                 </Tag>
               ) : (
                 <Tag
-                  style={{ fontSize: 16, padding: '4px 12px' }}
                   color="#108ee9"
                 >
                   {feedbackStatus.description}
@@ -485,6 +489,10 @@ const UserFeedbackDetailComponent = ({
         }
         .rate:hover {
           transform: scale(1.5);
+        }
+        .ant-tag {
+          font-size: 16px;
+          padding: 4px 12px;
         }
       `}</style>
     </Fragment>

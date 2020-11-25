@@ -16,13 +16,16 @@ import {
   Divider,
   Rate,
   Popover,
-  Tag
+  Tag,
+  Drawer
 } from 'antd';
 import { LeftOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import Router, { useRouter } from 'next/router';
 import React, { Fragment, useState, useEffect } from 'react';
 import { F_CLOSED, F_OPEN } from '../enums/feedbackStatus';
+import { F_ORDER, F_AUCTION, F_RFQ, F_SYSTEM} from '../enums/feedbackType';
+import FeedbackTypeComponent from './Utils/FeedbackTypeComponent';
 import {
   DATE_TIME_FORMAT,
   getCurrentUserImage,
@@ -44,6 +47,7 @@ import {
 } from '../stores/FeedbackState';
 import Moment from 'react-moment';
 import { SmileOutlined, FrownOutlined } from '@ant-design/icons';
+import UserProfileComponent from './UserProfileComponent';
 
 const { TextArea } = Input;
 const { Title } = Typography;
@@ -164,6 +168,8 @@ const AdminFeedbackDetailComponent = ({
   const [fileList, setFileList] = useState([]);
   const [serviceName, setServiceName] = useState('');
   const [isFeedbackSystem, setIsFeedbackSystem] = useState(true);
+  const [openDetails, setOpenDetails] = useState(false);
+  const [currentUserSelected, setCurrentUserSelected] = useState({});
 
   const {
     title,
@@ -221,7 +227,20 @@ const AdminFeedbackDetailComponent = ({
           setComments((comments) => [
             ...comments,
             {
-              author: user.firstName + ' ' + user.lastName,
+              author: feedbackItem.isUser ? (
+                <Button
+                  onClick={() => {
+                    setCurrentUserSelected(user);
+                    setOpenDetails(true);
+                  }}
+                  size="small"
+                  type="link"
+                >
+                  {user.firstName + ' ' + user.lastName}
+                </Button>
+              ) : (
+                user.firstName + ' ' + user.lastName
+              ),
               avatar: user.avatar
                 ? getCurrentUserImage(user.id)
                 : '/static/images/avatar.png',
@@ -286,6 +305,20 @@ const AdminFeedbackDetailComponent = ({
 
   return (
     <Fragment>
+      <Drawer
+        width={640}
+        title="User Details"
+        placement={'right'}
+        closable={true}
+        onClose={() => setOpenDetails(false)}
+        visible={openDetails}
+        key={'right'}
+      >
+        <UserProfileComponent
+          isDrawer
+          userId={(currentUserSelected || {}).id}
+        />
+      </Drawer>
       <Row style={{ paddingBottom: 24 }} justify="space-between" align="middle">
         <Button
           type="primary"
@@ -303,13 +336,17 @@ const AdminFeedbackDetailComponent = ({
         <Row span={24} gutter={16} justify="space-between">
           <Col span={isFeedbackSystem ? 8 : 6}>
             <FeedBackCard title="Type">
-              {order
-                ? 'Order'
-                : request
-                ? 'Order'
-                : reverseAuction
-                ? 'Auction'
-                : 'System'}
+              <FeedbackTypeComponent
+                status={
+                  request
+                    ? F_RFQ
+                    : reverseAuction
+                    ? F_AUCTION
+                    : order
+                    ? F_ORDER
+                    : F_SYSTEM
+                }
+              ></FeedbackTypeComponent>
             </FeedBackCard>
           </Col>
           <Col span={isFeedbackSystem ? 8 : 6}>
@@ -322,12 +359,11 @@ const AdminFeedbackDetailComponent = ({
           <Col span={isFeedbackSystem ? 8 : 6}>
             <FeedBackCard title="Status">
               {feedbackStatus.id === F_CLOSED ? (
-                <Tag style={{ fontSize: 16, padding: '4px 12px' }} color="#f50">
+                <Tag color="#f50">
                   {feedbackStatus.description}
                 </Tag>
               ) : (
                 <Tag
-                  style={{ fontSize: 16, padding: '4px 12px' }}
                   color="#108ee9"
                 >
                   {feedbackStatus.description}
@@ -354,7 +390,18 @@ const AdminFeedbackDetailComponent = ({
           style={{ width: '100%' }}
         >
           <Comment
-            author={user.firstName + ' ' + user.lastName}
+            author={
+              <Button
+                onClick={() => {
+                  setCurrentUserSelected(user);
+                  setOpenDetails(true);
+                }}
+                size="small"
+                type="link"
+              >
+                {user.firstName + ' ' + user.lastName}
+              </Button>
+            }
             avatar={
               user.avatar
                 ? getCurrentUserImage(user.id)
@@ -422,6 +469,10 @@ const AdminFeedbackDetailComponent = ({
         }
         .rate:hover {
           transform: scale(1.5);
+        }
+        .ant-tag {
+          font-size: 16px;
+          padding: 4px 12px;
         }
       `}</style>
     </Fragment>

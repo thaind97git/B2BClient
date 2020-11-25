@@ -188,6 +188,7 @@ const UserProfileComponent = ({
 
   if (isDrawer) {
     const {
+      id,
       address,
       avatar,
       companyName,
@@ -204,7 +205,7 @@ const UserProfileComponent = ({
         <Col span={6}>
           <Avatar
             size={120}
-            src={getCurrentUserImage(avatar) || '/static/images/avatar.png'}
+            src={avatar? getCurrentUserImage(id) : '/static/images/avatar.png'}
           />
         </Col>
         <Col span={18}>
