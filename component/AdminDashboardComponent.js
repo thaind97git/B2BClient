@@ -10,6 +10,7 @@ import {
   Typography
 } from 'antd';
 import React, { useState } from 'react';
+import LeaderboardAggregatorComponent from './LeaderboardAggregatorComponent';
 import LeaderboardBuyerComponent from './LeaderboardBuyerComponent';
 import LeaderboardProductComponent from './LeaderboardProductComponent';
 import LeaderboardSupplierComponent from './LeaderboardSupplierComponent';
@@ -20,20 +21,22 @@ if (process.browser) {
 const { Title } = Typography;
 const { TabPane } = Tabs;
 const dataRFQ = [
-  { type: 'Pending', value: 10 },
-  { type: 'Negotiating', value: 10 },
+  // { type: 'Pending', value: 10 },
+  // { type: 'Negotiating', value: 10 },
   { type: 'Canceled', value: 10 },
   { type: 'Rejected', value: 10 },
-  { type: 'Grouped', value: 10 },
-  { type: 'Wait For Auction', value: 10 },
-  { type: 'Bidding', value: 10 },
+  // { type: 'Grouped', value: 10 },
+  // { type: 'Wait For Auction', value: 10 },
+  // { type: 'Bidding', value: 10 },
   { type: 'Ordered', value: 10 },
   { type: 'Done', value: 20 }
 ];
 
-const dataOrder = [
-  { type: 'Fail', value: 50 },
-  { type: 'Done', value: 50 }
+const dataAuction = [
+  { type: 'Closed', value: 30 },
+  { type: 'Failed', value: 50 },
+  { type: 'Done', value: 40 },
+  { type: 'Canceled', value: 50 }
 ];
 
 const AdminDashBoardComponent = () => {
@@ -67,18 +70,18 @@ const AdminDashBoardComponent = () => {
       }
     }
   };
-  const configOrder = {
+  const configAuction = {
     width: 380,
     autoFit: false,
     appendPadding: 10,
-    data: dataOrder,
+    data: dataAuction,
     angleField: 'value',
     colorField: 'type',
     radius: 1,
     innerRadius: 0,
     meta: {
       value: {
-        formatter: (v) => `${v} RFQs`
+        formatter: (v) => `${v} Auctions`
       }
     },
     label: {
@@ -120,7 +123,7 @@ const AdminDashBoardComponent = () => {
         <Card
           title={
             <Row justify="space-between">
-              <Title level={4}>Order Statistic</Title>
+              <Title level={4}>Reverse Auction Statistic</Title>
               <DatePicker picker="month" />
             </Row>
           }
@@ -128,7 +131,7 @@ const AdminDashBoardComponent = () => {
           bordered={false}
         >
           <Row justify="center">
-            {G2Plot && <G2Plot.Pie {...configOrder} />}
+            {G2Plot && <G2Plot.Pie {...configAuction} />}
           </Row>
         </Card>
       </Col>
@@ -153,6 +156,9 @@ const AdminDashBoardComponent = () => {
               </TabPane>
               <TabPane tab="Buyer" key="3">
                 <LeaderboardBuyerComponent />
+              </TabPane>
+              <TabPane tab="Aggregator" key="4">
+                <LeaderboardAggregatorComponent />
               </TabPane>
             </Tabs>
           </div>

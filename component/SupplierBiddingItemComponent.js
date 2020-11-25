@@ -18,7 +18,7 @@ import Link from 'next/link';
 import React from 'react';
 import Moment from 'react-moment';
 import Router from 'next/router';
-import { getBadgeAuctionLabel } from '../utils';
+import { getBadgeAuctionLabel, getUtcTime } from '../utils';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 import {
@@ -111,13 +111,13 @@ const SupplierBiddingItemComponent = ({
             ? 'blue'
             : closed
             ? 'red'
-            : auctionStartTime <= Date.now()
+            : getUtcTime(auctionStartTime) <= Date.now()
             ? 'blue'
             : 'gold'
         }
         placement="end"
         text={getBadgeAuctionLabel(
-          auctionStartTime,
+          getUtcTime(auctionStartTime),
           closed,
           reverseAuctionStatus.id
         )}

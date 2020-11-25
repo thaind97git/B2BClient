@@ -1,6 +1,6 @@
 import { Button, Drawer, Row, Select, Space, Typography } from 'antd';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
-import React, { useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import ReactTableLayout from '../layouts/ReactTableLayout';
 import { DEFAULT_DATE_RANGE } from '../utils';
 
@@ -24,6 +24,7 @@ import {
 } from '../enums/accountStatus';
 import Modal from 'antd/lib/modal/Modal';
 import UserProfileComponent from './UserProfileComponent';
+import ListReportSupplierComponent from './ListReportSupplierComponent';
 const { Option } = Select;
 const { Title } = Typography;
 
@@ -48,10 +49,7 @@ const connectToRedux = connect(
           statusId: status
         })
       );
-    },
-    banSupplier: ({ id, description }) =>
-      dispatch(banUser({ id, description })),
-    unBanSupplier: ({ id }) => dispatch(unBanUser({ id }))
+    }
   })
 );
 
@@ -82,7 +80,7 @@ const columns = [
     key: 'status'
   },
   {
-    title: 'Actions',
+    title: 'Details',
     dataIndex: 'actions',
     key: 'actions'
   }
@@ -91,9 +89,7 @@ const columns = [
 const SupplierManagementComponent = ({
   getSupplierPaging,
   supplierPagingData,
-  supplierPagingError,
-  banSupplier,
-  unBanSupplier
+  supplierPagingError
 }) => {
   const [searchMessage, setSearchMessage] = useState('');
   const [dateRange, setDateRange] = useState(DEFAULT_DATE_RANGE);
@@ -117,7 +113,12 @@ const SupplierManagementComponent = ({
           const supplierStatus = +get('userStatus.id')(supplier);
           return {
             key: supplier.id,
-            email: (
+            email: supplier.email,
+            fullName: `${supplier.firstName} ${supplier.lastName}`,
+            companyName: supplier.companyName,
+            phoneNumber: supplier.phoneNumber,
+            status: <UserStatusComponent status={supplierStatus} />,
+            actions: (
               <Button
                 onClick={() => {
                   setCurrentSupplierSelected(supplier);
@@ -126,56 +127,8 @@ const SupplierManagementComponent = ({
                 size="small"
                 type="link"
               >
-                {supplier.email}
+                View
               </Button>
-            ),
-            fullName: `${supplier.firstName} ${supplier.lastName}`,
-            companyName: supplier.companyName,
-            phoneNumber: supplier.phoneNumber,
-            status: <UserStatusComponent status={supplierStatus} />,
-            actions: (
-              <Space>
-                {supplierStatus === U_ACTIVE && (
-                  <Button
-                    type="primary"
-                    danger
-                    onClick={() => {
-                      Modal.confirm({
-                        title: 'Do you want ban this account?',
-                        icon: <ExclamationCircleOutlined />,
-                        okText: 'Ban',
-                        cancelText: 'Cancel',
-                        onOk: () => {
-                          banSupplier({ id: supplier.id });
-                        }
-                      });
-                    }}
-                    size="small"
-                  >
-                    Ban
-                  </Button>
-                )}
-                {(supplierStatus === U_PENDING ||
-                  supplierStatus === U_BANNED) && (
-                  <Button
-                    type="primary"
-                    onClick={() => {
-                      Modal.confirm({
-                        title: 'Do you want active this account?',
-                        icon: <ExclamationCircleOutlined />,
-                        okText: 'Active',
-                        cancelText: 'Cancel',
-                        onOk: () => {
-                          unBanSupplier({ id: supplier.id });
-                        }
-                      });
-                    }}
-                    size="small"
-                  >
-                    Active
-                  </Button>
-                )}
-              </Space>
             )
           };
         })
@@ -192,7 +145,7 @@ const SupplierManagementComponent = ({
     <div>
       <Row justify="space-between">
         <Drawer
-          width={640}
+          width={840}
           title="Supplier Details"
           placement={'right'}
           closable={true}
@@ -200,10 +153,18 @@ const SupplierManagementComponent = ({
           visible={openDetails}
           key={'right'}
         >
-          <UserProfileComponent
-            isDrawer
-            userId={(currentSupplierSelected || {}).id}
-          />
+          {openDetails ? (
+            <Fragment>
+              <UserProfileComponent
+                isAdmin={true}
+                isDrawer
+                userId={(currentSupplierSelected || {}).id}
+              />
+              <ListReportSupplierComponent
+                supplierId={(currentSupplierSelected || {}).id}
+              />
+            </Fragment>
+          ) : null}
         </Drawer>
         <Title level={4}>Supplier Management</Title>
       </Row>

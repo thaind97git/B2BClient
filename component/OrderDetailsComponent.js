@@ -115,6 +115,7 @@ const OrderDetailsComponent = ({ orderDetailsData, getOrderDetails }) => {
   ];
 
   const {
+    id,
     email,
     address,
     avatar,
@@ -160,7 +161,7 @@ const OrderDetailsComponent = ({ orderDetailsData, getOrderDetails }) => {
             </Row>
             <Card
               bordered={false}
-              title={<b>Supplier: {`${firstName} ${lastName}`}</b>}
+              title={<b>Supplier Information</b>}
               style={{
                 width: '100%',
                 boxShadow: '2px 2px 14px 0 rgba(0,0,0,.1)',
@@ -180,13 +181,14 @@ const OrderDetailsComponent = ({ orderDetailsData, getOrderDetails }) => {
                       <Avatar
                         size={64}
                         src={
-                          getCurrentUserImage(avatar) ||
-                          '/static/images/avatar.png'
+                          getCurrentUserImage(id) || '/static/images/avatar.png'
                         }
                       />
 
-                      <span>&nbsp;</span>
+                      <span>&nbsp;&nbsp;&nbsp;</span>
                       <div>
+                        Supplier Name: {`${firstName} ${lastName}`}
+                        <br />
                         Company: {companyName}
                         <br />
                         Address: {address}
@@ -219,7 +221,7 @@ const OrderDetailsComponent = ({ orderDetailsData, getOrderDetails }) => {
                   <b>Order Item</b>
                   <Row dir="row" align="middle">
                     <Title style={{ marginBottom: 0 }} level={5}>
-                      Order Status:{' '}
+                      Order Status:<span>&nbsp;</span>
                     </Title>
                     <OrderStatusComponent status={orderStatus.id} />
                   </Row>
