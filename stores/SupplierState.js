@@ -10,6 +10,8 @@ const GET_SUPPLIER_BY_GROUP_ID = 'GetSupplierByGroupIdAPI';
 const GET_SUPPLIER_PAGING = 'GetSupplierPagingAPI';
 export const BAN_USER = 'BanUserAPI';
 export const UN_BAN_USER = 'UnBanUserAPI';
+export const APPROVE_USER = 'ApproveUserAPI';
+export const REJECT_USER = 'RejectUserAPI';
 const GET_SUPPLIER_BY_PRODUCT_ID = 'GetSupplierByProductIdAPI';
 export const SUPPLIER_REGISTER_PRODUCT = 'SupplierRegisterProductAPI';
 export const SUPPLIER_UPDATE_QUOTATION = 'SupplierUpdateQuotationAPI';
@@ -170,6 +172,58 @@ export const unBanUser = ({ id, isSupplier = true }) =>
 export const UnBanUserData = UnBanUserAPI.dataSelector;
 export const UnBanUserError = UnBanUserAPI.errorSelector;
 export const UnBanUserResetter = getResetter(UnBanUserAPI);
+
+//Approve Supplier
+const ApproveSupplierAPI = makeFetchAction(APPROVE_USER, ({ id }) =>
+  nfetch({
+    endpoint: `/api/Supplier/ApproveSupplier/${id}`,
+    method: 'PUT'
+  })()
+);
+
+export const approveSupplier = ({ id }) =>
+  respondToSuccess(
+    ApproveSupplierAPI.actionCreator({ id }),
+    (resp, _, store) => {
+      if (resp) {
+        store.dispatch(
+          getSupplierPaging({
+            pageIndex: DEFAULT_PAGING_INFO.page,
+            pageSize: DEFAULT_PAGING_INFO.pageSize
+          })
+        );
+      }
+    }
+  );
+export const ApproveSupplierData = ApproveSupplierAPI.dataSelector;
+export const ApproveSupplierError = ApproveSupplierAPI.errorSelector;
+export const ApproveSupplierResetter = getResetter(ApproveSupplierAPI);
+
+//Reject Supplier
+const RejectSupplierAPI = makeFetchAction(REJECT_USER, ({ id }) =>
+  nfetch({
+    endpoint: `/api/Supplier/RejectSupplier/${id}`,
+    method: 'PUT'
+  })()
+);
+
+export const rejectSupplier = ({ id }) =>
+  respondToSuccess(
+    RejectSupplierAPI.actionCreator({ id }),
+    (resp, _, store) => {
+      if (resp) {
+        store.dispatch(
+          getSupplierPaging({
+            pageIndex: DEFAULT_PAGING_INFO.page,
+            pageSize: DEFAULT_PAGING_INFO.pageSize
+          })
+        );
+      }
+    }
+  );
+export const RejectSupplierData = RejectSupplierAPI.dataSelector;
+export const RejectSupplierError = RejectSupplierAPI.errorSelector;
+export const RejectSupplierResetter = getResetter(RejectSupplierAPI);
 
 // Register Product
 const SupplierRegisterProductAPI = makeFetchAction(

@@ -1,21 +1,21 @@
-import React, { Fragment, useEffect, useState } from "react";
-import { connect } from "react-redux";
-import { createStructuredSelector } from "reselect";
-import { BUYER, MODERATOR, SUPPLIER } from "../enums/accountRoles";
-import { removeToken } from "../libs/localStorage";
+import React, { Fragment, useEffect, useState } from 'react';
+import { connect } from 'react-redux';
+import { createStructuredSelector } from 'reselect';
+import { BUYER, MODERATOR, SUPPLIER } from '../enums/accountRoles';
+import { removeToken } from '../libs/localStorage';
 import {
   CurrentUserData,
   CurrentUserResetter,
-  getCurrentUser,
-} from "../stores/UserState";
+  getCurrentUser
+} from '../stores/UserState';
 
 const connectToRedux = connect(
   createStructuredSelector({
-    currentUserData: CurrentUserData,
+    currentUserData: CurrentUserData
   }),
   (dispatch) => ({
     getCurrentUser: () => dispatch(getCurrentUser({ isVerify: false })),
-    resetData: () => dispatch(CurrentUserResetter),
+    resetData: () => dispatch(CurrentUserResetter)
   })
 );
 
@@ -27,7 +27,7 @@ const HomePageLayout = ({
   isCta = true,
   currentUserData,
   getCurrentUser,
-  resetData,
+  resetData
 }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   useEffect(() => {
@@ -53,16 +53,16 @@ const HomePageLayout = ({
     }
   }, [currentUserData]);
 
-  let url = "";
+  let url = '';
   if (currentUserData) {
     if (currentUserData.role === BUYER) {
-      url = "/buyer/user-profile";
+      url = '/buyer/user-profile';
     }
     if (currentUserData.role === SUPPLIER) {
-      url = "/supplier";
+      url = '/supplier';
     }
     if (currentUserData.role === MODERATOR) {
-      url = "/aggregator";
+      url = '/aggregator';
     }
   }
   return (
@@ -95,8 +95,14 @@ const HomePageLayout = ({
       <header id="header">
         <div className="container">
           <div id="logo" className="pull-left">
-            <a style={{ fontSize: 24, color: "white" }} href="/">
-              B2B Market
+            <a href="/">
+              <img
+                style={{
+                  width: 120
+                }}
+                src="/static/images/logo-white.png"
+                alt="B2B Market"
+              />
             </a>
           </div>
 
@@ -198,7 +204,7 @@ const HomePageLayout = ({
                   <div className="circle">
                     <span className="stats-no" data-toggle="counter-up">
                       232
-                    </span>{" "}
+                    </span>{' '}
                     Satisfied Customers
                   </div>
                 </div>
@@ -207,7 +213,7 @@ const HomePageLayout = ({
                   <div className="circle">
                     <span className="stats-no" data-toggle="counter-up">
                       79
-                    </span>{" "}
+                    </span>{' '}
                     Released Projects
                   </div>
                 </div>
@@ -216,7 +222,7 @@ const HomePageLayout = ({
                   <div className="circle">
                     <span className="stats-no" data-toggle="counter-up">
                       1,463
-                    </span>{" "}
+                    </span>{' '}
                     Hours Of Support
                   </div>
                 </div>
@@ -225,7 +231,7 @@ const HomePageLayout = ({
                   <div className="circle">
                     <span className="stats-no" data-toggle="counter-up">
                       15
-                    </span>{" "}
+                    </span>{' '}
                     Hard Workers
                   </div>
                 </div>

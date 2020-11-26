@@ -1,11 +1,13 @@
 import React from 'react';
 import FeedbackCreateComponent from '../../../component/FeedbackCreateComponent';
+import FeedbackSubmitComponent from '../../../component/FeedbackSubmitComponent';
 import withAuth from '../../../component/HOC/AuthenHOC';
 import BuyerLayout from '../../../layouts/BuyerLayout';
 const Page = () => {
   return (
-    <BuyerLayout>
-      <FeedbackCreateComponent />
+    <BuyerLayout hasBackground={false}>
+      <FeedbackSubmitComponent />
+      {/* <FeedbackCreateComponent /> */}
     </BuyerLayout>
   );
 };

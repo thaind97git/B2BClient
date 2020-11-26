@@ -131,7 +131,7 @@ const GroupRequestComponent = ({ getGroupPaging, groupPagingData }) => {
       <ReactTableLayout
         dispatchAction={getGroupPaging}
         searchProps={{
-          placeholder: 'Search By Group Name or Group Name',
+          placeholder: 'Search By Group Name or Product Name',
           searchMessage,
           setSearchMessage,
           exElement: (

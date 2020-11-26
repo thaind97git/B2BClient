@@ -213,20 +213,14 @@ const AggregatorLayout = ({
           >
             <Row style={{ minHeight: 64 }} justify="center" align="middle">
               <Link href="/">
-                <a
+                <img
                   style={{
-                    fontSize: 13,
+                    width: 64,
                     transform: `scale(${collapsed ? 1 : 1.5})`
                   }}
-                >
-                  B2B Market
-                  {/* <img
-                    alt="B2BMarket"
-                    src="/static/images/logo.png"
-                    height={collapsed ? 16 : 32}
-                    style={{ margin: "16px 0px" }}
-                  /> */}
-                </a>
+                  src="/static/images/logo.png"
+                  alt="B2B Market"
+                />
               </Link>
             </Row>
             <MemberNavComponent path={currentPath()} menus={ADMIN_MENU} />
