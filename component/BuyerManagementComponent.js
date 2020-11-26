@@ -1,6 +1,6 @@
 import { Button, Drawer, Row, Select, Space, Typography } from 'antd';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
-import React, { useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import ReactTableLayout from '../layouts/ReactTableLayout';
 import { DEFAULT_DATE_RANGE } from '../utils';
 import { connect } from 'react-redux';
@@ -22,6 +22,7 @@ import {
 } from '../enums/accountStatus';
 import Modal from 'antd/lib/modal/Modal';
 import UserProfileComponent from './UserProfileComponent';
+import ListRFQCanceledBuyerComponent from './ListRFQCanceledBuyerComponent';
 const { Option } = Select;
 const { Title } = Typography;
 
@@ -74,7 +75,7 @@ const columns = [
     key: 'status'
   },
   {
-    title: 'Actions',
+    title: 'Details',
     dataIndex: 'actions',
     key: 'actions'
   }
@@ -83,9 +84,7 @@ const columns = [
 const BuyerManagementComponent = ({
   getBuyerPaging,
   buyerPagingData,
-  buyerPagingError,
-  banBuyer,
-  unBanBuyer
+  buyerPagingError
 }) => {
   const [searchMessage, setSearchMessage] = useState('');
   const [dateRange, setDateRange] = useState(DEFAULT_DATE_RANGE);
@@ -109,7 +108,12 @@ const BuyerManagementComponent = ({
           const buyerStatus = get('userStatus.id')(buyer);
           return {
             key: buyer.id,
-            email: (
+            email: buyer.email,
+            fullName: `${buyer.firstName} ${buyer.lastName}`,
+            companyName: buyer.companyName,
+            phoneNumber: buyer.phoneNumber,
+            status: <UserStatusComponent status={buyerStatus} />,
+            actions: (
               <Button
                 onClick={() => {
                   setCurrentBuyerSelected(buyer);
@@ -118,55 +122,8 @@ const BuyerManagementComponent = ({
                 size="small"
                 type="link"
               >
-                {buyer.email}
+                View
               </Button>
-            ),
-            fullName: `${buyer.firstName} ${buyer.lastName}`,
-            companyName: buyer.companyName,
-            phoneNumber: buyer.phoneNumber,
-            status: <UserStatusComponent status={buyerStatus} />,
-            actions: (
-              <Space>
-                {+buyerStatus === U_ACTIVE && (
-                  <Button
-                    type="primary"
-                    danger
-                    onClick={() => {
-                      Modal.confirm({
-                        title: 'Do you want ban this account?',
-                        icon: <ExclamationCircleOutlined />,
-                        okText: 'Ban',
-                        cancelText: 'Cancel',
-                        onOk: () => {
-                          banBuyer({ id: buyer.id });
-                        }
-                      });
-                    }}
-                    size="small"
-                  >
-                    Ban
-                  </Button>
-                )}
-                {+buyerStatus === U_BANNED && (
-                  <Button
-                    type="primary"
-                    onClick={() => {
-                      Modal.confirm({
-                        title: 'Do you want active this account?',
-                        icon: <ExclamationCircleOutlined />,
-                        okText: 'Active',
-                        cancelText: 'Cancel',
-                        onOk: () => {
-                          unBanBuyer({ id: buyer.id });
-                        }
-                      });
-                    }}
-                    size="small"
-                  >
-                    Active
-                  </Button>
-                )}
-              </Space>
             )
           };
         })
@@ -183,7 +140,7 @@ const BuyerManagementComponent = ({
     <div>
       <Row justify="space-between">
         <Drawer
-          width={640}
+          width={840}
           title="Buyer Details"
           placement={'right'}
           closable={true}
@@ -191,10 +148,18 @@ const BuyerManagementComponent = ({
           visible={openDetails}
           key={'right'}
         >
-          <UserProfileComponent
-            isDrawer
-            userId={(currentBuyerSelected || {}).id}
-          />
+          {openDetails ? (
+            <Fragment>
+              <UserProfileComponent
+                isAdmin={true}
+                isDrawer
+                userId={(currentBuyerSelected || {}).id}
+              />
+              <ListRFQCanceledBuyerComponent
+                buyerId={(currentBuyerSelected || {}).id}
+              />
+            </Fragment>
+          ) : null}
         </Drawer>
         <Title level={4}>Buyer Management</Title>
       </Row>

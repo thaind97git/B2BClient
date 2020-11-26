@@ -141,7 +141,7 @@ const AdminBiddingManagementComponent = ({
               <Button
                 onClick={() => {
                   Modal.confirm({
-                    title: 'Do you want cancel auction?',
+                    title: 'Are you sure you want to cancel auction?',
                     okText: 'Yes',
                     cancelText: 'No',
                     onOk: () => {

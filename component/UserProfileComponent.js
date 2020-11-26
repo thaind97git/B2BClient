@@ -178,15 +178,16 @@ const UserProfileComponent = ({
 
   if (isDrawer) {
     const {
-      address,
       id,
+      address,
       companyName,
       email,
       firstName,
       lastName,
       phoneNumber,
       userStatus = {},
-      bannedReason
+      bannedReason,
+      avatar
     } = getUserData || {};
     if (loading) {
       return <Skeleton active />;
@@ -196,7 +197,7 @@ const UserProfileComponent = ({
         <Col span={6}>
           <Avatar
             size={120}
-            src={getCurrentUserImage(id) || '/static/images/avatar.png'}
+            src={avatar ? getCurrentUserImage(id) : '/static/images/avatar.png'}
           />
         </Col>
         <Col span={18}>

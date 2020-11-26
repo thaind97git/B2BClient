@@ -111,7 +111,7 @@ const BiddingSettingComponent = ({
     values.description = (values.brief || {}).value;
     values.auctionStartTime = new Date(values.auctionStartTime);
     Modal.confirm({
-      title: 'Do you want create auction?',
+      title: 'Are you sure you want to create auction?',
       okText: 'Submit',
       cancelText: 'Cancel',
       onOk: () => {

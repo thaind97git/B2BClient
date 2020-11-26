@@ -76,16 +76,16 @@ const ADMIN_MENU = [
     icon: <FileDoneOutlined />,
     label: 'Order',
     link: '/aggregator/order'
-  },
-  {
-    key: '7',
-    icon: <LogoutOutlined style={{ color: 'red' }} />,
-    label: 'Logout',
-    action: () => {
-      Router.push('/login');
-      removeToken();
-    }
   }
+  // {
+  //   key: '7',
+  //   icon: <LogoutOutlined style={{ color: 'red' }} />,
+  //   label: 'Logout',
+  //   action: () => {
+  //     Router.push('/login');
+  //     removeToken();
+  //   }
+  // }
 ];
 
 const connectToRedux = connect(

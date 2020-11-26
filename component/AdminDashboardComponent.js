@@ -139,7 +139,7 @@ const AdminDashBoardComponent = () => {
         <Card
           title={
             <Row justify="space-between">
-              <Title level={4}>Leader Board Top 10</Title>
+              <Title level={4}>Leaderboard Top 10</Title>
               <DatePicker picker="month" />
             </Row>
           }
@@ -170,7 +170,7 @@ const AdminDashBoardComponent = () => {
             <Card
               title={
                 <Row justify="space-between">
-                  <Title level={4}>Product Leader Board</Title>
+                  <Title level={4}>Product Leaderboard</Title>
                   <DatePicker picker="month" />
                 </Row>
               }
@@ -188,7 +188,7 @@ const AdminDashBoardComponent = () => {
             <Card
               title={
                 <Row justify="space-between">
-                  <Title level={4}>Supplier Leader Board</Title>
+                  <Title level={4}>Supplier Leaderboard</Title>
                   <DatePicker picker="month" />
                 </Row>
               }
@@ -206,7 +206,7 @@ const AdminDashBoardComponent = () => {
             <Card
               title={
                 <Row justify="space-between">
-                  <Title level={4}>Buyer Leader Board</Title>
+                  <Title level={4}>Buyer Leaderboard</Title>
                   <DatePicker picker="month" />
                 </Row>
               }

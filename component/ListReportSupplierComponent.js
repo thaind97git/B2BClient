@@ -12,7 +12,7 @@ import {
   GetFeedbackReportedForSupplierResetter
 } from '../stores/FeedbackState';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
-import { DEFAULT_DATE_RANGE, getUtcTime, openNotification } from '../utils';
+import { openNotification } from '../utils';
 import FeedbackStatusComponent from './Utils/FeedbackStatusComponent';
 import FeedbackTypeComponent from './Utils/FeedbackTypeComponent';
 import { getUser, getUserData } from '../stores/UserState';
@@ -25,6 +25,7 @@ import {
   UnBanUserResetter
 } from '../stores/SupplierState';
 import { get } from 'lodash/fp';
+import { F_AUCTION, F_ORDER, F_RFQ, F_SYSTEM } from '../enums/feedbackType';
 const { Title } = Typography;
 const connectToRedux = connect(
   createStructuredSelector({
@@ -102,6 +103,7 @@ const ListReportSupplierComponent = ({
 
   useEffect(() => {
     if (banUserData) {
+      setBanReason('');
       setOpenBan(false);
       resetBanAndUnBan();
       getReport(0, 10, '', {}, supplierId);
@@ -111,6 +113,7 @@ const ListReportSupplierComponent = ({
 
   useEffect(() => {
     if (unBanUserData) {
+      setBanReason('');
       resetBanAndUnBan();
       getReport(0, 10, '', {}, supplierId);
       getUser(supplierId);
@@ -136,7 +139,19 @@ const ListReportSupplierComponent = ({
       feedbackData.map((feedback = {}) => ({
         key: feedback.id,
         title: feedback.title,
-        service: <FeedbackTypeComponent feedback={feedback} />,
+        service: (
+          <FeedbackTypeComponent
+            status={
+              feedback.request
+                ? F_RFQ
+                : feedback.reverseAuction
+                ? F_AUCTION
+                : feedback.order
+                ? F_ORDER
+                : F_SYSTEM
+            }
+          />
+        ),
         status: (
           <FeedbackStatusComponent
             status={feedback.feedbackStatus.id}
@@ -196,7 +211,7 @@ const ListReportSupplierComponent = ({
               onClick={() => {
                 setOpenBan(true);
                 // Modal.confirm({
-                //   title: 'Do you want ban this account?',
+                //   title: 'Are you sure you want to ban this account?',
                 //   icon: <ExclamationCircleOutlined />,
                 //   okText: 'Ban',
                 //   cancelText: 'Cancel',
@@ -216,7 +231,7 @@ const ListReportSupplierComponent = ({
               type="primary"
               onClick={() => {
                 Modal.confirm({
-                  title: 'Do you want active this account?',
+                  title: 'Are you sure you want to active this account?',
                   icon: <ExclamationCircleOutlined />,
                   okText: 'Active',
                   cancelText: 'Cancel',

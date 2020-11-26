@@ -170,7 +170,7 @@ const SupplierBiddingItemComponent = ({
                   <Button
                     onClick={() => {
                       Modal.confirm({
-                        title: 'Do you want accept this event?',
+                        title: 'Are you sure you want to accept this event?',
                         okText: 'Accept',
                         cancelText: 'Close',
                         onOk: () => {
@@ -186,7 +186,7 @@ const SupplierBiddingItemComponent = ({
                   <Button
                     onClick={() => {
                       Modal.confirm({
-                        title: 'Do you want decline this event?',
+                        title: 'Are you sure you want to decline this event?',
                         okText: 'Decline',
                         cancelText: 'Close',
                         okButtonProps: {

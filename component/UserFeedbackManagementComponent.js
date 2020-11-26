@@ -13,8 +13,8 @@ import {
   GetFeedbackPagingError
 } from '../stores/FeedbackState';
 import { CurrentUserData } from '../stores/UserState';
-//import AdminProductDetailsComponent from "./AdminProductDetailsComponent";
 import FeedbackStatusComponent from './Utils/FeedbackStatusComponent';
+import FeedbackTypeComponent from './Utils/FeedbackTypeComponent';
 import { get } from 'lodash/fp';
 import Moment from 'react-moment';
 import {F_ORDER,F_RFQ,F_AUCTION,F_SYSTEM} from '../enums/feedbackType'
@@ -61,6 +61,11 @@ const columns = [
     title: 'Date updated',
     dataIndex: 'dateUpdated',
     key: 'dateUpdated'
+  },
+  {
+    title: 'Service Type',
+    dataIndex: 'serviceType',
+    key: 'serviceType'
   },
   {
     title: 'Status',
@@ -127,6 +132,19 @@ const UserFeedbackManagementComponent = ({
         key: feedback.id,
         title: feedback.title,
         dateUpdated: getUtcTime(feedback.dateUpdated),
+        serviceType: (
+          <FeedbackTypeComponent
+            status={
+              feedback.request
+                ? F_RFQ
+                : feedback.reverseAuction
+                ? F_AUCTION
+                : feedback.order
+                ? F_ORDER
+                : F_SYSTEM
+            }
+          ></FeedbackTypeComponent>
+        ),
         status: (
           <FeedbackStatusComponent
             status={feedback.feedbackStatus.id}
@@ -181,17 +199,6 @@ const UserFeedbackManagementComponent = ({
             <Space>
               <Select
                 size="large"
-                placeholder="Filter by status"
-                style={{ width: 200 }}
-                onChange={handleStatusChange}
-                defaultValue=""
-              >
-                <Option value="">All Status</Option>
-                <Option value={F_OPEN}>Opeing</Option>
-                <Option value={F_CLOSED}>Closed</Option>
-              </Select>
-              <Select
-                size="large"
                 placeholder="Filter by service type"
                 style={{ width: 200 }}
                 onChange={handleServiceChange}
@@ -207,6 +214,17 @@ const UserFeedbackManagementComponent = ({
                   <Option value={F_RFQ}>Order</Option>
                 )}
                 <Option value={F_SYSTEM}>System</Option>
+              </Select>
+              <Select
+                size="large"
+                placeholder="Filter by status"
+                style={{ width: 200 }}
+                onChange={handleStatusChange}
+                defaultValue=""
+              >
+                <Option value="">All Status</Option>
+                <Option value={F_OPEN}>Opeing</Option>
+                <Option value={F_CLOSED}>Closed</Option>
               </Select>
             </Space>
           ),
