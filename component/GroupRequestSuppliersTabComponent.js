@@ -45,7 +45,8 @@ const connectToRedux = connect(
 const getSupplierTable = ({
   supplierData = [],
   setOpenSupplierDetail,
-  groupId
+  groupId,
+  setCurrentSupplierSelected
 }) =>
   supplierData &&
   supplierData.length > 0 &&
@@ -57,6 +58,7 @@ const getSupplierTable = ({
         <Button
           type="link"
           onClick={() => {
+            setCurrentSupplierSelected(supplier);
             setOpenSupplierDetail(true);
           }}
         >
@@ -125,6 +127,7 @@ const GroupRequestSuppliersTabComponent = ({
   const [isOpenContact, setIsOpenContact] = useState(false);
   const [openSupplierDetail, setOpenSupplierDetail] = useState(false);
   const [supplierIdSelected, setSupplierIdSelected] = useState([]);
+  const [currentSupplierSelected, setCurrentSupplierSelected] = useState(null);
 
   const callbackGetSupplierList = () => {
     getSupplierByGroupId(
@@ -148,7 +151,7 @@ const GroupRequestSuppliersTabComponent = ({
   }
 
   const { groupStatus = {} } = group;
-  if (groupStatus.id === G_NEGOTIATING) {
+  if (groupStatus.id === G_NEGOTIATING || groupStatus.id === G_PENDING) {
     SUPPLIER_CONTACT.push({
       title: 'Actions',
       dataIndex: 'actions',
@@ -167,7 +170,13 @@ const GroupRequestSuppliersTabComponent = ({
         visible={openSupplierDetail}
         key={'supplier-details'}
       >
-        <UserProfileComponent isDrawer={true} />
+        {openSupplierDetail ? (
+          <UserProfileComponent
+            isDrawer={true}
+            isSupplier={true}
+            userId={(currentSupplierSelected || {}).id}
+          />
+        ) : null}
       </Drawer>
 
       <Card
@@ -184,7 +193,8 @@ const GroupRequestSuppliersTabComponent = ({
             data={getSupplierTable({
               supplierData: supplierData || [],
               setOpenSupplierDetail,
-              groupId
+              groupId,
+              setCurrentSupplierSelected
             })}
             columns={SUPPLIER_CONTACT}
             totalCount={totalSupplier}

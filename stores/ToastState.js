@@ -16,9 +16,11 @@ import {
 import { CANCEL_REQUEST, REJECT_REQUEST } from './RequestState';
 import {
   ACTIVE_SUPPLIER_PRODUCT,
+  APPROVE_USER,
   BAN_USER,
   DELETE_SUPPLIER_PRODUCT,
   IGNORE_SUPPLIER,
+  REJECT_USER,
   SUPPLIER_REGISTER_PRODUCT,
   SUPPLIER_UPDATE_QUOTATION,
   UN_BAN_USER,
@@ -95,6 +97,12 @@ export default {
         case UPDATE_FEEDBACK_RATE:
           msgNotify = 'Submit rating success';
           break;
+        case APPROVE_USER:
+          msgNotify = 'Approve account success';
+          break;
+        case REJECT_USER:
+          msgNotify = 'Reject account success';
+          break;
         default:
           break;
       }
@@ -164,6 +172,12 @@ export default {
           break;
         case UPDATE_FEEDBACK_RATE:
           msgNotify = 'Submit rating fail';
+          break;
+        case APPROVE_USER:
+          msgNotify = 'Approve account fail';
+          break;
+        case REJECT_USER:
+          msgNotify = 'Reject account fail';
           break;
         default:
           break;

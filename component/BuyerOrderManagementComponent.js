@@ -3,41 +3,53 @@ import { CurrentUserData } from '../stores/UserState';
 import { createStructuredSelector } from 'reselect';
 import { connect } from 'react-redux';
 import { get } from 'lodash/fp';
-import {
-  Button,
-  Row,
-  Typography,
-  Popover
-} from 'antd';
-import { DEFAULT_DATE_RANGE, displayCurrency } from '../utils';
+import { Button, Row, Typography, Popover, Select, Drawer } from 'antd';
+import { DEFAULT_DATE_RANGE, displayCurrency, getShortContent } from '../utils';
 import ReactTableLayout from '../layouts/ReactTableLayout';
 import Router from 'next/router';
 import OrderStatusComponent from './Utils/OrderStatusComponent';
+import {
+  getOrderPaging,
+  GetOrderPagingData,
+  GetOrderPagingError
+} from '../stores/OrderState';
+import { O_DONE, O_ORDERED } from '../enums/orderStatus';
+import UserProfileComponent from './UserProfileComponent';
 
 const { Title } = Typography;
+const { Option } = Select;
 
 const connectToRedux = connect(
   createStructuredSelector({
-    // productPagingData: GetProductPagingData,
-    // productPagingError: GetProductPagingError,
+    orderPagingData: GetOrderPagingData,
+    orderPagingError: GetOrderPagingError,
     currentUser: CurrentUserData
+  }),
+  (dispatch) => ({
+    getOrderPaging: (
+      pageIndex,
+      pageSize,
+      searchMessage,
+      dateRange = {},
+      status
+    ) => {
+      dispatch(
+        getOrderPaging({
+          status,
+          groupName: searchMessage,
+          fromDate: dateRange.fromDate,
+          toDate: dateRange.toDate,
+          pageIndex,
+          pageSize
+        })
+      );
+    }
   })
-  //   (dispatch) => ({
-  //     getProduct: (pageIndex, pageSize, searchMessage, dateRange, category) => {
-  //       dispatch(
-  //         getProductPaging({
-  //           pageIndex,
-  //           pageSize,
-  //           categoryID: category,
-  //           productName: searchMessage,
-  //         })
-  //       );
-  //     },
 );
 
-const buyerColumns = [
+const columns = [
   {
-    title: 'Group Name',
+    title: 'Product Name',
     dataIndex: 'name',
     key: 'name'
   },
@@ -52,7 +64,7 @@ const buyerColumns = [
     key: 'quantity'
   },
   {
-    title: 'Supplier Contact',
+    title: 'Supplier Company',
     dataIndex: 'contact',
     key: 'contact'
   },
@@ -68,105 +80,129 @@ const buyerColumns = [
   }
 ];
 
-const data = [
-  {
-    product: {
-      id: 'f6ae608f-2010-4e2d-4d3d-08d88552484d',
-      description:
-        'Wholesale Stock Tactical Combat Men Army Trousers Military Suit Camouflage Uniform',
-      unitType: 'Boxes'
-    },
-    price: 10000,
-    quantity: 100,
-    supplierName: 'rko@gmail.com',
-    status: 1
-  },
-  {
-    product: {
-      id: 'f6ae608f-2010-4e2d-4d3d-08d88552484d',
-      description:
-        'Wholesale Stock Tactical Combat Men Army Trousers Military Suit Camouflage Uniform',
-      unitType: 'Boxes'
-    },
-    price: 10000,
-    quantity: 100,
-    supplierName: 'rko@gmail.com',
-    status: 2
-  }
-];
-
-const displayProductName = (name) =>
-  name ? (name.length > 100 ? name.slice(0, 80) + ' ...' : name) : '';
-
-const getBuyerTable = (orderData = []) => {
+const getOrderTable = (orderData = [], setCurrentSupplier, setOpenDetails) => {
   return orderData
-    ? orderData.map((order = {}) => ({
-        key: order.id,
-        price: displayCurrency(+order.price),
-        name: (
-          <Popover content={order.product.description}>
-            <a
-              target="_blank"
-              rel="noreferrer"
-              href={`/product-details?id=${get('product.id')(order)}`}
+    ? orderData.map((order = {}) => {
+        const {
+          id,
+          group = {},
+          quantity,
+          unitPrice,
+          product = {},
+          supplier = {},
+          orderStatus = {}
+        } = order || {};
+        const { unitOfMeasure = {} } = product;
+        return {
+          key: id,
+          price: displayCurrency(unitPrice),
+          name: (
+            <Popover content={product.description}>
+              <a
+                target="_blank"
+                rel="noreferrer"
+                href={`/product-details?id=${product.id}`}
+              >
+                {getShortContent(product.description, 100)}
+              </a>
+            </Popover>
+          ),
+          quantity: `${quantity} ${unitOfMeasure.description}`,
+          contact: (
+            <Button
+              onClick={() => {
+                setOpenDetails(true);
+                setCurrentSupplier(supplier);
+              }}
+              type="link"
             >
-              {displayProductName(order.product.description)}
-            </a>
-          </Popover>
-        ),
-        quantity: (+order.quantity || 0) + ' ' + get('product.unitType')(order),
-        contact: order.supplierName,
-        status: <OrderStatusComponent status={order.status} />,
-        actions: (
-          <Button
-            onClick={() => {
-              Router.push(
-                `/buyer/order/details?id=${get('product.id')(order)}`
-              );
-            }}
-            size="small"
-            type="link"
-          >
-            View
-          </Button>
-        )
-      }))
+              {`${supplier.companyName}`}
+            </Button>
+          ),
+          status: <OrderStatusComponent status={orderStatus.id} />,
+          actions: (
+            <Button
+              onClick={() => {
+                Router.push(`/buyer/order/details?id=${id}`);
+              }}
+              size="small"
+              type="link"
+            >
+              View
+            </Button>
+          )
+        };
+      })
     : [];
 };
-const BuyerOrderManagementComponent = ({ currentUser }) => {
+const BuyerOrderManagementComponent = ({
+  getOrderPaging,
+  orderPagingData,
+  orderPagingError
+}) => {
   const [dateRange, setDateRange] = useState(DEFAULT_DATE_RANGE);
-  // switch (currentUser.role) {
-  //   case 'Aggregator':
-  //     return (
-  //       <div>
-  //         <Row justify="space-between">
-  //           <Title level={4}>Your Order</Title>
-  //         </Row>
-  //         <AggregatorOrder />
-  //       </div>
-  //     );
-  //   case 'Buyer':
+  const [searchMessage, setSearchMessage] = useState('');
+  const [status, setStatus] = useState('all');
+  const [openDetails, setOpenDetails] = useState(false);
+  const [currentSupplier, setCurrentSupplier] = useState({});
+
+  let orderData = [],
+    totalCount = 0;
+  if (orderPagingData) {
+    orderData = orderPagingData.data;
+    totalCount = orderPagingData.total;
+  }
   return (
     <div>
+      <Drawer
+        width={640}
+        title="Supplier Details"
+        placement={'right'}
+        closable={true}
+        onClose={() => setOpenDetails(false)}
+        visible={openDetails}
+        key={'right'}
+      >
+        {openDetails ? (
+          <UserProfileComponent isDrawer userId={(currentSupplier || {}).id} />
+        ) : null}
+      </Drawer>
       <Row justify="space-between">
         <Title level={4}>Your Order</Title>
       </Row>
       <ReactTableLayout
-      totalCount={data.length}
-      // loading={loading}
-      // dispatchAction={getRequest}
-      searchProps={{
-        placeholder: 'Search by product name'
-        //   searchMessage,
-        //   setSearchMessage,
-      }}
-      data={getBuyerTable(data || [])}
-      columns={buyerColumns}
-      dateRangeProps={{
-        dateRange,
-        setDateRange
-      }}
-    />
+        totalCount={totalCount}
+        dispatchAction={getOrderPaging}
+        searchProps={{
+          placeholder: 'Search by group name',
+          searchMessage,
+          setSearchMessage,
+          exElement: (
+            <Select
+              size="large"
+              placeholder="Filter by status"
+              style={{ width: 140 }}
+              onChange={(value) => setStatus(value)}
+              defaultValue=""
+            >
+              <Option value="">All Status</Option>
+              <Option value={O_DONE}>Done</Option>
+              <Option value={O_ORDERED}>Ordered</Option>
+            </Select>
+          ),
+          exCondition: [status]
+        }}
+        data={getOrderTable(
+          orderData || [],
+          setCurrentSupplier,
+          setOpenDetails
+        )}
+        columns={columns}
+        dateRangeProps={{
+          dateRange,
+          setDateRange
+        }}
+      />
     </div>
   );
   //   case 'Supplier':

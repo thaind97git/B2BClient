@@ -221,14 +221,14 @@ const AdminLayout = ({
           >
             <Row style={{ minHeight: 64 }} justify="center" align="middle">
               <Link href="/">
-                <a
+                <img
                   style={{
-                    fontSize: 13,
+                    width: 64,
                     transform: `scale(${collapsed ? 1 : 1.5})`
                   }}
-                >
-                  B2B Market
-                </a>
+                  src="/static/images/logo.png"
+                  alt="B2B Market"
+                />
               </Link>
             </Row>
             <MemberNavComponent path={currentPath()} menus={ADMIN_MENU} />
