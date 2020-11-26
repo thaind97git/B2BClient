@@ -87,7 +87,7 @@ const RenderMessages = React.memo(({ messagesData }) => {
 
     if (next) {
       let nextMoment = moment(next.dateCreated);
-      let nextDuration = moment.duration(nextMoment.diff(currentMoment));
+      let nextDuration = 'moment.duration(nextMoment.diff(currentMoment))';
       nextBySameAuthor = next.yourMessage === current.yourMessage;
 
       if (nextBySameAuthor && nextDuration.as('hours') < 1) {
