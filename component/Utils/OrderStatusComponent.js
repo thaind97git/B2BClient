@@ -8,7 +8,7 @@ const OrderStatusComponent = ({ status }) => {
       case O_DONE:
         return '#2db7f5';
       case O_ORDERED:
-        return '#87d068';
+        return 'success';
       default:
         break;
     }

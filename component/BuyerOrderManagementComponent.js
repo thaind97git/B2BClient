@@ -1,20 +1,18 @@
 import React, { useState } from 'react';
-import { CurrentUserData } from '../stores/UserState';
 import { createStructuredSelector } from 'reselect';
 import { connect } from 'react-redux';
-import { get } from 'lodash/fp';
 import { Button, Row, Typography, Popover, Select, Drawer } from 'antd';
 import { DEFAULT_DATE_RANGE, displayCurrency, getShortContent } from '../utils';
 import ReactTableLayout from '../layouts/ReactTableLayout';
 import Router from 'next/router';
-import OrderStatusComponent from './Utils/OrderStatusComponent';
 import {
   getOrderPaging,
   GetOrderPagingData,
   GetOrderPagingError
 } from '../stores/OrderState';
-import { O_DONE, O_ORDERED } from '../enums/orderStatus';
 import UserProfileComponent from './UserProfileComponent';
+import RequestStatusComponent from './Utils/RequestStatusComponent';
+import { R_DONE, R_ORDERED } from '../enums/requestStatus';
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -22,8 +20,7 @@ const { Option } = Select;
 const connectToRedux = connect(
   createStructuredSelector({
     orderPagingData: GetOrderPagingData,
-    orderPagingError: GetOrderPagingError,
-    currentUser: CurrentUserData
+    orderPagingError: GetOrderPagingError
   }),
   (dispatch) => ({
     getOrderPaging: (
@@ -90,20 +87,21 @@ const getOrderTable = (orderData = [], setCurrentSupplier, setOpenDetails) => {
           unitPrice,
           product = {},
           supplier = {},
-          orderStatus = {}
+          orderStatus = {},
+          requestStatus = {}
         } = order || {};
-        const { unitOfMeasure = {} } = product;
+        const { unitOfMeasure = {}, productName } = product;
         return {
           key: id,
           price: displayCurrency(unitPrice),
           name: (
-            <Popover content={product.description}>
+            <Popover content={productName}>
               <a
                 target="_blank"
                 rel="noreferrer"
                 href={`/product-details?id=${product.id}`}
               >
-                {getShortContent(product.description, 100)}
+                {getShortContent(productName, 100)}
               </a>
             </Popover>
           ),
@@ -119,7 +117,7 @@ const getOrderTable = (orderData = [], setCurrentSupplier, setOpenDetails) => {
               {`${supplier.companyName}`}
             </Button>
           ),
-          status: <OrderStatusComponent status={orderStatus.id} />,
+          status: <RequestStatusComponent status={requestStatus.id} />,
           actions: (
             <Button
               onClick={() => {
@@ -174,7 +172,7 @@ const BuyerOrderManagementComponent = ({
         totalCount={totalCount}
         dispatchAction={getOrderPaging}
         searchProps={{
-          placeholder: 'Search by group name',
+          placeholder: 'Search by product name',
           searchMessage,
           setSearchMessage,
           exElement: (
@@ -186,8 +184,8 @@ const BuyerOrderManagementComponent = ({
               defaultValue=""
             >
               <Option value="">All Status</Option>
-              <Option value={O_DONE}>Done</Option>
-              <Option value={O_ORDERED}>Ordered</Option>
+              <Option value={R_DONE}>Done</Option>
+              <Option value={R_ORDERED}>Ordered</Option>
             </Select>
           ),
           exCondition: [status]
