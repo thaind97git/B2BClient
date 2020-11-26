@@ -266,3 +266,36 @@ body {
   }
   transition: all 0.3s;
 }
+// Rating Antd Override
+.ant-rate-star:not(:last-child) {
+  margin-right: 16px !important;
+}
+
+// .ant-rate-star.ant-rate-star-full,
+// .ant-rate-star.ant-rate-star-zero,
+// .ant-rate-star.ant-rate-star-half.ant-rate-star-active {
+//   // transition: transform 0s;
+// }
+
+// .ant-rate-star.ant-rate-star-half.ant-rate-star-active:not(.rate-active):hover {
+//   transition: all 0.4s;
+//   transform: scale(1.4);
+// }
+
+.ant-rate-star.ant-rate-star-full:not(.ant-rate-star-full .rate-active):hover {
+  transform: scale(1.5);
+}
+.ant-rate-star.ant-rate-star-full:hover {
+  transition: all 0.4s;
+}
+
+// .ant-rate-star.ant-rate-star-zero:not(.rate-active):hover {
+//   transition: all 0.4s;
+//   transform: scale(1.4);
+// }
+.rate-active {
+  transform: scale(1.3);
+}
+.rate-default {
+  opacity: 0.8;
+}
