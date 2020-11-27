@@ -154,7 +154,7 @@ const SupplierOrderManagementComponent = ({
         totalCount={totalCount}
         dispatchAction={getOrderPaging}
         searchProps={{
-          placeholder: 'Search by group name',
+          placeholder: 'Search by group name or product name',
           searchMessage,
           setSearchMessage,
           exElement: (

@@ -11,12 +11,13 @@ import {
   Avatar
 } from 'antd';
 import { PhoneOutlined, MailOutlined, LeftOutlined } from '@ant-design/icons';
-import React, { useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import RequestDetailsComponent from './RequestDetailsComponent';
 import {
   DATE_TIME_FORMAT,
   displayCurrency,
-  getCurrentUserImage
+  getCurrentUserImage,
+  getUtcTime
 } from '../utils';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
@@ -83,7 +84,10 @@ const OrderDetailsComponent = ({
     orderStatus = {},
     requests,
     unitPrice,
-    supplier = {}
+    supplier = {},
+    quantity,
+    requestStatus = {},
+    dateCreated
   } = orderDetailsData;
   const totalQuantity = (requests || []).reduce((prev, current) => {
     return prev + +current.quantity;
@@ -97,7 +101,7 @@ const OrderDetailsComponent = ({
       key: 'productPrice'
     },
     {
-      title: 'Total Quantity',
+      title: role === BUYER ? 'Quantity' : 'Total Quantity',
       dataIndex: 'totalQuantity',
       key: 'totalQuantity'
     }
@@ -115,7 +119,9 @@ const OrderDetailsComponent = ({
       ),
 
       productPrice: displayCurrency(unitPrice),
-      totalQuantity: `${totalQuantity} ${unitOfMeasure.description}`
+      totalQuantity: `${role === BUYER ? quantity : totalQuantity} ${
+        unitOfMeasure.description
+      }`
     }
   ];
 
@@ -194,11 +200,17 @@ const OrderDetailsComponent = ({
 
                         <span>&nbsp;&nbsp;&nbsp;</span>
                         <div>
-                          Supplier Name: {`${firstName} ${lastName}`}
-                          <br />
+                          {role !== BUYER && (
+                            <Fragment>
+                              Supplier Name: {`${firstName} ${lastName}`}
+                              <br />
+                            </Fragment>
+                          )}
                           Company: {companyName}
                           <br />
                           Address: {address}
+                          <br />
+                          Date Create: {getUtcTime(dateCreated)}
                         </div>
                       </div>
                     </Card>
@@ -231,7 +243,11 @@ const OrderDetailsComponent = ({
                     <Title style={{ marginBottom: 0 }} level={5}>
                       Order Status:<span>&nbsp;</span>
                     </Title>
-                    <OrderStatusComponent status={orderStatus.id} />
+                    {role === BUYER ? (
+                      <RequestStatusComponent status={requestStatus.id} />
+                    ) : (
+                      <OrderStatusComponent status={orderStatus.id} />
+                    )}
                   </Row>
                 </Row>
               }
@@ -250,7 +266,10 @@ const OrderDetailsComponent = ({
                 footer={() => (
                   <div align="right" style={{ height: '20px' }}>
                     <p style={{ color: '#199eb8', fontSize: 18 }}>
-                      Total {displayCurrency(unitPrice * totalQuantity)}
+                      Total{' '}
+                      {displayCurrency(
+                        unitPrice * (role === BUYER ? quantity : totalQuantity)
+                      )}
                     </p>
                   </div>
                 )}
