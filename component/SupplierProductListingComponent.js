@@ -37,6 +37,7 @@ import {
   SupplierRegisterProductData
 } from '../stores/SupplierState';
 import QuotationDisplayComponent from './Utils/QuotationDisplayComponent';
+import QuotationListDisplayComponent from './Utils/QuotationListDisplayComponent';
 const { Title } = Typography;
 
 const connectToRedux = connect(
@@ -121,9 +122,7 @@ const SupplierProductListingComponent = ({
       productData &&
       productData.length > 0 &&
       productData.map((product = {}) => {
-        const { description = [] } = product;
-        const tooltipFirstQuotation = description.slice(1, description.length);
-        const tooltipSecondQuotation = description.slice(2, description.length);
+        const { description: quotations = [] } = product;
         return {
           key: get('product.id')(product),
           productName: (
@@ -141,32 +140,9 @@ const SupplierProductListingComponent = ({
               {getUtcTime(product.dateCreated)}
             </Moment>
           ),
-          quotation:
-            description.length > 0 ? (
-              <Avatar.Group
-                maxCount={1}
-                maxStyle={{ color: '#f56a00', backgroundColor: '#fde3cf' }}
-              >
-                <QuotationDisplayComponent quotation={description[0]} />
-                {tooltipFirstQuotation.length > 0 && (
-                  <Fragment>
-                    <Tooltip title="Other Quotation" placement="top">
-                      <QuotationDisplayComponent quotation={description[1]} />
-                    </Tooltip>
-                    {tooltipSecondQuotation.map((quotation, index) => {
-                      return (
-                        <QuotationDisplayComponent
-                          key={index}
-                          quotation={quotation}
-                        />
-                      );
-                    })}
-                  </Fragment>
-                )}
-              </Avatar.Group>
-            ) : (
-              'N/A'
-            ),
+          quotation: (
+            <QuotationListDisplayComponent quotations={quotations} isTooltip />
+          ),
           status: <ProductStatus isDelete={product.isDeleted} />,
           action: product.isDeleted ? (
             <Button

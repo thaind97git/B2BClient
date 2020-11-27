@@ -31,6 +31,7 @@ import {
   UnIgnoreSupplierResetter
 } from '../stores/SupplierState';
 import SignalR from '../libs/signalR';
+import QuotationListDisplayComponent from './Utils/QuotationListDisplayComponent';
 const connectToRedux = connect(
   createStructuredSelector({
     GetAggregatorGroupChatData: GetAggregatorGroupChatData,
@@ -109,8 +110,10 @@ const TabsConversation = ({
           flag: currentIgnore,
           lastMessageTime,
           seen,
-          supplierId
+          supplierId,
+          description: quotations
         } = conversation;
+        console.log({ conversation });
         const contentLabel = `${yourMessage ? 'You: ' : ''} ${getShortContent(
           lastMessage,
           12
@@ -139,7 +142,11 @@ const TabsConversation = ({
                 leftTitle: supplierName,
                 rightTitle: (
                   <Space>
-                    {isClosingDeal && (
+                    <QuotationListDisplayComponent
+                      quotations={quotations}
+                      isTooltip
+                    />
+                    {!isClosingDeal && (
                       <Button
                         icon={<FileProtectOutlined />}
                         size="small"
@@ -157,7 +164,7 @@ const TabsConversation = ({
                         Closing deal
                       </Button>
                     )}
-                    {(ignoreSup || unIgnoreSup) && (
+                    {!ignoreSup && (
                       <Button
                         onClick={() => {
                           currentIgnore

@@ -11,12 +11,13 @@ import {
   Avatar
 } from 'antd';
 import { PhoneOutlined, MailOutlined, LeftOutlined } from '@ant-design/icons';
-import React, { useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import RequestDetailsComponent from './RequestDetailsComponent';
 import {
   DATE_TIME_FORMAT,
   displayCurrency,
-  getCurrentUserImage
+  getCurrentUserImage,
+  getUtcTime
 } from '../utils';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
@@ -32,6 +33,7 @@ import {
 import OrderStatusComponent from './Utils/OrderStatusComponent';
 import RequestStatusComponent from './Utils/RequestStatusComponent';
 import { get } from 'lodash/fp';
+import { BUYER, MODERATOR, SUPPLIER } from '../enums/accountRoles';
 const { Title } = Typography;
 
 const connectToRedux = connect(
@@ -57,7 +59,11 @@ const groupRequestColumns = [
   { title: 'View Details', dataIndex: 'actions', key: 'actions' }
 ];
 
-const OrderDetailsComponent = ({ orderDetailsData, getOrderDetails }) => {
+const OrderDetailsComponent = ({
+  orderDetailsData,
+  getOrderDetails,
+  role = MODERATOR
+}) => {
   const [openRequestDetails, setOpenRequestDetails] = useState(false);
   const [currentRequestSelected, setCurrentRequestSelected] = useState({});
   const router = useRouter();
@@ -78,7 +84,10 @@ const OrderDetailsComponent = ({ orderDetailsData, getOrderDetails }) => {
     orderStatus = {},
     requests,
     unitPrice,
-    supplier = {}
+    supplier = {},
+    quantity,
+    requestStatus = {},
+    dateCreated
   } = orderDetailsData;
   const totalQuantity = (requests || []).reduce((prev, current) => {
     return prev + +current.quantity;
@@ -92,7 +101,7 @@ const OrderDetailsComponent = ({ orderDetailsData, getOrderDetails }) => {
       key: 'productPrice'
     },
     {
-      title: 'Total Quantity',
+      title: role === BUYER ? 'Quantity' : 'Total Quantity',
       dataIndex: 'totalQuantity',
       key: 'totalQuantity'
     }
@@ -110,7 +119,9 @@ const OrderDetailsComponent = ({ orderDetailsData, getOrderDetails }) => {
       ),
 
       productPrice: displayCurrency(unitPrice),
-      totalQuantity: `${totalQuantity} ${unitOfMeasure.description}`
+      totalQuantity: `${role === BUYER ? quantity : totalQuantity} ${
+        unitOfMeasure.description
+      }`
     }
   ];
 
@@ -159,61 +170,70 @@ const OrderDetailsComponent = ({ orderDetailsData, getOrderDetails }) => {
             <Row justify="center">
               <Title level={3}>Order Details</Title>
             </Row>
-            <Card
-              bordered={false}
-              title={<b>Supplier Information</b>}
-              style={{
-                width: '100%',
-                boxShadow: '2px 2px 14px 0 rgba(0,0,0,.1)',
-                marginTop: 16
-              }}
-            >
-              <Row justify="space-between">
-                <Col span={16}>
-                  <Card bordered={false} size="small">
-                    <div
-                      style={{
-                        display: 'flex',
-                        flexDirection: 'row',
-                        alignItems: 'center'
-                      }}
-                    >
-                      <Avatar
-                        size={64}
-                        src={
-                          getCurrentUserImage(id) || '/static/images/avatar.png'
-                        }
-                      />
+            {role !== SUPPLIER && (
+              <Card
+                bordered={false}
+                title={<b>Supplier Information</b>}
+                style={{
+                  width: '100%',
+                  boxShadow: '2px 2px 14px 0 rgba(0,0,0,.1)',
+                  marginTop: 16
+                }}
+              >
+                <Row justify="space-between">
+                  <Col span={16}>
+                    <Card bordered={false} size="small">
+                      <div
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'row',
+                          alignItems: 'center'
+                        }}
+                      >
+                        <Avatar
+                          size={64}
+                          src={
+                            getCurrentUserImage(id) ||
+                            '/static/images/avatar.png'
+                          }
+                        />
 
-                      <span>&nbsp;&nbsp;&nbsp;</span>
-                      <div>
-                        Supplier Name: {`${firstName} ${lastName}`}
-                        <br />
-                        Company: {companyName}
-                        <br />
-                        Address: {address}
+                        <span>&nbsp;&nbsp;&nbsp;</span>
+                        <div>
+                          {role !== BUYER && (
+                            <Fragment>
+                              Supplier Name: {`${firstName} ${lastName}`}
+                              <br />
+                            </Fragment>
+                          )}
+                          Company: {companyName}
+                          <br />
+                          Address: {address}
+                          <br />
+                          Date Create: {getUtcTime(dateCreated)}
+                        </div>
                       </div>
-                    </div>
-                  </Card>
-                </Col>
-                <Col span={8}>
-                  <Card bordered={false} size="small">
-                    <div style={{ textAlign: 'right' }}>
-                      <Space>
-                        {email}
-                        <MailOutlined />
-                      </Space>
-                      <br />
-                      <Space>
-                        {phoneNumber}
-                        <PhoneOutlined />
-                      </Space>
-                      <br />
-                    </div>
-                  </Card>
-                </Col>
-              </Row>
-            </Card>
+                    </Card>
+                  </Col>
+                  <Col span={8}>
+                    <Card bordered={false} size="small">
+                      <div style={{ textAlign: 'right' }}>
+                        <Space>
+                          {email}
+                          <MailOutlined />
+                        </Space>
+                        <br />
+                        <Space>
+                          {phoneNumber}
+                          <PhoneOutlined />
+                        </Space>
+                        <br />
+                      </div>
+                    </Card>
+                  </Col>
+                </Row>
+              </Card>
+            )}
             <Card
               bordered={false}
               title={
@@ -223,7 +243,11 @@ const OrderDetailsComponent = ({ orderDetailsData, getOrderDetails }) => {
                     <Title style={{ marginBottom: 0 }} level={5}>
                       Order Status:<span>&nbsp;</span>
                     </Title>
-                    <OrderStatusComponent status={orderStatus.id} />
+                    {role === BUYER ? (
+                      <RequestStatusComponent status={requestStatus.id} />
+                    ) : (
+                      <OrderStatusComponent status={orderStatus.id} />
+                    )}
                   </Row>
                 </Row>
               }
@@ -242,63 +266,68 @@ const OrderDetailsComponent = ({ orderDetailsData, getOrderDetails }) => {
                 footer={() => (
                   <div align="right" style={{ height: '20px' }}>
                     <p style={{ color: '#199eb8', fontSize: 18 }}>
-                      Total {displayCurrency(unitPrice * totalQuantity)}
+                      Total{' '}
+                      {displayCurrency(
+                        unitPrice * (role === BUYER ? quantity : totalQuantity)
+                      )}
                     </p>
                   </div>
                 )}
               />
             </Card>
-            <Card
-              bordered={false}
-              title={<b>Request List</b>}
-              style={{
-                width: '100%',
-                boxShadow: '2px 2px 14px 0 rgba(0,0,0,.1)',
-                marginTop: 10
-              }}
-            >
-              <Table
-                bordered
-                columns={groupRequestColumns}
-                dataSource={(requests || []).map((request) => {
-                  const {
-                    id,
-                    buyer = {},
-                    quantity,
-                    product = {},
-                    dateCreated,
-                    preferredUnitPrice
-                  } = request;
-                  return {
-                    key: id,
-                    createdBy: buyer.fullName,
-                    price: displayCurrency(preferredUnitPrice),
-                    quantity: `${quantity} ${product.unitType}`,
-                    dateCreated: (
-                      <Moment format={DATE_TIME_FORMAT}>{dateCreated}</Moment>
-                    ),
-                    status: (
-                      <RequestStatusComponent
-                        status={get('requestStatus.id')(request)}
-                      />
-                    ),
-                    actions: (
-                      <Button
-                        onClick={() => {
-                          setCurrentRequestSelected(request);
-                          setOpenRequestDetails(true);
-                        }}
-                        type="link"
-                      >
-                        View
-                      </Button>
-                    )
-                  };
-                })}
-                rowKey="key"
-                pagination={false}
-              />
-            </Card>
+            {role !== BUYER && (
+              <Card
+                bordered={false}
+                title={<b>Request List</b>}
+                style={{
+                  width: '100%',
+                  boxShadow: '2px 2px 14px 0 rgba(0,0,0,.1)',
+                  marginTop: 10
+                }}
+              >
+                <Table
+                  bordered
+                  columns={groupRequestColumns}
+                  dataSource={(requests || []).map((request) => {
+                    const {
+                      id,
+                      buyer = {},
+                      quantity,
+                      product = {},
+                      dateCreated,
+                      preferredUnitPrice
+                    } = request;
+                    return {
+                      key: id,
+                      createdBy: buyer.fullName,
+                      price: displayCurrency(preferredUnitPrice),
+                      quantity: `${quantity} ${product.unitType}`,
+                      dateCreated: (
+                        <Moment format={DATE_TIME_FORMAT}>{dateCreated}</Moment>
+                      ),
+                      status: (
+                        <RequestStatusComponent
+                          status={get('requestStatus.id')(request)}
+                        />
+                      ),
+                      actions: (
+                        <Button
+                          onClick={() => {
+                            setCurrentRequestSelected(request);
+                            setOpenRequestDetails(true);
+                          }}
+                          type="link"
+                        >
+                          View
+                        </Button>
+                      )
+                    };
+                  })}
+                  rowKey="key"
+                  pagination={false}
+                />
+              </Card>
+            )}
           </Col>
         </Row>
       </Col>

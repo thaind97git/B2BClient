@@ -1,46 +1,46 @@
-import React, { useEffect, useState } from "react";
-import { Form, Input, Button, Row, Col, Radio, Typography } from "antd";
+import React, { useEffect, useState } from 'react';
+import { Form, Input, Button, Row, Col, Radio, Typography } from 'antd';
 import {
   UserOutlined,
   LockOutlined,
   AuditOutlined,
   PhoneOutlined,
-  MailOutlined,
-} from "@ant-design/icons";
-import Link from "next/link";
-import { createStructuredSelector } from "reselect";
-import { connect } from "react-redux";
+  MailOutlined
+} from '@ant-design/icons';
+import Link from 'next/link';
+import { createStructuredSelector } from 'reselect';
+import { connect } from 'react-redux';
 import {
   userRegister,
   userRegisterErrorSelector,
-  userRegisterResetter,
-} from "../stores/UserState";
-import { openNotification, parseBoolean } from "../utils";
+  userRegisterResetter
+} from '../stores/UserState';
+import { openNotification, parseBoolean } from '../utils';
 const { Title } = Typography;
 const FormItem = Form.Item;
 const styles = {
-  colStyle: { padding: "0 8px" },
-  titleStyle: { fontWeight: 500 },
+  colStyle: { padding: '0 8px' },
+  titleStyle: { fontWeight: 500 }
 };
 
 const connectToRedux = connect(
   createStructuredSelector({
-    userRegisterError: userRegisterErrorSelector,
+    userRegisterError: userRegisterErrorSelector
   }),
   (dispatch) => ({
     registerUser: (values) => dispatch(userRegister(values)),
-    resetData: () => dispatch(userRegisterResetter),
+    resetData: () => dispatch(userRegisterResetter)
   })
 );
 
 const RegisterComponent = ({ userRegisterError, registerUser, resetData }) => {
   const [role, setRole] = useState(1);
 
-  useEffect(() => {
-    if (userRegisterError) {
-      openNotification("error", { message: "Register account fail" });
-    }
-  }, [userRegisterError]);
+  // useEffect(() => {
+  //   if (userRegisterError) {
+  //     openNotification("error", { message: "Register account fail" });
+  //   }
+  // }, [userRegisterError]);
 
   useEffect(() => {
     return () => {
@@ -61,7 +61,7 @@ const RegisterComponent = ({ userRegisterError, registerUser, resetData }) => {
           className="register-form"
           onFinish={onFinish}
           initialValues={{
-            isBuyer: role,
+            isBuyer: role
           }}
         >
           <Row justify="center">
@@ -73,8 +73,8 @@ const RegisterComponent = ({ userRegisterError, registerUser, resetData }) => {
             name="isBuyer"
             rules={[
               {
-                required: true,
-              },
+                required: true
+              }
             ]}
           >
             <Row justify="center">
@@ -97,12 +97,12 @@ const RegisterComponent = ({ userRegisterError, registerUser, resetData }) => {
                 rules={[
                   {
                     required: true,
-                    message: "Please enter Email",
+                    message: 'Please enter Email'
                   },
                   {
-                    type: "email",
-                    message: "Please enter the correct Email",
-                  },
+                    type: 'email',
+                    message: 'Please enter the correct Email'
+                  }
                 ]}
               >
                 <Input
@@ -119,8 +119,8 @@ const RegisterComponent = ({ userRegisterError, registerUser, resetData }) => {
                 rules={[
                   {
                     required: true,
-                    message: "Please enter your phone",
-                  },
+                    message: 'Please enter your phone'
+                  }
                 ]}
               >
                 <Input
@@ -139,8 +139,8 @@ const RegisterComponent = ({ userRegisterError, registerUser, resetData }) => {
                 rules={[
                   {
                     required: true,
-                    message: "Please enter your first name",
-                  },
+                    message: 'Please enter your first name'
+                  }
                 ]}
               >
                 <Input
@@ -157,8 +157,8 @@ const RegisterComponent = ({ userRegisterError, registerUser, resetData }) => {
                 rules={[
                   {
                     required: true,
-                    message: "Please enter your last name",
-                  },
+                    message: 'Please enter your last name'
+                  }
                 ]}
               >
                 <Input
@@ -173,14 +173,14 @@ const RegisterComponent = ({ userRegisterError, registerUser, resetData }) => {
             <Col style={styles.colStyle} span={12}>
               <div className="label">Password:</div>
               <FormItem
-                dependencies={["password"]}
+                dependencies={['password']}
                 hasFeedback
                 name="password"
                 rules={[
                   {
                     required: true,
-                    message: "Please set login password",
-                  },
+                    message: 'Please set login password'
+                  }
                 ]}
               >
                 <Input.Password
@@ -199,18 +199,18 @@ const RegisterComponent = ({ userRegisterError, registerUser, resetData }) => {
                 rules={[
                   {
                     required: true,
-                    message: "Please confirm your password",
+                    message: 'Please confirm your password'
                   },
                   ({ getFieldValue }) => ({
                     validator(rule, value) {
-                      if (!value || getFieldValue("password") === value) {
+                      if (!value || getFieldValue('password') === value) {
                         return Promise.resolve();
                       }
                       return Promise.reject(
-                        "The two passwords that you entered do not match!"
+                        'The two passwords that you entered do not match!'
                       );
-                    },
-                  }),
+                    }
+                  })
                 ]}
               >
                 <Input.Password
@@ -230,8 +230,8 @@ const RegisterComponent = ({ userRegisterError, registerUser, resetData }) => {
                 rules={[
                   {
                     required: true,
-                    message: "Enter the company name",
-                  },
+                    message: 'Enter the company name'
+                  }
                 ]}
               >
                 <Input
@@ -248,8 +248,8 @@ const RegisterComponent = ({ userRegisterError, registerUser, resetData }) => {
                 rules={[
                   {
                     required: true,
-                    message: "Enter the company address",
-                  },
+                    message: 'Enter the company address'
+                  }
                 ]}
               >
                 <Input

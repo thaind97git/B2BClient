@@ -1,11 +1,10 @@
 import React, { Fragment } from 'react';
-import moment from 'moment';
-import { getFileMessage } from '../../../utils';
+import { getFileMessage, getUtcTime } from '../../../utils';
 
 export default function Message(props) {
   const { data, isMine, startsSequence, endsSequence, showTimestamp } = props;
 
-  const friendlyTimestamp = moment(data.dateCreated).format('LLLL');
+  const friendlyTimestamp = getUtcTime(data.dateCreated, 'LLLL');
   return (
     (data.fileName || data.description) && (
       <div style={{ width: '100%' }}>

@@ -83,7 +83,8 @@ const UserProfileComponent = ({
   getUserData,
   resetGetUser,
   isSupplier = true,
-  isAdmin = false
+  isAdmin = false,
+  displayQuotation = false
 }) => {
   const [changePasswordVisible, setChangePasswordVisible] = useState(false);
   const [imageUrl, setImageUrl] = useState(
@@ -279,7 +280,6 @@ const UserProfileComponent = ({
         <Row span={24}>
           <Col span={4} align="left">
             <div>
-              {/* <Avatar size={120} src={getCurrentUserImage(currentUser.avatar)} fallback={fallbackImage} /> */}
               <ImgCrop>
                 <Upload
                   name="avatar"
@@ -336,17 +336,6 @@ const UserProfileComponent = ({
           </Descriptions.Item>
         </Descriptions>
         <Divider dashed />
-        {/* <Descriptions title="Company Information">
-          <Descriptions.Item label="Email">
-            {USER_PROFILE.email}
-          </Descriptions.Item>
-          <Descriptions.Item label="Telephone">
-            {USER_PROFILE.telephone}
-          </Descriptions.Item>
-          <Descriptions.Item label="Address">
-            {USER_PROFILE.address}
-          </Descriptions.Item>
-        </Descriptions> */}
         <Modal
           title="Change Password"
           visible={changePasswordVisible}
@@ -358,9 +347,6 @@ const UserProfileComponent = ({
             className="register-form"
             ref={updatePasswordRef}
             onFinish={onUpdatePasswordFinish}
-            // initialValues={{
-            //   isBuyer: role,
-            // }}
           >
             <Row align="middle">
               <Col span={24}>

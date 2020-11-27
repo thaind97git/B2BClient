@@ -12,12 +12,14 @@ class UserLayout extends React.PureComponent {
           <div className="top">
             <div className="header">
               <a href="/">
-                {/* <img
-                    alt="logo"
-                    className="logo"
-                    src="/static/images/logo.png"
-                  /> */}
-                <span className="title">B2BMarket</span>
+                {/* <span className="title">B2BMarket</span> */}
+                <img
+                  style={{
+                    width: 400
+                  }}
+                  src="/static/images/logo.png"
+                  alt="B2B Market"
+                />
               </a>
             </div>
             <div className="desc">

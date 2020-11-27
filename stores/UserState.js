@@ -148,7 +148,7 @@ export const userRegister = (object) =>
   respondToSuccess(UserRegisterAPI.actionCreator(object), (resp) => {
     if (resp) {
       console.log({ resp });
-      openNotification('success', { message: 'Register success' });
+      // openNotification('success', { message: 'Register success' });
       Router.push('/login');
     }
   });

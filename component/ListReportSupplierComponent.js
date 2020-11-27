@@ -17,9 +17,15 @@ import FeedbackStatusComponent from './Utils/FeedbackStatusComponent';
 import FeedbackTypeComponent from './Utils/FeedbackTypeComponent';
 import { getUser, getUserData } from '../stores/UserState';
 import {
+  approveSupplier,
+  ApproveSupplierData,
+  ApproveSupplierResetter,
   banUser,
   BanUserData,
   BanUserResetter,
+  rejectSupplier,
+  RejectSupplierData,
+  RejectSupplierResetter,
   unBanUser,
   UnBanUserData,
   UnBanUserResetter
@@ -33,7 +39,9 @@ const connectToRedux = connect(
     reportError: GetFeedbackReportedForSupplierError,
     getUserData: getUserData,
     banUserData: BanUserData,
-    unBanUserData: UnBanUserData
+    unBanUserData: UnBanUserData,
+    approveData: ApproveSupplierData,
+    rejectData: RejectSupplierData
   }),
   (dispatch) => ({
     getReport: (pageIndex, pageSize, searchMessage, dateRange, supplierId) => {
@@ -49,11 +57,15 @@ const connectToRedux = connect(
     banSupplier: ({ id, description }) =>
       dispatch(banUser({ id, description })),
     unBanSupplier: ({ id }) => dispatch(unBanUser({ id })),
-    resetBanAndUnBan: () => {
+    resetAccountData: () => {
       dispatch(BanUserResetter);
       dispatch(UnBanUserResetter);
+      dispatch(ApproveSupplierResetter);
+      dispatch(RejectSupplierResetter);
     },
-    getUser: (id) => dispatch(getUser(id))
+    getUser: (id) => dispatch(getUser(id)),
+    approveSupplier: ({ id }) => dispatch(approveSupplier({ id })),
+    rejectSupplier: ({ id }) => dispatch(rejectSupplier({ id }))
   })
 );
 const columns = [
@@ -89,10 +101,14 @@ const ListReportSupplierComponent = ({
   getUserData,
   banUserData,
   unBanUserData,
-  resetBanAndUnBan,
-  getUser
+  resetAccountData,
+  getUser,
+  approveData,
+  rejectData,
+  rejectSupplier,
+  approveSupplier
 }) => {
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [banReason, setBanReason] = useState('');
   const [openBan, setOpenBan] = useState(false);
   useEffect(() => {
@@ -102,23 +118,38 @@ const ListReportSupplierComponent = ({
   }, [reportData, reportError]);
 
   useEffect(() => {
-    if (banUserData) {
-      setBanReason('');
-      setOpenBan(false);
-      resetBanAndUnBan();
+    if (approveData) {
+      resetAccountData();
       getReport(0, 10, '', {}, supplierId);
       getUser(supplierId);
     }
-  }, [banUserData, resetBanAndUnBan, getReport, supplierId, getUser]);
+  }, [approveData, resetAccountData, getReport, supplierId, getUser]);
+
+  useEffect(() => {
+    if (rejectData) {
+      resetAccountData();
+      getReport(0, 10, '', {}, supplierId);
+      getUser(supplierId);
+    }
+  }, [rejectData, resetAccountData, getReport, supplierId, getUser]);
+  useEffect(() => {
+    if (banUserData) {
+      setBanReason('');
+      setOpenBan(false);
+      resetAccountData();
+      getReport(0, 10, '', {}, supplierId);
+      getUser(supplierId);
+    }
+  }, [banUserData, resetAccountData, getReport, supplierId, getUser]);
 
   useEffect(() => {
     if (unBanUserData) {
       setBanReason('');
-      resetBanAndUnBan();
+      resetAccountData();
       getReport(0, 10, '', {}, supplierId);
       getUser(supplierId);
     }
-  }, [unBanUserData, resetBanAndUnBan, supplierId, getReport, getUser]);
+  }, [unBanUserData, resetAccountData, supplierId, getReport, getUser]);
 
   useEffect(() => {
     return () => {
@@ -210,23 +241,51 @@ const ListReportSupplierComponent = ({
               danger
               onClick={() => {
                 setOpenBan(true);
-                // Modal.confirm({
-                //   title: 'Are you sure you want to ban this account?',
-                //   icon: <ExclamationCircleOutlined />,
-                //   okText: 'Ban',
-                //   cancelText: 'Cancel',
-                //   onOk: () => {
-                //     banSupplier({ id: supplierId });
-                //   }
-                // });
               }}
               size="small"
             >
               Ban Account
             </Button>
           )}
-          {(get('userStatus.id')(getUserData) === U_PENDING ||
-            get('userStatus.id')(getUserData) === U_BANNED) && (
+          {get('userStatus.id')(getUserData) === U_PENDING && (
+            <Space>
+              <Button
+                type="primary"
+                onClick={() => {
+                  Modal.confirm({
+                    title: 'Are you sure you want to approve this account?',
+                    icon: <ExclamationCircleOutlined />,
+                    okText: 'Approve',
+                    cancelText: 'Cancel',
+                    onOk: () => {
+                      approveSupplier({ id: supplierId });
+                    }
+                  });
+                }}
+                size="small"
+              >
+                Approve Account
+              </Button>
+              <Button
+                danger
+                onClick={() => {
+                  Modal.confirm({
+                    title: 'Are you sure you want to reject this account?',
+                    icon: <ExclamationCircleOutlined />,
+                    okText: 'Reject',
+                    cancelText: 'Cancel',
+                    onOk: () => {
+                      rejectSupplier({ id: supplierId });
+                    }
+                  });
+                }}
+                size="small"
+              >
+                Reject Account
+              </Button>
+            </Space>
+          )}
+          {get('userStatus.id')(getUserData) === U_BANNED && (
             <Button
               type="primary"
               onClick={() => {
