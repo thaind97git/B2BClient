@@ -6,7 +6,7 @@ const OrderStatusComponent = ({ status }) => {
   const getColorByStatus = (status) => {
     switch (status) {
       case O_DONE:
-        return '#2db7f5';
+        return '#87d068';
       case O_ORDERED:
         return 'success';
       default:

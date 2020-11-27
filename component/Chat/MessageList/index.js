@@ -168,7 +168,11 @@ function MessageList({
   useEffect(() => {
     const { data, total } = messagesData || {};
     if (data && data.length > 0) {
-      if ((data[0] || {}).conversationId !== conversationId) {
+      const messageIds = messages.map((mes) => mes.id) || [];
+      if (
+        (data[0] || {}).conversationId !== conversationId ||
+        messageIds.includes((data[0] || {}).id)
+      ) {
         return;
       }
       setLoading(false);

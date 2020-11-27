@@ -185,7 +185,8 @@ const AdminRequestProcessingComponent = ({
         key={'right'}
       >
         <RequestDetailsComponent
-          isSupplier={false}
+          isBuyer={false}
+          isAggregator
           requestId={(currentRequestSelected || {}).id}
         />
       </Drawer>

@@ -150,7 +150,7 @@ const SupplierProductListingComponent = ({
                 Modal.confirm({
                   title: 'Are you sure you want to Resupply this product?',
                   icon: <ExclamationCircleOutlined />,
-                  okText: 'Re-Supply',
+                  okText: 'Resupply',
                   cancelText: 'Cancel',
                   onOk: () => {
                     activeSupplierProduct((product.product || {}).id);
@@ -160,7 +160,7 @@ const SupplierProductListingComponent = ({
               size="small"
               type="primary"
             >
-              Supply
+              Resupply
             </Button>
           ) : (
             <Button
@@ -168,7 +168,7 @@ const SupplierProductListingComponent = ({
                 Modal.confirm({
                   title: 'Are you sure you want to Unsupply this product?',
                   icon: <ExclamationCircleOutlined />,
-                  okText: 'Un-Supply',
+                  okText: 'Unsupply',
                   cancelText: 'Cancel',
                   onOk: () => {
                     deleteSupplierProduct((product.product || {}).id);
