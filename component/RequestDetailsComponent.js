@@ -137,7 +137,7 @@ const RequestDetailsComponent = ({
     let result = [];
     switch (status) {
       case R_PENDING:
-        if (isBuyer) {
+        if (isAggregator) {
           result = [
             {
               label: 'Reject',
@@ -149,7 +149,7 @@ const RequestDetailsComponent = ({
               }
             }
           ];
-        } else {
+        } else if (isBuyer) {
           result = [
             {
               label: 'Edit',
@@ -171,11 +171,11 @@ const RequestDetailsComponent = ({
         }
         break;
       case R_GROUPED:
-        if (isBuyer) {
+        if (isAggregator) {
           if (isRemove) {
             result = [];
           }
-        } else {
+        } else if (isBuyer) {
           result = [
             {
               label: 'Cancel',
@@ -190,11 +190,11 @@ const RequestDetailsComponent = ({
         }
         break;
       case R_NEGOTIATING:
-        if (isBuyer) {
+        if (isAggregator) {
           if (isRemove) {
             result = [];
           }
-        } else {
+        } else if (isBuyer) {
           result = [
             {
               label: 'Cancel',

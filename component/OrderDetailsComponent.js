@@ -166,7 +166,8 @@ const OrderDetailsComponent = ({
     supplier = {},
     quantity,
     requestStatus = {},
-    dateCreated
+    dateCreated,
+    aggregator = {}
   } = orderDetailsData;
   const totalQuantity = (requests || []).reduce((prev, current) => {
     return prev + +current.quantity;
@@ -247,6 +248,69 @@ const OrderDetailsComponent = ({
             <Row justify="center">
               <Title level={3}>Order Details</Title>
             </Row>
+            {role === ADMIN && (
+              <Card
+                bordered={false}
+                title={<b>Aggregator Information</b>}
+                style={{
+                  width: '100%',
+                  boxShadow: '2px 2px 14px 0 rgba(0,0,0,.1)',
+                  marginTop: 16
+                }}
+              >
+                <Row justify="space-between">
+                  <Col span={16}>
+                    <Card bordered={false} size="small">
+                      <div
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'row',
+                          alignItems: 'center'
+                        }}
+                      >
+                        <Avatar
+                          size={64}
+                          src={
+                            getCurrentUserImage(aggregator.id) ||
+                            '/static/images/avatar.png'
+                          }
+                        />
+
+                        <span>&nbsp;&nbsp;&nbsp;</span>
+                        <div>
+                          {role !== BUYER && (
+                            <Fragment>
+                              Aggregator Name:{' '}
+                              {`${aggregator.firstName} ${aggregator.lastName}`}
+                              <br />
+                            </Fragment>
+                          )}
+                          Company: {companyName}
+                          {/* <br />
+                          Address: {address} */}
+                        </div>
+                      </div>
+                    </Card>
+                  </Col>
+                  <Col span={8}>
+                    <Card bordered={false} size="small">
+                      <div style={{ textAlign: 'right' }}>
+                        <Space>
+                          {aggregator.email}
+                          <MailOutlined />
+                        </Space>
+                        <br />
+                        <Space>
+                          {aggregator.phoneNumber}
+                          <PhoneOutlined />
+                        </Space>
+                        <br />
+                      </div>
+                    </Card>
+                  </Col>
+                </Row>
+              </Card>
+            )}
             {role !== SUPPLIER && (
               <Card
                 bordered={false}
