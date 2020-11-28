@@ -7,6 +7,7 @@ import { generateQuery, getResetter } from '../libs';
 export const CREATE_NEW_ORDER = 'CreateNewOrderAPI';
 export const GET_ORDER_PAGING = 'GetOrderPagingAPI';
 export const GET_ORDER_DETAILS = 'GetOrderDetailsAPI';
+export const DELIVERED_ORDER = 'DeliveredOrderAPI';
 
 const CreateNewOrderAPI = makeFetchAction(
   CREATE_NEW_ORDER,
@@ -83,3 +84,20 @@ export const GetOrderDetailsDataSelector = GetOrderDetailsAPI.dataSelector;
 export const GetOrderDetailsErrorSelector = GetOrderDetailsAPI.errorSelector;
 
 export const GetOrderDetailsResetter = getResetter(GetOrderDetailsAPI);
+
+// Delivered Order
+const DeliveredOrderAPI = makeFetchAction(
+  DELIVERED_ORDER,
+  ({ orderId, requestId }) =>
+    nfetch({
+      endpoint: `/api/Order/Delivered`,
+      method: 'PUT'
+    })({ orderId, requestId })
+);
+
+export const deliveredOrder = ({ orderId, requestId }) =>
+  respondToSuccess(DeliveredOrderAPI.actionCreator({ orderId, requestId }));
+export const DeliveredOrderDataSelector = DeliveredOrderAPI.dataSelector;
+export const DeliveredOrderErrorSelector = DeliveredOrderAPI.errorSelector;
+
+export const DeliveredOrderResetter = getResetter(DeliveredOrderAPI);

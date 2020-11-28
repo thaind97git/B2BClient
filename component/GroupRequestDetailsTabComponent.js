@@ -198,6 +198,7 @@ const GroupRequestDetailsTabComponent = ({
         key={'rfq-details'}
       >
         <RequestDetailsComponent
+          isAggregator
           isRemove={isCanRemove ? true : false}
           isSupplier={false}
           requestId={currentRequestSelected.id}

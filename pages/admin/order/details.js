@@ -1,13 +1,13 @@
 import React from 'react';
 import OrderDetailsComponent from '../../../component/OrderDetailsComponent';
 import withAuth from '../../../component/HOC/AuthenHOC';
-import AggregatorLayout from '../../../layouts/AggregatorLayout';
-import { MODERATOR } from '../../../enums/accountRoles';
+import { ADMIN } from '../../../enums/accountRoles';
+import AdminLayout from '../../../layouts/AdminLayout';
 const DetailsPage = () => {
   return (
-    <AggregatorLayout hasBackground={false}>
-      <OrderDetailsComponent role={MODERATOR} />
-    </AggregatorLayout>
+    <AdminLayout hasBackground={false}>
+      <OrderDetailsComponent role={ADMIN} />
+    </AdminLayout>
   );
 };
 export default withAuth(DetailsPage);

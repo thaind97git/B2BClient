@@ -36,12 +36,10 @@ const { Title } = Typography;
 
 const connectToRedux = connect(
   createStructuredSelector({
-    requestDetailsData: GetRequestDetailsDataSelector,
     cancelRequestData: CancelRequestData,
     rejectRequestData: RejectRequestData
   }),
   (dispatch) => ({
-    getRequestDetails: (id) => dispatch(getRequestDetails(id)),
     resetData: () => {
       dispatch(getRequestDetailsResetter);
     }
@@ -61,30 +59,10 @@ const DescriptionItem = ({ title, content }) => (
   </Col>
 );
 
-const RequestDetailsComponent = ({
-  isAggregator = false,
-  isBuyer = true,
-  requestDetailsData,
-  getRequestDetails,
-  requestId,
-  resetData,
-  cancelRequestData,
-  rejectRequestData,
-  setOpenDetails,
-  isRemove = true
-}) => {
+const RequestDetailsForSupplierComponent = ({ requestDetailsData }) => {
   const [loading, setLoading] = useState(true);
   const [openCancel, setOpenCancel] = useState(false);
   const [openReject, setOpenReject] = useState(false);
-  useEffect(() => {
-    if (requestId) {
-      getRequestDetails(requestId);
-      setLoading(true);
-    }
-    return () => {
-      resetData();
-    };
-  }, [requestId, getRequestDetails, resetData]);
 
   useEffect(() => {
     if (!!requestDetailsData) {
@@ -92,22 +70,6 @@ const RequestDetailsComponent = ({
     }
   }, [requestDetailsData]);
 
-  useEffect(() => {
-    if (cancelRequestData) {
-      setOpenCancel(false);
-      typeof setOpenDetails === 'function' && setOpenDetails(false);
-    }
-  }, [cancelRequestData, setOpenDetails]);
-  useEffect(() => {
-    if (rejectRequestData) {
-      setOpenReject(false);
-      typeof setOpenDetails === 'function' && setOpenDetails(false);
-    }
-  }, [rejectRequestData, setOpenDetails]);
-
-  if (!requestId) {
-    return <Empty description="Can not find any request !" />;
-  }
   if (loading) {
     return <Skeleton active />;
   }
@@ -133,87 +95,6 @@ const RequestDetailsComponent = ({
     otherRequirements,
     group = {}
   } = requestDetailsData || {};
-  const getButtonActionsByStatus = (status) => {
-    let result = [];
-    switch (status) {
-      case R_PENDING:
-        if (isAggregator) {
-          result = [
-            {
-              label: 'Reject',
-              buttonProps: {
-                danger: true
-              },
-              action: () => {
-                setOpenReject(true);
-              }
-            }
-          ];
-        } else if (isBuyer) {
-          result = [
-            {
-              label: 'Edit',
-              action: () =>
-                Router.push(
-                  `/buyer/rfq/update?id=${(requestDetailsData || {}).id}`
-                )
-            },
-            {
-              label: 'Cancel',
-              buttonProps: {
-                danger: true
-              },
-              action: () => {
-                setOpenCancel(true);
-              }
-            }
-          ];
-        }
-        break;
-      case R_GROUPED:
-        if (isAggregator) {
-          if (isRemove) {
-            result = [];
-          }
-        } else if (isBuyer) {
-          result = [
-            {
-              label: 'Cancel',
-              buttonProps: {
-                danger: true
-              },
-              action: () => {
-                setOpenCancel(true);
-              }
-            }
-          ];
-        }
-        break;
-      case R_NEGOTIATING:
-        if (isAggregator) {
-          if (isRemove) {
-            result = [];
-          }
-        } else if (isBuyer) {
-          result = [
-            {
-              label: 'Cancel',
-              buttonProps: {
-                danger: true
-              },
-              action: () => {
-                setOpenCancel(true);
-              }
-            }
-          ];
-        }
-        break;
-      default:
-        result = [];
-        break;
-    }
-    return result;
-  };
 
   const leadTimeDisplay = `Ship in ${leadTime} day(s) after supplier receives the initial payment`;
   return (
@@ -240,46 +121,11 @@ const RequestDetailsComponent = ({
           <RequestRejectComponent requestId={(requestDetailsData || {}).id} />
         ) : null}
       </Modal>
-      {isAggregator && !!group && (
-        <DescriptionItem
-          title="Group Name"
-          content={
-            <a
-              href={`/aggregator/group/details?id=${group.id}`}
-              target="_blank"
-              rel="noreferrer"
-            >
-              {group.description}
-            </a>
-          }
-        />
-      )}
+
       <Col style={{ padding: '12px 0px' }} span={24}>
         Status: <RequestStatusComponent status={requestStatus.id} />
       </Col>
-      {requestStatus.id === R_CANCELED && (
-        <Col style={{ padding: '12px 0px' }} span={24}>
-          Cancel reason: <b>{cancelReason || 'N/A'}</b>
-        </Col>
-      )}
-      <Col style={{ padding: '12px 0px' }} span={24}>
-        <Space>
-          {(getButtonActionsByStatus(requestStatus.id) || []).map(
-            (button, index) => (
-              <Button
-                key={index}
-                onClick={() => {
-                  typeof button.action === 'function' && button.action();
-                }}
-                size="small"
-                {...button.buttonProps}
-              >
-                {button.label}
-              </Button>
-            )
-          )}
-        </Space>
-      </Col>
+
       <Col span={24}>
         <Title level={5}>Product Basic Information</Title>
       </Col>
@@ -348,25 +194,19 @@ const RequestDetailsComponent = ({
         } - ${(province || {}).description}`}
       />
       <DescriptionItem title="Lead Time" content={leadTimeDisplay} />
-      {isAggregator && (
-        <div>
-          <Divider />
-          <Col span={24}>
-            <Title level={5}>RFQ Owner</Title>
-          </Col>
-          <DescriptionItem
-            title="Created by"
-            content={(buyer || {}).fullName}
-          />
-          <DescriptionItem title="Email" content={(buyer || {}).email} />
-          <DescriptionItem title="Phone" content={(buyer || {}).phoneNumber} />
-          <DescriptionItem
-            title="Company Name"
-            content={(buyer || {}).companyName}
-          />
-        </div>
-      )}
-
+      <div>
+        <Divider />
+        <Col span={24}>
+          <Title level={5}>RFQ Owner</Title>
+        </Col>
+        <DescriptionItem title="Created by" content={(buyer || {}).fullName} />
+        <DescriptionItem title="Email" content={(buyer || {}).email} />
+        <DescriptionItem title="Phone" content={(buyer || {}).phoneNumber} />
+        {/* <DescriptionItem
+          title="Company Name"
+          content={(buyer || {}).companyName}
+        /> */}
+      </div>
       <style jsx global>{`
         .site-description-item-profile-wrapper {
           margin-bottom: 7px;
@@ -405,4 +245,4 @@ const RequestDetailsComponent = ({
   );
 };
 
-export default connectToRedux(RequestDetailsComponent);
+export default connectToRedux(RequestDetailsForSupplierComponent);

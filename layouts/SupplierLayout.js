@@ -69,21 +69,21 @@ const SUPPLIER_MENU = [
     icon: <FileDoneOutlined />,
     label: 'Order',
     link: '/supplier/order'
-  },
-  {
-    key: '6',
-    icon: (
-      <img
-        style={{ paddingRight: 10 }}
-        alt=""
-        className="imgicon"
-        src="/static/images/feedback.png"
-        height={16}
-      />
-    ),
-    label: 'Feedback',
-    link: '/supplier/feedback'
   }
+  // {
+  //   key: '6',
+  //   icon: (
+  //     <img
+  //       style={{ paddingRight: 10 }}
+  //       alt=""
+  //       className="imgicon"
+  //       src="/static/images/feedback.png"
+  //       height={16}
+  //     />
+  //   ),
+  //   label: 'Feedback',
+  //   link: '/supplier/feedback'
+  // }
   // {
   //   key: '7',
   //   icon: <LogoutOutlined style={{ color: 'red' }} />,

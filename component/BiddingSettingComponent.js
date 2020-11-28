@@ -55,13 +55,22 @@ function range(start, end) {
 }
 function disabledDate(current) {
   // Can not select days before today and today
-  return current && current < moment().endOf('day');
+  return current && current < moment().startOf('day');
 }
 function disabledDateTime() {
   return {
-    disabledHours: () => range(0, 24).splice(4, 20),
-    disabledMinutes: () => range(30, 60),
-    disabledSeconds: () => [55, 56]
+    disabledHours: () => {
+      return range(0, 24).splice(0, new Date().getHours());
+    },
+    disabledMinutes: () => {
+      const currentMinute = new Date().getMinutes();
+      let disable = currentMinute + 5;
+      if (currentMinute >= 55) {
+        disable = 0;
+      }
+      return range(0, disable);
+    },
+    disabledSeconds: () => range(0, 60)
   };
 }
 const styles = {
@@ -333,14 +342,25 @@ const BiddingSettingComponent = ({
                 {
                   required: true,
                   message: 'Please choose action start time'
+                },
+                {
+                  validator: async (_, dateTime) => {
+                    if (dateTime < moment(new Date()).add(5, 'm').toDate()) {
+                      return Promise.reject(
+                        new Error(
+                          'You just could select date time after current date time 5 minutes'
+                        )
+                      );
+                    }
+                  }
                 }
               ]}
             >
               <DatePicker
                 style={{ width: '100%' }}
                 format="YYYY-MM-DD HH:mm:ss"
-                // disabledDate={disabledDate}
-                // disabledTime={disabledDateTime}
+                disabledDate={disabledDate}
+                disabledTime={disabledDateTime}
                 showTime={{ defaultValue: moment('00:00:00', 'HH:mm:ss') }}
               />
             </Form.Item>

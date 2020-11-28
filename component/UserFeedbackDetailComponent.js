@@ -18,7 +18,10 @@ import {
   Popover,
   Tag
 } from 'antd';
-import { LeftOutlined, WarningOutlined } from '@ant-design/icons';
+import {
+  LeftOutlined,
+  WarningOutlined,
+} from '@ant-design/icons';
 import moment from 'moment';
 import Router, { useRouter } from 'next/router';
 import React, { Fragment, useState, useEffect } from 'react';
@@ -58,7 +61,7 @@ const connectToRedux = connect(
     createFeedbackReplyData: CreateFeedbackReplyData,
     updateFeedbackRateData: UpdateFeedbackRateData,
     currentUser: CurrentUserData,
-    feedbackFileData: GetFeedbackFileData
+    feedbackFileData: GetFeedbackFileData,
   }),
   (dispatch) => ({
     getFeedbackDetails: (feedbackId) => {
@@ -67,8 +70,8 @@ const connectToRedux = connect(
     replyFeedback: (object) => {
       dispatch(createFeedbackReply(object));
     },
-    rateFeedback: ({ feedbackReplyId, isHappy }) => {
-      dispatch(updateFeedbackRate({ feedbackReplyId, isHappy }));
+    rateFeedback: ({feedbackReplyId,isHappy}) => {
+      dispatch(updateFeedbackRate( {feedbackReplyId, isHappy} ));
     },
     getFeedbackFile: (fileId) => {
       dispatch(getFeedbackFile(fileId));
@@ -146,11 +149,7 @@ const Unhappy = ({ isHappy }) => (
     className="rate"
     src="/static/images/vote-down.png"
     height={20}
-    style={
-      isHappy === false || isHappy === null
-        ? { opacity: '1' }
-        : { opacity: '0.3' }
-    }
+    style={isHappy===false || isHappy === null ? { opacity: '1' } : { opacity: '0.3' }}
   />
 );
 
@@ -160,6 +159,7 @@ const displayServiceName = (serviceName) =>
       ? serviceName.slice(0, 38) + ' ...'
       : serviceName
     : '';
+
 
 const UserFeedbackDetailComponent = ({
   currentUser,
@@ -186,10 +186,7 @@ const UserFeedbackDetailComponent = ({
   const [serviceName, setServiceName] = useState('');
 
   const rate = (feedbackItem, isHappy) => {
-    rateFeedback({
-      feedbackReplyId: (feedbackItem || {}).id,
-      isHappy: isHappy
-    });
+    rateFeedback({feedbackReplyId:(feedbackItem||{}).id,isHappy:isHappy});
   };
 
   const handleSubmit = () => {
@@ -255,14 +252,22 @@ const UserFeedbackDetailComponent = ({
               actions: [
                 !feedbackItem.isUser ? (
                   <>
-                    <span style={{ fontSize: '15', color: 'black' }}>
-                      How would you rate on this reply?
-                    </span>
-                    <br />
+                    {feedbackItem.isHappy === null ? (
+                      <span style={{ fontSize: '15', color: 'black' }}>
+                        How would you rate on this reply?
+                        <br />
+                      </span>
+                    ) : (
+                      <span style={{ fontSize: '15', color: 'black' }}>
+                        Your rate
+                        <br />
+                      </span>
+                    )}
                     <Space>
                       <Tooltip key="comment-basic-like" title="Happy">
                         <span
                           onClick={() => {
+                            if (feedbackItem.isHappy !== null) return;
                             rate(feedbackItem, true);
                           }}
                         >
@@ -272,6 +277,7 @@ const UserFeedbackDetailComponent = ({
                       <Tooltip key="comment-basic-dislike" title="Not Happy">
                         <span
                           onClick={() => {
+                            if (feedbackItem.isHappy !== null) return;
                             rate(feedbackItem, false);
                           }}
                         >
@@ -375,9 +381,15 @@ const UserFeedbackDetailComponent = ({
           <Col span={isFeedbackSystem ? 8 : 6}>
             <FeedBackCard title="Status">
               {feedbackStatus.id === F_CLOSED ? (
-                <Tag color="#f50">{feedbackStatus.description}</Tag>
+                <Tag color="#f50">
+                  {feedbackStatus.description}
+                </Tag>
               ) : (
-                <Tag color="#108ee9">{feedbackStatus.description}</Tag>
+                <Tag
+                  color="#108ee9"
+                >
+                  {feedbackStatus.description}
+                </Tag>
               )}
             </FeedBackCard>
           </Col>
