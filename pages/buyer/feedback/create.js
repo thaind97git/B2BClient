@@ -6,7 +6,7 @@ import BuyerLayout from '../../../layouts/BuyerLayout';
 const Page = () => {
   return (
     <BuyerLayout hasBackground={false}>
-      <FeedbackSubmitComponent />
+      <FeedbackSubmitComponent span={22} />
       {/* <FeedbackCreateComponent /> */}
     </BuyerLayout>
   );

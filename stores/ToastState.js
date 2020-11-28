@@ -13,6 +13,7 @@ import {
   CREATE_NEW_GROUP,
   REMOVE_REQUEST_FROM_GROUP
 } from './GroupState';
+import { CREATE_NEW_ORDER } from './OrderState';
 import { CANCEL_REQUEST, REJECT_REQUEST } from './RequestState';
 import {
   ACTIVE_SUPPLIER_PRODUCT,
@@ -103,6 +104,9 @@ export default {
         case REJECT_USER:
           msgNotify = 'Reject account success';
           break;
+        case CREATE_NEW_ORDER:
+          msgNotify = 'Create new order success';
+          break;
         default:
           break;
       }
@@ -178,6 +182,9 @@ export default {
           break;
         case REJECT_USER:
           msgNotify = 'Reject account fail';
+          break;
+        case CREATE_NEW_ORDER:
+          msgNotify = 'Create new order fail';
           break;
         default:
           break;

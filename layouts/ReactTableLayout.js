@@ -41,7 +41,8 @@ const ReactTableLayout = ({
     exCondition = [],
     exElement,
     isDateRange = true,
-    isSearch = true
+    isSearch = true,
+    placeholderDateRange = ['Start date', 'End date']
   } = searchProps;
   const otherCondition = exCondition.join('~');
   const { dateRange, setDateRange } = dateRangeProps;
@@ -109,7 +110,11 @@ const ReactTableLayout = ({
               <Space>
                 {exElement}
                 {isDateRange && (
-                  <DateRangePickerComponent small setDateRange={setDateRange} />
+                  <DateRangePickerComponent
+                    placeholder={placeholderDateRange}
+                    small
+                    setDateRange={setDateRange}
+                  />
                 )}
               </Space>
             </Row>

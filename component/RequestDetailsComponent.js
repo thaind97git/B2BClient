@@ -349,7 +349,7 @@ const RequestDetailsComponent = ({
       />
       <DescriptionItem title="Lead Time" content={leadTimeDisplay} />
       {isAggregator && (
-        <div>
+        <Col span={24}>
           <Divider />
           <Col span={24}>
             <Title level={5}>RFQ Owner</Title>
@@ -364,7 +364,7 @@ const RequestDetailsComponent = ({
             title="Company Name"
             content={(buyer || {}).companyName}
           />
-        </div>
+        </Col>
       )}
 
       <style jsx global>{`

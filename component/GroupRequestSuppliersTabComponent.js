@@ -24,6 +24,8 @@ import {
 import ReactTableLayout from '../layouts/ReactTableLayout';
 import { createLink } from '../libs';
 import { G_NEGOTIATING, G_PENDING } from '../enums/groupStatus';
+import { get } from 'lodash/fp';
+import { MODERATOR } from '../enums/accountRoles';
 
 const { Title } = Typography;
 
@@ -51,7 +53,6 @@ const getSupplierTable = ({
   supplierData &&
   supplierData.length > 0 &&
   supplierData.map((supplier = {}) => {
-    console.log({ supplier });
     return {
       key: supplier.id,
       name: (
@@ -62,7 +63,7 @@ const getSupplierTable = ({
             setOpenSupplierDetail(true);
           }}
         >
-          {supplier.firstName + supplier.lastName}
+          {supplier.firstName + ' ' + supplier.lastName}
         </Button>
       ),
       phone: supplier.phoneNumber,
@@ -120,8 +121,7 @@ const GroupRequestSuppliersTabComponent = ({
   const SUPPLIER_CONTACT = [
     { title: 'Name', dataIndex: 'name', key: 'name' },
     { title: 'Email', dataIndex: 'email', key: 'email' },
-    { title: 'Phone', dataIndex: 'phone', key: 'phone' },
-    { title: 'Is Ignore', dataIndex: 'isIgnore', key: 'isIgnore' }
+    { title: 'Phone', dataIndex: 'phone', key: 'phone' }
   ];
 
   const [isOpenContact, setIsOpenContact] = useState(false);
@@ -153,6 +153,11 @@ const GroupRequestSuppliersTabComponent = ({
   const { groupStatus = {} } = group;
   if (groupStatus.id === G_NEGOTIATING || groupStatus.id === G_PENDING) {
     SUPPLIER_CONTACT.push({
+      title: 'Is Negotiating',
+      dataIndex: 'isIgnore',
+      key: 'isIgnore'
+    });
+    SUPPLIER_CONTACT.push({
       title: 'Actions',
       dataIndex: 'actions',
       key: 'actions'
@@ -173,6 +178,7 @@ const GroupRequestSuppliersTabComponent = ({
         {openSupplierDetail ? (
           <UserProfileComponent
             isDrawer={true}
+            role={MODERATOR}
             isSupplier={true}
             userId={(currentSupplierSelected || {}).id}
           />

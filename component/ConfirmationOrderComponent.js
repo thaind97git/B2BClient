@@ -340,7 +340,7 @@ const ConfirmationOrderComponent = ({
                       cancelText: 'Cancel',
                       onOk: () => {
                         createOrder(
-                          { unitPrice: price * quantity, groupId, supplierId },
+                          { unitPrice: price, groupId, supplierId },
                           () => {
                             Router.push('/aggregator');
                           }

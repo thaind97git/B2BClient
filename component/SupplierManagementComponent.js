@@ -1,5 +1,5 @@
 import { Button, Drawer, Row, Select, Space, Typography } from 'antd';
-import { ExclamationCircleOutlined } from '@ant-design/icons';
+import { StarFilled } from '@ant-design/icons';
 import React, { Fragment, useEffect, useState } from 'react';
 import ReactTableLayout from '../layouts/ReactTableLayout';
 import { DEFAULT_DATE_RANGE } from '../utils';
@@ -22,9 +22,10 @@ import {
   U_PENDING,
   U_REJECT
 } from '../enums/accountStatus';
-import Modal from 'antd/lib/modal/Modal';
+
 import UserProfileComponent from './UserProfileComponent';
 import ListReportSupplierComponent from './ListReportSupplierComponent';
+import DisplayStarComponent from './Utils/DisplayStarComponent';
 const { Option } = Select;
 const { Title } = Typography;
 
@@ -69,10 +70,21 @@ const columns = [
     dataIndex: 'companyName',
     key: 'companyName'
   },
+  // {
+  //   title: 'Phone Number',
+  //   dataIndex: 'phoneNumber',
+  //   key: 'phoneNumber'
+  // },
   {
-    title: 'Phone Number',
-    dataIndex: 'phoneNumber',
-    key: 'phoneNumber'
+    title: (
+      <div>
+        Average Rating
+        <br />
+        <small>(Calculated by order's feedback)</small>
+      </div>
+    ),
+    dataIndex: 'averageRating',
+    key: 'averageRating'
   },
   {
     title: 'Status',
@@ -118,6 +130,12 @@ const SupplierManagementComponent = ({
             companyName: supplier.companyName,
             phoneNumber: supplier.phoneNumber,
             status: <UserStatusComponent status={supplierStatus} />,
+            averageRating: (
+              <DisplayStarComponent
+                isDisplay={supplier.totalFeedback > 0}
+                star={supplier.averageRating}
+              />
+            ),
             actions: (
               <Button
                 onClick={() => {
@@ -174,6 +192,7 @@ const SupplierManagementComponent = ({
         dispatchAction={getSupplierPaging}
         searchProps={{
           placeholder: 'Search by email',
+          placeholderDateRange: ['Rating from', 'To'],
           searchMessage,
           setSearchMessage,
           exElement: (
@@ -191,8 +210,7 @@ const SupplierManagementComponent = ({
               <Option value={U_REJECT}>Rejected</Option>
             </Select>
           ),
-          exCondition: [status],
-          isDateRange: false
+          exCondition: [status]
         }}
         dateRangeProps={{
           dateRange,

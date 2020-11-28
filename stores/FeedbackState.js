@@ -128,8 +128,8 @@ const GetFeedbackReportedForSupplierAPI = makeFetchAction(
   GET_FEEDBACK_REPORTED_FOR_SUPPLIER,
   ({ supplierId, pageIndex, pageSize }) =>
     nfetch({
-      endpoint: `/api/Feedback/FilterReportedSupplier${generateQuery({
-        supplierId,
+      endpoint: `/api/Feedback/FeedbackSupplier${generateQuery({
+        userId: supplierId,
         pageIndex,
         pageSize
       })}`,
