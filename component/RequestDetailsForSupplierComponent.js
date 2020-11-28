@@ -194,7 +194,7 @@ const RequestDetailsForSupplierComponent = ({ requestDetailsData }) => {
         } - ${(province || {}).description}`}
       />
       <DescriptionItem title="Lead Time" content={leadTimeDisplay} />
-      <div>
+      <Fragment>
         <Divider />
         <Col span={24}>
           <Title level={5}>RFQ Owner</Title>
@@ -206,7 +206,7 @@ const RequestDetailsForSupplierComponent = ({ requestDetailsData }) => {
           title="Company Name"
           content={(buyer || {}).companyName}
         /> */}
-      </div>
+      </Fragment>
       <style jsx global>{`
         .site-description-item-profile-wrapper {
           margin-bottom: 7px;

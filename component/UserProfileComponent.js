@@ -203,7 +203,7 @@ const UserProfileComponent = ({
         </Col>
         <Col span={18}>
           <Descriptions title={firstName + ' ' + lastName} column={1}>
-            {isAdmin && role !== MODERATOR && (
+            {(isAdmin || role === MODERATOR) && (
               <Descriptions.Item label="at">{companyName}</Descriptions.Item>
             )}
             <Descriptions.Item label="Email">{email}</Descriptions.Item>

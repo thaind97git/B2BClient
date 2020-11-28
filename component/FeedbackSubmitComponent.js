@@ -57,7 +57,13 @@ const getIconList = (answer) => {
     )
   };
 };
-const FeedbackSubmitComponent = ({ isAdmin = false }) => {
+const FeedbackSubmitComponent = ({
+  isAdmin = false,
+  span = 16,
+  title = true,
+  supplier
+}) => {
+  console.log({ supplier });
   const [answer1, setAnswer1] = useState(null);
   const [answer2, setAnswer2] = useState(null);
   const [answer3, setAnswer3] = useState(null);
@@ -67,19 +73,23 @@ const FeedbackSubmitComponent = ({ isAdmin = false }) => {
   const customIcons2 = getIconList(answer2);
   const customIcons3 = getIconList(answer3);
   const customIcons4 = getIconList(answer4);
-
+  if (!supplier) {
+    return null;
+  }
   return (
     <Row justify="center">
-      <Col span={16}>
+      <Col span={span}>
         <Card
           bordered={false}
           title={
             <Row>
-              <Col span={24}>
-                <Row justify="center" style={{ marginBottom: 12 }}>
-                  <b>{isAdmin ? 'Feedback Details' : 'Submit Feedback'}</b>
-                </Row>
-              </Col>
+              {title ? (
+                <Col span={24}>
+                  <Row justify="center" style={{ marginBottom: 12 }}>
+                    <b>{isAdmin ? 'Feedback Details' : 'Submit Feedback'}</b>
+                  </Row>
+                </Col>
+              ) : null}
               <Col span={24}>
                 <Row justify="space-between" align="middle">
                   <div
@@ -127,7 +137,11 @@ const FeedbackSubmitComponent = ({ isAdmin = false }) => {
           }
         >
           <Row justify="space-between">
-            <Col md={12} sm={24} style={{ margin: '12px 0px 24px 0px' }}>
+            <Col
+              md={12}
+              sm={24}
+              style={{ margin: '12px 0px 24px 0px', paddingLeft: '10%' }}
+            >
               1. Mức độ hài lòng về thời gian giao hàng.
               <br />
               <div style={styles.rate}>
@@ -142,7 +156,11 @@ const FeedbackSubmitComponent = ({ isAdmin = false }) => {
                 <More />
               </div>
             </Col>
-            <Col md={12} sm={24} style={{ margin: '12px 0px 24px 0px' }}>
+            <Col
+              md={12}
+              sm={24}
+              style={{ margin: '12px 0px 24px 0px', paddingLeft: '10%' }}
+            >
               2. Mức độ hài lòng về chất lượng sản phâm.
               <br />
               <div style={styles.rate}>
@@ -159,7 +177,11 @@ const FeedbackSubmitComponent = ({ isAdmin = false }) => {
             </Col>
           </Row>
           <Row>
-            <Col md={12} sm={24} style={{ margin: '24px 0px' }}>
+            <Col
+              md={12}
+              sm={24}
+              style={{ margin: '24px 0px', paddingLeft: '10%' }}
+            >
               3. Mức độ hài lòng về giá nhà cung cấp đưa ra.
               <br />
               <div style={styles.rate}>
@@ -174,7 +196,11 @@ const FeedbackSubmitComponent = ({ isAdmin = false }) => {
                 <More />
               </div>
             </Col>
-            <Col md={12} sm={24} style={{ margin: '24px 0px' }}>
+            <Col
+              md={12}
+              sm={24}
+              style={{ margin: '24px 0px', paddingLeft: '10%' }}
+            >
               4. Mức độ hài lòng về đóng gói sản phẩm.
               <br />
               <div style={styles.rate}>
@@ -191,7 +217,11 @@ const FeedbackSubmitComponent = ({ isAdmin = false }) => {
             </Col>
           </Row>
           <Row>
-            <Col md={18} sm={24} style={{ margin: '24px 0px' }}>
+            <Col
+              md={22}
+              sm={24}
+              style={{ margin: '24px 0px', paddingLeft: '10%' }}
+            >
               5. Thank you for your feedback. <br />
               <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>Any suggestions for
               improvement?.

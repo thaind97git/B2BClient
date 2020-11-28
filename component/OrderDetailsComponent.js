@@ -50,6 +50,7 @@ import { get } from 'lodash/fp';
 import { ADMIN, BUYER, MODERATOR, SUPPLIER } from '../enums/accountRoles';
 import RequestDetailsForSupplierComponent from './RequestDetailsForSupplierComponent';
 import { R_DONE } from '../enums/requestStatus';
+import FeedbackSubmitComponent from './FeedbackSubmitComponent';
 const { Title, Text } = Typography;
 
 const connectToRedux = connect(
@@ -103,6 +104,7 @@ const OrderDetailsComponent = ({
   const [currentRequestSelected, setCurrentRequestSelected] = useState({});
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const [openFeedback, setOpenFeedback] = useState(false);
   const { id: orderId } = router.query;
 
   useEffect(() => {
@@ -210,6 +212,24 @@ const OrderDetailsComponent = ({
 
   return (
     <div>
+      <Modal
+        width={1000}
+        title="Feedback form"
+        visible={openFeedback}
+        onOk={() => {}}
+        onCancel={() => {
+          setOpenFeedback(false);
+        }}
+        footer={false}
+      >
+        {openFeedback ? (
+          <FeedbackSubmitComponent
+            title={false}
+            span={22}
+            supplier={supplier}
+          />
+        ) : null}
+      </Modal>
       <Drawer
         width={640}
         title="RFQ details"
@@ -404,16 +424,43 @@ const OrderDetailsComponent = ({
                 dataSource={PRODUCT_DETAIL}
                 rowKey="id"
                 pagination={false}
-                footer={() => (
-                  <div align="right" style={{ height: '20px' }}>
-                    <p style={{ color: '#199eb8', fontSize: 18 }}>
-                      Total{' '}
-                      {displayCurrency(
-                        unitPrice * (role === BUYER ? quantity : totalQuantity)
-                      )}
-                    </p>
-                  </div>
-                )}
+                footer={() => {
+                  if (role === BUYER && (requestStatus || {}).id === R_DONE) {
+                    return (
+                      <Row justify="space-between">
+                        <div>
+                          <Button
+                            onClick={() => setOpenFeedback(true)}
+                            type="primary"
+                          >
+                            Give Feedback
+                          </Button>
+                        </div>
+                        <div style={{ height: '20px' }}>
+                          <p style={{ color: '#199eb8', fontSize: 18 }}>
+                            Total{' '}
+                            {displayCurrency(
+                              unitPrice *
+                                (role === BUYER ? quantity : totalQuantity)
+                            )}
+                          </p>
+                        </div>
+                      </Row>
+                    );
+                  } else {
+                    return (
+                      <div align="right" style={{ height: '20px' }}>
+                        <p style={{ color: '#199eb8', fontSize: 18 }}>
+                          Total{' '}
+                          {displayCurrency(
+                            unitPrice *
+                              (role === BUYER ? quantity : totalQuantity)
+                          )}
+                        </p>
+                      </div>
+                    );
+                  }
+                }}
               />
             </Card>
             {role !== BUYER && (
@@ -487,7 +534,7 @@ const OrderDetailsComponent = ({
                                 Modal.confirm({
                                   title: (
                                     <div>
-                                      Do you want to change this Address to
+                                      Do you want to change this Request to
                                       Delivered?
                                       <br />
                                       <Text

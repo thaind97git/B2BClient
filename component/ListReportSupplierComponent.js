@@ -1,5 +1,4 @@
 import { Button, Col, Input, Modal, Row, Space, Typography } from 'antd';
-import Router from 'next/router';
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
@@ -12,9 +11,7 @@ import {
   GetFeedbackReportedForSupplierResetter
 } from '../stores/FeedbackState';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
-import { openNotification } from '../utils';
-import FeedbackStatusComponent from './Utils/FeedbackStatusComponent';
-import FeedbackTypeComponent from './Utils/FeedbackTypeComponent';
+import { displayCurrency, getUtcTime, openNotification } from '../utils';
 import { getUser, getUserData } from '../stores/UserState';
 import {
   approveSupplier,
@@ -31,7 +28,7 @@ import {
   UnBanUserResetter
 } from '../stores/SupplierState';
 import { get } from 'lodash/fp';
-import { F_AUCTION, F_ORDER, F_RFQ, F_SYSTEM } from '../enums/feedbackType';
+import DisplayStarComponent from './Utils/DisplayStarComponent';
 const { Title } = Typography;
 const connectToRedux = connect(
   createStructuredSelector({
@@ -70,24 +67,39 @@ const connectToRedux = connect(
 );
 const columns = [
   {
-    title: 'Title',
-    dataIndex: 'title',
-    key: 'title'
+    title: 'Group Name',
+    dataIndex: 'groupName',
+    key: 'groupName'
   },
   {
-    title: 'Service Type',
-    dataIndex: 'service',
-    key: 'service'
+    title: 'Total Feedback',
+    dataIndex: 'totalFeedback',
+    key: 'totalFeedback'
+  },
+  // {
+  //   title: 'Created At',
+  //   dataIndex: 'createdAt',
+  //   key: 'createdAt'
+  // },
+  // {
+  //   title: 'Quantity',
+  //   dataIndex: 'quantity',
+  //   key: 'quantity'
+  // },
+  // {
+  //   title: 'Unit Price',
+  //   dataIndex: 'unitPrice',
+  //   key: 'unitPrice'
+  // },
+  {
+    title: 'Average Rating',
+    dataIndex: 'averageRatingOrder',
+    key: 'averageRatingOrder'
   },
   {
-    title: 'Status',
-    dataIndex: 'status',
-    key: 'status'
-  },
-  {
-    title: 'Actions',
-    dataIndex: 'actions',
-    key: 'actions'
+    title: 'Details',
+    dataIndex: 'detail',
+    key: 'detail'
   }
 ];
 const ListReportSupplierComponent = ({
@@ -167,37 +179,34 @@ const ListReportSupplierComponent = ({
     return (
       feedbackData &&
       feedbackData.length > 0 &&
-      feedbackData.map((feedback = {}) => ({
-        key: feedback.id,
-        title: feedback.title,
-        service: (
-          <FeedbackTypeComponent
-            status={
-              feedback.request
-                ? F_RFQ
-                : feedback.reverseAuction
-                ? F_AUCTION
-                : feedback.order
-                ? F_ORDER
-                : F_SYSTEM
-            }
-          />
-        ),
-        status: (
-          <FeedbackStatusComponent
-            status={feedback.feedbackStatus.id}
-          ></FeedbackStatusComponent>
-        ),
-        actions: (
-          <a
-            target="_blank"
-            rel="noreferrer"
-            href={`/admin/feedback/details?id=${feedback.id}`}
-          >
-            View
-          </a>
-        )
-      }))
+      feedbackData.map((feedback = {}) => {
+        const { order = {}, feedbackList = [] } = feedback || [];
+        const { group = {}, quantity, unitPrice } = order;
+        const averageRatingOrder =
+          feedbackList.reduce((prev, current = {}) => {
+            return prev + +current.averageRating;
+          }, 0) / feedbackList.length;
+        return {
+          key: feedback.id,
+          groupName: group.description,
+          totalFeedback: feedbackList.length,
+          createdAt: getUtcTime(order.dateCreated),
+          quantity: quantity,
+          unitPrice: displayCurrency(unitPrice),
+          averageRatingOrder: (
+            <DisplayStarComponent star={averageRatingOrder} />
+          ),
+          detail: (
+            <a
+              target="_blank"
+              rel="noreferrer"
+              href={`/admin/order/feedback?id=${feedback.id}`}
+            >
+              View
+            </a>
+          )
+        };
+      })
     );
   };
 
@@ -308,8 +317,8 @@ const ListReportSupplierComponent = ({
       </Col>
       <Col span={24}>
         <Row justify="space-between" align="middle">
-          <Title level={5}>Supplier Reported List</Title>
-          <Title level={5}>Total Report: {totalCount}</Title>
+          <Title level={5}>Order Feedback List</Title>
+          <Title level={5}>Total: {totalCount}</Title>
         </Row>
       </Col>
       <ReactTableLayout
