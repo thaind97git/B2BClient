@@ -15,7 +15,7 @@ const columns = [
     key: 'totalQuantity'
   },
   {
-    title: 'Total Price',
+    title: 'Total Sales',
     dataIndex: 'totalPrice',
     key: 'totalPrice'
   }

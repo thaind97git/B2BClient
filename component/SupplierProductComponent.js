@@ -33,8 +33,7 @@ import {
   supplierRegisterProduct,
   SupplierRegisterProductData,
   supplierUpdateQuotation,
-  SupplierUpdateQuotationData,
-  SupplierUpdateQuotationResetter
+  SupplierUpdateQuotationData
 } from '../stores/SupplierState';
 const { Title } = Typography;
 const connectToRedux = connect(
@@ -56,8 +55,8 @@ const connectToRedux = connect(
       ),
     supplierRegisterProduct: ({ productId, description, callback }) =>
       dispatch(supplierRegisterProduct({ productId, description, callback })),
-    supplierUpdateQuotation: ({ id, description }) =>
-      dispatch(supplierUpdateQuotation({ id, description }))
+    supplierUpdateQuotation: ({ id, description }, callback) =>
+      dispatch(supplierUpdateQuotation({ id, description, callback }))
   })
 );
 const SupplierProductComponent = ({

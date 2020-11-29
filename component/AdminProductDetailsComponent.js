@@ -12,6 +12,7 @@ import {
   Tag
 } from 'antd';
 import {
+  getProductBySupplier,
   getProductDetails,
   GetProductDetailsData,
   GetProductDetailsError,
@@ -50,7 +51,24 @@ const connectToRedux = connect(
     resetData: () => {
       dispatch(GetProductDetailsResetter);
       dispatch(GetSupplierProductDetailsResetter);
-    }
+    },
+    getProductBySupplier: ({
+      pageIndex,
+      pageSize,
+      searchMessage,
+      dateRange = {},
+      category
+    }) =>
+      dispatch(
+        getProductBySupplier({
+          pageIndex,
+          pageSize,
+          productName: searchMessage,
+          fromDate: dateRange.fromDate,
+          toDate: dateRange.toDate,
+          category
+        })
+      )
   })
 );
 const DescriptionItem = ({ title, content }) => (
@@ -76,7 +94,8 @@ const AdminProductDetailsComponent = ({
   supplierProductDetailData,
   supplierProductDetailError,
   supplierUpdateQuotation,
-  updateQuotationData
+  updateQuotationData,
+  getProductBySupplier
 }) => {
   const [loading, setLoading] = useState(true);
   const [openQuotation, setOpenQuotation] = useState(false);
@@ -151,7 +170,10 @@ const AdminProductDetailsComponent = ({
           supplierUpdateQuotation({
             productId: productID,
             description: quotationsUpdate,
-            callback: () => getSupplierProductDetails(productID)
+            callback: () => {
+              isSupplier && getProductBySupplier({});
+              getSupplierProductDetails(productID);
+            }
           });
         }}
         onCancel={() => setOpenQuotation(false)}
