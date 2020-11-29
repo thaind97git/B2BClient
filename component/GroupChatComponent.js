@@ -113,7 +113,6 @@ const TabsConversation = ({
           supplierId,
           description: quotations
         } = conversation;
-        console.log({ conversation });
         const contentLabel = `${yourMessage ? 'You: ' : ''} ${getShortContent(
           lastMessage,
           12
@@ -146,7 +145,7 @@ const TabsConversation = ({
                       quotations={quotations}
                       isTooltip
                     />
-                    {!isClosingDeal && (
+                    {isClosingDeal && (
                       <Button
                         icon={<FileProtectOutlined />}
                         size="small"
@@ -164,7 +163,7 @@ const TabsConversation = ({
                         Closing deal
                       </Button>
                     )}
-                    {!ignoreSup && (
+                    {(ignoreSup || unIgnoreSup) && (
                       <Button
                         onClick={() => {
                           currentIgnore
@@ -396,6 +395,7 @@ const GroupChatComponent = ({
           }
           #aggregator-group-chat .ant-tabs-left > .ant-tabs-nav .ant-tabs-tab {
             padding-left: 0px;
+            margin-right: 16px;
           }
 
           .aggregator-chat .ant-tabs-nav-list {

@@ -28,7 +28,6 @@ import {
 } from '../stores/AuctionState';
 import { get } from 'lodash/fp';
 import moment from 'moment';
-import SignalR from '../libs/signalR';
 import ScrollToBottom from 'react-scroll-to-bottom';
 import BiddingAuctionHistoryComponent from './BiddingAuctionHistoryComponent';
 const { Panel } = Collapse;
@@ -44,10 +43,6 @@ const connectToRedux = connect(
   })
 );
 
-const signalR = new SignalR({
-  hubDomain: 'reverseAuctionHub'
-});
-signalR.startConnection();
 const Rank = ({ rank }) => {
   let color;
   switch (rank) {
@@ -113,7 +108,8 @@ const BiddingAuctionComponent = ({
   placeNewBid,
   getAuctionHistory,
   auctionHistoryData,
-  isAggregator = false
+  isAggregator = false,
+  signalR
 }) => {
   const [isPlaceBid, setIsPlaceBid] = useState(false);
   const [bidTmp, setBidTmp] = useState(0);
@@ -133,7 +129,6 @@ const BiddingAuctionComponent = ({
   const [isFirstRank, setIsFirstRank] = useState(false);
   useEffect(() => {
     if (auction) {
-      console.log({ auction });
       const { id, minimumBidChange, maximumBidChange } = auction;
       getAuctionHistory(id);
       setMiniPercentageChange(minimumBidChange);
@@ -144,6 +139,7 @@ const BiddingAuctionComponent = ({
   // Check is first rank
   useEffect(() => {
     if (lowestBid === yourLastedBid) {
+      console.log({ lowestBid, yourLastedBid });
       setIsFirstRank(true);
     } else {
       setIsFirstRank(false);
@@ -311,7 +307,7 @@ const BiddingAuctionComponent = ({
               )}
             </Descriptions.Item>
             <Descriptions.Item label="YOUR RANK" span={3}>
-              {isFirstRank ? (
+              {lowestBid !== 0 && isFirstRank ? (
                 <Rank rank={1} />
               ) : (
                 <Tag icon={<ExclamationCircleOutlined />} color="warning">

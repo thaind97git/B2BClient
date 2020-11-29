@@ -12,7 +12,7 @@ import {
   TeamOutlined,
   DashboardOutlined,
   BellOutlined,
-  LogoutOutlined
+  FileDoneOutlined
 } from '@ant-design/icons';
 import MemberNavComponent from '../component/MemberNavComponent';
 import { currentPath } from '../utils';
@@ -69,6 +69,12 @@ const ADMIN_MENU = [
     link: '/admin/buyer'
   },
   {
+    key: '6',
+    icon: <FileDoneOutlined />,
+    label: 'Order',
+    link: '/admin/order'
+  },
+  {
     key: '4',
     icon: (
       <img
@@ -82,15 +88,6 @@ const ADMIN_MENU = [
     label: 'Feedback',
     link: '/admin/feedback'
   }
-  // {
-  //   key: '7',
-  //   icon: <LogoutOutlined style={{ color: 'red' }} />,
-  //   label: 'Logout',
-  //   action: () => {
-  //     Router.push('/login');
-  //     removeToken();
-  //   }
-  // }
 ];
 
 const connectToRedux = connect(

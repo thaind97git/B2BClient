@@ -78,7 +78,6 @@ const getRequestTable = ({
     requestData &&
     requestData.length > 0 &&
     requestData.map((request = {}) => {
-      console.log({ request });
       const { requestStatus = {} } = request;
       return {
         key: request.id,
@@ -198,6 +197,7 @@ const GroupRequestDetailsTabComponent = ({
         key={'rfq-details'}
       >
         <RequestDetailsComponent
+          isAggregator
           isRemove={isCanRemove ? true : false}
           isSupplier={false}
           requestId={currentRequestSelected.id}
@@ -223,7 +223,7 @@ const GroupRequestDetailsTabComponent = ({
               <GroupStatusComponent status={status} />
             </Descriptions.Item>
             <Descriptions.Item label="Created date">
-              {dateCreated}
+              {getUtcTime(dateCreated)}
             </Descriptions.Item>
             <Descriptions.Item label="Total Quantity">
               <b>
@@ -241,7 +241,7 @@ const GroupRequestDetailsTabComponent = ({
             </Descriptions.Item>
 
             <Descriptions.Item label="Description">
-              {description}
+              {description || 'N/A'}
             </Descriptions.Item>
           </Descriptions>
         </Card>

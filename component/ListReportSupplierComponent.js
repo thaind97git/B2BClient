@@ -1,5 +1,13 @@
-import { Button, Col, Input, Modal, Row, Space, Typography } from 'antd';
-import Router from 'next/router';
+import {
+  Button,
+  Col,
+  Input,
+  Modal,
+  Row,
+  Select,
+  Space,
+  Typography
+} from 'antd';
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
@@ -12,9 +20,7 @@ import {
   GetFeedbackReportedForSupplierResetter
 } from '../stores/FeedbackState';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
-import { openNotification } from '../utils';
-import FeedbackStatusComponent from './Utils/FeedbackStatusComponent';
-import FeedbackTypeComponent from './Utils/FeedbackTypeComponent';
+import { getUtcTime, openNotification } from '../utils';
 import { getUser, getUserData } from '../stores/UserState';
 import {
   approveSupplier,
@@ -31,8 +37,15 @@ import {
   UnBanUserResetter
 } from '../stores/SupplierState';
 import { get } from 'lodash/fp';
-import { F_AUCTION, F_ORDER, F_RFQ, F_SYSTEM } from '../enums/feedbackType';
+import DisplayStarComponent from './Utils/DisplayStarComponent';
+import {
+  ASCENDING,
+  DESCENDING,
+  HIGHEST_RATING,
+  LOWEST_RATING
+} from '../enums/sortFeedback';
 const { Title } = Typography;
+const { Option } = Select;
 const connectToRedux = connect(
   createStructuredSelector({
     reportData: GetFeedbackReportedForSupplierData,
@@ -44,12 +57,20 @@ const connectToRedux = connect(
     rejectData: RejectSupplierData
   }),
   (dispatch) => ({
-    getReport: (pageIndex, pageSize, searchMessage, dateRange, supplierId) => {
+    getReport: (
+      pageIndex,
+      pageSize,
+      searchMessage,
+      dateRange = {},
+      supplierId
+    ) => {
       dispatch(
         getFeedbackReportedForSupplier({
           pageSize,
           pageIndex,
-          supplierId
+          supplierId,
+          fromDate: dateRange.fromDate,
+          toDate: dateRange.toDate
         })
       );
     },
@@ -70,24 +91,34 @@ const connectToRedux = connect(
 );
 const columns = [
   {
-    title: 'Title',
-    dataIndex: 'title',
-    key: 'title'
+    title: 'Feedback From',
+    dataIndex: 'from',
+    key: 'from'
   },
   {
-    title: 'Service Type',
-    dataIndex: 'service',
-    key: 'service'
+    title: 'Date Created',
+    dataIndex: 'createdAt',
+    key: 'createdAt'
+  },
+  // {
+  //   title: 'Quantity',
+  //   dataIndex: 'quantity',
+  //   key: 'quantity'
+  // },
+  // {
+  //   title: 'Unit Price',
+  //   dataIndex: 'unitPrice',
+  //   key: 'unitPrice'
+  // },
+  {
+    title: 'Average Rating',
+    dataIndex: 'averageRatingOrder',
+    key: 'averageRatingOrder'
   },
   {
-    title: 'Status',
-    dataIndex: 'status',
-    key: 'status'
-  },
-  {
-    title: 'Actions',
-    dataIndex: 'actions',
-    key: 'actions'
+    title: 'Details',
+    dataIndex: 'detail',
+    key: 'detail'
   }
 ];
 const ListReportSupplierComponent = ({
@@ -111,6 +142,7 @@ const ListReportSupplierComponent = ({
   const [loading, setLoading] = useState(false);
   const [banReason, setBanReason] = useState('');
   const [openBan, setOpenBan] = useState(false);
+  const [sortBy, setSortBy] = useState(DESCENDING);
   useEffect(() => {
     if (reportData || reportError) {
       setLoading(false);
@@ -167,37 +199,24 @@ const ListReportSupplierComponent = ({
     return (
       feedbackData &&
       feedbackData.length > 0 &&
-      feedbackData.map((feedback = {}) => ({
-        key: feedback.id,
-        title: feedback.title,
-        service: (
-          <FeedbackTypeComponent
-            status={
-              feedback.request
-                ? F_RFQ
-                : feedback.reverseAuction
-                ? F_AUCTION
-                : feedback.order
-                ? F_ORDER
-                : F_SYSTEM
-            }
-          />
-        ),
-        status: (
-          <FeedbackStatusComponent
-            status={feedback.feedbackStatus.id}
-          ></FeedbackStatusComponent>
-        ),
-        actions: (
-          <a
-            target="_blank"
-            rel="noreferrer"
-            href={`/admin/feedback/details?id=${feedback.id}`}
-          >
-            View
-          </a>
-        )
-      }))
+      feedbackData.map((feedback = {}) => {
+        const { id, averageRating, dateCreated, buyer } = feedback || [];
+        return {
+          key: feedback.id,
+          from: buyer.email,
+          createdAt: getUtcTime(dateCreated),
+          averageRatingOrder: <DisplayStarComponent star={averageRating} />,
+          detail: (
+            <a
+              target="_blank"
+              rel="noreferrer"
+              href={`/admin/feedback/details?id=${id}`}
+            >
+              View
+            </a>
+          )
+        };
+      })
     );
   };
 
@@ -308,8 +327,8 @@ const ListReportSupplierComponent = ({
       </Col>
       <Col span={24}>
         <Row justify="space-between" align="middle">
-          <Title level={5}>Supplier Reported List</Title>
-          <Title level={5}>Total Report: {totalCount}</Title>
+          <Title level={5}>Order Feedback List</Title>
+          <Title level={5}>Total: {totalCount}</Title>
         </Row>
       </Col>
       <ReactTableLayout
@@ -317,9 +336,25 @@ const ListReportSupplierComponent = ({
         loading={loading}
         dispatchAction={getReport}
         searchProps={{
-          exCondition: [supplierId],
+          exCondition: [supplierId, sortBy],
           isDateRange: false,
-          isSearch: false
+          isSearch: false,
+          exElement: (
+            <Space>
+              <Select
+                size="small"
+                placeholder="Sort"
+                style={{ width: 200 }}
+                onChange={(value) => setSortBy(value)}
+                defaultValue={DESCENDING}
+              >
+                <Option value={DESCENDING}>Date recently</Option>
+                <Option value={ASCENDING}>Date oldest</Option>
+                <Option value={LOWEST_RATING}>Lowest rating</Option>
+                <Option value={HIGHEST_RATING}>Highest rating</Option>
+              </Select>
+            </Space>
+          )
         }}
         data={getFeedbackTable(feedbackData || [])}
         columns={columns}

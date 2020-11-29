@@ -1,10 +1,10 @@
-import * as React from "react";
-import { DatePicker } from "antd";
+import * as React from 'react';
+import { DatePicker } from 'antd';
 
-import { formatDate, isValidDateFormat, DATE_FORMAT } from "../utils";
+import { formatDate, isValidDateFormat, DATE_FORMAT } from '../utils';
 const { RangePicker } = DatePicker;
 const dateFormat = DATE_FORMAT;
-function DateRangePicker({ setDateRange }) {
+function DateRangePicker({ setDateRange, placeholder = [] }) {
   const [selectedDate, setSelectedDate] = React.useState([null, null]);
 
   const handleDateChange = (date = []) => {
@@ -38,6 +38,7 @@ function DateRangePicker({ setDateRange }) {
   return (
     <>
       <RangePicker
+        placeholder={placeholder}
         size="large"
         onChange={(date) => {
           handleDateChange(date || []);

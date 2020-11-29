@@ -7,15 +7,14 @@ import { notification } from 'antd';
 import brn from 'brn';
 import { B_CANCELED, B_CLOSED, B_DONE, B_FAILED } from '../enums/biddingStatus';
 import {
-  N_ADMIN_REPLY_FEEDBACK,
   N_AUCTION_WINNER,
+  N_FEEDBACK_CREATED,
   N_INVITATION,
   N_ORDER_CREATED,
   N_REQUEST_CANCELED,
   N_REQUEST_GROUPED,
   N_REVERSE_AUCTION_START,
-  N_RFQ_OUT_OF_DATE,
-  N_USER_REPLY_FEEDBACK
+  N_RFQ_OUT_OF_DATE
 } from '../enums/notificationStatus';
 import { ADMIN, BUYER, MODERATOR, SUPPLIER } from '../enums/accountRoles';
 import { Fragment } from 'react';
@@ -349,14 +348,6 @@ export const getLabelNotify = ({ type, role = BUYER, id, title }) => {
         );
         link = `/supplier/order/details?id=${id}`;
         break;
-      case N_ADMIN_REPLY_FEEDBACK:
-        label = (
-          <Fragment>
-            Admin replied your feedback <b>{title}</b>.
-          </Fragment>
-        );
-        link = `/supplier/feedback/details?id=${id}`;
-        break;
       default:
         break;
     }
@@ -386,26 +377,18 @@ export const getLabelNotify = ({ type, role = BUYER, id, title }) => {
         );
         link = `/buyer/order/details?id=${id}`;
         break;
-      case N_ADMIN_REPLY_FEEDBACK:
-        label = (
-          <Fragment>
-            Admin replied your feedback <b>{title}</b>.
-          </Fragment>
-        );
-        link = `/buyer/feedback/details?id=${id}`;
-        break;
       default:
         break;
     }
   } else if (role === ADMIN) {
     switch (type) {
-      case N_USER_REPLY_FEEDBACK:
+      case N_FEEDBACK_CREATED:
         label = (
           <Fragment>
-            User replied a feedback <b>{title}</b>.
+            Feedback for <b>{title}</b> has been created.
           </Fragment>
         );
-        link = `/admin/feedback/details?id=${id}`;
+        link = `/admin/feedback`;
         break;
       default:
         break;

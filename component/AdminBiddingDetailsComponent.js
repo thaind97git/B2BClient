@@ -46,7 +46,6 @@ const AdminBiddingDetailsComponent = ({
     aggregator = {},
     group = {}
   } = auctionDetailsData;
-  console.log({ reverseAuctionId });
   const { firstName, lastName } = aggregator;
   const BIDDING = [
     {

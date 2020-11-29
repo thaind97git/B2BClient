@@ -353,7 +353,8 @@ const AdminRequestManagement = ({
           <RequestDetailsComponent
             setOpenDetails={setOpenDetails}
             requestId={(currentRequestSelected || {}).id}
-            isSupplier={false}
+            isAggregator
+            isBuyer={false}
           />
         ) : null}
       </Drawer>

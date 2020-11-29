@@ -1,12 +1,39 @@
-import { Button, Card, Col, Input, Rate, Row } from 'antd';
-import { FrownOutlined, MehOutlined, SmileOutlined } from '@ant-design/icons';
+import { Button, Card, Col, Input, message, Rate, Row } from 'antd';
 import React, { Fragment, useEffect, useState } from 'react';
 import { displayCurrency } from '../utils';
+import { connect } from 'react-redux';
+import { createStructuredSelector } from 'reselect';
+import {
+  createFeedback,
+  CreateFeedbackData,
+  getFeedbackQuestions,
+  GetFeedbackQuestionsData,
+  CreateFeedbackError,
+  CreateFeedbackResetter
+} from '../stores/FeedbackState';
+import { get } from 'lodash/fp';
 const styles = {
   rate: {
     margin: '8px 0px 8px 12px'
   }
 };
+const connectToRedux = connect(
+  createStructuredSelector({
+    questionData: GetFeedbackQuestionsData,
+    createFeedbackData: CreateFeedbackData,
+    createFeedbackError: CreateFeedbackError
+  }),
+  (dispatch) => ({
+    getQuestions: () => dispatch(getFeedbackQuestions()),
+    createFeedback: ({ requestId, description, feedbackAnswers }) => {
+      dispatch(createFeedback({ requestId, description, feedbackAnswers }));
+    },
+    resetSubmitFeedback: () => {
+      // dispatch(CreateFeedbackError);
+      dispatch(CreateFeedbackResetter);
+    }
+  })
+);
 const More = () => (
   <div style={{ marginTop: 4 }}>
     <small>Very dissatisfied</small>
@@ -57,39 +84,76 @@ const getIconList = (answer) => {
     )
   };
 };
-const FeedbackSubmitComponent = ({ isAdmin = false }) => {
+const FeedbackSubmitComponent = ({
+  isAdmin = false,
+  span = 16,
+  title = true,
+  supplier,
+  questionData,
+  getQuestions,
+  product,
+  quantity,
+  unitPrice,
+  createFeedback,
+  createFeedbackData,
+  createFeedbackError,
+  requestId,
+  resetSubmitFeedback
+}) => {
   const [answer1, setAnswer1] = useState(null);
   const [answer2, setAnswer2] = useState(null);
   const [answer3, setAnswer3] = useState(null);
   const [answer4, setAnswer4] = useState(null);
+  const [description, setDescription] = useState('');
 
   const customIcons1 = getIconList(answer1);
   const customIcons2 = getIconList(answer2);
   const customIcons3 = getIconList(answer3);
   const customIcons4 = getIconList(answer4);
 
+  useEffect(() => {
+    getQuestions();
+  }, [getQuestions]);
+  useEffect(() => {
+    resetSubmitFeedback();
+  }, [resetSubmitFeedback]);
+
+  useEffect(() => {
+    if (createFeedbackError) {
+      message.error('Submit feedback fail!');
+    }
+  }, [createFeedbackError]);
+
+  if (!supplier && !questionData && !product) {
+    return null;
+  }
+
   return (
     <Row justify="center">
-      <Col span={16}>
+      <Col span={span}>
         <Card
           bordered={false}
           title={
             <Row>
-              <Col span={24}>
-                <Row justify="center" style={{ marginBottom: 12 }}>
-                  <b>{isAdmin ? 'Feedback Details' : 'Submit Feedback'}</b>
-                </Row>
-              </Col>
+              {title ? (
+                <Col span={24}>
+                  <Row justify="center" style={{ marginBottom: 12 }}>
+                    <b>{isAdmin ? 'Feedback Details' : 'Submit Feedback'}</b>
+                  </Row>
+                </Col>
+              ) : null}
               <Col span={24}>
                 <Row justify="space-between" align="middle">
-                  <div
+                  <Col
                     style={{
                       display: 'flex',
                       flexDirection: 'row',
                       alignItems: 'center',
                       color: 'rgba(0, 0, 0, 0.65)',
+                      whiteSpace: 'normal',
                       fontSize: 14
                     }}
+                    span={15}
                   >
                     <span>&nbsp;&nbsp;&nbsp;</span>
                     <div>
@@ -101,34 +165,39 @@ const FeedbackSubmitComponent = ({ isAdmin = false }) => {
                         </Fragment>
                       )}
                       <br />
-                      Product Name: Product 1
+                      <div>Product Name: {product.productName}</div>
+                      Quantity: {quantity}{' '}
+                      {get('unitOfMeasure.description')(product)}
                       <br />
-                      Quantity: 120 Units
-                      <br />
-                      Unit Price: {displayCurrency(200000)}
+                      Unit Price: {displayCurrency(unitPrice)}
                     </div>
-                  </div>
-                  <div
+                  </Col>
+                  <Col
                     style={{
                       color: 'rgba(0, 0, 0, 0.65)',
                       fontSize: 14,
                       textAlign: 'right'
                     }}
+                    span={8}
                   >
                     <b>Supplier Information</b>
                     <br />
-                    Feedback to: supplier1@gmail.com
+                    Feedback to: {supplier.email}
                     <br />
-                    Company Name: FP Company
-                  </div>
+                    Company Name: {supplier.companyName}
+                  </Col>
                 </Row>
               </Col>
             </Row>
           }
         >
           <Row justify="space-between">
-            <Col md={12} sm={24} style={{ margin: '12px 0px 24px 0px' }}>
-              1. Mức độ hài lòng về thời gian giao hàng.
+            <Col
+              md={12}
+              sm={24}
+              style={{ margin: '12px 0px 24px 0px', paddingLeft: '10%' }}
+            >
+              1. {get('[0].description')(questionData)}
               <br />
               <div style={styles.rate}>
                 <Rate
@@ -142,8 +211,12 @@ const FeedbackSubmitComponent = ({ isAdmin = false }) => {
                 <More />
               </div>
             </Col>
-            <Col md={12} sm={24} style={{ margin: '12px 0px 24px 0px' }}>
-              2. Mức độ hài lòng về chất lượng sản phâm.
+            <Col
+              md={12}
+              sm={24}
+              style={{ margin: '12px 0px 24px 0px', paddingLeft: '10%' }}
+            >
+              2. {get('[1].description')(questionData)}
               <br />
               <div style={styles.rate}>
                 <Rate
@@ -159,8 +232,12 @@ const FeedbackSubmitComponent = ({ isAdmin = false }) => {
             </Col>
           </Row>
           <Row>
-            <Col md={12} sm={24} style={{ margin: '24px 0px' }}>
-              3. Mức độ hài lòng về giá nhà cung cấp đưa ra.
+            <Col
+              md={12}
+              sm={24}
+              style={{ margin: '24px 0px', paddingLeft: '10%' }}
+            >
+              3. {get('[2].description')(questionData)}
               <br />
               <div style={styles.rate}>
                 <Rate
@@ -174,8 +251,12 @@ const FeedbackSubmitComponent = ({ isAdmin = false }) => {
                 <More />
               </div>
             </Col>
-            <Col md={12} sm={24} style={{ margin: '24px 0px' }}>
-              4. Mức độ hài lòng về đóng gói sản phẩm.
+            <Col
+              md={12}
+              sm={24}
+              style={{ margin: '24px 0px', paddingLeft: '10%' }}
+            >
+              4. {get('[3].description')(questionData)}
               <br />
               <div style={styles.rate}>
                 <Rate
@@ -191,22 +272,60 @@ const FeedbackSubmitComponent = ({ isAdmin = false }) => {
             </Col>
           </Row>
           <Row>
-            <Col md={18} sm={24} style={{ margin: '24px 0px' }}>
-              5. Thank you for your feedback. <br />
-              <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>Any suggestions for
-              improvement?.
+            <Col
+              md={22}
+              sm={24}
+              style={{ margin: '24px 0px', paddingLeft: '10%' }}
+            >
+              5. Is there anything we can do to improve ?
               <br />
               <div style={styles.rate}>
                 <Input.TextArea
+                  value={description}
+                  onChange={(event) => setDescription(event.target.value)}
+                  maxLength={300}
+                  showCount={true}
                   autoSize={{ minRows: 5, maxRows: 6 }}
-                  placeholder="Ý kiến đóng góp về chất lượng dịch vụ."
                 />
               </div>
             </Col>
           </Row>
           {!isAdmin && (
             <Row justify="center">
-              <Button type="primary">Submit</Button>
+              <Button
+                disabled={!answer1 || !answer2 || !answer3 || !answer4}
+                onClick={() => {
+                  if (!answer1 || !answer2 || !answer3 || !answer4) {
+                    return;
+                  } else {
+                    createFeedback({
+                      requestId,
+                      description,
+                      feedbackAnswers: [
+                        {
+                          feedbackQuestionId: 1,
+                          rating: answer1
+                        },
+                        {
+                          feedbackQuestionId: 2,
+                          rating: answer2
+                        },
+                        {
+                          feedbackQuestionId: 3,
+                          rating: answer3
+                        },
+                        {
+                          feedbackQuestionId: 4,
+                          rating: answer4
+                        }
+                      ]
+                    });
+                  }
+                }}
+                type="primary"
+              >
+                Submit
+              </Button>
             </Row>
           )}
         </Card>
@@ -215,4 +334,4 @@ const FeedbackSubmitComponent = ({ isAdmin = false }) => {
   );
 };
 
-export default FeedbackSubmitComponent;
+export default connectToRedux(FeedbackSubmitComponent);

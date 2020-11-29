@@ -53,21 +53,21 @@ const BUYER_MENU = [
     icon: <FileDoneOutlined />,
     label: 'Order',
     link: '/buyer/order'
-  },
-  {
-    key: '4',
-    icon: (
-      <img
-        style={{ paddingRight: 10 }}
-        alt=""
-        className="imgicon"
-        src="/static/images/feedback.png"
-        height={16}
-      />
-    ),
-    label: 'Feedback',
-    link: '/buyer/feedback'
   }
+  // {
+  //   key: '4',
+  //   icon: (
+  //     <img
+  //       style={{ paddingRight: 10 }}
+  //       alt=""
+  //       className="imgicon"
+  //       src="/static/images/feedback.png"
+  //       height={16}
+  //     />
+  //   ),
+  //   label: 'Feedback',
+  //   link: '/buyer/feedback'
+  // }
   // {
   //   key: '6',
   //   icon: <LogoutOutlined style={{ color: 'red' }} />,

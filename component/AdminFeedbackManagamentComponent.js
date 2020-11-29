@@ -1,23 +1,24 @@
-import { Button, Row, Typography, Select, Space } from 'antd';
+import { Button, Row, Typography, Select, Space, Drawer } from 'antd';
 import React, { useState, useEffect } from 'react';
 import ReactTableLayout from '../layouts/ReactTableLayout';
-import { DATE_TIME_FORMAT, DEFAULT_DATE_RANGE, getUtcTime } from '../utils';
+import { DEFAULT_DATE_RANGE, getUtcTime } from '../utils';
 import Router from 'next/router';
 import { connect } from 'react-redux';
-import { F_CLOSED, F_OPEN } from '../enums/feedbackStatus';
 import { createStructuredSelector } from 'reselect';
 import {
   getFeedbackPaging,
   GetFeedbackPagingData,
   GetFeedbackPagingError
 } from '../stores/FeedbackState';
-//import AdminProductDetailsComponent from "./AdminProductDetailsComponent";
-import FeedbackStatusComponent from './Utils/FeedbackStatusComponent';
-import FeedbackTypeComponent from './Utils/FeedbackTypeComponent';
-import { get } from 'lodash/fp';
-import Moment from 'react-moment';
-import moment from 'moment';
-import { F_AUCTION, F_ORDER, F_RFQ, F_SYSTEM } from '../enums/feedbackType';
+import { F_AUCTION, F_ORDER, F_RFQ } from '../enums/feedbackType';
+import DisplayStarComponent from './Utils/DisplayStarComponent';
+import FeedbackDetailsComponent from './FeedbackDetailsComponent';
+import {
+  ASCENDING,
+  DESCENDING,
+  HIGHEST_RATING,
+  LOWEST_RATING
+} from '../enums/sortFeedback';
 const { Title } = Typography;
 const { Option } = Select;
 
@@ -27,23 +28,15 @@ const connectToRedux = connect(
     feedbackPagingError: GetFeedbackPagingError
   }),
   (dispatch) => ({
-    getFeedback: (
-      pageIndex,
-      pageSize,
-      searchMessage,
-      dateRange,
-      status,
-      systemType
-    ) => {
+    getFeedback: (pageIndex, pageSize, searchMessage, dateRange, sortBy) => {
       dispatch(
         getFeedbackPaging({
           pageIndex,
           pageSize,
           fromDate: dateRange.fromDate,
           toDate: dateRange.toDate,
-          title: searchMessage,
-          status,
-          systemType
+          searchMessage,
+          sortBy
         })
       );
     }
@@ -52,27 +45,22 @@ const connectToRedux = connect(
 
 const columns = [
   {
-    title: 'Title',
-    dataIndex: 'title',
-    key: 'title'
+    title: 'Feedback from',
+    dataIndex: 'from',
+    key: 'from'
   },
   {
-    title: 'User',
-    dataIndex: 'user',
-    key: 'user'
+    title: 'Date Created',
+    dataIndex: 'createdAt',
+    key: 'createdAt'
   },
   {
-    title: 'Service Type',
-    dataIndex: 'serviceType',
-    key: 'serviceType'
+    title: 'Average Rating',
+    dataIndex: 'averageRating',
+    key: 'averageRating'
   },
   {
-    title: 'Status',
-    dataIndex: 'status',
-    key: 'status'
-  },
-  {
-    title: 'Actions',
+    title: 'Details',
     dataIndex: 'actions',
     key: 'actions'
   }
@@ -84,29 +72,15 @@ const AdminFeedbackManagementComponent = ({
   feedbackPagingError
 }) => {
   const [searchMessage, setSearchMessage] = useState('');
+  const [sortBy, setSortBy] = useState(DESCENDING);
   const [dateRange, setDateRange] = useState(DEFAULT_DATE_RANGE);
-  const [status, setStatus] = useState(null);
-  const [systemType, setSystemType]= useState(null);
-  //zconst [openDetails, setOpenDetails] = useState(false);
-  // const [loading, setLoading] = useState(true);
-
-  //   useEffect(() => {
-  //     if (productPagingError || productPagingData) {
-  //       setLoading(false);
-  //     }
-  //   }, [productPagingError, productPagingData]);
-
-  function handleStatusChange(value) {
-    setStatus(value);
-  }
-
-  function handleServiceChange(value) {
-    setSystemType(value);
-  }
+  const [loading, setLoading] = useState(true);
+  const [openDetails, setOpenDetails] = useState(false);
+  const [currentFeedbackSelected, setCurrentFeedbackSelected] = useState({});
 
   useEffect(() => {
     if (feedbackPagingError || feedbackPagingData) {
-      //setLoading(false);
+      setLoading(false);
     }
   }, [feedbackPagingError, feedbackPagingData]);
 
@@ -117,87 +91,92 @@ const AdminFeedbackManagementComponent = ({
     totalCount = feedbackPagingData.total;
   }
 
-  const getFeedbackTable = (feedbackData = []) => {
+  const getFeedbackTable = (
+    feedbackData = [],
+    setCurrentFeedbackSelected,
+    setOpenDetails
+  ) => {
     return (
       feedbackData &&
       feedbackData.length > 0 &&
-      feedbackData.map((feedback = {}) => ({
-        key: feedback.id,
-        title: feedback.title,
-        serviceType: (
-          <FeedbackTypeComponent
-            status={feedback.request? F_RFQ : feedback.reverseAuction? F_AUCTION : feedback.order? F_ORDER : F_SYSTEM}
-          ></FeedbackTypeComponent>
-        ),
-        //dateUpdated: getUtcTime(feedback.dateCreated),
-        user: feedback.user.email,
-        status: (
-          <FeedbackStatusComponent
-            status={feedback.feedbackStatus.id}
-          ></FeedbackStatusComponent>
-        ),
-        actions: (
-          <Button
-            onClick={() => {
-              Router.push(`/admin/feedback/details?id=${feedback.id}`);
-            }}
-            size="small"
-            type="link"
-          >
-            View
-          </Button>
-        )
-      }))
+      feedbackData.map((feedback = {}) => {
+        const { averageRating, buyer = {}, dateCreated, id } = feedback || {};
+        return {
+          key: id,
+          createdAt: getUtcTime(dateCreated),
+          from: buyer.email,
+          averageRating: <DisplayStarComponent star={averageRating} />,
+          actions: (
+            <Button
+              onClick={() => {
+                setCurrentFeedbackSelected(feedback);
+                setOpenDetails(true);
+              }}
+              size="small"
+              type="link"
+            >
+              View
+            </Button>
+          )
+        };
+      })
     );
   };
 
   return (
     <div>
+      <Drawer
+        width={640}
+        title="Feedback Details"
+        placement={'right'}
+        closable={true}
+        onClose={() => setOpenDetails(false)}
+        visible={openDetails}
+        key={'right'}
+      >
+        {openDetails ? (
+          <FeedbackDetailsComponent
+            feedbackId={(currentFeedbackSelected || {}).id}
+          />
+        ) : null}
+      </Drawer>
       <Row justify="space-between">
         <Title level={4}>Feedback List</Title>
       </Row>
       <ReactTableLayout
-        // loading={loading}
+        loading={loading}
         dispatchAction={getFeedback}
         searchProps={{
-          placeholder: 'Search by title',
+          placeholder: 'Search by name or email of buyer',
           searchMessage,
           setSearchMessage,
           exElement: (
             <Space>
               <Select
                 size="large"
-                placeholder="Filter by service type"
+                placeholder="Sort"
                 style={{ width: 200 }}
-                onChange={handleServiceChange}
-                defaultValue=""
+                onChange={(value) => setSortBy(value)}
+                defaultValue={DESCENDING}
               >
-                <Option value="">All Service</Option>
-                <Option value={F_ORDER}>Order of suplier</Option>
-                <Option value={F_AUCTION}>Auction</Option>
-                <Option value={F_RFQ}>Order of buyer</Option>
-                <Option value={F_SYSTEM}>System</Option>
-              </Select>
-              <Select
-                size="large"
-                placeholder="Filter by status"
-                style={{ width: 200 }}
-                onChange={handleStatusChange}
-                defaultValue=""
-              >
-                <Option value="">All Status</Option>
-                <Option value={F_OPEN}>Opeing</Option>
-                <Option value={F_CLOSED}>Closed</Option>
+                <Option value={DESCENDING}>Date recently</Option>
+                <Option value={ASCENDING}>Date oldest</Option>
+                <Option value={LOWEST_RATING}>Lowest rating</Option>
+                <Option value={HIGHEST_RATING}>Highest rating</Option>
               </Select>
             </Space>
           ),
-          exCondition: [status, systemType]
+          exCondition: [sortBy]
         }}
         dateRangeProps={{
           dateRange,
           setDateRange
         }}
-        data={getFeedbackTable(feedbackData || [])}
+        data={getFeedbackTable(
+          feedbackData || [],
+          setCurrentFeedbackSelected,
+          setOpenDetails
+        )}
         columns={columns}
         totalCount={totalCount}
       />

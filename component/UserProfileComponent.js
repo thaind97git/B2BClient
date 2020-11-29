@@ -34,6 +34,7 @@ import {
 import ImgCrop from 'antd-img-crop';
 import UserStatusComponent from './Utils/UserStatusComponent';
 import { U_BANNED } from '../enums/accountStatus';
+import { BUYER, MODERATOR } from '../enums/accountRoles';
 const { Title } = Typography;
 const DescriptionItem = ({ title, content }) => (
   <Col span={24}>
@@ -82,9 +83,8 @@ const UserProfileComponent = ({
   getUser,
   getUserData,
   resetGetUser,
-  isSupplier = true,
   isAdmin = false,
-  displayQuotation = false
+  role = BUYER
 }) => {
   const [changePasswordVisible, setChangePasswordVisible] = useState(false);
   const [imageUrl, setImageUrl] = useState(
@@ -203,7 +203,9 @@ const UserProfileComponent = ({
         </Col>
         <Col span={18}>
           <Descriptions title={firstName + ' ' + lastName} column={1}>
-            <Descriptions.Item label="at">{companyName}</Descriptions.Item>
+            {(isAdmin || role === MODERATOR) && (
+              <Descriptions.Item label="at">{companyName}</Descriptions.Item>
+            )}
             <Descriptions.Item label="Email">{email}</Descriptions.Item>
             {isAdmin && (
               <Fragment>

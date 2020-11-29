@@ -106,6 +106,10 @@ const SupplierChatComponent = ({
 
   if (supplierGroupChatData && supplierGroupChatData.length > 0) {
     GROUP_NEGOTIATING_TABS = supplierGroupChatData.map((group) => {
+      const currentGroup =
+        supplierGroupChatData.find(
+          (groupChat) => groupChat.id === currentGroupIdSelected
+        ) || {};
       const {
         id,
         lastMessage,
@@ -141,9 +145,9 @@ const SupplierChatComponent = ({
             titleProps={{
               leftTitle: (
                 <div style={{ textAlign: 'center' }}>
-                  <Tooltip title={productName}>
+                  <Tooltip title={currentGroup.productName}>
                     <span style={{ fontWeight: 600 }}>
-                      {getShortContent(productName, 100)}
+                      {getShortContent(currentGroup.productName, 100)}
                     </span>
                   </Tooltip>
                 </div>
@@ -151,8 +155,9 @@ const SupplierChatComponent = ({
               rightTitle: (
                 <div>
                   <div>
-                    <b>{totalQuantity}</b> {unit} / <b>{totalRFQ}</b>{' '}
-                    {parseInt(totalRFQ) === 1 ? 'Buyer' : 'Buyers'}
+                    <b>{currentGroup.totalQuantity}</b> {currentGroup.unit} /{' '}
+                    <b>{currentGroup.totalRFQ}</b>{' '}
+                    {parseInt(currentGroup.totalRFQ) === 1 ? 'Buyer' : 'Buyers'}
                   </div>
                 </div>
               )

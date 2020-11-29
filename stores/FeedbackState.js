@@ -16,44 +16,41 @@ export const UPDATE_FEEDBACK_RATE = 'UpdateFeedbackRateAPI';
 export const GET_REQUEST_PAGING_FOR_FEEDBACK = 'GetRequestPagingForFeedbackAPI';
 const GET_FEEDBACK_REPORTED_FOR_SUPPLIER = 'GetFeedbackReportedForSupplierAPI';
 
-//create feedback
-const onUploadFile = (feedbackId, fileList) => {
-  const listFileOrigin = fileList.map((file) => file.originFileObj);
-  const formData = new FormData();
-  for (let file of listFileOrigin) {
-    formData.append('files', file);
-  }
+const GET_LIST_QUESTION = 'GetListQuestionAPI';
 
-  var myHeaders = new Headers();
-  myHeaders.append('Authorization', `Bearer ${getToken()}`);
-  var requestOptions = {
-    method: 'PUT',
-    headers: myHeaders,
-    body: formData
-  };
+// const onUploadFile = (feedbackId, fileList) => {
+//   const listFileOrigin = fileList.map((file) => file.originFileObj);
+//   const formData = new FormData();
+//   for (let file of listFileOrigin) {
+//     formData.append('files', file);
+//   }
 
-  fetch(
-    `${process.env.API_SERVER_URL}/api/Feedback/FeedbackFile/${feedbackId}`,
-    requestOptions
-  );
-};
+//   var myHeaders = new Headers();
+//   myHeaders.append('Authorization', `Bearer ${getToken()}`);
+//   var requestOptions = {
+//     method: 'PUT',
+//     headers: myHeaders,
+//     body: formData
+//   };
 
-const CreateFeedbackAPI = makeFetchAction(CREATE_FEEDBACK, (object) =>
-  nfetch({
-    endpoint: '/api/Feedback'
-  })(object)
+//   fetch(
+//     `${process.env.API_SERVER_URL}/api/Feedback/FeedbackFile/${feedbackId}`,
+//     requestOptions
+//   );
+// };
+// Create new feedback
+const CreateFeedbackAPI = makeFetchAction(
+  CREATE_FEEDBACK,
+  ({ requestId, description, feedbackAnswers }) =>
+    nfetch({
+      endpoint: '/api/Feedback'
+    })({ requestId, description, feedbackAnswers })
 );
 
-export const createFeedback = (object, fileList) =>
-  respondToSuccess(CreateFeedbackAPI.actionCreator(object), (resp) => {
-    if (resp) {
-      openNotification('success', {
-        message: 'Create new feedback success !'
-      });
-      onUploadFile(resp, fileList);
-      //Router.push('/buyer');
-    }
-  });
+export const createFeedback = ({ requestId, description, feedbackAnswers }) =>
+  respondToSuccess(
+    CreateFeedbackAPI.actionCreator({ requestId, description, feedbackAnswers })
+  );
 export const CreateFeedbackData = CreateFeedbackAPI.dataSelector;
 export const CreateFeedbackError = CreateFeedbackAPI.errorSelector;
 export const CreateFeedbackResetter = getResetter(CreateFeedbackAPI);
@@ -61,17 +58,16 @@ export const CreateFeedbackResetter = getResetter(CreateFeedbackAPI);
 //get feedback paging
 const GetFeedbackPagingAPI = makeFetchAction(
   GET_FEEDBACK_PAGING,
-  ({ status, systemType, title, fromDate, toDate, pageIndex, pageSize }) => {
+  ({ fromDate, toDate, pageIndex, pageSize, searchMessage, sortBy }) => {
     return nfetch({
       endpoint: `/api/Feedback/Filter${generateQuery({
-        statusId: status,
-        systemType,
-        title,
         fromDate,
         toDate,
         pageIndex,
         pageSize,
-        dateDescending: true
+        dateDescending: true,
+        searchMessage,
+        sortBy
       })}`,
       method: 'GET'
     })();
@@ -79,23 +75,21 @@ const GetFeedbackPagingAPI = makeFetchAction(
 );
 
 export const getFeedbackPaging = ({
-  status,
-  systemType,
-  title,
   fromDate,
   toDate,
   pageIndex,
-  pageSize
+  pageSize,
+  searchMessage,
+  sortBy
 }) =>
   respondToSuccess(
     GetFeedbackPagingAPI.actionCreator({
-      status,
-      systemType,
-      title,
       fromDate,
       toDate,
       pageIndex,
-      pageSize
+      pageSize,
+      searchMessage,
+      sortBy
     }),
     () => {}
   );
@@ -126,12 +120,14 @@ export const GetFeedbackDetailsResetter = getResetter(GetFeedbackDetailsAPI);
 //get feedback reported for supplier
 const GetFeedbackReportedForSupplierAPI = makeFetchAction(
   GET_FEEDBACK_REPORTED_FOR_SUPPLIER,
-  ({ supplierId, pageIndex, pageSize }) =>
+  ({ supplierId, pageIndex, pageSize, fromDate, toDate }) =>
     nfetch({
-      endpoint: `/api/Feedback/FilterReportedSupplier${generateQuery({
+      endpoint: `/api/Feedback/FeedbackSupplier${generateQuery({
         supplierId,
         pageIndex,
-        pageSize
+        pageSize,
+        fromDate,
+        toDate
       })}`,
       method: 'GET'
     })()
@@ -140,13 +136,17 @@ const GetFeedbackReportedForSupplierAPI = makeFetchAction(
 export const getFeedbackReportedForSupplier = ({
   supplierId,
   pageIndex,
-  pageSize
+  pageSize,
+  fromDate,
+  toDate
 }) =>
   respondToSuccess(
     GetFeedbackReportedForSupplierAPI.actionCreator({
       supplierId,
       pageIndex,
-      pageSize
+      pageSize,
+      fromDate,
+      toDate
     })
   );
 export const GetFeedbackReportedForSupplierData =
@@ -270,4 +270,20 @@ export const GetRequestPagingForFeedbackError =
   GetRequestPagingForFeedbackAPI.errorSelector;
 export const GetRequestPagingForFeedbackResetter = getResetter(
   GetRequestPagingForFeedbackAPI
+);
+
+//get feedback question
+const GetFeedbackQuestionsAPI = makeFetchAction(GET_LIST_QUESTION, () =>
+  nfetch({
+    endpoint: `/api/Feedback/FeedbackQuestion`,
+    method: 'GET'
+  })()
+);
+
+export const getFeedbackQuestions = () =>
+  respondToSuccess(GetFeedbackQuestionsAPI.actionCreator());
+export const GetFeedbackQuestionsData = GetFeedbackQuestionsAPI.dataSelector;
+export const GetFeedbackQuestionsError = GetFeedbackQuestionsAPI.errorSelector;
+export const GetFeedbackQuestionsResetter = getResetter(
+  GetFeedbackQuestionsAPI
 );
