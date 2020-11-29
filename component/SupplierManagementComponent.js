@@ -47,7 +47,9 @@ const connectToRedux = connect(
           pageSize,
           pageIndex,
           email: searchMessage,
-          statusId: status
+          statusId: status,
+          rateFrom: dateRange.fromDate,
+          rateTo: dateRange.toDate
         })
       );
     }
@@ -80,7 +82,7 @@ const columns = [
       <div>
         Average Rating
         <br />
-        <small>(Calculated by order's feedback)</small>
+        <small>(Calculated by feedback)</small>
       </div>
     ),
     dataIndex: 'averageRating',

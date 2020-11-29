@@ -16,7 +16,7 @@ import React, { useEffect, useState } from 'react';
 import moment from 'moment';
 import MarkdownEditorComponent from './MarkdownEditorComponent';
 import { displayCurrency, openNotification } from '../utils';
-import { useRouter } from 'next/router';
+import Router, { useRouter } from 'next/router';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 import {
@@ -79,8 +79,6 @@ const styles = {
   }
 };
 const BiddingSettingComponent = ({
-  setIsDoneSetting,
-  setDefaultTab,
   getGroupDetails,
   groupDetailsData,
   groupDetailsError,
@@ -131,10 +129,9 @@ const BiddingSettingComponent = ({
 
   useEffect(() => {
     if (submitAuctionData) {
-      setIsDoneSetting(true);
-      setDefaultTab('2');
+      Router.push('/aggregator/bidding');
     }
-  }, [submitAuctionData, setDefaultTab, setIsDoneSetting]);
+  }, [submitAuctionData]);
 
   useEffect(() => {
     setCurrentValue(quantity * currentPrice);

@@ -19,7 +19,8 @@ import {
   MailOutlined,
   LeftOutlined,
   CheckOutlined,
-  ExclamationCircleOutlined
+  ExclamationCircleOutlined,
+  FormOutlined
 } from '@ant-design/icons';
 import React, { Fragment, useEffect, useState } from 'react';
 import RequestDetailsComponent from './RequestDetailsComponent';
@@ -51,6 +52,7 @@ import { ADMIN, BUYER, MODERATOR, SUPPLIER } from '../enums/accountRoles';
 import RequestDetailsForSupplierComponent from './RequestDetailsForSupplierComponent';
 import { R_DONE } from '../enums/requestStatus';
 import FeedbackSubmitComponent from './FeedbackSubmitComponent';
+import { CreateFeedbackData } from '../stores/FeedbackState';
 const { Title, Text } = Typography;
 
 const connectToRedux = connect(
@@ -58,7 +60,8 @@ const connectToRedux = connect(
     orderDetailsData: GetOrderDetailsDataSelector,
     orderDetailsError: GetOrderDetailsErrorSelector,
     deliveredOrderData: DeliveredOrderDataSelector,
-    deliveredOrderError: DeliveredOrderErrorSelector
+    deliveredOrderError: DeliveredOrderErrorSelector,
+    createFeedbackData: CreateFeedbackData
   }),
   (dispatch) => ({
     getOrderDetails: (id) => dispatch(getOrderDetails(id)),
@@ -98,7 +101,8 @@ const OrderDetailsComponent = ({
   deliveredOrder,
   deliveredOrderData,
   deliveredOrderError,
-  resetDelivered
+  resetDelivered,
+  createFeedbackData
 }) => {
   const [openRequestDetails, setOpenRequestDetails] = useState(false);
   const [currentRequestSelected, setCurrentRequestSelected] = useState({});
@@ -106,6 +110,13 @@ const OrderDetailsComponent = ({
   const router = useRouter();
   const [openFeedback, setOpenFeedback] = useState(false);
   const { id: orderId } = router.query;
+
+  useEffect(() => {
+    if (createFeedbackData) {
+      message.success('Thank for your feedback!');
+      setOpenFeedback(false);
+    }
+  }, [createFeedbackData]);
 
   useEffect(() => {
     if (orderId) {
@@ -224,6 +235,10 @@ const OrderDetailsComponent = ({
       >
         {openFeedback ? (
           <FeedbackSubmitComponent
+            requestId={(orderDetailsData || {}).id}
+            unitPrice={unitPrice}
+            quantity={quantity}
+            product={product}
             title={false}
             span={22}
             supplier={supplier}
@@ -267,6 +282,9 @@ const OrderDetailsComponent = ({
           <Col sm={22} md={20}>
             <Row justify="center">
               <Title level={3}>Order Details</Title>
+              <Col span={24} style={{ textAlign: 'center' }}>
+                Date Create: {getUtcTime(dateCreated)}
+              </Col>
             </Row>
             {role === ADMIN && (
               <Card
@@ -305,9 +323,8 @@ const OrderDetailsComponent = ({
                               <br />
                             </Fragment>
                           )}
-                          Company: {companyName}
-                          {/* <br />
-                          Address: {address} */}
+                          {/* Company: {companyName} */}
+                          Address: {address}
                         </div>
                       </div>
                     </Card>
@@ -370,8 +387,6 @@ const OrderDetailsComponent = ({
                           Company: {companyName}
                           <br />
                           Address: {address}
-                          <br />
-                          Date Create: {getUtcTime(dateCreated)}
                         </div>
                       </div>
                     </Card>
@@ -430,6 +445,8 @@ const OrderDetailsComponent = ({
                       <Row justify="space-between">
                         <div>
                           <Button
+                            size="small"
+                            icon={<FormOutlined />}
                             onClick={() => setOpenFeedback(true)}
                             type="primary"
                           >

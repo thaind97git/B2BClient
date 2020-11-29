@@ -89,13 +89,15 @@ export const GetSupplierByProductIdResetter = getResetter(
 // Get Supplier Paging
 const GetSupplierPagingAPI = makeFetchAction(
   GET_SUPPLIER_PAGING,
-  ({ pageIndex, pageSize, statusId, email }) =>
+  ({ pageIndex, pageSize, statusId, email, rateFrom, rateTo }) =>
     nfetch({
       endpoint: `/api/Supplier/Filter${generateQuery({
         statusId,
         email,
         pageIndex,
-        pageSize
+        pageSize,
+        rateFrom,
+        rateTo
       })}`,
       method: 'GET'
     })()
@@ -105,10 +107,19 @@ export const getSupplierPaging = ({
   statusId,
   email,
   pageIndex = 1,
-  pageSize = 10
+  pageSize = 10,
+  rateFrom,
+  rateTo
 }) =>
   respondToSuccess(
-    GetSupplierPagingAPI.actionCreator({ statusId, email, pageIndex, pageSize })
+    GetSupplierPagingAPI.actionCreator({
+      statusId,
+      email,
+      pageIndex,
+      pageSize,
+      rateFrom,
+      rateTo
+    })
   );
 export const GetSupplierPagingData = GetSupplierPagingAPI.dataSelector;
 export const GetSupplierPagingError = GetSupplierPagingAPI.errorSelector;

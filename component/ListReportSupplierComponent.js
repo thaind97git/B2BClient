@@ -1,4 +1,13 @@
-import { Button, Col, Input, Modal, Row, Space, Typography } from 'antd';
+import {
+  Button,
+  Col,
+  Input,
+  Modal,
+  Row,
+  Select,
+  Space,
+  Typography
+} from 'antd';
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
@@ -11,7 +20,7 @@ import {
   GetFeedbackReportedForSupplierResetter
 } from '../stores/FeedbackState';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
-import { displayCurrency, getUtcTime, openNotification } from '../utils';
+import { getUtcTime, openNotification } from '../utils';
 import { getUser, getUserData } from '../stores/UserState';
 import {
   approveSupplier,
@@ -29,7 +38,14 @@ import {
 } from '../stores/SupplierState';
 import { get } from 'lodash/fp';
 import DisplayStarComponent from './Utils/DisplayStarComponent';
+import {
+  ASCENDING,
+  DESCENDING,
+  HIGHEST_RATING,
+  LOWEST_RATING
+} from '../enums/sortFeedback';
 const { Title } = Typography;
+const { Option } = Select;
 const connectToRedux = connect(
   createStructuredSelector({
     reportData: GetFeedbackReportedForSupplierData,
@@ -41,12 +57,20 @@ const connectToRedux = connect(
     rejectData: RejectSupplierData
   }),
   (dispatch) => ({
-    getReport: (pageIndex, pageSize, searchMessage, dateRange, supplierId) => {
+    getReport: (
+      pageIndex,
+      pageSize,
+      searchMessage,
+      dateRange = {},
+      supplierId
+    ) => {
       dispatch(
         getFeedbackReportedForSupplier({
           pageSize,
           pageIndex,
-          supplierId
+          supplierId,
+          fromDate: dateRange.fromDate,
+          toDate: dateRange.toDate
         })
       );
     },
@@ -67,20 +91,15 @@ const connectToRedux = connect(
 );
 const columns = [
   {
-    title: 'Group Name',
-    dataIndex: 'groupName',
-    key: 'groupName'
+    title: 'Feedback From',
+    dataIndex: 'from',
+    key: 'from'
   },
   {
-    title: 'Total Feedback',
-    dataIndex: 'totalFeedback',
-    key: 'totalFeedback'
+    title: 'Date Created',
+    dataIndex: 'createdAt',
+    key: 'createdAt'
   },
-  // {
-  //   title: 'Created At',
-  //   dataIndex: 'createdAt',
-  //   key: 'createdAt'
-  // },
   // {
   //   title: 'Quantity',
   //   dataIndex: 'quantity',
@@ -123,6 +142,7 @@ const ListReportSupplierComponent = ({
   const [loading, setLoading] = useState(false);
   const [banReason, setBanReason] = useState('');
   const [openBan, setOpenBan] = useState(false);
+  const [sortBy, setSortBy] = useState(DESCENDING);
   useEffect(() => {
     if (reportData || reportError) {
       setLoading(false);
@@ -180,27 +200,17 @@ const ListReportSupplierComponent = ({
       feedbackData &&
       feedbackData.length > 0 &&
       feedbackData.map((feedback = {}) => {
-        const { order = {}, feedbackList = [] } = feedback || [];
-        const { group = {}, quantity, unitPrice } = order;
-        const averageRatingOrder =
-          feedbackList.reduce((prev, current = {}) => {
-            return prev + +current.averageRating;
-          }, 0) / feedbackList.length;
+        const { id, averageRating, dateCreated, buyer } = feedback || [];
         return {
           key: feedback.id,
-          groupName: group.description,
-          totalFeedback: feedbackList.length,
-          createdAt: getUtcTime(order.dateCreated),
-          quantity: quantity,
-          unitPrice: displayCurrency(unitPrice),
-          averageRatingOrder: (
-            <DisplayStarComponent star={averageRatingOrder} />
-          ),
+          from: buyer.email,
+          createdAt: getUtcTime(dateCreated),
+          averageRatingOrder: <DisplayStarComponent star={averageRating} />,
           detail: (
             <a
               target="_blank"
               rel="noreferrer"
-              href={`/admin/order/feedback?id=${feedback.id}`}
+              href={`/admin/feedback/details?id=${id}`}
             >
               View
             </a>
@@ -326,9 +336,25 @@ const ListReportSupplierComponent = ({
         loading={loading}
         dispatchAction={getReport}
         searchProps={{
-          exCondition: [supplierId],
+          exCondition: [supplierId, sortBy],
           isDateRange: false,
-          isSearch: false
+          isSearch: false,
+          exElement: (
+            <Space>
+              <Select
+                size="small"
+                placeholder="Sort"
+                style={{ width: 200 }}
+                onChange={(value) => setSortBy(value)}
+                defaultValue={DESCENDING}
+              >
+                <Option value={DESCENDING}>Date recently</Option>
+                <Option value={ASCENDING}>Date oldest</Option>
+                <Option value={LOWEST_RATING}>Lowest rating</Option>
+                <Option value={HIGHEST_RATING}>Highest rating</Option>
+              </Select>
+            </Space>
+          )
         }}
         data={getFeedbackTable(feedbackData || [])}
         columns={columns}

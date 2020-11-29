@@ -127,9 +127,10 @@ const SupplierBiddingItemComponent = ({
             <Title className="title" level={4}>
               {auctionName}
             </Title>
-            <div>
-              Posted on <Moment format="LLL">{dateCreated}</Moment>
-            </div>
+            {/* <div>
+              Posted on{' '}
+              <Moment format="LLL">{getUtcTime(dateCreated, 'LLL')}</Moment>
+            </div> */}
             <div>
               Posted in{' '}
               <Tag color="processing">
@@ -145,7 +146,9 @@ const SupplierBiddingItemComponent = ({
                 <ClockCircleOutlined /> Start Time:
               </Col>
               <Col span={18}>
-                <Moment format="LLL">{auctionStartTime}</Moment>
+                <Moment format="LLL">
+                  {getUtcTime(auctionStartTime, 'LLL')}
+                </Moment>
               </Col>
             </Row>
             <Row>

@@ -144,7 +144,7 @@ const SupplierProductOptionComponent = ({
       }
     },
     {
-      title: 'Price',
+      title: 'Unit Price',
       dataIndex: 'price',
       editable: true,
       width: '40%',

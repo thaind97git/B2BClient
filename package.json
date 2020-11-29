@@ -19,7 +19,7 @@
     "@emotion/css": "^11.0.0",
     "@microsoft/signalr": "^3.1.9",
     "add": "^2.0.6",
-    "antd": "^4.6.3",
+    "antd": "^4.7.0",
     "antd-img-crop": "^3.13.1",
     "axios": "^0.20.0",
     "babel-plugin-import": "^1.13.0",
