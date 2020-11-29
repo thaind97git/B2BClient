@@ -1,4 +1,5 @@
 import {
+  Alert,
   Button,
   Col,
   Divider,
@@ -144,7 +145,7 @@ const FeedbackDetailsComponent = ({
                 <Fragment>
                   {get('feedbackQuestion.description')(answer)}
                   <br />
-                  Answer: {getIconByRate(answer.rating)} ({' '}
+                  {!isAdmin && 'Your '} Answer: {getIconByRate(answer.rating)} ({' '}
                   {<DisplayStarComponent star={answer.rating} />})
                 </Fragment>
               }
@@ -155,31 +156,43 @@ const FeedbackDetailsComponent = ({
       <DescriptionItem title="Description" content={description || 'N/A'} />
       <Col span={24}>
         <Row justify="end">
-          <Button type="link" size="small">
-            <a
-              href={`/admin/order/details?id=${orderId}`}
-              target="_blank"
-              rel="noreferrer"
-            >
-              Go to Order Details <RightOutlined />
-            </a>
-          </Button>
+          {isAdmin ? (
+            <Button type="link" size="small">
+              <a
+                href={`/admin/order/details?id=${orderId}`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                Go to Order Details <RightOutlined />
+              </a>
+            </Button>
+          ) : (
+            <Alert
+              message="Thank for your feedback !"
+              type="success"
+              showIcon
+            />
+          )}
         </Row>
       </Col>
       <Divider />
-      <Col span={24}>
-        <Title level={5}>Feedback From</Title>
-      </Col>
-      <DescriptionItem title="Email" content={buyer.email} />
-      <DescriptionItem
-        title="FullName"
-        content={`${buyer.firstName} ${buyer.lastName}`}
-      />
-      <DescriptionItem title="Phone Number" content={buyer.phoneNumber} />
-      <DescriptionItem title="Address" content={buyer.address} />
-      <DescriptionItem title="Company Name" content={buyer.companyName} />
+      {isAdmin && (
+        <Fragment>
+          <Col span={24}>
+            <Title level={5}>Feedback From</Title>
+          </Col>
+          <DescriptionItem title="Email" content={buyer.email} />
+          <DescriptionItem
+            title="FullName"
+            content={`${buyer.firstName} ${buyer.lastName}`}
+          />
+          <DescriptionItem title="Phone Number" content={buyer.phoneNumber} />
+          <DescriptionItem title="Address" content={buyer.address} />
+          <DescriptionItem title="Company Name" content={buyer.companyName} />
 
-      <Divider />
+          <Divider />
+        </Fragment>
+      )}
       <Col span={24}>
         <Title level={5}>Supplier Information</Title>
       </Col>

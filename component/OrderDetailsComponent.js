@@ -53,6 +53,7 @@ import RequestDetailsForSupplierComponent from './RequestDetailsForSupplierCompo
 import { R_DONE } from '../enums/requestStatus';
 import FeedbackSubmitComponent from './FeedbackSubmitComponent';
 import { CreateFeedbackData } from '../stores/FeedbackState';
+import FeedbackDetailsComponent from './FeedbackDetailsComponent';
 const { Title, Text } = Typography;
 
 const connectToRedux = connect(
@@ -109,6 +110,7 @@ const OrderDetailsComponent = ({
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const [openFeedback, setOpenFeedback] = useState(false);
+  const [openFeedbackDetails, setOpenFeedbackDetails] = useState(false);
   const { id: orderId } = router.query;
 
   useEffect(() => {
@@ -180,7 +182,8 @@ const OrderDetailsComponent = ({
     quantity,
     requestStatus = {},
     dateCreated,
-    aggregator = {}
+    aggregator = {},
+    feedbackId
   } = orderDetailsData;
   const totalQuantity = (requests || []).reduce((prev, current) => {
     return prev + +current.quantity;
@@ -265,6 +268,19 @@ const OrderDetailsComponent = ({
               isSupplier={role === SUPPLIER}
             />
           )
+        ) : null}
+      </Drawer>
+      <Drawer
+        width={640}
+        title="Feedback details"
+        placement={'right'}
+        closable={true}
+        onClose={() => setOpenFeedbackDetails(false)}
+        visible={openFeedbackDetails}
+        key={'right'}
+      >
+        {openFeedbackDetails ? (
+          <FeedbackDetailsComponent feedbackId={feedbackId} />
         ) : null}
       </Drawer>
       <Col span={24}>
@@ -444,14 +460,25 @@ const OrderDetailsComponent = ({
                     return (
                       <Row justify="space-between">
                         <div>
-                          <Button
-                            size="small"
-                            icon={<FormOutlined />}
-                            onClick={() => setOpenFeedback(true)}
-                            type="primary"
-                          >
-                            Give Feedback
-                          </Button>
+                          {!feedbackId ? (
+                            <Button
+                              size="small"
+                              icon={<FormOutlined />}
+                              onClick={() => setOpenFeedback(true)}
+                              type="primary"
+                            >
+                              Give Feedback
+                            </Button>
+                          ) : (
+                            <Button
+                              onClick={() => {
+                                setOpenFeedbackDetails(true);
+                              }}
+                              size="small"
+                            >
+                              View feedback
+                            </Button>
+                          )}
                         </div>
                         <div style={{ height: '20px' }}>
                           <p style={{ color: '#199eb8', fontSize: 18 }}>
