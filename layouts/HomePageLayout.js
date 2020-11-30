@@ -148,7 +148,7 @@ const HomePageLayout = ({
             {isAuthenticated ? (
               <Fragment>
                 <a href={url} style={{ fontSize: 14 }}>
-                  Hi, {(currentUserData || {}).firstName}
+                  Hi, {(currentUserData || {}).lastName}
                 </a>
                 <a
                   href="/login"
@@ -162,17 +162,17 @@ const HomePageLayout = ({
               <Fragment>
                 <a
                   style={{ fontSize: 18 }}
-                  className="scrollto"
-                  href="/register"
-                >
-                  Register
-                </a>
-                <a
-                  style={{ fontSize: 18 }}
                   className="im-supplier scrollto"
                   href="/login"
                 >
                   Login
+                </a>
+                <a
+                  style={{ fontSize: 18 }}
+                  className="scrollto"
+                  href="/register"
+                >
+                  Register
                 </a>
               </Fragment>
             )}

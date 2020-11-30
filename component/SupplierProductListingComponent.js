@@ -122,7 +122,7 @@ const SupplierProductListingComponent = ({
       productData &&
       productData.length > 0 &&
       productData.map((product = {}) => {
-        const { description: quotations = [] } = product;
+        const { description: quotations = [], unitOfMeasure = {} } = product;
         return {
           key: get('product.id')(product),
           productName: (
@@ -141,7 +141,11 @@ const SupplierProductListingComponent = ({
             </Moment>
           ),
           quotation: (
-            <QuotationListDisplayComponent quotations={quotations} isTooltip />
+            <QuotationListDisplayComponent
+              unitLabel={unitOfMeasure.description}
+              quotations={quotations}
+              isTooltip
+            />
           ),
           status: <ProductStatus isDelete={product.isDeleted} />,
           action: product.isDeleted ? (

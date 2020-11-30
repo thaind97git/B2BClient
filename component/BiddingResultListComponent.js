@@ -220,7 +220,7 @@ const BiddingResultListComponent = ({
             );
           }}
         >
-          Closing Deal
+          Create Order
         </Button>
       </Row>
     </Row>

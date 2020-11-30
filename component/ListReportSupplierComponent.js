@@ -1,6 +1,7 @@
 import {
   Button,
   Col,
+  Drawer,
   Input,
   Modal,
   Row,
@@ -44,6 +45,7 @@ import {
   HIGHEST_RATING,
   LOWEST_RATING
 } from '../enums/sortFeedback';
+import FeedbackDetailsComponent from './FeedbackDetailsComponent';
 const { Title } = Typography;
 const { Option } = Select;
 const connectToRedux = connect(
@@ -143,6 +145,9 @@ const ListReportSupplierComponent = ({
   const [banReason, setBanReason] = useState('');
   const [openBan, setOpenBan] = useState(false);
   const [sortBy, setSortBy] = useState(DESCENDING);
+  const [openDetails, setOpenDetails] = useState(false);
+  const [currentFeedbackSelected, setCurrentFeedbackSelected] = useState({});
+
   useEffect(() => {
     if (reportData || reportError) {
       setLoading(false);
@@ -195,7 +200,11 @@ const ListReportSupplierComponent = ({
   if (!getUserData) {
     return null;
   }
-  const getFeedbackTable = (feedbackData = []) => {
+  const getFeedbackTable = (
+    feedbackData = [],
+    setCurrentFeedbackSelected,
+    setOpenDetails
+  ) => {
     return (
       feedbackData &&
       feedbackData.length > 0 &&
@@ -207,13 +216,15 @@ const ListReportSupplierComponent = ({
           createdAt: getUtcTime(dateCreated),
           averageRatingOrder: <DisplayStarComponent star={averageRating} />,
           detail: (
-            <a
-              target="_blank"
-              rel="noreferrer"
-              href={`/admin/feedback/details?id=${id}`}
+            <Button
+              type="link"
+              onClick={() => {
+                setCurrentFeedbackSelected(feedback);
+                setOpenDetails(true);
+              }}
             >
               View
-            </a>
+            </Button>
           )
         };
       })
@@ -228,6 +239,22 @@ const ListReportSupplierComponent = ({
   }
   return (
     <Row>
+      <Drawer
+        width={640}
+        title="Feedback Details"
+        placement={'right'}
+        closable={true}
+        onClose={() => setOpenDetails(false)}
+        visible={openDetails}
+        key={'right'}
+      >
+        {openDetails ? (
+          <FeedbackDetailsComponent
+            isAdmin
+            feedbackId={(currentFeedbackSelected || {}).id}
+          />
+        ) : null}
+      </Drawer>
       <Modal
         okText="Ban"
         title="Ban Supplier"
@@ -356,7 +383,11 @@ const ListReportSupplierComponent = ({
             </Space>
           )
         }}
-        data={getFeedbackTable(feedbackData || [])}
+        data={getFeedbackTable(
+          feedbackData || [],
+          setCurrentFeedbackSelected,
+          setOpenDetails
+        )}
         columns={columns}
       />
     </Row>

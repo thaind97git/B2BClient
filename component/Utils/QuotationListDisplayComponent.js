@@ -1,4 +1,4 @@
-import { Tooltip, Avatar } from 'antd';
+import { Avatar } from 'antd';
 import React, { Fragment } from 'react';
 import QuotationDisplayComponent from './QuotationDisplayComponent';
 
@@ -10,7 +10,7 @@ const QuotationListDisplayComponent = ({
   if (!quotations.length) {
     return null;
   }
-  const tooltipFirstQuotation = quotations.slice(1, quotations.length);
+  const tooltipSecondQuotation = quotations.slice(1, quotations.length) || {};
   return (
     <div>
       {isTooltip ? (
@@ -19,19 +19,20 @@ const QuotationListDisplayComponent = ({
             maxCount={1}
             maxStyle={{ color: '#f56a00', backgroundColor: '#fde3cf' }}
           >
-            <QuotationDisplayComponent quotation={quotations[0]} />
-            {tooltipFirstQuotation.length > 0 && (
-              <Tooltip title="Other Quotation" placement="top">
-                {tooltipFirstQuotation.map((quotation, index) => {
-                  return (
-                    <QuotationDisplayComponent
-                      key={index}
-                      quotation={quotation}
-                    />
-                  );
-                })}
-              </Tooltip>
-            )}
+            <QuotationDisplayComponent
+              unitLabel={unitLabel}
+              quotation={quotations[0]}
+            />
+            {tooltipSecondQuotation &&
+              tooltipSecondQuotation.map((quotation, index) => {
+                return (
+                  <QuotationDisplayComponent
+                    unitLabel={unitLabel}
+                    key={index}
+                    quotation={quotation}
+                  />
+                );
+              })}
           </Avatar.Group>
         ) : (
           'N/A'

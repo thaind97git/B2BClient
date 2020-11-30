@@ -168,7 +168,7 @@ const FeedbackDetailsComponent = ({
             </Button>
           ) : (
             <Alert
-              message="Thank for your feedback !"
+              message="Thanks for your feedback !"
               type="success"
               showIcon
             />
@@ -204,27 +204,6 @@ const FeedbackDetailsComponent = ({
       <DescriptionItem title="Phone Number" content={supplier.phoneNumber} />
       <DescriptionItem title="Address" content={supplier.address} />
       <DescriptionItem title="Company Name" content={supplier.companyName} />
-
-      <Divider />
-
-      {isAdmin && (
-        <Col span={24}>
-          <Divider />
-          <Col span={24}>
-            <Title level={5}>RFQ Owner</Title>
-          </Col>
-          <DescriptionItem
-            title="Created by"
-            content={(buyer || {}).fullName}
-          />
-          <DescriptionItem title="Email" content={(buyer || {}).email} />
-          <DescriptionItem title="Phone" content={(buyer || {}).phoneNumber} />
-          <DescriptionItem
-            title="Company Name"
-            content={(buyer || {}).companyName}
-          />
-        </Col>
-      )}
 
       <style jsx global>{`
         .site-description-item-profile-wrapper {

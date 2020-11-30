@@ -45,7 +45,7 @@ const connectToRedux = connect(
 
 const columns = [
   {
-    title: 'Feedback from',
+    title: 'Feedback From',
     dataIndex: 'from',
     key: 'from'
   },
@@ -136,6 +136,7 @@ const AdminFeedbackManagementComponent = ({
       >
         {openDetails ? (
           <FeedbackDetailsComponent
+            isAdmin
             feedbackId={(currentFeedbackSelected || {}).id}
           />
         ) : null}

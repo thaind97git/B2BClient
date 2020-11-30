@@ -61,6 +61,8 @@ const EditableCell = ({
   const save = async (e) => {
     try {
       const values = await form.validateFields();
+      values.price = parseInt(values.price);
+      console.log(values);
       toggleEdit();
       handleSave({ ...record, ...values });
     } catch (errInfo) {

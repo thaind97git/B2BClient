@@ -228,7 +228,8 @@ const ProductListHomePageComponent = ({
             <Col span={24}>
               <Row justify="space-between" align="middle">
                 <Col span={16} style={{ paddingLeft: 24 }}>
-                  Products in {(currentCategorySelected || {}).name}
+                  Products in{' '}
+                  {(currentCategorySelected || {}).name || 'Suggestion'}
                 </Col>
                 <Col span={8}>
                   <Search
@@ -245,7 +246,7 @@ const ProductListHomePageComponent = ({
                         );
                     }}
                     placeholder={`Search in ${
-                      (currentCategorySelected || {}).name
+                      (currentCategorySelected || {}).name || 'Suggestion'
                     }`}
                   />
                 </Col>
