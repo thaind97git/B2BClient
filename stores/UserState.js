@@ -189,28 +189,17 @@ export const userUploadAvatar = (object) =>
 //Update Password
 const UserUpdatePasswordAPI = makeFetchAction(
   USER_UPDATE_PASSWORD,
-  ({ oldPassword, newPassword }) => {
-    var myHeaders = new Headers();
-    myHeaders.append('Authorization', `Bearer ${getToken()}`);
-    myHeaders.append('Content-Type', `application/json`);
-    console.log(oldPassword + ' ' + newPassword);
-    const formData = { oldPassword: oldPassword, newPassword: newPassword };
-    var requestOptions = {
-      method: 'PUT',
-      headers: myHeaders,
-      body: JSON.stringify(formData)
-    };
-    fetch(`${process.env.API_SERVER_URL}/api/Account/Password`, requestOptions);
-  }
+  ({ oldPassword, newPassword }) =>
+    nfetch({
+      endpoint: '/api/Account/Password',
+      method: 'PUT'
+    })({ oldPassword: oldPassword, newPassword:newPassword })
 );
 
 export const userUpdatePassword = ({ oldPassword, newPassword }) =>
   respondToSuccess(
     UserUpdatePasswordAPI.actionCreator({ oldPassword, newPassword }),
     (resp) => {
-      if (resp) {
-        openNotification('success', { message: 'Update password success!' });
-      }
     }
   );
 export const UserUpdatePasswordData = UserUpdatePasswordAPI.dataSelector;

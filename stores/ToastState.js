@@ -25,9 +25,9 @@ import {
   SUPPLIER_REGISTER_PRODUCT,
   SUPPLIER_UPDATE_QUOTATION,
   UN_BAN_USER,
-  UN_IGNORE_SUPPLIER
+  UN_IGNORE_SUPPLIER,
 } from './SupplierState';
-import { USER_LOGIN, USER_REGISTER } from './UserState';
+import { USER_LOGIN, USER_REGISTER, USER_UPDATE_PASSWORD } from './UserState';
 
 export default {
   displayNotify(state = {}, { type, payload = {} }) {
@@ -107,6 +107,9 @@ export default {
         case CREATE_NEW_ORDER:
           msgNotify = 'Create new order success';
           break;
+        case USER_UPDATE_PASSWORD:
+          msgNotify = 'Create new password success';
+          break;
         default:
           break;
       }
@@ -185,6 +188,9 @@ export default {
           break;
         case CREATE_NEW_ORDER:
           msgNotify = 'Create new order fail';
+          break;
+        case USER_UPDATE_PASSWORD:
+          msgNotify = 'Create new password fail';
           break;
         default:
           break;
