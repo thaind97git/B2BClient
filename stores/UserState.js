@@ -7,6 +7,7 @@ import { getToken } from '../libs/localStorage';
 import { getResetter } from '../libs';
 import Router from 'next/router';
 import { openNotification } from '../utils';
+import { isString } from 'lodash';
 const GET_CURRENT_USER = 'GetCurrentUserAPI';
 export const USER_LOGIN = 'UserLoginAPI';
 export const USER_REGISTER = 'UserRegisterAPI';
@@ -17,7 +18,12 @@ export const USER_UPDATE_PASSWORD_BY_CODE = 'UserUpdatePasswordByCodeAPI';
 const GET_USER = 'GetUserAPI';
 
 export const checkMessageLogin = (errorSelector) => {
-  if (errorSelector && errorSelector.includes('banned')) {
+  console.log({ errorSelector });
+  if (
+    errorSelector &&
+    isString(errorSelector) &&
+    errorSelector.includes('banned')
+  ) {
     Router.push('/banned');
   }
 };

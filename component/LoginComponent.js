@@ -58,6 +58,10 @@ const LoginComponent = ({ loginUser, resetData, userLoginError }) => {
           {
             required: true,
             message: 'Please enter your Email'
+          },
+          {
+            type: 'email',
+            message: 'Email is not a valid email!'
           }
         ]}
       >
