@@ -12,7 +12,8 @@ import {
   TeamOutlined,
   DashboardOutlined,
   BellOutlined,
-  FileDoneOutlined
+  FileDoneOutlined,
+  UserSwitchOutlined
 } from '@ant-design/icons';
 import MemberNavComponent from '../component/MemberNavComponent';
 import { currentPath } from '../utils';
@@ -67,6 +68,12 @@ const ADMIN_MENU = [
     icon: <SolutionOutlined />,
     label: 'Buyer',
     link: '/admin/buyer'
+  },
+  {
+    key: '7',
+    icon: <UserSwitchOutlined />,
+    label: 'Aggregator',
+    link: '/admin/aggregator'
   },
   {
     key: '6',
