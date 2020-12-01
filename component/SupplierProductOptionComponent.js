@@ -5,7 +5,7 @@ import React, {
   useRef,
   Fragment
 } from 'react';
-import { Table, Input, Button, Popconfirm, Form, Row } from 'antd';
+import { Table, Input, Button, Popconfirm, Form, Row, InputNumber } from 'antd';
 import { displayCurrency } from '../utils';
 import QuotationDisplayComponent from './Utils/QuotationDisplayComponent';
 import { connect } from 'react-redux';
@@ -40,11 +40,24 @@ const EditableCell = ({
   dataIndex,
   record,
   handleSave,
+  dataSource,
   ...restProps
 }) => {
   const [editing, setEditing] = useState(false);
+  const [minValue, setMinValue] = useState(0);
+  const [maxValue, setMaxValue] = useState();
+  const [currentQuantity, setCurrentQuantity] = useState(1);
   const inputRef = useRef();
   const form = useContext(EditableContext);
+  const getRange = (data = [], quantity) => {
+    console.log({ quantity });
+    const min = data.filter((item) => item.quantity > quantity) || [];
+    const max = data.filter((item) => item.quantity < quantity) || [];
+    return {
+      min: min[0] || {},
+      max: max[0] || { price: Infinity }
+    };
+  };
   useEffect(() => {
     if (editing) {
       inputRef.current.focus();
@@ -58,12 +71,18 @@ const EditableCell = ({
     });
   };
 
-  const save = async (e) => {
+  const save = async () => {
     try {
       const values = await form.validateFields();
       values.price = parseInt(values.price);
       console.log(values);
+      if (!!values.quantity) {
+        setCurrentQuantity(values.quantity);
+      } else {
+        setCurrentQuantity(0);
+      }
       toggleEdit();
+      console.log(getRange(dataSource, (record || {}).quantity));
       handleSave({ ...record, ...values });
     } catch (errInfo) {
       console.log('Save failed:', errInfo);
@@ -71,7 +90,13 @@ const EditableCell = ({
   };
 
   let childNode = children;
+  const checkPrice = (rule, value) => {
+    if (value && value.price > 1000) {
+      return Promise.resolve();
+    }
 
+    return Promise.reject('Price must be greater than zero!');
+  };
   if (editable) {
     childNode = editing ? (
       <Form.Item
@@ -83,10 +108,21 @@ const EditableCell = ({
           {
             required: true,
             message: `${title} is required.`
+          },
+          {
+            validator: checkPrice
           }
         ]}
       >
-        <Input type="number" ref={inputRef} onPressEnter={save} onBlur={save} />
+        <InputNumber
+          style={{ width: '100%' }}
+          // type="number"
+          min={getRange(dataSource, (record || {}).quantity).max.price}
+          max={getRange(dataSource, (record || {}).quantity).min.price}
+          ref={inputRef}
+          onPressEnter={save}
+          onBlur={save}
+        />
       </Form.Item>
     ) : (
       <div
@@ -181,7 +217,7 @@ const SupplierProductOptionComponent = ({
     const newData = {
       key: new Date().getTime() + '',
       quantity: '1',
-      price: '0'
+      price: 0
     };
     setDataSource([...dataSource, newData]);
     typeof onGetQuotation === 'function' &&
@@ -200,7 +236,7 @@ const SupplierProductOptionComponent = ({
   const components = {
     body: {
       row: EditableRow,
-      cell: EditableCell
+      cell: (props) => <EditableCell {...props} dataSource={dataSource} />
     }
   };
   const columnsTable = columns.map((col) => {
