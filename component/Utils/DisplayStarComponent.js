@@ -8,10 +8,11 @@ const DisplayStarComponent = ({ star, isDisplay = true }) => {
     <span>
       {star}{' '}
       {
-        <StarFilled
-          style={{ fontSize: 16, color: 'yellow' }}
-          twoToneColor="yellow"
-        />
+        <img alt="star" src="/static/images/star.png" width={16} />
+        // <StarFilled
+        //   style={{ fontSize: 16, color: 'yellow' }}
+        //   twoToneColor="yellow"
+        // />
       }
     </span>
   );

@@ -245,7 +245,14 @@ const UserProfileComponent = ({
         </Col>
         <Divider />
         <Col span={24}>
-          <Title level={5}>Supplier Basic Information</Title>
+          <Title level={5}>
+            {role === BUYER
+              ? 'Buyer'
+              : role === MODERATOR
+              ? 'Aggregator'
+              : 'Supplier'}{' '}
+            Basic Information
+          </Title>
         </Col>
         <DescriptionItem title="Email" content={email} />
         <DescriptionItem title="Mobile" content={phoneNumber} />
