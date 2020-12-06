@@ -13,7 +13,14 @@ import {
   ResponseAuctionInvitationResetter
 } from '../stores/AuctionState';
 import AllCategoryComponent from './AllCategoryComponent';
-import { B_CANCELED, B_CLOSED, B_DONE, B_FAILED } from '../enums/biddingStatus';
+import {
+  B_ACTIVE,
+  B_CANCELED,
+  B_CLOSED,
+  B_DONE,
+  B_FAILED,
+  B_FEATURE
+} from '../enums/biddingStatus';
 import { DEFAULT_PAGING_INFO } from '../utils';
 
 const { TabPane } = Tabs;
@@ -60,8 +67,10 @@ const callAuctionFilter = ({
   let isInvitation, status;
   if (key === '1') {
     isInvitation = true;
+    status = [B_FEATURE];
   } else if (key === '2') {
     isInvitation = 'false';
+    status = [B_FEATURE, B_ACTIVE];
   } else {
     status = [B_CLOSED, B_CANCELED, B_FAILED, B_DONE];
   }
@@ -118,7 +127,6 @@ const SupplierBiddingComponent = ({
     auctionData = auctionFilterData.data;
     totalCount = auctionFilterData.total;
   }
-  console.log({ auctionData });
   return (
     <Fragment>
       <Row justify="end">
