@@ -1,5 +1,14 @@
-import { Table, Typography } from 'antd';
+import { Skeleton, Table, Typography } from 'antd';
 import { displayCurrency } from '../utils';
+import { connect } from 'react-redux';
+import { createStructuredSelector } from 'reselect';
+import React, { useEffect, useState } from 'react';
+import {
+  GetTopProductData,
+  GetTopProductResetter,
+  getTopProduct,
+  GetTopProductError
+} from '../stores/DashboardState';
 
 const { Title } = Typography;
 
@@ -15,84 +24,77 @@ const columns = [
     key: 'totalQuantity'
   },
   {
-    title: 'Total Price',
-    dataIndex: 'totalPrice',
-    key: 'totalPrice'
+    title: 'Total Sales',
+    dataIndex: 'totalSales',
+    key: 'totalSales'
   }
 ];
 
-const dataTable = [
-  {
-    key: '1',
-    name: 'Product 1',
-    totalQuantity: 50,
-    totalPrice: displayCurrency(2500000)
-  },
-  {
-    key: '2',
-    name: 'Jim Green',
-    totalQuantity: 42,
-    totalPrice: displayCurrency(2400000)
-  },
-  {
-    key: '3',
-    name: 'Joe Black',
-    totalQuantity: 32,
-    totalPrice: displayCurrency(2300000)
-  },
-  {
-    key: '4',
-    name: 'Joe Black',
-    totalQuantity: 32,
-    totalPrice: displayCurrency(2200000)
-  },
-  {
-    key: '5',
-    name: 'Joe Black',
-    totalQuantity: 32,
-    totalPrice: displayCurrency(2100000)
-  },
-  {
-    key: '6',
-    name: 'Joe Black',
-    totalQuantity: 32,
-    totalPrice: displayCurrency(2000000)
-  },
-  {
-    key: '7',
-    name: 'Joe Black',
-    totalQuantity: 32,
-    totalPrice: displayCurrency(2000000)
-  },
-  {
-    key: '8',
-    name: 'Joe Black',
-    totalQuantity: 32,
-    totalPrice: displayCurrency(2000000)
-  },
-  {
-    key: '9',
-    name: 'Joe Black',
-    totalQuantity: 32,
-    totalPrice: displayCurrency(2000000)
-  },
-  {
-    key: '10',
-    name: 'Joe Black',
-    totalQuantity: 32,
-    totalPrice: displayCurrency(2000000)
-  }
-];
+const connectToRedux = connect(
+  createStructuredSelector({
+    topProductData: GetTopProductData,
+    topProductDataError: GetTopProductError
+  }),
+  (dispatch) => ({
+    getTopProduct: (fromDate) => dispatch(getTopProduct(fromDate)),
+    resetData: () => {
+      dispatch(GetTopProductResetter);
+    }
+  })
+);
 
-const LeaderboardProductComponent = () => {
+const getTopProductTable = (topProductData = []) => {
+  return (
+    topProductData &&
+    topProductData.length > 0 &&
+    topProductData.map((product = {}) => ({
+      key: product.id,
+      name: product.productName,
+      totalQuantity: product.totalQuantity,
+      totalSales: displayCurrency(product.totalSales)
+    }))
+  );
+};
+
+const LeaderboardProductComponent = ({
+  topProductData,
+  getTopProduct,
+  resetData,
+  topProductDataError,
+  date
+}) => {
+
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setLoading(true);
+    getTopProduct(date);
+  }, [date,getTopProduct]);
+
+  useEffect(() => {
+    if (topProductData || topProductDataError) {
+      setLoading(false);
+    }
+  }, [topProductData, topProductDataError]);
+
+  useEffect(() => {
+    return () => {
+      resetData();
+    };
+  }, [resetData]);
+
+  if (loading) {
+    return <Skeleton active />;
+  }
+
   return (
     <Table
       bordered
       columns={columns}
-      dataSource={dataTable}
+      dataSource={topProductData?getTopProductTable(topProductData):[]}
       pagination={false}
     />
   );
 };
 
-export default LeaderboardProductComponent;
+export default connectToRedux(LeaderboardProductComponent);

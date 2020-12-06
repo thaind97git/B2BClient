@@ -1,5 +1,27 @@
-import { Table } from 'antd';
-import { displayCurrency } from '../utils';
+import { Skeleton, Table } from 'antd';
+import {displayCurrency} from '../utils'
+import { connect } from 'react-redux';
+import { createStructuredSelector } from 'reselect';
+import React, { useEffect, useState } from 'react';
+import {
+  GetTopAggregatorData,
+  GetTopAggregatorResetter,
+  getTopAggregator,
+  GetTopAggregatorError
+} from '../stores/DashboardState';
+
+const connectToRedux = connect(
+  createStructuredSelector({
+    topAggregatorData: GetTopAggregatorData,
+    topAggregatorDataError: GetTopAggregatorError
+  }),
+  (dispatch) => ({
+    getTopAggregator: (fromDate) => dispatch(getTopAggregator(fromDate)),
+    resetData: () => {
+      dispatch(GetTopAggregatorResetter);
+    }
+  })
+);
 
 const columns = [
   {
@@ -18,45 +40,65 @@ const columns = [
     key: 'totalGroup'
   },
   {
-    title: 'Total Price',
-    dataIndex: 'totalPrice',
-    key: 'totalPrice'
+    title: 'Total Sales',
+    dataIndex: 'totalSales',
+    key: 'totalSales'
   }
 ];
 
-const dataTable = [
-  {
-    key: '1',
-    name: 'Aggregator 1',
-    totalRfq: 32,
-    totalGroup: 3,
-    totalPrice: displayCurrency(3000000)
-  },
-  {
-    key: '2',
-    name: 'Aggregator 2',
-    totalRfq: 42,
-    totalGroup: 2,
-    totalPrice: displayCurrency(2400000)
-  },
-  {
-    key: '3',
-    name: 'Aggregator 3',
-    totalRfq: 32,
-    totalGroup: 1,
-    totalPrice: displayCurrency(2000000)
-  }
-];
+const getTopAggregatorTable = (topAggregatorData = []) => {
+  return (
+    topAggregatorData &&
+    topAggregatorData.length > 0 &&
+    topAggregatorData.map((aggregator = {}) => {
+      return {
+        key: aggregator.id,
+        name: aggregator.firstName + ' ' + aggregator.lastName,
+        totalRfq: aggregator?.totalRFQ,
+        totalGroup: aggregator?.totalGroup,
+        totalSales: displayCurrency(aggregator?.totalSale)
+      };
+    })
+  );
+};
 
-const LeaderboardAggregatorComponent = () => {
+const LeaderboardAggregatorComponent = ({
+  topAggregatorData,
+  getTopAggregator,
+  resetData,
+  topAggregatorDataError,
+  date
+}) => {
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setLoading(true);
+    getTopAggregator(date);
+  }, [date, getTopAggregator]);
+
+  useEffect(() => {
+    if (topAggregatorData || topAggregatorDataError) {
+      setLoading(false);
+    }
+  }, [topAggregatorData, topAggregatorDataError]);
+
+  useEffect(() => {
+    return () => {
+      resetData();
+    };
+  }, [resetData]);
+
+  if (loading) {
+    return <Skeleton active />;
+  }
   return (
     <Table
       pagination={false}
       bordered
       columns={columns}
-      dataSource={dataTable}
+      dataSource={ getTopAggregatorTable(topAggregatorData) || []}
     />
   );
 };
 
-export default LeaderboardAggregatorComponent;
+export default connectToRedux(LeaderboardAggregatorComponent);
