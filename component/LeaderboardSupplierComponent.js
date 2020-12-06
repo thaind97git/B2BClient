@@ -1,5 +1,27 @@
-import { Table } from 'antd';
+import { Skeleton, Table } from 'antd';
 import { displayCurrency } from '../utils';
+import { connect } from 'react-redux';
+import { createStructuredSelector } from 'reselect';
+import React, { useEffect, useState } from 'react';
+import {
+  GetTopSupplierData,
+  GetTopSupplierResetter,
+  getTopSupplier,
+  GetTopSupplierError
+} from '../stores/DashboardState';
+
+const connectToRedux = connect(
+  createStructuredSelector({
+    topSupplierData: GetTopSupplierData,
+    topSupplierDataError: GetTopSupplierError
+  }),
+  (dispatch) => ({
+    getTopSupplier: (fromDate) => dispatch(getTopSupplier(fromDate)),
+    resetData: () => {
+      dispatch(GetTopSupplierResetter);
+    }
+  })
+);
 
 const columns = [
   {
@@ -14,83 +36,62 @@ const columns = [
   },
   {
     title: 'Total Sales',
-    dataIndex: 'totalPrice',
-    key: 'totalPrice'
+    dataIndex: 'totalSales',
+    key: 'totalSales'
   }
 ];
 
-const dataTable = [
-  {
-    key: '1',
-    name: 'Supplier 1',
-    totalOrder: 32,
-    totalPrice: displayCurrency(2700000)
-  },
-  {
-    key: '2',
-    name: 'Supplier 2',
-    totalOrder: 42,
-    totalPrice: displayCurrency(2600000)
-  },
-  {
-    key: '3',
-    name: 'Supplier 3',
-    totalOrder: 32,
-    totalPrice: displayCurrency(2500000)
-  },
-  {
-    key: '1',
-    name: 'Supplier 4',
-    totalOrder: 32,
-    totalPrice: displayCurrency(2400000)
-  },
-  {
-    key: '2',
-    name: 'Supplier 5',
-    totalOrder: 42,
-    totalPrice: displayCurrency(2300000)
-  },
-  {
-    key: '3',
-    name: 'Supplier 6',
-    totalOrder: 32,
-    totalPrice: displayCurrency(2200000)
-  },
-  {
-    key: '1',
-    name: 'Supplier 7',
-    totalOrder: 32,
-    totalPrice: displayCurrency(2000000)
-  },
-  {
-    key: '2',
-    name: 'Supplier 8',
-    totalOrder: 42,
-    totalPrice: displayCurrency(2000000)
-  },
-  {
-    key: '3',
-    name: 'Supplier 9',
-    totalOrder: 32,
-    totalPrice: displayCurrency(2000000)
-  },
-  {
-    key: '3',
-    name: 'Supplier 10',
-    totalOrder: 32,
-    totalPrice: displayCurrency(2000000)
-  }
-];
+const getTopSupplierTable = (topSupplierData = []) => {
+  return (
+    topSupplierData &&
+    topSupplierData.length > 0 &&
+    topSupplierData.map((supplier = {}) => ({
+      key: supplier?.id,
+      name: supplier?.firstName+' '+supplier?.lastName,
+      totalOrder: supplier?.totalOrder,
+      totalSales: displayCurrency(supplier?.totalSales)
+    }))
+  );
+};
 
-const LeaderboardSupplierComponent = () => {
+
+const LeaderboardSupplierComponent = ({
+  topSupplierData,
+  getTopSupplier,
+  resetData,
+  topSupplierDataError,
+  date
+}) => {
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setLoading(true);
+    getTopSupplier(date);
+  }, [date, getTopSupplier]);
+
+  useEffect(() => {
+    if (topSupplierData || topSupplierDataError) {
+      setLoading(false);
+    }
+  }, [topSupplierData, topSupplierDataError]);
+
+  useEffect(() => {
+    return () => {
+      resetData();
+    };
+  }, [resetData]);
+
+  if (loading) {
+    return <Skeleton active />;
+  }
   return (
     <Table
       bordered
       pagination={false}
       columns={columns}
-      dataSource={dataTable}
+      dataSource={topSupplierData ? getTopSupplierTable(topSupplierData) : []}
     />
   );
 };
 
-export default LeaderboardSupplierComponent;
+export default connectToRedux(LeaderboardSupplierComponent);
