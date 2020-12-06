@@ -1,5 +1,5 @@
-import { Button, Row, Space, Tag } from 'antd';
-import React from 'react';
+import { Button, Modal, Row, Space, Tag } from 'antd';
+import React, { useEffect } from 'react';
 import ReactTableLayout from '../layouts/ReactTableLayout';
 import {
   CheckCircleOutlined,
@@ -10,8 +10,12 @@ import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 import {
   getSupplierInvitation,
-  GetSupplierInvitationData
+  GetSupplierInvitationData,
+  removeSupplierAuction,
+  RemoveSupplierAuctionResetter
 } from '../stores/AuctionState';
+import { B_ACTIVE, B_FEATURE } from '../enums/biddingStatus';
+import { DEFAULT_PAGING_INFO } from '../utils';
 
 const connectToRedux = connect(
   createStructuredSelector({
@@ -25,79 +29,116 @@ const connectToRedux = connect(
           pageIndex: page,
           pageSize
         })
-      )
+      ),
+    removeSupplier: (supplierId, reverseAuctionId, callback) =>
+      dispatch(
+        removeSupplierAuction({ supplierId, reverseAuctionId }, callback)
+      ),
+    resetRemoveSupplier: () => dispatch(RemoveSupplierAuctionResetter)
   })
 );
 
-const columns = [
-  {
-    title: 'Supplier',
-    dataIndex: 'supplier',
-    key: 'supplier'
-  },
-  {
-    title: 'Email',
-    dataIndex: 'email',
-    key: 'email'
-  },
-  {
-    title: 'Phone',
-    dataIndex: 'phone',
-    key: 'phone'
-  },
-  {
-    title: 'Status',
-    dataIndex: 'status',
-    key: 'status'
-  },
-  {
-    title: 'Actions',
-    dataIndex: 'actions',
-    key: 'actions'
-  }
-];
-
-const getSupplierDataTable = (supplierData = []) => {
-  return (
-    supplierData &&
-    supplierData.length > 0 &&
-    supplierData.map((supplierItem) => {
-      const { supplier = {}, isAccepted } = supplierItem || {};
-      return {
-        key: supplier.id,
-        supplier: `${supplier.firstName} ${supplier.lastName}`,
-        email: supplier.email,
-        phone: supplier.phoneNumber,
-        status:
-          isAccepted === null ? (
-            <Tag icon={<ClockCircleOutlined />} color="warning">
-              Pending
-            </Tag>
-          ) : isAccepted ? (
-            <Tag icon={<CheckCircleOutlined />} color="success">
-              Registered
-            </Tag>
-          ) : (
-            <Tag icon={<CloseCircleOutlined />} color="error">
-              Not accepted invitation
-            </Tag>
-          ),
-        actions: (
-          <Space>
-            <Button size="small" danger>
-              Remove
-            </Button>
-          </Space>
-        )
-      };
-    })
-  );
-};
 const BiddingSupplierListComponent = ({
   getSupplierInvitation,
   supplierInvitationData,
-  reverseAuctionId
+  reverseAuctionId,
+  removeSupplier,
+  resetRemoveSupplier,
+  reverseAuctionStatus
 }) => {
+  useEffect(() => {
+    return () => {
+      resetRemoveSupplier();
+    };
+  }, [resetRemoveSupplier]);
+  const columns = [
+    {
+      title: 'Supplier',
+      dataIndex: 'supplier',
+      key: 'supplier'
+    },
+    {
+      title: 'Email',
+      dataIndex: 'email',
+      key: 'email'
+    },
+    {
+      title: 'Phone',
+      dataIndex: 'phone',
+      key: 'phone'
+    },
+    {
+      title: 'Status',
+      dataIndex: 'status',
+      key: 'status'
+    }
+  ];
+  if (
+    reverseAuctionStatus?.id === B_FEATURE ||
+    reverseAuctionStatus?.id === B_ACTIVE
+  ) {
+    columns.push({
+      title: 'Actions',
+      dataIndex: 'actions',
+      key: 'actions'
+    });
+  }
+  const getSupplierDataTable = (supplierData = []) => {
+    return (
+      supplierData &&
+      supplierData.length > 0 &&
+      supplierData.map((supplierItem) => {
+        const { supplier = {}, isAccepted } = supplierItem || {};
+        return {
+          key: supplier.id,
+          supplier: `${supplier.firstName} ${supplier.lastName}`,
+          email: supplier.email,
+          phone: supplier.phoneNumber,
+          status:
+            isAccepted === null ? (
+              <Tag icon={<ClockCircleOutlined />} color="warning">
+                Pending
+              </Tag>
+            ) : isAccepted ? (
+              <Tag icon={<CheckCircleOutlined />} color="success">
+                Registered
+              </Tag>
+            ) : (
+              <Tag icon={<CloseCircleOutlined />} color="error">
+                Not accepted invitation
+              </Tag>
+            ),
+          actions: (reverseAuctionStatus?.id === B_FEATURE ||
+            reverseAuctionStatus?.id === B_ACTIVE) && (
+            <Space>
+              <Button
+                onClick={() =>
+                  Modal.confirm({
+                    title: 'Are you sure you want to remove this supplier?',
+                    okText: 'Yes',
+                    cancelText: 'No',
+                    onOk: () => {
+                      removeSupplier(supplier?.id, reverseAuctionId, () => {
+                        getSupplierInvitation(
+                          DEFAULT_PAGING_INFO.page,
+                          DEFAULT_PAGING_INFO.pageSize,
+                          reverseAuctionId
+                        );
+                      });
+                    }
+                  })
+                }
+                size="small"
+                danger
+              >
+                Remove
+              </Button>
+            </Space>
+          )
+        };
+      })
+    );
+  };
   let supplierData = [],
     totalCount = 0;
   if (supplierInvitationData) {
