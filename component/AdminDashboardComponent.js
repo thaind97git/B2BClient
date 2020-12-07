@@ -28,6 +28,8 @@ import {
   GetAuctionStatisticError,
   GetAuctionStatisticResetter
 } from '../stores/DashboardState';
+import moment from 'moment';
+
 let G2Plot;
 if (process.browser) {
   G2Plot = require('@ant-design/charts');
@@ -212,7 +214,14 @@ const AdminDashBoardComponent = ({
           title={
             <Row justify="space-between">
               <Title level={4}>RFQ Statistic</Title>
-              <DatePicker picker="month" onChange={onRFQChange} />
+              <DatePicker
+                picker="month"
+                onChange={onRFQChange}
+                defaultValue={moment(moment(), 'YYYY-MM-DD').subtract(
+                  1,
+                  'months'
+                )}
+              />
             </Row>
           }
           style={{ width: '98%' }}
@@ -236,7 +245,14 @@ const AdminDashBoardComponent = ({
           title={
             <Row justify="space-between">
               <Title level={4}>Reverse Auction Statistic</Title>
-              <DatePicker picker="month" onChange={onAuctionChange} />
+              <DatePicker
+                picker="month"
+                onChange={onAuctionChange}
+                defaultValue={moment(moment(), 'YYYY-MM-DD').subtract(
+                  1,
+                  'months'
+                )}
+              />
             </Row>
           }
           style={{ width: '98%', float: 'right' }}
@@ -260,7 +276,14 @@ const AdminDashBoardComponent = ({
           title={
             <Row justify="space-between">
               <Title level={4}>Leaderboard Top 10</Title>
-              <DatePicker picker="month" onChange={onDateChange} />
+              <DatePicker
+                picker="month"
+                onChange={onDateChange}
+                defaultValue={moment(moment(), 'YYYY-MM-DD').subtract(
+                  1,
+                  'months'
+                )}
+              />
             </Row>
           }
           style={{ width: '100%' }}

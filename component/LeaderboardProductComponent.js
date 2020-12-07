@@ -50,7 +50,7 @@ const getTopProductTable = (topProductData = []) => {
     topProductData.map((product = {}) => ({
       key: product.id,
       name: product.productName,
-      totalQuantity: product.totalQuantity,
+      totalQuantity: product.totalQuantity+' '+product.unitOfMeasure.description,
       totalSales: displayCurrency(product.totalSales)
     }))
   );

@@ -45,8 +45,9 @@ const getTopProductTable = (topProductData = []) => {
     topProductData.map((product = {}) => ({
       key: product.id,
       name: product.productName,
-      totalQuantity: product.totalQuantity,
-      totalPrice : product.totalSales
+      totalQuantity:
+        product.totalQuantity + ' ' + product.unitOfMeasure.description,
+      totalPrice: product.totalSales
     }))
   );
 };
