@@ -1,42 +1,133 @@
-import { Card, Col, DatePicker, Row, Typography } from 'antd';
-import React from 'react';
+import { Card, Col, DatePicker, Empty, Row, Skeleton, Typography } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { connect } from 'react-redux';
+import { createStructuredSelector } from 'reselect';
+import {
+  GetAuctionStatisticData,
+  getAuctionStatistic,
+  GetAuctionStatisticError,
+  GetAuctionStatisticResetter,
+  GetGroupByAggregatorStatisticData,
+  getGroupByAggregatorStatistic,
+  GetGroupByAggregatorStatisticError,
+  GetGroupByAggregatorStatisticResetter
+} from '../stores/DashboardState';
+import moment from 'moment';
+
 let G2Plot;
 if (process.browser) {
   G2Plot = require('@ant-design/charts');
 }
 const { Title } = Typography;
-const dataGroup = [
-  { type: 'Pending', value: 10 },
-  { type: 'Negotiating', value: 10 },
-  { type: 'Done', value: 20 },
-  { type: 'Failed', value: 10 },
-  { type: 'Bidding', value: 10 },
-  { type: 'Wait For Auction', value: 10 },
-  { type: 'Ordered', value: 10 }
-];
 
-const dataAuction = [
-  { type: 'Waiting', value: 30 },
-  { type: 'Closed', value: 30 },
-  { type: 'Failed', value: 50 },
-  { type: 'Activating', value: 50 },
-  { type: 'Done', value: 40 },
-  { type: 'Canceled', value: 50 }
-];
+const connectToRedux = connect(
+  createStructuredSelector({
+    auctionStatictic: GetAuctionStatisticData,
+    auctionStaticticError: GetAuctionStatisticError,
+    groupStatictic: GetGroupByAggregatorStatisticData,
+    groupStaticticError: GetGroupByAggregatorStatisticError
+  }),
+  (dispatch) => ({
+    getAuctionStatistic: (fromDate) => dispatch(getAuctionStatistic(fromDate)),
+    resetDataAuction: () => {
+      dispatch(GetAuctionStatisticResetter);
+    },
+    getGroupStatistic: (fromDate) => dispatch(getGroupByAggregatorStatistic(fromDate)),
+    resetDataGroup: () => {
+      dispatch(GetGroupByAggregatorStatisticResetter);
+    }
+  })
+);
 
-const AggregatorDashBoardComponent = () => {
+const getAuctionStatisticDataPie = (dataAuction = []) => {
+  return (
+    dataAuction &&
+    dataAuction.length > 0 &&
+    dataAuction.map((status = {}) => ({
+      type: status?.reverseAuctionStatus?.description,
+      value: status?.total
+    }))
+  );
+};
+
+const getGroupStatisticDataPie = (dataGroup = []) => {
+  return (
+    dataGroup &&
+    dataGroup.length > 0 &&
+    dataGroup.map((status = {}) => ({
+      type: status?.groupStatus?.description,
+      value: status?.total
+    }))
+  );
+};
+
+const AggregatorDashBoardComponent = ({
+  auctionStatictic,
+  auctionStaticticError,
+  getAuctionStatistic,
+  resetDataAuction,
+  groupStatictic,
+  groupStaticticError,
+  getGroupStatistic,
+  resetDataGroup
+}) => {
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setLoading(true);
+    getGroupStatistic(null);
+    getAuctionStatistic(null);
+  }, [getGroupStatistic,getAuctionStatistic]);
+
+  useEffect(() => {
+    if (
+      auctionStatictic ||
+      auctionStaticticError ||
+      groupStatictic ||
+      groupStaticticError
+    ) {
+      setLoading(false);
+    }
+  }, [
+    auctionStatictic,
+    auctionStaticticError,
+    groupStatictic,
+    groupStaticticError
+  ]);
+
+  useEffect(() => {
+    return () => {
+      resetDataAuction();
+      resetDataGroup();
+    };
+  }, [resetDataAuction, resetDataGroup]);
+
+  if (loading) {
+    return <Skeleton active />;
+  }
+
+  function onAuctionChange(date, dateString) {
+    //resetData();
+    getAuctionStatistic(dateString + '-01');
+  }
+
+  function onGroupChange(date, dateString) {
+    //resetData();
+    getGroupStatistic(dateString + '-01');
+  }
+
   const configRequest = {
     width: 380,
     autoFit: false,
     appendPadding: 10,
-    data: dataGroup,
+    data: getGroupStatisticDataPie(groupStatictic),
     angleField: 'value',
     colorField: 'type',
     radius: 1,
     innerRadius: 0,
     meta: {
       value: {
-        formatter: (v) => `${v} RFQs`
+        formatter: (v) => (v > 1 ? `${v} group` : `${v} groups`)
       }
     },
     label: {
@@ -59,14 +150,14 @@ const AggregatorDashBoardComponent = () => {
     width: 380,
     autoFit: false,
     appendPadding: 10,
-    data: dataAuction,
+    data: getAuctionStatisticDataPie(auctionStatictic),
     angleField: 'value',
     colorField: 'type',
     radius: 1,
     innerRadius: 0,
     meta: {
       value: {
-        formatter: (v) => `${v} Auctions`
+        formatter: (v) => (v > 1 ? `${v} Auctions` : `${v} Auctions`)
       }
     },
     label: {
@@ -92,14 +183,29 @@ const AggregatorDashBoardComponent = () => {
           title={
             <Row justify="space-between">
               <Title level={4}>Group Statistic</Title>
-              <DatePicker picker="month" />
+              <DatePicker
+                picker="month"
+                onChange={onGroupChange}
+                defaultValue={moment(moment(), 'YYYY-MM-DD').subtract(
+                  1,
+                  'months'
+                )}
+              />
             </Row>
           }
           style={{ width: '98%' }}
           bordered={false}
         >
           <Row justify="center">
-            {G2Plot && <G2Plot.Pie {...configRequest} />}
+            {groupStatictic ? (
+              groupStatictic.length === 0 ? (
+                <Empty description="No group created in this month"></Empty>
+              ) : (
+                G2Plot && <G2Plot.Pie {...configRequest} />
+              )
+            ) : (
+              <Empty description="No group created in this month"></Empty>
+            )}
           </Row>
         </Card>
       </Col>
@@ -108,14 +214,29 @@ const AggregatorDashBoardComponent = () => {
           title={
             <Row justify="space-between">
               <Title level={4}>Reverse Auction Statistic</Title>
-              <DatePicker picker="month" />
+              <DatePicker
+                picker="month"
+                onChange={onAuctionChange}
+                defaultValue={moment(moment(), 'YYYY-MM-DD').subtract(
+                  1,
+                  'months'
+                )}
+              />
             </Row>
           }
           style={{ width: '98%' }}
           bordered={false}
         >
           <Row justify="center">
-            {G2Plot && <G2Plot.Pie {...configAuction} />}
+            {auctionStatictic ? (
+              auctionStatictic.length === 0 ? (
+                <Empty description="No auction of this month"></Empty>
+              ) : (
+                G2Plot && <G2Plot.Pie {...configAuction} />
+              )
+            ) : (
+              <Empty description="No auction of this month"></Empty>
+            )}
           </Row>
         </Card>
       </Col>
@@ -123,4 +244,4 @@ const AggregatorDashBoardComponent = () => {
   );
 };
 
-export default AggregatorDashBoardComponent;
+export default connectToRedux(AggregatorDashBoardComponent);

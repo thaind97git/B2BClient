@@ -5,10 +5,7 @@ import {
   Empty,
   Row,
   Skeleton,
-  Space,
-  Table,
   Tabs,
-  Tag,
   Typography
 } from 'antd';
 import React, { useState , useEffect} from 'react';
@@ -78,12 +75,6 @@ const getAuctionStatisticDataPie = (dataAuction = []) => {
   );
 };
 
-const dataAuction = [
-  { type: 'Closed', value: 30 },
-  { type: 'Failed', value: 50 },
-  { type: 'Done', value: 40 },
-  { type: 'Canceled', value: 50 }
-];
 
 const AdminDashBoardComponent = ({
   rfqStatictic,

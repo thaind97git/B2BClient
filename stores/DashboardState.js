@@ -9,6 +9,7 @@ import { generateQuery, getResetter } from '../libs';
 
 export const GET_SUPPLIER_TOP_PRODUCT = 'GetSupplierTopProductAPI';
 export const GET_RFQ_STATISTIC = 'GetRFQStatisticAPI';
+export const GET_GROUP_BY_AGGREGATOR_STATISTIC = 'GetGroupByAggregatorStatisticAPI';
 export const GET_AUCTION_STATISTIC = 'GetAuctionStatisticAPI';
 export const GET_TOP_PRODUCT = 'GetTopProductAPI';
 export const GET_TOP_SUPPLIER = 'GetTopSupplierAPI';
@@ -143,3 +144,21 @@ export const getAuctionStatistic = (fromDate) =>
 export const GetAuctionStatisticData = GetAuctionStatisticAPI.dataSelector;
 export const GetAuctionStatisticError = GetAuctionStatisticAPI.errorSelector;
 export const GetAuctionStatisticResetter = getResetter(GetAuctionStatisticAPI);
+
+//get group status statistic
+const GetGroupByAggregatorStatisticAPI = makeFetchAction(GET_GROUP_BY_AGGREGATOR_STATISTIC, (fromDate) =>
+  nfetch({
+    endpoint: `/api/Dashboard/GroupStatistic${fromDate===null?'':`?fromDate=${fromDate}`}`,
+    method: 'GET'
+  })()
+);
+
+export const getGroupByAggregatorStatistic = (fromDate) =>
+  respondToSuccess(
+    GetGroupByAggregatorStatisticAPI.actionCreator(fromDate),
+    (resp, _, store) => {}
+  );
+
+export const GetGroupByAggregatorStatisticData = GetGroupByAggregatorStatisticAPI.dataSelector;
+export const GetGroupByAggregatorStatisticError = GetGroupByAggregatorStatisticAPI.errorSelector;
+export const GetGroupByAggregatorStatisticResetter = getResetter(GetGroupByAggregatorStatisticAPI);
