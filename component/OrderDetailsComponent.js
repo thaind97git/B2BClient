@@ -117,8 +117,9 @@ const OrderDetailsComponent = ({
     if (createFeedbackData) {
       message.success('Thank for your feedback!');
       setOpenFeedback(false);
+      getOrderDetails(orderId);
     }
-  }, [createFeedbackData]);
+  }, [createFeedbackData, orderId, getOrderDetails]);
 
   useEffect(() => {
     if (orderId) {

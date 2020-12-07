@@ -207,7 +207,7 @@ const GroupRequestSuppliersTabComponent = ({
             footer={() =>
               groupStatus.id !== G_PENDING &&
               groupStatus.id !== G_NEGOTIATING ? null : (
-                <Button type="primary" onClick={() => setIsOpenContact(true)}>
+                <Button disabled={group?.quantity === 0} type="primary" onClick={() => setIsOpenContact(true)}>
                   Add Suppliers
                 </Button>
               )

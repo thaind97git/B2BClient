@@ -1,5 +1,5 @@
 import { Button, Row, Space, Typography, Empty, Skeleton, Col } from 'antd';
-
+import { LeftOutlined } from '@ant-design/icons';
 import Router from 'next/router';
 import React, { Fragment, useEffect, useState } from 'react';
 import { connect } from 'react-redux';
@@ -97,11 +97,21 @@ const GroupRequestDetailsComponent = ({
   return (
     <Fragment>
       <Row justify="space-between">
+        <Col span={24} style={{ marginBottom: 16 }}>
+          <Button
+            type="link"
+            onClick={() => {
+              Router.push(`/aggregator/group`);
+            }}
+          >
+            <LeftOutlined /> Back to group list
+          </Button>
+        </Col>
         <Title level={4}>Group Name: {groupName}</Title>
         <Space>
           <Button
             disabled={
-              groupStatus.id !== G_NEGOTIATING && groupStatus.id !== G_PENDING
+              groupStatus.id !== G_NEGOTIATING && groupStatus.id !== G_PENDING || groupDetailsData?.quantity === 0
             }
             danger
             type="primary"
@@ -122,9 +132,6 @@ const GroupRequestDetailsComponent = ({
       <Row>
         <Col span={24}>
           <TabsLayout
-            onTabClick={(key) => {
-              console.log({ key });
-            }}
             defaultTab={defaultTab}
             setDefaultTab={setDefaultTab}
             tabPosition={'top'}

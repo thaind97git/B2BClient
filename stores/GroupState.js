@@ -132,7 +132,7 @@ const GetGroupPagingAPI = makeFetchAction(
         toDate,
         pageSize,
         pageIndex,
-        dateDescending: true,
+        dateDescending: 'true',
         status
       })}`,
       method: 'GET'

@@ -21,7 +21,7 @@ const RequestStatusComponent = ({ status }) => {
       case R_GROUPED:
         return '#2db7f5';
       case R_DONE:
-        return '#87d068';
+        return 'success';
       case R_CANCELED:
         return 'error';
       case R_REJECTED:
@@ -33,7 +33,7 @@ const RequestStatusComponent = ({ status }) => {
       case R_BIDDING:
         return 'cyan';
       case R_ORDERED:
-        return 'success';
+        return '#87d068';
       case R_OUT_OF_DATE:
         return 'error';
       default:
