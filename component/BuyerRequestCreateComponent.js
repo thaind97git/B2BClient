@@ -310,23 +310,14 @@ const BuyerRequestCreateComponent = ({
   createRequest,
   createRequestError,
   resetData,
-  isUpdate = false,
-  checkDuplicateRFQ,
-  duplicateData
+  isUpdate = false
 }) => {
   const [price, setPrice] = useState(0);
   const router = useRouter();
   const [loadingRFQ, setLoadingRFQ] = useState(false);
   const [form] = Form.useForm();
   let productId = router.query.productId;
-  const isExisted = duplicateData?.isExisted;
-  const rfqIdExisted = duplicateData?.id;
-  useEffect(() => {
-    if (productId) {
-      checkDuplicateRFQ(productId);
-    }
-  }, [productId, checkDuplicateRFQ]);
-  console.log({ duplicateData });
+
   useEffect(() => {
     getSourcingType();
     getSourcingPurpose();
@@ -886,30 +877,16 @@ const BuyerRequestCreateComponent = ({
                 </Row>
               </Card>
               <Row justify="center" align="middle">
-                {isExisted && (
-                  <Col span={4} style={{ margin: '0 8px' }}>
-                    <Button
-                      shape="round"
-                      onClick={() => {}}
-                      block
-                      className="submit"
-                      type="primary"
-                      htmlType="submit"
-                    >
-                      Update Existed RFQ
-                    </Button>
-                  </Col>
-                )}
                 <Col span={4} style={{ margin: '0 8px' }}>
                   <Button
                     shape="round"
                     onClick={() => {}}
                     block
                     className="submit"
-                    type={isExisted ? 'default' : 'primary'}
+                    type={'primary'}
                     htmlType="submit"
                   >
-                    {isExisted ? 'Create new RFQ' : 'Submit'}
+                    {'Submit'}
                   </Button>
                 </Col>
                 <Col span={4} style={{ margin: '0 8px' }}>

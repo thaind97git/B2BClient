@@ -64,6 +64,7 @@ import {
   getRequestDetails,
   GetRequestDetailsDataSelector,
   GetRequestDetailsErrorSelector,
+  getRequestDetailsResetter,
   updateRequest,
   UpdateRequestData,
   UpdateRequestError,
@@ -125,6 +126,7 @@ const connectToRedux = connect(
       dispatch(GetDistrictResetter);
       dispatch(CreateRequestResetter);
       dispatch(UpdateRequestResetter);
+      dispatch(getRequestDetailsResetter);
     }
   })
 );
@@ -293,14 +295,12 @@ const BuyerRequestUpdateComponent = ({
   getCurrency,
   getTradeTerm,
   getShippingMethod,
-  getPaymentTerm,
   getSupCertification,
   sourcingTypeData,
   sourcingPurposeData,
   currencyData,
   tradeTermData,
   shippingMethodData,
-  paymentTermData,
   supCertificationData,
   getProvince,
   getWard,
@@ -323,7 +323,6 @@ const BuyerRequestUpdateComponent = ({
   const [initForm, setInitForm] = useState({});
   const [currentDistrict, setCurrentDistrict] = useState(null);
   let requestId = router.query.id;
-
   useEffect(() => {
     getSourcingType();
     getSourcingPurpose();
@@ -331,7 +330,6 @@ const BuyerRequestUpdateComponent = ({
     getCurrency();
     getTradeTerm();
     getShippingMethod();
-    getPaymentTerm();
     getSupCertification();
     getProvince();
   }, [
@@ -341,7 +339,6 @@ const BuyerRequestUpdateComponent = ({
     getCurrency,
     getTradeTerm,
     getShippingMethod,
-    getPaymentTerm,
     getSupCertification,
     getProvince
   ]);
@@ -377,6 +374,7 @@ const BuyerRequestUpdateComponent = ({
   }, [currentDistrict, getWard]);
 
   useEffect(() => {
+    console.log(requestDetailsData);
     let initForm = {};
     initForm.productName = get('product.description')(requestDetailsData);
     initForm.sourcingPurposeId = get('sourcingPurpose.id')(requestDetailsData);
@@ -388,7 +386,7 @@ const BuyerRequestUpdateComponent = ({
     initForm.tradeTermId = get('tradeTerm.id')(requestDetailsData);
     initForm.dueDate =
       get('dueDate')(requestDetailsData) &&
-      getUtcTime(get('dueDate')(requestDetailsData));
+      moment(get('dueDate')(requestDetailsData));
     initForm.description = get('description')(requestDetailsData);
     initForm.certifications = (
       get('certifications')(requestDetailsData) || []
@@ -402,16 +400,22 @@ const BuyerRequestUpdateComponent = ({
     initForm.wardId = get('ward.id')(requestDetailsData);
     initForm.address = get('address')(requestDetailsData);
     initForm.leadTime = get('leadTime')(requestDetailsData);
-    initForm.paymentTermId = get('paymentTerm.id')(requestDetailsData);
+    console.log({ initForm });
     setInitForm(initForm);
   }, [requestDetailsData]);
+  useEffect(() => {
+    return () => {
+      setInitForm({});
+    };
+  }, []);
   const onFinish = (values) => {
     values.preferredUnitPrice = get('preferredUnitPrice.price')(values) + '';
     values.quantity = values.quantity.number + '';
     values.dueDate = new Date(values.dueDate);
-    values.currencyId = (currencyData || [])[0].id;
+    values.currencyId = (currencyData || [])[0].id || 1;
     values.certifications = values.certifications || [];
     values.leadTime = values.leadTime.number;
+    values.id = requestId;
     updateRequest(values);
   };
 
@@ -438,7 +442,7 @@ const BuyerRequestUpdateComponent = ({
       <Fragment>
         <Empty description="Can not find any request! Make sure you choose specify request" />
         <div style={{ textAlign: 'center', paddingTop: 32 }}>
-          <Button onClick={() => Router.push('/buyer/rfq')} type="primary">
+          <Button onClick={() => Router.push('/buyer/rfq')} type="link">
             <LeftOutlined /> Back to RFQ list
           </Button>
         </div>
@@ -446,12 +450,10 @@ const BuyerRequestUpdateComponent = ({
     );
   }
 
-  console.log({ requestDetailsData });
-
   return (
     <Row>
       <Row justify="space-between">
-        <Button onClick={() => Router.push('/')} type="primary">
+        <Button onClick={() => Router.push('/')} type="link">
           <LeftOutlined /> Back to product list
         </Button>
       </Row>
@@ -462,7 +464,7 @@ const BuyerRequestUpdateComponent = ({
               form={form}
               {...formItemLayout}
               autoComplete="new-password"
-              className="register-form"
+              className="update-rfq-form"
               onFinish={onFinish}
               initialValues={initForm}
             >
@@ -863,34 +865,6 @@ const BuyerRequestUpdateComponent = ({
                       />
                     </FormItem>
                   </Col>
-                  <Col style={styles.colStyle} span={24}>
-                    <FormItem
-                      label="Payment Term"
-                      name="paymentTermId"
-                      rules={[
-                        {
-                          required: true,
-                          message: 'Please select payment term'
-                        }
-                      ]}
-                    >
-                      <Select
-                        placeholder="Please select"
-                        style={{ width: '50%' }}
-                      >
-                        {!!paymentTermData &&
-                          paymentTermData.map((type) => (
-                            <Option
-                              value={type.id}
-                              index={type.id}
-                              key={type.id}
-                            >
-                              {type.description}
-                            </Option>
-                          ))}
-                      </Select>
-                    </FormItem>
-                  </Col>
                 </Row>
               </Card>
               <Row justify="center" align="middle">
@@ -902,7 +876,7 @@ const BuyerRequestUpdateComponent = ({
                     type="primary"
                     htmlType="submit"
                   >
-                    Submit
+                    Update
                   </Button>
                 </Col>
               </Row>
