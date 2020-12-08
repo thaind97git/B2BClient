@@ -1,11 +1,11 @@
-import React from "react";
-import BuyerRequestCreateComponent from "../../../component/BuyerRequestCreateComponent";
-import withAuth from "../../../component/HOC/AuthenHOC";
-import BuyerLayout from "../../../layouts/BuyerLayout";
+import React from 'react';
+import BuyerRequestCreateComponent from '../../../component/BuyerRequestCreateComponent';
+import withAuth from '../../../component/HOC/AuthenHOC';
+import BuyerLayout from '../../../layouts/BuyerLayout';
 
 const Page = () => {
   return (
-    <BuyerLayout>
+    <BuyerLayout hasBackground={false}>
       <BuyerRequestCreateComponent />
     </BuyerLayout>
   );

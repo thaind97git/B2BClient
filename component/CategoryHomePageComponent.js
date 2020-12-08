@@ -7,6 +7,7 @@ import {
   getCategories,
   GetCategoriesDataSelector
 } from '../stores/CategoryState';
+const { DirectoryTree } = Tree;
 const connectToRedux = connect(
   createStructuredSelector({
     categoryData: GetCategoriesDataSelector
@@ -57,19 +58,23 @@ const CategoryHomePageComponent = ({
     <Fragment>
       <Row>
         <Title level={4} style={{ padding: '16px 0px 8px 16px' }}>
-          ALL CATEGORIES
+          CATEGORIES
         </Title>
       </Row>
       <Row>
         {tree.length === 0 ? (
           <Skeleton active />
         ) : (
-          <Tree
+          <DirectoryTree
+            icon={false}
             style={{ height: '100%' }}
             // defaultCheckedKeys={get('[0].id')(categoryData)}
             // defaultSelectedKeys={[get('[0].id')(categoryData)]}
             onSelect={onSelect}
-            treeData={tree}
+            treeData={[
+              { key: 'all', title: 'All Category', id: 'all' },
+              ...tree
+            ]}
           />
         )}
       </Row>

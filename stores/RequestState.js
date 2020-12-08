@@ -16,6 +16,7 @@ const GET_REQUEST_BY_GROUP_ID = 'GetRequestByGroupIdAPI';
 const GET_REQUEST_SUGGEST_BY_PRODUCT_ID = 'GetRequestSuggestByProductIdAPI';
 const GET_REQUEST_GROUP_BY = 'GetRequestGroupByAPI';
 const GET_REQUEST_CANCELED_BY_USER = 'GetRequestCanceledByUserAPI';
+const CHECK_DUPLICATE = 'CheckDuplicateAPI';
 
 // Create new Request
 const CreateRequestAPI = makeFetchAction(CREATE_REQUEST, (object) =>
@@ -33,6 +34,20 @@ export const createRequest = (object) =>
 export const CreateRequestData = CreateRequestAPI.dataSelector;
 export const CreateRequestError = CreateRequestAPI.errorSelector;
 export const CreateRequestResetter = getResetter(CreateRequestAPI);
+
+// Check Duplicate RFQ
+const CheckDuplicateAPI = makeFetchAction(CHECK_DUPLICATE, (productId) =>
+  nfetch({
+    endpoint: `/api/Request/CheckDuplicateRequest?productId=${productId}`,
+    method: 'GET'
+  })()
+);
+
+export const checkDuplicate = (productId) =>
+  respondToSuccess(CheckDuplicateAPI.actionCreator(productId));
+export const CheckDuplicateData = CheckDuplicateAPI.dataSelector;
+export const CheckDuplicateError = CheckDuplicateAPI.errorSelector;
+export const CheckDuplicateResetter = getResetter(CheckDuplicateAPI);
 
 // Get Request Paging
 const GetRequestPagingAPI = makeFetchAction(
