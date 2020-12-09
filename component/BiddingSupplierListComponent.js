@@ -88,28 +88,33 @@ const BiddingSupplierListComponent = ({
       supplierData &&
       supplierData.length > 0 &&
       supplierData.map((supplierItem) => {
-        const { supplier = {}, isAccepted } = supplierItem || {};
+        console.log({ supplierItem });
+        const { supplier = {}, isAccepted, isDeleted } = supplierItem || {};
         return {
           key: supplier.id,
           supplier: `${supplier.firstName} ${supplier.lastName}`,
           email: supplier.email,
           phone: supplier.phoneNumber,
-          status:
-            isAccepted === null ? (
-              <Tag icon={<ClockCircleOutlined />} color="warning">
-                Pending
-              </Tag>
-            ) : isAccepted ? (
-              <Tag icon={<CheckCircleOutlined />} color="success">
-                Registered
-              </Tag>
-            ) : (
-              <Tag icon={<CloseCircleOutlined />} color="error">
-                Not accepted invitation
-              </Tag>
-            ),
+          status: isDeleted ? (
+            <Tag icon={<CloseCircleOutlined />} color="error">
+              Removed
+            </Tag>
+          ) : isAccepted === null ? (
+            <Tag icon={<ClockCircleOutlined />} color="warning">
+              Pending
+            </Tag>
+          ) : isAccepted ? (
+            <Tag icon={<CheckCircleOutlined />} color="success">
+              Registered
+            </Tag>
+          ) : (
+            <Tag icon={<CloseCircleOutlined />} color="error">
+              Not accepted invitation
+            </Tag>
+          ),
           actions: (reverseAuctionStatus?.id === B_FEATURE ||
-            reverseAuctionStatus?.id === B_ACTIVE) && (
+            reverseAuctionStatus?.id === B_ACTIVE ||
+            !isDeleted) && (
             <Space>
               <Button
                 onClick={() =>

@@ -57,15 +57,17 @@ function disabledDate(current) {
   // Can not select days before today and today
   return current && current < moment().startOf('day');
 }
-function disabledDateTime() {
+function disabledDateTime(moment) {
+  const hoursSelected = new Date(moment).getHours();
   return {
     disabledHours: () => {
       return range(0, 24).splice(0, new Date().getHours());
     },
     disabledMinutes: () => {
       const currentMinute = new Date().getMinutes();
+      const currentHours = new Date().getHours();
       let disable = currentMinute + 5;
-      if (currentMinute >= 55) {
+      if (currentMinute >= 55 || hoursSelected > currentHours) {
         disable = 0;
       }
       return range(0, disable);
@@ -345,7 +347,7 @@ const BiddingSettingComponent = ({
                     if (dateTime < moment(new Date()).add(5, 'm').toDate()) {
                       return Promise.reject(
                         new Error(
-                          'You just could select date time after current date time 5 minutes'
+                          'You just could select time after current time 5 minutes'
                         )
                       );
                     }
@@ -354,11 +356,14 @@ const BiddingSettingComponent = ({
               ]}
             >
               <DatePicker
+                onChange={(value) => {
+                  console.log({ value });
+                }}
                 style={{ width: '100%' }}
-                format="YYYY-MM-DD HH:mm:ss"
+                format="YYYY-MM-DD HH:mm"
                 disabledDate={disabledDate}
                 disabledTime={disabledDateTime}
-                showTime={{ defaultValue: moment('00:00:00', 'HH:mm:ss') }}
+                showTime={{ defaultValue: moment('00:00', 'HH:mm') }}
               />
             </Form.Item>
           </Col>
@@ -458,7 +463,7 @@ const BiddingSettingComponent = ({
         <Form.Item>
           <Row style={{ padding: 24 }} justify="end">
             <Button htmlType="submit" size="large" type="primary">
-              Save & Go to Next Step
+              Create Auction
             </Button>
           </Row>
         </Form.Item>
