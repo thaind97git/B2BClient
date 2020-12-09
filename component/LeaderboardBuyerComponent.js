@@ -1,4 +1,26 @@
-import { Table } from 'antd';
+import { Skeleton, Table } from 'antd';
+import { connect } from 'react-redux';
+import { createStructuredSelector } from 'reselect';
+import React, { useEffect, useState } from 'react';
+import {
+  GetTopBuyerData,
+  GetTopBuyerResetter,
+  getTopBuyer,
+  GetTopBuyerError
+} from '../stores/DashboardState';
+
+const connectToRedux = connect(
+  createStructuredSelector({
+    topBuyerData: GetTopBuyerData,
+    topBuyerDataError: GetTopBuyerError
+  }),
+  (dispatch) => ({
+    getTopBuyer: (fromDate) => dispatch(getTopBuyer(fromDate)),
+    resetData: () => {
+      dispatch(GetTopBuyerResetter);
+    }
+  })
+);
 
 const columns = [
   {
@@ -13,68 +35,55 @@ const columns = [
   }
 ];
 
-const dataTable = [
-  {
-    key: '1',
-    name: 'Buyer 1',
-    totalRfq: 52
-  },
-  {
-    key: '2',
-    name: 'Buyer 2',
-    totalRfq: 42
-  },
-  {
-    key: '3',
-    name: 'Buyer 3',
-    totalRfq: 42
-  },
-  {
-    key: '4',
-    name: 'Buyer 4',
-    totalRfq: 32
-  },
-  {
-    key: '5',
-    name: 'Buyer 5',
-    totalRfq: 32
-  },
-  {
-    key: '6',
-    name: 'Buyer 6',
-    totalRfq: 22
-  },
-  {
-    key: '7',
-    name: 'Buyer 7',
-    totalRfq: 21
-  },
-  {
-    key: '8',
-    name: 'Buyer 8',
-    totalRfq: 20
-  },
-  {
-    key: '9',
-    name: 'Buyer 9',
-    totalRfq: 10
-  },
-  {
-    key: '10',
-    name: 'Buyer 10',
-    totalRfq: 5
-  }
-];
+const getTopBuyerTable = (topBuyerData = []) => {
+  return (
+    topBuyerData &&
+    topBuyerData.length > 0 &&
+    topBuyerData.map((buyer = {}) => ({
+      key: buyer?.id,
+      name: buyer?.firstName + ' ' + buyer?.lastName,
+      totalRfq: buyer?.totalRFQ
+    }))
+  );
+};
 
-const LeaderboardBuyerComponent = () => {
+const LeaderboardBuyerComponent = ({
+  topBuyerData,
+  getTopBuyer,
+  resetData,
+  topBuyerDataError,
+  date
+}) => {
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setLoading(true);
+    getTopBuyer(date);
+  }, [date, getTopBuyer]);
+
+  useEffect(() => {
+    if (topBuyerData || topBuyerDataError) {
+      setLoading(false);
+    }
+  }, [topBuyerData, topBuyerDataError]);
+
+  useEffect(() => {
+    return () => {
+      resetData();
+    };
+  }, [resetData]);
+
+  if (loading) {
+    return <Skeleton active />;
+  }
   return (
     <Table
       pagination={false}
       bordered
       columns={columns}
-      dataSource={dataTable}
+      dataSource={topBuyerData ? getTopBuyerTable(topBuyerData) : []}
     />
   );
 };
 
-export default LeaderboardBuyerComponent;
+export default connectToRedux(LeaderboardBuyerComponent);

@@ -8,8 +8,10 @@ import {
   Divider,
   Empty,
   Popover,
-  Spin
+  Spin,
+  Modal
 } from 'antd';
+import { WarningTwoTone } from '@ant-design/icons';
 import Search from 'antd/lib/input/Search';
 import Router from 'next/router';
 import { connect } from 'react-redux';
@@ -29,6 +31,11 @@ import {
   getDefaultProductImage,
   getProductImage
 } from '../utils';
+import {
+  checkDuplicate,
+  CheckDuplicateData,
+  CheckDuplicateResetter
+} from '../stores/RequestState';
 const { Meta } = Card;
 
 const connectToRedux = connect(
@@ -36,17 +43,20 @@ const connectToRedux = connect(
     getProductByCategoryData: GetProductByCategoryData,
     getProductByCategoryError: GetProductByCategoryError,
     getProductSuggestData: GetProductSuggestData,
-    getProductSuggestError: GetProductSuggestError
+    getProductSuggestError: GetProductSuggestError,
+    duplicateData: CheckDuplicateData
   }),
   (dispatch) => ({
     getProductByCategory: (id, pageSize, pageIndex, name) =>
       dispatch(getProductByCategory(id, pageSize, pageIndex, name)),
     getProductSuggest: (pageIndex, pageSize) =>
-      dispatch(getProductSuggest({ pageIndex, pageSize }))
+      dispatch(getProductSuggest({ pageIndex, pageSize })),
+    checkDuplicateRFQ: (productId) => dispatch(checkDuplicate(productId)),
+    resetCheckDuplicate: () => dispatch(CheckDuplicateResetter)
   })
 );
 
-const ProductCard = ({ product }) => {
+const ProductCard = ({ product, checkDuplicate, setCurrentProductId }) => {
   return (
     <Popover
       id="popover-product-card"
@@ -97,7 +107,8 @@ const ProductCard = ({ product }) => {
           <span>Unit: {product.unitOfMeasure.description}</span>
           <Button
             onClick={() => {
-              Router.push(`/buyer/rfq/create?productId=${product.id}`);
+              checkDuplicate(product.id);
+              setCurrentProductId(product.id);
             }}
             size="small"
             type="primary"
@@ -116,13 +127,35 @@ const ProductListHomePageComponent = ({
   getProductByCategoryError,
   getProductSuggest,
   getProductSuggestError,
-  getProductSuggestData
+  getProductSuggestData,
+  duplicateData,
+  checkDuplicateRFQ,
+  resetCheckDuplicate
 }) => {
   const [currentCategorySelected, setCurrentCategorySelected] = useState({});
   const [pageIndex, setPageIndex] = useState(1);
   const [loading, setLoading] = useState(true);
   const [searchValue, setSearchValue] = useState('');
   const [isCategorySelected, setIsCategorySelected] = useState(false);
+  const [currentProductId, setCurrentProductId] = useState(null);
+  const [openConfirm, setOpenConfirm] = useState(false);
+
+  useEffect(() => {
+    if (!!duplicateData) {
+      if (duplicateData?.isExisted) {
+        setOpenConfirm(true);
+      } else if (!duplicateData?.isExisted) {
+        currentProductId &&
+          Router.push(`/buyer/rfq/create?productId=${currentProductId}`);
+      }
+    }
+  }, [duplicateData, currentProductId]);
+
+  useEffect(() => {
+    return () => {
+      resetCheckDuplicate();
+    };
+  }, [resetCheckDuplicate]);
 
   const onSelect = (selectedKeys, info) => {
     setIsCategorySelected(true);
@@ -206,6 +239,32 @@ const ProductListHomePageComponent = ({
   }
   return (
     <div>
+      <Modal
+        title={
+          <WarningTwoTone
+            twoToneColor="#fa8c16"
+            style={{ width: 32, fontSize: 24 }}
+          />
+        }
+        visible={openConfirm}
+        onOk={() => {
+          Router.push(`/buyer/rfq/update?id=${duplicateData?.id}`);
+        }}
+        onCancel={() => {
+          setOpenConfirm(false);
+        }}
+        okText="Yes, Update"
+        cancelText="No, Create New RFQ"
+        cancelButtonProps={{
+          onClick: () => {
+            currentProductId &&
+              Router.push(`/buyer/rfq/create?productId=${currentProductId}`);
+          }
+        }}
+      >
+        There is an RFQ with the same Product in Your RFQ list, do you want to
+        update that RFQ?
+      </Modal>
       <Row>
         <Col
           span={5}
@@ -266,7 +325,11 @@ const ProductListHomePageComponent = ({
             ) : productData && productData.length > 0 ? (
               productData.map((product, index) => (
                 <Col span={6} sm={12} md={6} key={index}>
-                  <ProductCard product={product} />
+                  <ProductCard
+                    product={product}
+                    checkDuplicate={checkDuplicateRFQ}
+                    setCurrentProductId={setCurrentProductId}
+                  />
                 </Col>
               ))
             ) : (

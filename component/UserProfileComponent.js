@@ -21,6 +21,9 @@ import {
   CurrentUserData,
   userUploadAvatar,
   userUpdatePassword,
+  UserUpdatePasswordData,
+  UserUpdatePasswordResetter,
+  UserUpdatePasswordError,
   getUser,
   getUserData,
   getUserResetter
@@ -63,14 +66,16 @@ function getBase64(file) {
 const connectToRedux = connect(
   createStructuredSelector({
     currentUser: CurrentUserData,
-    getUserData: getUserData
+    getUserData: getUserData,
+    updatePasswordData: UserUpdatePasswordData
   }),
   (dispatch) => ({
     uploadAvatar: (fileList) => dispatch(userUploadAvatar(fileList)),
     updatePassword: ({ oldPassword, newPassword }) =>
       dispatch(userUpdatePassword({ oldPassword, newPassword })),
     getUser: (id) => dispatch(getUser(id)),
-    resetGetUser: () => dispatch(getUserResetter)
+    resetGetUser: () => dispatch(getUserResetter),
+    resetUpdatePassword: () => dispatch(UserUpdatePasswordResetter)
   })
 );
 
@@ -84,6 +89,8 @@ const UserProfileComponent = ({
   getUserData,
   resetGetUser,
   isAdmin = false,
+  updatePasswordData,
+  resetUpdatePassword,
   role = BUYER
 }) => {
   const [changePasswordVisible, setChangePasswordVisible] = useState(false);
@@ -119,6 +126,16 @@ const UserProfileComponent = ({
     }
   }, [getUserData]);
 
+  useEffect(() => {
+    if (updatePasswordData) {
+      resetUpdatePassword();
+      setChangePasswordVisible(false);
+      const form = updatePasswordRef.current;
+      console.log(form);
+      form.resetFields();
+    }
+  }, [updatePasswordData]);
+
   const showChangePasswordModal = () => {
     setChangePasswordVisible(true);
   };
@@ -128,6 +145,12 @@ const UserProfileComponent = ({
       resetGetUser();
     };
   }, [resetGetUser]);
+
+  useEffect(() => {
+    return () => {
+      resetUpdatePassword();
+    };
+  }, [resetUpdatePassword]);
 
   const handleChangePasswordOk = () => {
     updatePasswordRef.current.submit();
@@ -143,7 +166,6 @@ const UserProfileComponent = ({
       oldPassword: values[`old-password`],
       newPassword: values[`new-password`]
     });
-    setChangePasswordVisible(false);
   };
 
   const checkNewPassword = (rule, value = {}) => {

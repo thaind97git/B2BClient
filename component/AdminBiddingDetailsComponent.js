@@ -62,7 +62,10 @@ const AdminBiddingDetailsComponent = ({
       title: 'Suppliers',
       key: '1',
       content: (
-        <BiddingSupplierListComponent reverseAuctionId={reverseAuctionId} />
+        <BiddingSupplierListComponent
+          reverseAuctionId={reverseAuctionId}
+          reverseAuctionStatus={reverseAuctionStatus}
+        />
       )
     },
     {

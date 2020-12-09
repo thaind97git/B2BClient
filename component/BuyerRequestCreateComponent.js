@@ -63,6 +63,9 @@ import {
   GetProductDetailsError
 } from '../stores/ProductState';
 import {
+  checkDuplicate,
+  CheckDuplicateData,
+  CheckDuplicateResetter,
   createRequest,
   CreateRequestData,
   CreateRequestError,
@@ -94,7 +97,8 @@ const connectToRedux = connect(
     createRequestData: CreateRequestData,
     createRequestError: CreateRequestError,
     requestDetailsData: GetRequestDetailsDataSelector,
-    requestDetailsError: GetRequestDetailsErrorSelector
+    requestDetailsError: GetRequestDetailsErrorSelector,
+    duplicateData: CheckDuplicateData
   }),
   (dispatch) => ({
     removeCategorySelected: () =>
@@ -113,6 +117,7 @@ const connectToRedux = connect(
     getWard: (districtId) => dispatch(getWard(districtId)),
     createRequest: (object) => dispatch(createRequest(object)),
     getRequestDetails: (id) => dispatch(getRequestDetails(id)),
+    checkDuplicateRFQ: (productId) => dispatch(checkDuplicate(productId)),
     resetData: () => {
       dispatch(GetSourcingTypeResetter);
       dispatch(GetSourcingPurposeResetter);
@@ -127,6 +132,7 @@ const connectToRedux = connect(
       dispatch(GetWardResetter);
       dispatch(GetDistrictResetter);
       dispatch(CreateRequestResetter);
+      dispatch(CheckDuplicateResetter);
     }
   })
 );
@@ -224,6 +230,7 @@ const QuantityInput = ({ value = {}, onChange, unitOfMeasure }) => {
         onChange={onNumberChange}
         style={{ width: '50%' }}
         min={0}
+        max={1000000}
         placeholder="Enter the product quantity"
       />
       <Input
@@ -303,10 +310,8 @@ const BuyerRequestCreateComponent = ({
   createRequest,
   createRequestError,
   resetData,
-  isUpdate = false,
-  isLoggedIn
+  isUpdate = false
 }) => {
-  console.log({ isLoggedIn });
   const [price, setPrice] = useState(0);
   const router = useRouter();
   const [loadingRFQ, setLoadingRFQ] = useState(false);
@@ -375,7 +380,7 @@ const BuyerRequestCreateComponent = ({
     values.preferredUnitPrice = get('preferredUnitPrice.price')(values) + '';
     values.quantity = values.quantity.number + '';
     values.dueDate = new Date(values.dueDate);
-    values.currencyId = get('[0].id')(currencyData);
+    values.currencyId = get('[0].id')(currencyData) || 1;
     values.certifications = values.certifications || [];
     values.leadTime = values.leadTime.number;
     createRequest(values);
@@ -389,11 +394,14 @@ const BuyerRequestCreateComponent = ({
     return Promise.reject('Price must be greater than zero!');
   };
   const checkUnit = (rule, value) => {
-    if (value && value.number > 0) {
-      return Promise.resolve();
+    if (!value || value <= 0) {
+      return Promise.reject('Quantity must be greater than zero!');
+    }
+    if (value > 1000000) {
+      return Promise.reject('Quantity must be lesser than 1,000,000!');
     }
 
-    return Promise.reject('Quantity must be greater than zero!');
+    return Promise.resolve();
   };
   if (loadingRFQ) {
     return <Skeleton active />;
@@ -404,7 +412,7 @@ const BuyerRequestCreateComponent = ({
       <Fragment>
         <Empty description="Can not find any product! Please choose specify product before submit RFQ" />
         <div style={{ textAlign: 'center', paddingTop: 32 }}>
-          <Button onClick={() => Router.push('/')} type="primary">
+          <Button onClick={() => Router.push('/')} type="link">
             <LeftOutlined /> Back to product list
           </Button>
         </div>
@@ -421,7 +429,7 @@ const BuyerRequestCreateComponent = ({
   return (
     <Row>
       <Row justify="space-between">
-        <Button onClick={() => Router.push('/')} type="primary">
+        <Button onClick={() => Router.push('/')} type="link">
           <LeftOutlined /> Back to product list
         </Button>
       </Row>
@@ -604,7 +612,7 @@ const BuyerRequestCreateComponent = ({
                       <DatePicker
                         placeholder="Select due date"
                         style={{ width: '50%' }}
-                        format="YYYY-MM-DD HH:mm:ss"
+                        format="YYYY-MM-DD HH:mm"
                         disabledDate={disabledDate}
                         showTime={{
                           defaultValue: moment('00:00:00', 'HH:mm:ss')
@@ -869,15 +877,28 @@ const BuyerRequestCreateComponent = ({
                 </Row>
               </Card>
               <Row justify="center" align="middle">
-                <Col span={6}>
+                <Col span={4} style={{ margin: '0 8px' }}>
                   <Button
+                    shape="round"
                     onClick={() => {}}
                     block
                     className="submit"
-                    type="primary"
+                    type={'primary'}
                     htmlType="submit"
                   >
-                    Submit
+                    {'Submit'}
+                  </Button>
+                </Col>
+                <Col span={4} style={{ margin: '0 8px' }}>
+                  <Button
+                    shape="round"
+                    onClick={() => {
+                      Router.push('/');
+                    }}
+                    block
+                    danger
+                  >
+                    Cancel
                   </Button>
                 </Col>
               </Row>

@@ -190,7 +190,7 @@ const ConfirmationOrderComponent = ({
           <Col sm={22} md={20}>
             <Row justify="center">
               <Title style={styles.titleStyle} level={2}>
-                Confirmation Order
+                Order Confirmation
               </Title>
             </Row>
             <Card

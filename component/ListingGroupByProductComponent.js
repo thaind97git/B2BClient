@@ -9,6 +9,7 @@ import {
   GetGroupByProductIdError,
   GetGroupByProductIdResetter,
 } from "../stores/GroupState";
+import {G_PENDING, G_NEGOTIATING} from '../enums/groupStatus'
 import { calculateGroupRequest } from "../utils";
 const { Panel } = Collapse;
 const connectToRedux = connect(
@@ -53,7 +54,12 @@ const ListingGroupByProductComponent = ({
     count = 0;
   if (getGroupByProductIdData) {
     groupData = getGroupByProductIdData.data;
-    count = getGroupByProductIdData.total;
+    groupData = groupData.filter(
+      (group) =>
+        group.groupStatus.id === G_NEGOTIATING ||
+        group.groupStatus.id === G_PENDING
+    );
+    count = groupData.total;
   }
 
   if (groupData.length === 0) {
