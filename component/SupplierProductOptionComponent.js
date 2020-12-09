@@ -14,6 +14,25 @@ const connectToRedux = connect(null, (dispatch) => ({
   }
 }));
 
+const getRange = (quotations = [], quantity, key) => {
+  let dataSource = quotations;
+  if (key) {
+    dataSource = dataSource.filter((quotation) => quotation.key !== key);
+  }
+  const min =
+    dataSource.filter((quotation) => quotation.quantity >= quantity) || [];
+  const max =
+    dataSource.filter((quotation) => quotation.quantity < quantity) || [];
+  const minSort = min.sort((a, b) => a.quantity - b.quantity);
+  const maxSort = max.sort((a, b) => b.quantity - a.quantity);
+  return {
+    minSort,
+    maxSort,
+    minPrice: (minSort[0] || {}).price || 0,
+    maxPrice: (maxSort[0] || {}).price || Infinity
+  };
+};
+
 const EditableCell = ({
   editing,
   dataIndex,
@@ -22,9 +41,11 @@ const EditableCell = ({
   record,
   index,
   children,
+  quotations = [],
   ...restProps
 }) => {
-  const inputNode = <InputNumber />;
+  const [min, setMin] = useState();
+  const [max, setMax] = useState();
   return (
     <td {...restProps}>
       {editing ? (
@@ -40,7 +61,24 @@ const EditableCell = ({
             }
           ]}
         >
-          <InputNumber />
+          {dataIndex === 'price' ? (
+            <InputNumber min={min} max={max} />
+          ) : (
+            <InputNumber
+              onChange={(value) => {
+                if (dataIndex === 'quantity') {
+                  const { minPrice, maxPrice } = getRange(
+                    quotations,
+                    value,
+                    record.key
+                  );
+                  setMin(minPrice);
+                  setMax(maxPrice);
+                  console.log({ minPrice, maxPrice });
+                }
+              }}
+            />
+          )}
         </Form.Item>
       ) : (
         children
@@ -200,10 +238,11 @@ const SupplierProductOptionComponent = ({
     };
   });
   const handleAdd = () => {
+    const { minPrice } = getRange(data, 1);
     const newData = {
       key: new Date().getTime() + '',
-      quantity: '1',
-      price: 0
+      quantity: 1,
+      price: minPrice + 1000
     };
     setData([...data, newData]);
     typeof onGetQuotation === 'function' &&
@@ -220,18 +259,20 @@ const SupplierProductOptionComponent = ({
       >
         Add a quotation
       </Button>
-      <Table
-        components={{
-          body: {
-            cell: EditableCell
-          }
-        }}
-        rowClassName={() => 'editable-row'}
-        bordered
-        dataSource={data}
-        columns={mergedColumns}
-        pagination={false}
-      />
+      <Form form={form} component={false}>
+        <Table
+          components={{
+            body: {
+              cell: (props) => <EditableCell quotations={data} {...props} />
+            }
+          }}
+          rowClassName={() => 'editable-row'}
+          bordered
+          dataSource={data}
+          columns={mergedColumns}
+          pagination={false}
+        />
+      </Form>
       {!!data && (
         <Fragment>
           Display for Aggregator:
