@@ -130,7 +130,7 @@ const OrderDetailsComponent = ({
 
   useEffect(() => {
     if (!!deliveredOrderData) {
-      message.success('Change to delivered message');
+      message.success('Change to delivered successfully');
       getOrderDetails(orderId);
       resetDelivered();
     }

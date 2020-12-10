@@ -170,9 +170,9 @@ const SupplierProductListingComponent = ({
             <Button
               onClick={() => {
                 Modal.confirm({
-                  title: 'Are you sure you want to Unsupply this product?',
+                  title: 'Are you sure you want to Stop Supply this product?',
                   icon: <ExclamationCircleOutlined />,
-                  okText: 'Unsupply',
+                  okText: 'Stop Supply',
                   cancelText: 'Cancel',
                   onOk: () => {
                     deleteSupplierProduct((product.product || {}).id);
@@ -183,7 +183,7 @@ const SupplierProductListingComponent = ({
               type="primary"
               danger
             >
-              Unsupply
+              Stop Supply
             </Button>
           )
         };

@@ -158,7 +158,11 @@ const SupplierLayout = ({
       resetSeenNotify();
     }
   }, [seenNotificationData, resetSeenNotify]);
-
+  useEffect(() => {
+    return () => {
+      setNotifyCount(0);
+    };
+  }, []);
   useEffect(() => {
     if (firstTime) {
       getNotificationCount();
