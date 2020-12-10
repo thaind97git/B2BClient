@@ -162,11 +162,18 @@ const BiddingAuctionComponent = ({
   // Calculate minimumChange and maximumChange each lowest bid change
   useEffect(() => {
     if (miniPercentageChange && maxPercentageChange && auction) {
+      console.log({ auction });
       setMinimumChange(
-        lowestBid - (+maxPercentageChange * +auction.currentPrice) / 100 || 0
+        lowestBid ||
+          +auction.currentPrice -
+            (+maxPercentageChange * +auction.currentPrice) / 100 ||
+          0
       );
       setMaximumChange(
-        lowestBid - (+miniPercentageChange * +auction.currentPrice) / 100 || 0
+        lowestBid ||
+          +auction.currentPrice -
+            (+miniPercentageChange * +auction.currentPrice) / 100 ||
+          0
       );
     }
   }, [lowestBid, auction]);
@@ -345,7 +352,7 @@ const BiddingAuctionComponent = ({
                 </Row>
               ) : (
                 <Button
-                  disabled={lowestBid!==0 && isFirstRank}
+                  disabled={lowestBid !== 0 && isFirstRank}
                   onClick={() => setIsPlaceBid(true)}
                 >
                   Place Bid

@@ -4,6 +4,7 @@ import {
   CANCEL_AUCTION,
   CREATE_REVERSE_AUCTION,
   PLACE_NEW_BID,
+  REMOVE_SUPPLIER_AUCTION,
   RESPONSE_AUCTION_INVITATION
 } from './AuctionState';
 import { UPDATE_FEEDBACK_RATE } from './FeedbackState';
@@ -25,7 +26,7 @@ import {
   SUPPLIER_REGISTER_PRODUCT,
   SUPPLIER_UPDATE_QUOTATION,
   UN_BAN_USER,
-  UN_IGNORE_SUPPLIER,
+  UN_IGNORE_SUPPLIER
 } from './SupplierState';
 import { USER_LOGIN, USER_REGISTER, USER_UPDATE_PASSWORD } from './UserState';
 
@@ -36,79 +37,82 @@ export default {
     if (type === ACTIONS.COMPLETE) {
       switch (name) {
         case USER_LOGIN:
-          msgNotify = 'Login success';
+          msgNotify = 'Login successfully';
           break;
         case USER_REGISTER:
-          msgNotify = 'Register success';
+          msgNotify = 'Register successfully';
           break;
         case ADD_REQUEST_TO_GROUP:
-          msgNotify = 'Add Request to Group success';
+          msgNotify = 'Add Request to Group successfully';
           break;
         case ADD_SUPPLIER_TO_GROUP:
-          msgNotify = 'Add Supplier to Group success';
+          msgNotify = 'Add Supplier to Group successfully';
           break;
         case CREATE_NEW_GROUP:
-          msgNotify = 'Create new Group success';
+          msgNotify = 'Create new Group successfully';
           break;
         case CANCEL_REQUEST:
-          msgNotify = 'Cancel Request success';
+          msgNotify = 'Cancel Request successfully';
           break;
         case REJECT_REQUEST:
-          msgNotify = 'Reject Request success';
+          msgNotify = 'Reject Request successfully';
           break;
         case REMOVE_REQUEST_FROM_GROUP:
-          msgNotify = 'Remove Request from Group success';
+          msgNotify = 'Remove Request from Group successfully';
           break;
         case BAN_USER:
-          msgNotify = 'Ban User success';
+          msgNotify = 'Ban User successfully';
           break;
         case UN_BAN_USER:
-          msgNotify = 'Active User success';
+          msgNotify = 'Active User successfully';
           break;
         case SUPPLIER_REGISTER_PRODUCT:
-          msgNotify = 'Register Product success';
+          msgNotify = 'Register Product successfully';
           break;
         case SUPPLIER_UPDATE_QUOTATION:
-          msgNotify = 'Update Product Quotation success';
+          msgNotify = 'Update Product Quotation successfully';
           break;
         case DELETE_SUPPLIER_PRODUCT:
-          msgNotify = 'Deactive product success';
+          msgNotify = 'Deactive product successfully';
           break;
         case ACTIVE_SUPPLIER_PRODUCT:
-          msgNotify = 'Active product success';
+          msgNotify = 'Active product successfully';
           break;
         case CREATE_REVERSE_AUCTION:
-          msgNotify = 'Create new reverse auction success';
+          msgNotify = 'Create new reverse auction successfully';
           break;
         case IGNORE_SUPPLIER:
-          msgNotify = 'Ignore success';
+          msgNotify = 'Ignore successfully';
           break;
         case UN_IGNORE_SUPPLIER:
-          msgNotify = 'Un-Ignore success';
+          msgNotify = 'Un-Ignore successfully';
           break;
         case CANCEL_AUCTION:
-          msgNotify = 'Cancel success';
+          msgNotify = 'Cancel successfully';
           break;
         case RESPONSE_AUCTION_INVITATION:
-          msgNotify = 'Response event success';
+          msgNotify = 'Response event successfully';
           break;
         case PLACE_NEW_BID:
-          msgNotify = 'Place new bid success';
+          msgNotify = 'Place new bid successfully';
           break;
         case UPDATE_FEEDBACK_RATE:
-          msgNotify = 'Submit rating success';
+          msgNotify = 'Submit rating successfully';
           break;
         case APPROVE_USER:
-          msgNotify = 'Approve account success';
+          msgNotify = 'Approve account successfully';
           break;
         case REJECT_USER:
-          msgNotify = 'Reject account success';
+          msgNotify = 'Reject account successfully';
           break;
         case CREATE_NEW_ORDER:
-          msgNotify = 'Create new order success';
+          msgNotify = 'Create new order successfully';
           break;
         case USER_UPDATE_PASSWORD:
-          msgNotify = 'Create new password success';
+          msgNotify = 'Create new password successfully';
+          break;
+        case REMOVE_SUPPLIER_AUCTION:
+          msgNotify = 'Remove Supplier from Auction successfully';
           break;
         default:
           break;
@@ -191,6 +195,9 @@ export default {
           break;
         case USER_UPDATE_PASSWORD:
           msgNotify = 'Create new password fail';
+          break;
+        case REMOVE_SUPPLIER_AUCTION:
+          msgNotify = 'Remove Supplier from Auction fail';
           break;
         default:
           break;

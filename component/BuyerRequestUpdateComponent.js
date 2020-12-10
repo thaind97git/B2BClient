@@ -317,21 +317,23 @@ const BuyerRequestUpdateComponent = ({
 }) => {
   const [price, setPrice] = useState(0);
   const router = useRouter();
-  const [loadingRFQ, setLoadingRFQ] = useState(false);
+  const [loadingRFQ, setLoadingRFQ] = useState(true);
   const [form] = Form.useForm();
   const [currentProvince, setCurrentProvince] = useState(null);
   const [initForm, setInitForm] = useState({});
   const [currentDistrict, setCurrentDistrict] = useState(null);
   let requestId = router.query.id;
   useEffect(() => {
-    getSourcingType();
-    getSourcingPurpose();
-    getUnit();
-    getCurrency();
-    getTradeTerm();
-    getShippingMethod();
-    getSupCertification();
-    getProvince();
+    if (!!requestDetailsData) {
+      getSourcingType();
+      getSourcingPurpose();
+      getUnit();
+      getCurrency();
+      getTradeTerm();
+      getShippingMethod();
+      getSupCertification();
+      getProvince();
+    }
   }, [
     getSourcingType,
     getSourcingPurpose,
@@ -340,13 +342,14 @@ const BuyerRequestUpdateComponent = ({
     getTradeTerm,
     getShippingMethod,
     getSupCertification,
-    getProvince
+    getProvince,
+    requestDetailsData
   ]);
 
   useEffect(() => {
     if (!!requestId) {
-      getRequestDetails(requestId);
       setLoadingRFQ(true);
+      getRequestDetails(requestId);
     }
   }, [getRequestDetails, requestId]);
 
@@ -366,15 +369,14 @@ const BuyerRequestUpdateComponent = ({
   }, [updateRequestError, resetData]);
 
   useEffect(() => {
-    getDistrict(currentProvince);
+    currentProvince && getDistrict(currentProvince);
   }, [currentProvince, getDistrict]);
 
   useEffect(() => {
-    getWard(currentDistrict);
+    currentDistrict && getWard(currentDistrict);
   }, [currentDistrict, getWard]);
 
   useEffect(() => {
-    console.log(requestDetailsData);
     let initForm = {};
     initForm.productName = get('product.description')(requestDetailsData);
     initForm.sourcingPurposeId = get('sourcingPurpose.id')(requestDetailsData);
@@ -400,7 +402,6 @@ const BuyerRequestUpdateComponent = ({
     initForm.wardId = get('ward.id')(requestDetailsData);
     initForm.address = get('address')(requestDetailsData);
     initForm.leadTime = get('leadTime')(requestDetailsData);
-    console.log({ initForm });
     setInitForm(initForm);
   }, [requestDetailsData]);
   useEffect(() => {

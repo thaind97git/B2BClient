@@ -10,7 +10,7 @@ import {
   Tag,
   Typography
 } from 'antd';
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   R_CANCELED,
   R_GROUPED,
@@ -81,10 +81,13 @@ const RequestDetailsComponent = ({
       getRequestDetails(requestId);
       setLoading(true);
     }
+  }, [requestId, getRequestDetails]);
+
+  useEffect(() => {
     return () => {
       resetData();
     };
-  }, [requestId, getRequestDetails, resetData]);
+  }, [resetData]);
 
   useEffect(() => {
     if (!!requestDetailsData) {
@@ -153,10 +156,12 @@ const RequestDetailsComponent = ({
           result = [
             {
               label: 'Edit',
-              action: () =>
+              action: () => {
+                resetData();
                 Router.push(
                   `/buyer/rfq/update?id=${(requestDetailsData || {}).id}`
-                )
+                );
+              }
             },
             {
               label: 'Cancel',

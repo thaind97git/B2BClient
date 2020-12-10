@@ -32,7 +32,8 @@ const connectToRedux = connect(
     resetDataAuction: () => {
       dispatch(GetAuctionStatisticResetter);
     },
-    getGroupStatistic: (fromDate) => dispatch(getGroupByAggregatorStatistic(fromDate)),
+    getGroupStatistic: (fromDate) =>
+      dispatch(getGroupByAggregatorStatistic(fromDate)),
     resetDataGroup: () => {
       dispatch(GetGroupByAggregatorStatisticResetter);
     }
@@ -77,7 +78,7 @@ const AggregatorDashBoardComponent = ({
     setLoading(true);
     getGroupStatistic(null);
     getAuctionStatistic(null);
-  }, [getGroupStatistic,getAuctionStatistic]);
+  }, [getGroupStatistic, getAuctionStatistic]);
 
   useEffect(() => {
     if (
@@ -157,7 +158,7 @@ const AggregatorDashBoardComponent = ({
     innerRadius: 0,
     meta: {
       value: {
-        formatter: (v) => (v > 1 ? `${v} Auctions` : `${v} Auctions`)
+        formatter: (v) => (v > 1 ? `${v} Auction` : `${v} Auctions`)
       }
     },
     label: {
