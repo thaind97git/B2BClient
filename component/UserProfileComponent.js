@@ -27,7 +27,13 @@ import {
   UserUpdatePasswordError,
   getUser,
   getUserData,
-  getUserResetter
+  getUserResetter,
+  userUpdateAccount,
+  UserUpdateAccountData,
+  UserUpdateAccountError,
+  UserUpdateAccountResetter,
+  getCurrentUser,
+  CurrentUserResetter,
 } from '../stores/UserState';
 import {
   acceptFileMimes,
@@ -68,15 +74,29 @@ const connectToRedux = connect(
   createStructuredSelector({
     currentUser: CurrentUserData,
     getUserData: getUserData,
-    updatePasswordData: UserUpdatePasswordData
+    updatePasswordData: UserUpdatePasswordData,
+    updateAccountData: UserUpdateAccountData
   }),
   (dispatch) => ({
     uploadAvatar: (fileList) => dispatch(userUploadAvatar(fileList)),
     updatePassword: ({ oldPassword, newPassword }) =>
       dispatch(userUpdatePassword({ oldPassword, newPassword })),
+    updateAccount: ({ firstName, lastName, phone, address, companyName }) =>
+      dispatch(
+        userUpdateAccount({
+          firstName,
+          lastName,
+          phone,
+          address,
+          companyName
+        })
+      ),
+    getCurrentUser: () => dispatch(getCurrentUser({})),
     getUser: (id) => dispatch(getUser(id)),
+    resetCurrentUser: () => dispatch(CurrentUserResetter),
     resetGetUser: () => dispatch(getUserResetter),
-    resetUpdatePassword: () => dispatch(UserUpdatePasswordResetter)
+    resetUpdatePassword: () => dispatch(UserUpdatePasswordResetter),
+    resetUpdateAccount: () => dispatch(UserUpdateAccountResetter)
   })
 );
 
@@ -92,10 +112,16 @@ const UserProfileComponent = ({
   isAdmin = false,
   updatePasswordData,
   resetUpdatePassword,
+  updateAccount,
+  updateAccountData,
+  resetUpdateAccount,
+  resetCurrentUser,
+  getCurrentUser,
   role = BUYER
 }) => {
   const [changePasswordVisible, setChangePasswordVisible] = useState(false);
   const [updateProfileVisible, setUpdateProfileVisible] = useState(false);
+  const [updateProfile, setUpdateProfile] = useState({});
   const [imageUrl, setImageUrl] = useState(
     currentUser.avatar
       ? getCurrentUserImage(currentUser.id)
@@ -129,6 +155,10 @@ const UserProfileComponent = ({
   }, [getUserData]);
 
   useEffect(() => {
+    getCurrentUser();
+  }, [getCurrentUser]);
+
+  useEffect(() => {
     if (updatePasswordData) {
       resetUpdatePassword();
       setChangePasswordVisible(false);
@@ -137,6 +167,15 @@ const UserProfileComponent = ({
       form.resetFields();
     }
   }, [updatePasswordData]);
+
+  useEffect(() => {
+    if (updateAccountData) {
+      resetUpdateAccount();
+      //resetCurrentUser();
+      getCurrentUser();
+      setUpdateProfileVisible(false);
+    }
+  }, [updateAccountData]);
 
   const showChangePasswordModal = () => {
     setChangePasswordVisible(true);
@@ -157,6 +196,18 @@ const UserProfileComponent = ({
       resetUpdatePassword();
     };
   }, [resetUpdatePassword]);
+
+  useEffect(() => {
+    return () => {
+      resetUpdateAccount();
+    };
+  }, [resetUpdateAccount]);
+
+  useEffect(() => {
+    return () => {
+      resetCurrentUser();
+    };
+  }, [resetCurrentUser]);
 
   const handleChangePasswordOk = () => {
     updatePasswordRef.current.submit();
@@ -208,6 +259,11 @@ const UserProfileComponent = ({
   //handle User Profile Edit Cancel
   const handleUpdateCancel = () => {
     setUpdateProfileVisible(false);
+  };
+
+  //handle User Profile Edit OK
+  const handleUpdateOK = () => {
+    updateAccount(updateProfile);
   };
 
   if (isDrawer) {
@@ -388,6 +444,7 @@ const UserProfileComponent = ({
           visible={changePasswordVisible}
           onOk={handleChangePasswordOk}
           onCancel={handleChangePasswordCancel}
+          destroyOnClose={true}
         >
           <Form
             autoComplete="new-password"
@@ -476,9 +533,14 @@ const UserProfileComponent = ({
           visible={updateProfileVisible}
           title={'Update Profile'}
           onCancel={handleUpdateCancel}
-          //onOk={''}
+          destroyOnClose={true}
+          onOk={handleUpdateOK}
         >
-          <UserProfileEditComponent />
+          <UserProfileEditComponent
+            setUpdateProfileForm={(updateProfile = {}) => {
+              setUpdateProfile(updateProfile);
+            }}
+          />
         </Modal>
         <style jsx global>{`
           .avatar-uploader .ant-upload-list-picture-card {

@@ -90,20 +90,24 @@ const AdminProductUpdateComponent = ({
     getUnit();
   }, [getUnit]);
   const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     getProduct(productID);
   }, [productID, getProduct]);
+
   useEffect(() => {
     if (productDetailError || productDetailData) {
       setLoading(false);
     }
   }, [productDetailData, productDetailError]);
+
   useEffect(() => {
     let initForm = {};
     initForm.productName = (productDetailData || {}).productName;
     initForm.description = (productDetailData || {}).description;
     setInitForm(initForm);
   }, [productDetailData]);
+  
   if (loading) {
     return <Skeleton active />;
   }

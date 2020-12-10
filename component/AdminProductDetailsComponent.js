@@ -194,6 +194,7 @@ const AdminProductDetailsComponent = ({
           <Space>
             <Button
               onClick={() => {
+                resetData();
                 Router.push(`/admin/product/update?id=${productID}`);
               }}
               size="small"

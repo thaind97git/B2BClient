@@ -28,7 +28,12 @@ import {
   UN_BAN_USER,
   UN_IGNORE_SUPPLIER
 } from './SupplierState';
-import { USER_LOGIN, USER_REGISTER, USER_UPDATE_PASSWORD } from './UserState';
+import {
+  USER_LOGIN,
+  USER_REGISTER,
+  USER_UPDATE_PASSWORD,
+  USER_UPDATE_ACCOUNT
+} from './UserState';
 
 export default {
   displayNotify(state = {}, { type, payload = {} }) {
@@ -114,6 +119,9 @@ export default {
         case REMOVE_SUPPLIER_AUCTION:
           msgNotify = 'Remove Supplier from Auction successfully';
           break;
+        case USER_UPDATE_ACCOUNT:
+          msgNotify = 'Update account successfully';
+          break;
         default:
           break;
       }
@@ -198,6 +206,9 @@ export default {
           break;
         case REMOVE_SUPPLIER_AUCTION:
           msgNotify = 'Remove Supplier from Auction fail';
+          break;
+        case USER_UPDATE_ACCOUNT:
+          msgNotify = 'Update account failed';
           break;
         default:
           break;
