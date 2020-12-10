@@ -345,7 +345,7 @@ const BiddingAuctionComponent = ({
                 </Row>
               ) : (
                 <Button
-                  disabled={isFirstRank}
+                  disabled={lowestBid!==0 && isFirstRank}
                   onClick={() => setIsPlaceBid(true)}
                 >
                   Place Bid

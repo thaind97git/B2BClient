@@ -12,10 +12,11 @@ import {
   Form,
   Button,
   Skeleton,
-  Input
+  Input,
+  Space
 } from 'antd';
 import { UploadOutlined, LockOutlined } from '@ant-design/icons';
-// import UserProfileEditComponent from "./UserProfileEditComponent";
+import UserProfileEditComponent from "./UserProfileEditComponent";
 import { createStructuredSelector } from 'reselect';
 import {
   CurrentUserData,
@@ -94,6 +95,7 @@ const UserProfileComponent = ({
   role = BUYER
 }) => {
   const [changePasswordVisible, setChangePasswordVisible] = useState(false);
+  const [updateProfileVisible, setUpdateProfileVisible] = useState(false);
   const [imageUrl, setImageUrl] = useState(
     currentUser.avatar
       ? getCurrentUserImage(currentUser.id)
@@ -140,6 +142,10 @@ const UserProfileComponent = ({
     setChangePasswordVisible(true);
   };
 
+  const showUpdateProfileModal = () => {
+    setUpdateProfileVisible(true);
+  };
+
   useEffect(() => {
     return () => {
       resetGetUser();
@@ -155,7 +161,7 @@ const UserProfileComponent = ({
   const handleChangePasswordOk = () => {
     updatePasswordRef.current.submit();
   };
-  //handle User Profile Edit Cancel
+  //handle User Password Edit Cancel
   const handleChangePasswordCancel = () => {
     setChangePasswordVisible(false);
   };
@@ -197,6 +203,11 @@ const UserProfileComponent = ({
       previewTitle:
         file.name || file.url.substring(file.url.lastIndexOf('/') + 1)
     });
+  };
+
+  //handle User Profile Edit Cancel
+  const handleUpdateCancel = () => {
+    setUpdateProfileVisible(false);
   };
 
   if (isDrawer) {
@@ -341,9 +352,14 @@ const UserProfileComponent = ({
             <Descriptions
               title={firstName + ' ' + lastName}
               extra={
-                <Button type="primary" onClick={showChangePasswordModal}>
-                  Change Password
-                </Button>
+                <Space>
+                  <Button type="primary" onClick={showUpdateProfileModal}>
+                    Update Profile
+                  </Button>
+                  <Button type="primary" onClick={showChangePasswordModal}>
+                    Change Password
+                  </Button>
+                </Space>
               }
               column={1}
             >
@@ -455,6 +471,14 @@ const UserProfileComponent = ({
             style={{ width: '100%' }}
             src={preview.previewImage}
           />
+        </Modal>
+        <Modal
+          visible={updateProfileVisible}
+          title={'Update Profile'}
+          onCancel={handleUpdateCancel}
+          //onOk={''}
+        >
+          <UserProfileEditComponent />
         </Modal>
         <style jsx global>{`
           .avatar-uploader .ant-upload-list-picture-card {
