@@ -128,7 +128,7 @@ const AggregatorDashBoardComponent = ({
     innerRadius: 0,
     meta: {
       value: {
-        formatter: (v) => (v > 1 ? `${v} group` : `${v} groups`)
+        formatter: (v) => (v > 1 ? `${v} Groups` : `${v} Group`)
       }
     },
     label: {
@@ -158,7 +158,7 @@ const AggregatorDashBoardComponent = ({
     innerRadius: 0,
     meta: {
       value: {
-        formatter: (v) => (v > 1 ? `${v} Auction` : `${v} Auctions`)
+        formatter: (v) => (v > 1 ? `${v} Auctions` : `${v} Auction`)
       }
     },
     label: {

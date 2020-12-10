@@ -157,6 +157,7 @@ const ConfirmationOrderComponent = ({
   }
 
   const {
+    id,
     email,
     address,
     avatar,
@@ -166,7 +167,7 @@ const ConfirmationOrderComponent = ({
     phoneNumber,
     role
   } = supplierData;
-
+  console.log({ avatar });
   return (
     <div>
       <Drawer
@@ -215,8 +216,9 @@ const ConfirmationOrderComponent = ({
                       <Avatar
                         size={64}
                         src={
-                          getCurrentUserImage(avatar) ||
-                          '/static/images/avatar.png'
+                          avatar
+                            ? getCurrentUserImage(id)
+                            : '/static/images/avatar.png'
                         }
                       />
                       {/* <Avatar

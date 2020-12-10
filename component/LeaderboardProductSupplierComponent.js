@@ -1,9 +1,15 @@
-import { Skeleton, Table, Typography } from 'antd';
+import { Button, Drawer, Skeleton, Table, Typography } from 'antd';
 import { displayCurrency } from '../utils';
-import {GetSupplierTopProductData , GetSupplierTopProductResetter, getSupplierTopProduct, GetSupplierTopProductError} from '../stores/DashboardState';
+import {
+  GetSupplierTopProductData,
+  GetSupplierTopProductResetter,
+  getSupplierTopProduct,
+  GetSupplierTopProductError
+} from '../stores/DashboardState';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
-import React, {  useEffect, useState} from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
+import AdminProductDetailsComponent from './AdminProductDetailsComponent';
 
 const { Title } = Typography;
 
@@ -38,26 +44,46 @@ const columns = [
   }
 ];
 
-const getTopProductTable = (topProductData = []) => {
+const getTopProductTable = (
+  topProductData = [],
+  setCurrentProductSelected,
+  setOpenDetails
+) => {
   return (
     topProductData &&
     topProductData.length > 0 &&
     topProductData.map((product = {}) => ({
       key: product.id,
-      name: product.productName,
+      name: (
+        <Button
+          onClick={() => {
+            setOpenDetails(true);
+            setCurrentProductSelected(product);
+          }}
+          type="link"
+        >
+          {product.productName}
+        </Button>
+      ),
       totalQuantity:
         product.totalQuantity + ' ' + product.unitOfMeasure.description,
-      totalPrice: product.totalSales
+      totalPrice: displayCurrency(product.totalSales)
     }))
   );
 };
 
-const LeaderboardProductSupplierComponent = ({ topProductData, getTopProduct, resetData ,topProductDataError}) => {
+const LeaderboardProductSupplierComponent = ({
+  topProductData,
+  getTopProduct,
+  resetData,
+  topProductDataError
+}) => {
   const [loading, setLoading] = useState(true);
-
+  const [openDetails, setOpenDetails] = useState(false);
+  const [currentProductSelected, setCurrentProductSelected] = useState({});
   useEffect(() => {
-      setLoading(true);
-      getTopProduct();
+    setLoading(true);
+    getTopProduct();
   }, [getTopProduct]);
 
   useEffect(() => {
@@ -75,15 +101,35 @@ const LeaderboardProductSupplierComponent = ({ topProductData, getTopProduct, re
   if (loading) {
     return <Skeleton active />;
   }
-  
+
   return (
-    <Table
-      bordered
-      columns={columns}
-      dataSource={getTopProductTable(topProductData)}
-      pagination={false}
-      dispatch
-    />
+    <Fragment>
+      <Drawer
+        width={640}
+        title="Product Details"
+        placement={'right'}
+        closable={true}
+        onClose={() => setOpenDetails(false)}
+        visible={openDetails}
+        key={'product-details'}
+      >
+        <AdminProductDetailsComponent
+          isSupplier
+          productID={(currentProductSelected || {}).id}
+        />
+      </Drawer>
+      <Table
+        bordered
+        columns={columns}
+        dataSource={getTopProductTable(
+          topProductData,
+          setCurrentProductSelected,
+          setOpenDetails
+        )}
+        pagination={false}
+        dispatch
+      />
+    </Fragment>
   );
 };
 
