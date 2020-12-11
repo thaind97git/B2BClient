@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 import {
   Form,
   Input,
@@ -8,22 +8,22 @@ import {
   Typography,
   Card,
   Select,
-  Upload,
-} from "antd";
-import Modal from "antd/lib/modal/Modal";
-import BuyerRequestCategoryComponent from "./BuyerRequestCategoryComponent";
-import { createStructuredSelector } from "reselect";
-import { connect } from "react-redux";
-import { getCategorySelected } from "../libs";
-import { SET_CATEGORY_SELECTED } from "../stores/initState";
+  Upload
+} from 'antd';
+import Modal from 'antd/lib/modal/Modal';
+import BuyerRequestCategoryComponent from './BuyerRequestCategoryComponent';
+import { createStructuredSelector } from 'reselect';
+import { connect } from 'react-redux';
+import { getCategorySelected } from '../libs';
+import { SET_CATEGORY_SELECTED } from '../stores/initState';
 import {
   getUnitOfMeasure,
-  GetUnitOfMeasureData,
-} from "../stores/SupportRequestState";
-import ImgCrop from "antd-img-crop";
-import MarkdownEditorComponent from "./MarkdownEditorComponent";
-import { acceptFileMimes, acceptFileTypes, openNotification } from "../utils";
-import { createNewProduct } from "../stores/ProductState";
+  GetUnitOfMeasureData
+} from '../stores/SupportRequestState';
+import ImgCrop from 'antd-img-crop';
+import MarkdownEditorComponent from './MarkdownEditorComponent';
+import { acceptFileMimes, acceptFileTypes, openNotification } from '../utils';
+import { createNewProduct } from '../stores/ProductState';
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -31,23 +31,23 @@ const FormItem = Form.Item;
 const connectToRedux = connect(
   createStructuredSelector({
     categorySelected: (state) => state.categorySelected,
-    unitData: GetUnitOfMeasureData,
+    unitData: GetUnitOfMeasureData
   }),
   (dispatch) => ({
     removeCategorySelected: () =>
       dispatch({ type: SET_CATEGORY_SELECTED, payload: [] }),
     getUnit: () => dispatch(getUnitOfMeasure()),
     createNewProduct: (product, fileList) =>
-      dispatch(createNewProduct(product, fileList)),
+      dispatch(createNewProduct(product, fileList))
   })
 );
 const styles = {
-  colStyle: { padding: "0 8px" },
-  titleStyle: { fontWeight: 500 },
+  colStyle: { padding: '0 8px' },
+  titleStyle: { fontWeight: 500 }
 };
 const formItemLayout = {
   labelCol: { span: 4 },
-  wrapperCol: { span: 16 },
+  wrapperCol: { span: 16 }
 };
 function getBase64(file) {
   return new Promise((resolve, reject) => {
@@ -63,14 +63,14 @@ const AdminProductCreateComponent = ({
   categorySelected,
   getUnit,
   unitData,
-  createNewProduct,
+  createNewProduct
 }) => {
   const [openCategory, setOpenCategory] = useState(false);
   const [fileList, setFileList] = useState([]);
   const [preview, setPreview] = useState({
     previewVisible: false,
-    previewImage: "",
-    previewTitle: "",
+    previewImage: '',
+    previewTitle: ''
   });
 
   useEffect(() => {
@@ -79,9 +79,9 @@ const AdminProductCreateComponent = ({
 
   const onFinish = (values) => {
     if (!categorySelected || categorySelected.length === 0) {
-      openNotification("error", { message: "Please select category" });
+      openNotification('error', { message: 'Please select category' });
     } else if (!fileList || fileList.length === 0) {
-      openNotification("error", { message: "Please upload product image" });
+      openNotification('error', { message: 'Please upload product image' });
     } else {
       values.categoryId = categorySelected[categorySelected.length - 1].id;
       values.description = values.description.value;
@@ -95,7 +95,7 @@ const AdminProductCreateComponent = ({
       return Promise.resolve();
     }
 
-    return Promise.reject("Please enter the product description !");
+    return Promise.reject('Please enter the product description !');
   };
 
   const onChange = ({ fileList: newFileList }) => {
@@ -112,7 +112,7 @@ const AdminProductCreateComponent = ({
       previewImage: file.url || file.preview,
       previewVisible: true,
       previewTitle:
-        file.name || file.url.substring(file.url.lastIndexOf("/") + 1),
+        file.name || file.url.substring(file.url.lastIndexOf('/') + 1)
     });
   };
 
@@ -156,9 +156,9 @@ const AdminProductCreateComponent = ({
             bordered={false}
             title={<b>Product Basic Information</b>}
             style={{
-              width: "100%",
-              boxShadow: "2px 2px 14px 0 rgba(0,0,0,.1)",
-              marginTop: 16,
+              width: '100%',
+              boxShadow: '2px 2px 14px 0 rgba(0,0,0,.1)',
+              marginTop: 16
             }}
           >
             <Row align="middle">
@@ -169,8 +169,8 @@ const AdminProductCreateComponent = ({
                   rules={[
                     {
                       required: true,
-                      message: "Please Enter Product Name",
-                    },
+                      message: 'Please Enter Product Name'
+                    }
                   ]}
                 >
                   <Input />
@@ -180,7 +180,7 @@ const AdminProductCreateComponent = ({
                 <FormItem
                   label={
                     <span>
-                      <span style={{ color: "red" }}>*</span> Category
+                      <span style={{ color: 'red' }}>*</span> Category
                     </span>
                   }
                   name="category"
@@ -205,14 +205,14 @@ const AdminProductCreateComponent = ({
                   rules={[
                     {
                       required: true,
-                      message: "Please select unit",
-                    },
+                      message: 'Please select unit'
+                    }
                   ]}
                 >
                   <Select
                     showSearch
                     style={{
-                      width: "50%",
+                      width: '50%'
                     }}
                     placeholder="Select a unit"
                     optionFilterProp="children"
@@ -240,11 +240,11 @@ const AdminProductCreateComponent = ({
                   rules={[
                     {
                       required: true,
-                      validator: checkDescription,
-                    },
+                      validator: checkDescription
+                    }
                   ]}
                 >
-                  <MarkdownEditorComponent />
+                  <MarkdownEditorComponent defaultValue={`<div>abc</div>`} />
                 </FormItem>
               </Col>
               <Col style={styles.colStyle} span={24}>
@@ -252,7 +252,7 @@ const AdminProductCreateComponent = ({
                   name="imageList"
                   label={
                     <span>
-                      <span style={{ color: "red" }}>*</span> Image List
+                      <span style={{ color: 'red' }}>*</span> Image List
                     </span>
                   }
                 >
@@ -268,13 +268,13 @@ const AdminProductCreateComponent = ({
                         if (acceptFileMimes.includes(file.type)) {
                           return true;
                         }
-                        openNotification("error", {
-                          message: `We just accept file type for ${acceptFileTypes}`,
+                        openNotification('error', {
+                          message: `We just accept file type for ${acceptFileTypes}`
                         });
                         return false;
                       }}
                     >
-                      {fileList.length < 5 && "+ Upload"}
+                      {fileList.length < 5 && '+ Upload'}
                       <Modal
                         visible={preview.previewVisible}
                         title={preview.previewTitle}
@@ -283,7 +283,7 @@ const AdminProductCreateComponent = ({
                       >
                         <img
                           alt="example"
-                          style={{ width: "100%" }}
+                          style={{ width: '100%' }}
                           src={preview.previewImage}
                         />
                       </Modal>

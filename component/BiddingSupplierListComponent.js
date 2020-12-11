@@ -73,22 +73,12 @@ const BiddingSupplierListComponent = ({
       key: 'status'
     }
   ];
-  if (
-    reverseAuctionStatus?.id === B_FEATURE ||
-    reverseAuctionStatus?.id === B_ACTIVE
-  ) {
-    columns.push({
-      title: 'Actions',
-      dataIndex: 'actions',
-      key: 'actions'
-    });
-  }
+
   const getSupplierDataTable = (supplierData = []) => {
     return (
       supplierData &&
       supplierData.length > 0 &&
       supplierData.map((supplierItem) => {
-        console.log({ supplierItem });
         const { supplier = {}, isAccepted, isDeleted } = supplierItem || {};
         return {
           key: supplier.id,
@@ -112,9 +102,7 @@ const BiddingSupplierListComponent = ({
               Not accepted invitation
             </Tag>
           ),
-          actions: (reverseAuctionStatus?.id === B_FEATURE ||
-            reverseAuctionStatus?.id === B_ACTIVE ||
-            !isDeleted) && (
+          actions: !isDeleted && (
             <Space>
               <Button
                 onClick={() =>
@@ -146,9 +134,23 @@ const BiddingSupplierListComponent = ({
   };
   let supplierData = [],
     totalCount = 0;
+  let isExistedNotDeleted = false;
   if (supplierInvitationData) {
     supplierData = supplierInvitationData.data;
     totalCount = supplierInvitationData.total;
+    for (const supplier of supplierData) {
+      if (supplier.isDeleted === false) {
+        isExistedNotDeleted = true;
+        break;
+      }
+    }
+    if (isExistedNotDeleted) {
+      columns.push({
+        title: 'Actions',
+        dataIndex: 'actions',
+        key: 'actions'
+      });
+    }
   }
   return (
     <Row>

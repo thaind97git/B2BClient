@@ -1,24 +1,35 @@
-import React, { useState } from "react";
-import dynamic from "next/dynamic";
-const BraftEditor = dynamic(() => import("braft-editor"), { ssr: false });
-
-const MarkdownEditorComponent = ({ setText, value = {}, onChange }) => {
-  const [editorState, setEditorState] = useState(value);
+import React, { useEffect, useState } from 'react';
+let BraftEditor = () => <p>Loading...</p>;
+const MarkdownEditorComponent = ({
+  setText,
+  value = {},
+  onChange,
+  defaultValue
+}) => {
+  const [editorState, setEditorState] = useState('');
+  useEffect(() => {
+    //here window is available
+    const initBraft = async () => {
+      BraftEditor = (await import('braft-editor')).default;
+      setEditorState(BraftEditor.createEditorState(defaultValue));
+    };
+    initBraft();
+  }, []);
   const triggerChange = (changedValue) => {
     if (onChange) {
       onChange({
         ...value,
-        ...changedValue,
+        ...changedValue
       });
     }
   };
   const onEditorChange = (value) => {
     triggerChange({
-      value: value === "<p></p>" ? null : value,
+      value: value === '<p></p>' ? null : value
     });
   };
   return (
-    <div style={{ border: "1px solid #eceaea" }} className="my-component">
+    <div style={{ border: '1px solid #eceaea' }} className="my-component">
       <link
         rel="stylesheet"
         type="text/css"
@@ -30,7 +41,7 @@ const MarkdownEditorComponent = ({ setText, value = {}, onChange }) => {
         onChange={(editorState) => {
           onEditorChange(editorState.toHTML());
           setEditorState(editorState);
-          typeof setText === "function" && setText(editorState.toHTML());
+          typeof setText === 'function' && setText(editorState.toHTML());
         }}
       />
     </div>
