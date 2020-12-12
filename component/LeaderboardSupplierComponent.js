@@ -47,13 +47,12 @@ const getTopSupplierTable = (topSupplierData = []) => {
     topSupplierData.length > 0 &&
     topSupplierData.map((supplier = {}) => ({
       key: supplier?.id,
-      name: supplier?.firstName+' '+supplier?.lastName,
+      name: supplier?.firstName + ' ' + supplier?.lastName,
       totalOrder: supplier?.totalOrder,
       totalSales: displayCurrency(supplier?.totalSales)
     }))
   );
 };
-
 
 const LeaderboardSupplierComponent = ({
   topSupplierData,

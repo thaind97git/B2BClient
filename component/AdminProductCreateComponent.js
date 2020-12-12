@@ -200,7 +200,7 @@ const AdminProductCreateComponent = ({
               </Col>
               <Col style={styles.colStyle} span={24}>
                 <FormItem
-                  label="Unit"
+                  label="Unit of measure"
                   name="unitOfMeasureId"
                   rules={[
                     {
@@ -244,7 +244,7 @@ const AdminProductCreateComponent = ({
                     }
                   ]}
                 >
-                  <MarkdownEditorComponent defaultValue={`<div>abc</div>`} />
+                  <MarkdownEditorComponent />
                 </FormItem>
               </Col>
               <Col style={styles.colStyle} span={24}>
@@ -293,7 +293,7 @@ const AdminProductCreateComponent = ({
               </Col>
             </Row>
           </Card>
-          <Row justify="center" align="middle">
+          <Row justify="center" align="middle" style={{ marginTop: 16 }}>
             <Col span={6}>
               <Button
                 onClick={() => {}}

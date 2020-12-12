@@ -76,8 +76,12 @@ const AggregatorDashBoardComponent = ({
 
   useEffect(() => {
     setLoading(true);
-    getGroupStatistic(null);
-    getAuctionStatistic(null);
+    getGroupStatistic(
+      moment(moment()).subtract(0, 'months').format('YYYY-MM-DD')
+    );
+    getAuctionStatistic(
+      moment(moment()).subtract(0, 'months').format('YYYY-MM-DD')
+    );
   }, [getGroupStatistic, getAuctionStatistic]);
 
   useEffect(() => {
@@ -188,7 +192,7 @@ const AggregatorDashBoardComponent = ({
                 picker="month"
                 onChange={onGroupChange}
                 defaultValue={moment(moment(), 'YYYY-MM-DD').subtract(
-                  1,
+                  0,
                   'months'
                 )}
               />
@@ -219,7 +223,7 @@ const AggregatorDashBoardComponent = ({
                 picker="month"
                 onChange={onAuctionChange}
                 defaultValue={moment(moment(), 'YYYY-MM-DD').subtract(
-                  1,
+                  0,
                   'months'
                 )}
               />

@@ -74,6 +74,7 @@ const ListingSupplierByProductComponent = ({
       supplierData.map((supplier = {}) => ({
         name:
           get('supplier.firstName')(supplier) +
+          ' ' +
           get('supplier.lastName')(supplier),
         key: get('supplier.id')(supplier),
         supplierEmail: get('supplier.email')(supplier),

@@ -37,6 +37,8 @@ export const getFromNowTime = (time) =>
 
 export const getUtcTime = (time, format = DATE_TIME_FORMAT) =>
   time ? momentTimeZone.tz(time, 'Etc/GMT+7').utc().format(format) : null;
+export const getUtcTimeWithoutFormat = (time) =>
+  time ? momentTimeZone.tz(time, 'Etc/GMT+7').utc() : null;
 
 export const isValidDateFormat = (value) =>
   value ? moment(value, DATE_FORMAT, true).isValid() : false;
@@ -398,4 +400,8 @@ export const getLabelNotify = ({ type, role = BUYER, id, title }) => {
     label,
     link
   };
+};
+
+export const getRangeDateLabel = (date = 30) => {
+  return `From: ${moment().add(-date, 'days').format(DATE_FORMAT)} - To: Today`;
 };

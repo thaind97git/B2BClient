@@ -183,7 +183,7 @@ const FeedbackDetailsComponent = ({
           </Col>
           <DescriptionItem title="Email" content={buyer.email} />
           <DescriptionItem
-            title="FullName"
+            title="Full Name"
             content={`${buyer.firstName} ${buyer.lastName}`}
           />
           <DescriptionItem title="Phone Number" content={buyer.phoneNumber} />
@@ -198,7 +198,7 @@ const FeedbackDetailsComponent = ({
       </Col>
       <DescriptionItem title="Email" content={supplier.email} />
       <DescriptionItem
-        title="FullName"
+        title="Full Name"
         content={`${supplier.firstName} ${supplier.lastName}`}
       />
       <DescriptionItem title="Phone Number" content={supplier.phoneNumber} />

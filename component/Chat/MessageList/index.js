@@ -10,15 +10,10 @@ import {
   GetMessagesData,
   GetMessagesResetter
 } from '../../../stores/ConversationState';
-import {
-  DEFAULT_PAGING_INFO,
-  getShortContent,
-  getUtcTime
-} from '../../../utils';
-import { Col, Row, Skeleton, Spin, Tooltip } from 'antd';
+import { DEFAULT_PAGING_INFO, getShortContent } from '../../../utils';
+import { Col, Row, Spin, Tooltip } from 'antd';
 import ScrollToBottom, { useAtTop } from 'react-scroll-to-bottom';
 import { LoadingOutlined } from '@ant-design/icons';
-import { get } from 'lodash/fp';
 
 const connectToRedux = connect(
   createStructuredSelector({
@@ -79,7 +74,6 @@ const RenderMessages = React.memo(({ messagesData }) => {
       if (prevBySameAuthor && previousDuration.as('hours') < 1) {
         startsSequence = false;
       }
-
       if (previousDuration.as('hours') < 1) {
         showTimestamp = false;
       }
@@ -203,7 +197,10 @@ function MessageList({
       }
       if (currentConversationId === newMessage.conversationId) {
         const messagesCopy = [...messages];
-        messagesCopy.push(newMessage);
+        messagesCopy.push({
+          ...newMessage,
+          dateCreated: newMessage?.dateCreated?.split('Z')?.[0]
+        });
         setNewMessage(null);
         setMessages(messagesCopy);
       }

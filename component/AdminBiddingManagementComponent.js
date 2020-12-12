@@ -189,7 +189,7 @@ const AdminBiddingManagementComponent = ({
   return (
     <div>
       <Row justify="start">
-        <Title level={4}>Event management</Title>
+        <Title level={4}>Event Management</Title>
       </Row>
       <ReactTableLayout
         dispatchAction={auctionFilter}

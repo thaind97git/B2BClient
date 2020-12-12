@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Empty, Row, Statistic, Tabs, Tag, Typography } from 'antd';
 import { ADMIN, SUPPLIER } from '../enums/accountRoles';
 import BiddingOverviewComponent from './BiddingOverviewComponent';
@@ -9,9 +9,10 @@ import {
   getAuctionDetails,
   GetAuctionDetailsData
 } from '../stores/AuctionState';
-import { useRouter } from 'next/router';
+import Router, { useRouter } from 'next/router';
 import { getUtcTime } from '../utils';
 import SignalR from '../libs/signalR';
+import { B_CANCELED, B_FEATURE } from '../enums/biddingStatus';
 const { TabPane } = Tabs;
 const { Countdown } = Statistic;
 const { Title } = Typography;
@@ -130,7 +131,14 @@ const SupplierBiddingDetailsComponent = ({
   if (!auctionDetailsData) {
     return <Empty description="Can not find any event" />;
   }
-  const { dynamicClosePeriod } = auctionDetailsData || {};
+  const { dynamicClosePeriod, isBeingRemoved, reverseAuctionStatus } =
+    auctionDetailsData || {};
+  if (
+    isBeingRemoved ||
+    [B_FEATURE, B_CANCELED].includes(reverseAuctionStatus?.id)
+  ) {
+    Router.push('/supplier/bidding');
+  }
   return (
     <div>
       <Row justify="space-between">

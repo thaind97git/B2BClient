@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useState } from 'react';
-import { Empty, Row, Select, Space, Tabs } from 'antd';
+import { Badge, Empty, Row, Select, Space, Tabs } from 'antd';
 import { ApartmentOutlined, ClusterOutlined } from '@ant-design/icons';
 import SupplierBiddingItemComponent from './SupplierBiddingItemComponent';
 import { connect } from 'react-redux';
@@ -9,6 +9,9 @@ import {
   AuctionFilterData,
   AuctionFilterError,
   AuctionFilterResetter,
+  getCountAuction,
+  GetCountAuctionData,
+  GetCountAuctionResetter,
   ResponseAuctionInvitationData,
   ResponseAuctionInvitationResetter
 } from '../stores/AuctionState';
@@ -29,7 +32,8 @@ const connectToRedux = connect(
   createStructuredSelector({
     auctionFilterData: AuctionFilterData,
     auctionFilterError: AuctionFilterError,
-    responseInvitationData: ResponseAuctionInvitationData
+    responseInvitationData: ResponseAuctionInvitationData,
+    countAuctionData: GetCountAuctionData
   }),
   (dispatch) => ({
     auctionFilter: ({
@@ -53,7 +57,9 @@ const connectToRedux = connect(
         })
       ),
     resetResponseInvitation: () => dispatch(ResponseAuctionInvitationResetter),
-    resetAuctionFilter: () => dispatch(AuctionFilterResetter)
+    resetAuctionFilter: () => dispatch(AuctionFilterResetter),
+    getCountAuction: () => dispatch(getCountAuction()),
+    resetGetCount: () => dispatch(GetCountAuctionResetter)
   })
 );
 const callAuctionFilter = ({
@@ -89,13 +95,26 @@ const SupplierBiddingComponent = ({
   auctionFilterData,
   responseInvitationData,
   resetResponseInvitation,
-  resetAuctionFilter
+  resetAuctionFilter,
+  getCountAuction,
+  countAuctionData,
+  resetGetCount
 }) => {
   const [currentTab, setCurrentTab] = useState('1');
   const [category, setCategory] = useState('all');
   const [page, setPage] = useState(DEFAULT_PAGING_INFO.page);
   const [pageSize, setPageSize] = useState(DEFAULT_PAGING_INFO.pageSize);
   const [isDescending, setIsDescending] = useState('true');
+
+  useEffect(() => {
+    getCountAuction();
+  }, [getCountAuction]);
+
+  useEffect(() => {
+    return () => {
+      resetGetCount();
+    };
+  }, [resetGetCount]);
 
   useEffect(() => {
     callAuctionFilter({
@@ -127,6 +146,7 @@ const SupplierBiddingComponent = ({
     auctionData = auctionFilterData.data;
     totalCount = auctionFilterData.total;
   }
+  const { totalAcceptedEvents, totalEventInvitations } = countAuctionData || {};
   return (
     <Fragment>
       <Row justify="end">
@@ -155,14 +175,15 @@ const SupplierBiddingComponent = ({
         onChange={(key) => {
           resetAuctionFilter();
           setCurrentTab(key);
+          getCountAuction();
         }}
       >
         <TabPane
           tab={
-            <span>
+            <Badge count={totalEventInvitations} offset={[8, -4]}>
               <ApartmentOutlined />
               Event invitations
-            </span>
+            </Badge>
           }
           key="1"
         >
@@ -182,10 +203,10 @@ const SupplierBiddingComponent = ({
         </TabPane>
         <TabPane
           tab={
-            <span>
+            <Badge count={totalAcceptedEvents} offset={[8, -4]}>
               <ClusterOutlined />
               Accepted events
-            </span>
+            </Badge>
           }
           key="2"
         >

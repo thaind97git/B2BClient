@@ -64,7 +64,8 @@ const connectToRedux = connect(
       pageSize,
       searchMessage,
       dateRange = {},
-      supplierId
+      supplierId,
+      sortBy
     ) => {
       dispatch(
         getFeedbackReportedForSupplier({
@@ -72,7 +73,8 @@ const connectToRedux = connect(
           pageIndex,
           supplierId,
           fromDate: dateRange.fromDate,
-          toDate: dateRange.toDate
+          toDate: dateRange.toDate,
+          sortBy
         })
       );
     },
@@ -369,7 +371,7 @@ const ListReportSupplierComponent = ({
           exElement: (
             <Space>
               <Select
-                size="small"
+                size="middle"
                 placeholder="Sort"
                 style={{ width: 200 }}
                 onChange={(value) => setSortBy(value)}

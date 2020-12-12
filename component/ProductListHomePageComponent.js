@@ -107,8 +107,7 @@ const ProductCard = ({ product, checkDuplicate, setCurrentProductId }) => {
           <span>Unit: {product.unitOfMeasure.description}</span>
           <Button
             onClick={() => {
-              checkDuplicate(product.id);
-              setCurrentProductId(product.id);
+              Router.push(`/buyer/rfq/create?productId=${product.id}`);
             }}
             size="small"
             type="primary"
@@ -140,22 +139,22 @@ const ProductListHomePageComponent = ({
   const [currentProductId, setCurrentProductId] = useState(null);
   const [openConfirm, setOpenConfirm] = useState(false);
 
-  useEffect(() => {
-    if (!!duplicateData) {
-      if (duplicateData?.isExisted) {
-        setOpenConfirm(true);
-      } else if (!duplicateData?.isExisted) {
-        currentProductId &&
-          Router.push(`/buyer/rfq/create?productId=${currentProductId}`);
-      }
-    }
-  }, [duplicateData, currentProductId]);
+  // useEffect(() => {
+  //   if (!!duplicateData) {
+  //     if (duplicateData?.isExisted) {
+  //       setOpenConfirm(true);
+  //     } else if (!duplicateData?.isExisted) {
+  //       currentProductId &&
+  //         Router.push(`/buyer/rfq/create?productId=${currentProductId}`);
+  //     }
+  //   }
+  // }, [duplicateData, currentProductId]);
 
-  useEffect(() => {
-    return () => {
-      resetCheckDuplicate();
-    };
-  }, [resetCheckDuplicate]);
+  // useEffect(() => {
+  //   return () => {
+  //     resetCheckDuplicate();
+  //   };
+  // }, [resetCheckDuplicate]);
 
   const onSelect = (selectedKeys, info) => {
     setIsCategorySelected(true);
@@ -239,7 +238,7 @@ const ProductListHomePageComponent = ({
   }
   return (
     <div>
-      <Modal
+      {/* <Modal
         title={
           <WarningTwoTone
             twoToneColor="#fa8c16"
@@ -264,7 +263,7 @@ const ProductListHomePageComponent = ({
       >
         There is an RFQ with the same Product in Your RFQ list, do you want to
         update that RFQ?
-      </Modal>
+      </Modal> */}
       <Row>
         <Col
           span={5}

@@ -1,5 +1,5 @@
-import { Button, Drawer, Skeleton, Table, Typography } from 'antd';
-import { displayCurrency } from '../utils';
+import { Button, Drawer, Row, Skeleton, Table, Typography } from 'antd';
+import { displayCurrency, getRangeDateLabel } from '../utils';
 import {
   GetSupplierTopProductData,
   GetSupplierTopProductResetter,
@@ -119,6 +119,12 @@ const LeaderboardProductSupplierComponent = ({
         />
       </Drawer>
       <Table
+        title={() => (
+          <Row justify="space-between">
+            <b>Top 10 Products in last 30 days</b>
+            <span>{getRangeDateLabel()}</span>
+          </Row>
+        )}
         bordered
         columns={columns}
         dataSource={getTopProductTable(

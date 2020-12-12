@@ -15,7 +15,7 @@ import {
   Skeleton
 } from 'antd';
 import { LeftOutlined } from '@ant-design/icons';
-import { displayCurrency, getUtcTime, openNotification } from '../utils';
+import { displayCurrency, openNotification } from '../utils';
 import { createStructuredSelector } from 'reselect';
 import { connect } from 'react-redux';
 import Router, { useRouter } from 'next/router';
@@ -70,6 +70,7 @@ import {
   UpdateRequestError,
   UpdateRequestResetter
 } from '../stores/RequestState';
+import { R_PENDING } from '../enums/requestStatus';
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -375,7 +376,12 @@ const BuyerRequestUpdateComponent = ({
   useEffect(() => {
     currentDistrict && getWard(currentDistrict);
   }, [currentDistrict, getWard]);
-
+  if (
+    requestDetailsData &&
+    get('requestStatus.id')(requestDetailsData) !== R_PENDING
+  ) {
+    Router.push('/buyer/rfq');
+  }
   useEffect(() => {
     let initForm = {};
     initForm.productName = get('product.description')(requestDetailsData);

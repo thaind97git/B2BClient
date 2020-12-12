@@ -50,7 +50,8 @@ const getTopProductTable = (topProductData = []) => {
     topProductData.map((product = {}) => ({
       key: product.id,
       name: product.productName,
-      totalQuantity: product.totalQuantity+' '+product.unitOfMeasure.description,
+      totalQuantity:
+        product.totalQuantity + ' ' + product.unitOfMeasure.description,
       totalSales: displayCurrency(product.totalSales)
     }))
   );
@@ -63,13 +64,12 @@ const LeaderboardProductComponent = ({
   topProductDataError,
   date
 }) => {
-
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setLoading(true);
     getTopProduct(date);
-  }, [date,getTopProduct]);
+  }, [date, getTopProduct]);
 
   useEffect(() => {
     if (topProductData || topProductDataError) {
@@ -91,7 +91,7 @@ const LeaderboardProductComponent = ({
     <Table
       bordered
       columns={columns}
-      dataSource={topProductData?getTopProductTable(topProductData):[]}
+      dataSource={topProductData ? getTopProductTable(topProductData) : []}
       pagination={false}
     />
   );

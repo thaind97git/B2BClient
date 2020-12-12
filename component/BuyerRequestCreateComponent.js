@@ -12,9 +12,10 @@ import {
   Select,
   DatePicker,
   Empty,
-  Skeleton
+  Skeleton,
+  Modal
 } from 'antd';
-import { LeftOutlined } from '@ant-design/icons';
+import { LeftOutlined, WarningTwoTone } from '@ant-design/icons';
 import { displayCurrency, openNotification } from '../utils';
 import { createStructuredSelector } from 'reselect';
 import { connect } from 'react-redux';
@@ -310,13 +311,29 @@ const BuyerRequestCreateComponent = ({
   createRequest,
   createRequestError,
   resetData,
-  isUpdate = false
+  isUpdate = false,
+  checkDuplicateRFQ,
+  duplicateData
 }) => {
   const [price, setPrice] = useState(0);
   const router = useRouter();
   const [loadingRFQ, setLoadingRFQ] = useState(false);
   const [form] = Form.useForm();
+  const [openConfirm, setOpenConfirm] = useState(false);
   let productId = router.query.productId;
+  useEffect(() => {
+    if (productId) {
+      checkDuplicateRFQ(productId);
+    }
+  }, [checkDuplicateRFQ, productId]);
+
+  useEffect(() => {
+    if (!!duplicateData) {
+      if (duplicateData?.isExisted) {
+        setOpenConfirm(true);
+      }
+    }
+  }, [duplicateData]);
 
   useEffect(() => {
     getSourcingType();
@@ -374,6 +391,7 @@ const BuyerRequestCreateComponent = ({
       resetData();
     };
   }, [createRequestError, resetData]);
+  console.log({ duplicateData });
 
   const onFinish = (values) => {
     values.productId = productId + '';
@@ -428,6 +446,26 @@ const BuyerRequestCreateComponent = ({
 
   return (
     <Row>
+      <Modal
+        title={
+          <WarningTwoTone
+            twoToneColor="#fa8c16"
+            style={{ width: 32, fontSize: 24 }}
+          />
+        }
+        visible={openConfirm}
+        onOk={() => {
+          Router.push(`/buyer/rfq/update?id=${duplicateData?.id}`);
+        }}
+        onCancel={() => {
+          setOpenConfirm(false);
+        }}
+        okText="Yes, Update"
+        cancelText="No, Create New RFQ"
+      >
+        There is an RFQ with the same Product in Your RFQ list, do you want to
+        update that RFQ?
+      </Modal>
       <Row justify="space-between">
         <Button onClick={() => Router.push('/')} type="link">
           <LeftOutlined /> Back to product list

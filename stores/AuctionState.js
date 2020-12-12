@@ -13,6 +13,22 @@ export const PLACE_NEW_BID = 'PlaceNewBidAPI';
 const GET_HISTORY_AUCTION = 'GetHistoryAuctionAPI';
 const GET_SUPPLIER_INVITATION = 'GetSupplierInvitationAPI';
 export const REMOVE_SUPPLIER_AUCTION = 'RemoveSupplierAuctionAPI';
+const GET_COUNT_AUCTION = 'GetCountAuctionAPI';
+
+const GetCountAuctionAPI = makeFetchAction(
+  GET_COUNT_AUCTION,
+  nfetch({
+    endpoint: '/api/ReverseAuction/CountEventSupplier',
+    method: 'GET'
+  })
+);
+
+export const getCountAuction = () =>
+  respondToSuccess(GetCountAuctionAPI.actionCreator());
+
+export const GetCountAuctionData = GetCountAuctionAPI.dataSelector;
+export const GetCountAuctionError = GetCountAuctionAPI.errorSelector;
+export const GetCountAuctionResetter = getResetter(GetCountAuctionAPI);
 
 const CreateReverseAuctionAPI = makeFetchAction(
   CREATE_REVERSE_AUCTION,

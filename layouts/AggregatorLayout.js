@@ -271,7 +271,7 @@ const AggregatorLayout = ({
                     )}
                   </Dropdown>
                   <Divider type="vertical" />
-                  <Dropdown overlay={PROFILE_MENU}>
+                  <Dropdown trigger={['click']} overlay={PROFILE_MENU}>
                     <a
                       className="ant-dropdown-link"
                       onClick={(e) => e.preventDefault()}
