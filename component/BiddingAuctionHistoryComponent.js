@@ -1,6 +1,6 @@
 import React from 'react';
 import { Table, Typography } from 'antd';
-import { DATE_TIME_FORMAT, displayCurrency } from '../utils';
+import { DATE_TIME_FORMAT, displayCurrency, getUtcTime } from '../utils';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 import { placeNewBid, PlaceNewBidData } from '../stores/AuctionState';
@@ -62,7 +62,11 @@ const BiddingAuctionHistoryComponent = ({
         columns={columns}
         dataSource={data.map((item, index) => {
           return {
-            time: <Moment format={DATE_TIME_FORMAT}>{item.dateCreated}</Moment>,
+            time: (
+              <Moment format={DATE_TIME_FORMAT}>
+                {getUtcTime(item.dateCreated)}
+              </Moment>
+            ),
             bid: displayCurrency(item.price),
             total: displayCurrency(totalQuantity * item.price),
             key: index

@@ -30,6 +30,7 @@ import { get } from 'lodash/fp';
 import moment from 'moment';
 import ScrollToBottom from 'react-scroll-to-bottom';
 import BiddingAuctionHistoryComponent from './BiddingAuctionHistoryComponent';
+import { B_ACTIVE } from '../enums/biddingStatus';
 const { Panel } = Collapse;
 const connectToRedux = connect(
   createStructuredSelector({
@@ -346,7 +347,10 @@ const BiddingAuctionComponent = ({
                 </Row>
               ) : (
                 <Button
-                  disabled={lowestBid !== 0 && isFirstRank}
+                  disabled={
+                    (lowestBid !== 0 && isFirstRank) ||
+                    auction?.reverseAuctionStatus?.id !== B_ACTIVE
+                  }
                   onClick={() => setIsPlaceBid(true)}
                 >
                   Place Bid

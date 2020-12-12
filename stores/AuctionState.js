@@ -57,7 +57,7 @@ const AuctionFilterAPI = makeFetchAction(
     toDate,
     pageIndex,
     pageSize,
-    orderByDateDescending
+    orderByDateDescending = true
   }) =>
     nfetch({
       endpoint: `/api/ReverseAuction/Filter${generateQuery({

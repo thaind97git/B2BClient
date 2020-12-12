@@ -1,4 +1,4 @@
-export const B_FEATURE = 1;
+export const B_FUTURE = 1;
 export const B_CLOSED = 3;
 export const B_DONE = 4;
 export const B_ACTIVE = 2;

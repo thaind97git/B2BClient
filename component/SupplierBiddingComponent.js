@@ -22,7 +22,7 @@ import {
   B_CLOSED,
   B_DONE,
   B_FAILED,
-  B_FEATURE
+  B_FUTURE
 } from '../enums/biddingStatus';
 import { DEFAULT_PAGING_INFO } from '../utils';
 
@@ -73,10 +73,10 @@ const callAuctionFilter = ({
   let isInvitation, status;
   if (key === '1') {
     isInvitation = true;
-    status = [B_FEATURE];
+    status = [B_FUTURE];
   } else if (key === '2') {
     isInvitation = 'false';
-    status = [B_FEATURE, B_ACTIVE];
+    status = [B_FUTURE, B_ACTIVE];
   } else {
     status = [B_CLOSED, B_CANCELED, B_FAILED, B_DONE];
   }

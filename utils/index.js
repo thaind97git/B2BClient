@@ -302,7 +302,7 @@ export const getLabelNotify = ({ type, role = BUYER, id, title }) => {
       case N_REQUEST_CANCELED:
         label = (
           <Fragment>
-            A request canceled in group <b>{title}</b>.
+            A request cancelled in group <b>{title}</b>.
           </Fragment>
         );
         link = `/aggregator/group/details?id=${id}`;
@@ -318,7 +318,7 @@ export const getLabelNotify = ({ type, role = BUYER, id, title }) => {
       case N_REVERSE_AUCTION_START:
         label = (
           <Fragment>
-            The reverse auction <b>{title}</b> started.
+            The reverse auction <b>{title}</b> has started.
           </Fragment>
         );
         link = `/aggregator/bidding/details?id=${id}`;
@@ -332,7 +332,7 @@ export const getLabelNotify = ({ type, role = BUYER, id, title }) => {
       case N_INVITATION:
         label = (
           <Fragment>
-            You invited to reverse auction <b>{title}</b>.
+            You have been invited to reverse auction <b>{title}</b>.
           </Fragment>
         );
         link = `/supplier/bidding`;
@@ -340,7 +340,7 @@ export const getLabelNotify = ({ type, role = BUYER, id, title }) => {
       case N_REVERSE_AUCTION_START:
         label = (
           <Fragment>
-            Reverse auction <b>{title}</b> started.
+            Reverse auction <b>{title}</b> has started.
           </Fragment>
         );
         link = `/supplier/bidding`;
@@ -348,7 +348,7 @@ export const getLabelNotify = ({ type, role = BUYER, id, title }) => {
       case N_AUCTION_WINNER:
         label = (
           <Fragment>
-            You winned reverse auction <b>{title}</b>.
+            You have won reverse auction <b>{title}</b>.
           </Fragment>
         );
         link = `/supplier/bidding/details?id=${id}`;
@@ -356,7 +356,7 @@ export const getLabelNotify = ({ type, role = BUYER, id, title }) => {
       case N_ORDER_CREATED:
         label = (
           <Fragment>
-            An order of <b>{title}</b> created for you.
+            An order of <b>{title}</b> has been created.
           </Fragment>
         );
         link = `/supplier/order/details?id=${id}`;
@@ -377,7 +377,7 @@ export const getLabelNotify = ({ type, role = BUYER, id, title }) => {
       case N_REQUEST_GROUPED:
         label = (
           <Fragment>
-            One your RFQ grouped, <b>{title}</b>.
+            One of your RFQ has been grouped, <b>{title}</b>.
           </Fragment>
         );
         link = `/buyer/rfq`;
@@ -385,7 +385,7 @@ export const getLabelNotify = ({ type, role = BUYER, id, title }) => {
       case N_ORDER_CREATED:
         label = (
           <Fragment>
-            An order of <b>{title}</b> created for you.
+            An order of <b>{title}</b> has been created.
           </Fragment>
         );
         link = `/buyer/order/details?id=${id}`;

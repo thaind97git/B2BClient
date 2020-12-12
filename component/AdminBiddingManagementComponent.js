@@ -10,7 +10,7 @@ import {
   B_CLOSED,
   B_DONE,
   B_FAILED,
-  B_FEATURE
+  B_FUTURE
 } from '../enums/biddingStatus';
 import ReactTableLayout from '../layouts/ReactTableLayout';
 import { createLink } from '../libs';
@@ -137,7 +137,7 @@ const AdminBiddingManagementComponent = ({
           createdBy: `${aggregator.firstName} ${aggregator.lastName}`,
           status: <BiddingStatusComponent status={reverseAuctionStatus.id} />,
           actions:
-            +reverseAuctionStatus.id === B_FEATURE ? (
+            +reverseAuctionStatus.id === B_FUTURE ? (
               <Button
                 onClick={() => {
                   Modal.confirm({
@@ -175,7 +175,7 @@ const AdminBiddingManagementComponent = ({
   if (!!auctionData && !auctionError) {
     requestData = auctionData.data;
     isActions = requestData.some(
-      (auction = {}) => (auction.reverseAuctionStatus || {}).id === B_FEATURE
+      (auction = {}) => (auction.reverseAuctionStatus || {}).id === B_FUTURE
     );
     totalCount = auctionData.total;
   }
@@ -207,7 +207,7 @@ const AdminBiddingManagementComponent = ({
                 defaultValue=""
               >
                 <Option value="">All Status</Option>
-                <Option value={B_FEATURE}>Waiting</Option>
+                <Option value={B_FUTURE}>Waiting</Option>
                 <Option value={B_ACTIVE}>Activating</Option>
                 <Option value={B_DONE}>Donned</Option>
                 <Option value={B_CLOSED}>Closed</Option>

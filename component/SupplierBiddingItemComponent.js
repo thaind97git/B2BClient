@@ -29,7 +29,14 @@ import {
   responseAuctionInvitation,
   ResponseAuctionInvitationData
 } from '../stores/AuctionState';
-import { B_ACTIVE, B_DONE } from '../enums/biddingStatus';
+import {
+  B_ACTIVE,
+  B_CANCELED,
+  B_CLOSED,
+  B_DONE,
+  B_FAILED,
+  B_FUTURE
+} from '../enums/biddingStatus';
 const { Title } = Typography;
 const styles = {
   root: {
@@ -83,6 +90,34 @@ const connectToRedux = connect(
   })
 );
 
+const getColorByAuctionStatus = (status) => {
+  let color = '';
+  switch (status) {
+    case B_ACTIVE:
+      color = 'blue';
+      break;
+    case B_DONE:
+      color = 'green';
+      break;
+    case B_CANCELED:
+      color = 'red';
+      break;
+    case B_CLOSED:
+      color = 'gray';
+      break;
+    case B_FAILED:
+      color = 'red';
+      break;
+    case B_FUTURE:
+      color = 'gold';
+      break;
+
+    default:
+      break;
+  }
+  return color;
+};
+
 const SupplierBiddingItemComponent = ({
   bidding,
   isInvitation = false,
@@ -108,17 +143,7 @@ const SupplierBiddingItemComponent = ({
   return (
     <div style={styles.root}>
       <Badge.Ribbon
-        color={
-          reverseAuctionStatus.id === B_DONE
-            ? 'green'
-            : reverseAuctionStatus.id === B_ACTIVE
-            ? 'blue'
-            : closed
-            ? 'red'
-            : getUtcTime(auctionStartTime) <= Date.now()
-            ? 'blue'
-            : 'gold'
-        }
+        color={getColorByAuctionStatus(reverseAuctionStatus?.id)}
         placement="end"
         text={getBadgeAuctionLabel(
           getUtcTime(auctionStartTime),
@@ -128,8 +153,10 @@ const SupplierBiddingItemComponent = ({
       >
         <Row className="bidding-item" align="middle">
           <Col style={styles.detailSection} md={15} sm={24}>
-            <Title className="title" level={4}>
-              {auctionName}
+            <Title className="title" level={5}>
+              <Link href={`/supplier/bidding/details?id=${id}`}>
+                {auctionName}
+              </Link>
             </Title>
             {/* <div>
               Posted on{' '}
