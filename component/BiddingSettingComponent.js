@@ -59,15 +59,25 @@ function disabledDate(current) {
 }
 function disabledDateTime(moment) {
   const hoursSelected = new Date(moment).getHours();
+  const dateSelected = new Date(moment).getDate();
+  const currentDate = new Date().getDate();
+  const currentMinute = new Date().getMinutes();
+  const currentHours = new Date().getHours();
   return {
     disabledHours: () => {
-      return range(0, 24).splice(0, new Date().getHours());
+      let disableHours = new Date().getHours();
+      if (dateSelected > currentDate) {
+        disableHours = 0;
+      }
+      return range(0, 24).splice(0, disableHours);
     },
     disabledMinutes: () => {
-      const currentMinute = new Date().getMinutes();
-      const currentHours = new Date().getHours();
       let disable = currentMinute + 5;
-      if (currentMinute >= 55 || hoursSelected > currentHours) {
+      if (
+        currentMinute >= 55 ||
+        hoursSelected > currentHours ||
+        dateSelected > currentDate
+      ) {
         disable = 0;
       }
       return range(0, disable);
