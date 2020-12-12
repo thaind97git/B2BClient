@@ -139,7 +139,6 @@ const BiddingAuctionComponent = ({
   // Check is first rank
   useEffect(() => {
     if (lowestBid === yourLastedBid) {
-      console.log({ lowestBid, yourLastedBid });
       setIsFirstRank(true);
     } else {
       setIsFirstRank(false);
@@ -162,21 +161,16 @@ const BiddingAuctionComponent = ({
   // Calculate minimumChange and maximumChange each lowest bid change
   useEffect(() => {
     if (miniPercentageChange && maxPercentageChange && auction) {
-      console.log({ auction });
       setMinimumChange(
-        lowestBid ||
-          +auction.currentPrice -
-            (+maxPercentageChange * +auction.currentPrice) / 100 ||
-          0
+        (lowestBid || +auction.currentPrice) -
+          (+maxPercentageChange * +auction.currentPrice) / 100 || 0
       );
       setMaximumChange(
-        lowestBid ||
-          +auction.currentPrice -
-            (+miniPercentageChange * +auction.currentPrice) / 100 ||
-          0
+        (lowestBid || +auction.currentPrice) -
+          (+miniPercentageChange * +auction.currentPrice) / 100 || 0
       );
     }
-  }, [lowestBid, auction]);
+  }, [lowestBid, miniPercentageChange.maxPercentageChange]);
 
   // Set history total lot at the first load
   useEffect(() => {
@@ -299,9 +293,9 @@ const BiddingAuctionComponent = ({
                   min={Math.floor(minimumChange)}
                   max={Math.floor(maximumChange)}
                   formatter={(value) =>
-                    `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+                    `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
                   }
-                  parser={(value) => value.replace('.', '')}
+                  parser={(value) => value.replace(/,*/g, '')}
                   onChange={(value) => {
                     setBidTmp(value);
                     setTotalLot(Math.floor(value * quantity));

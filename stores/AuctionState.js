@@ -153,7 +153,8 @@ export const responseAuctionInvitation = (
 ) =>
   respondToSuccess(
     ResponseAuctionInvitationAPI.actionCreator(reverseAuctionId, isAccept),
-    () => {
+    (_, __, store) => {
+      store.dispatch(getCountAuction());
       typeof callback === 'function' && callback();
     }
   );

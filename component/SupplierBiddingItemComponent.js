@@ -18,7 +18,11 @@ import Link from 'next/link';
 import React from 'react';
 import Moment from 'react-moment';
 import Router from 'next/router';
-import { getBadgeAuctionLabel, getUtcTime } from '../utils';
+import {
+  getBadgeAuctionLabel,
+  getUtcTime,
+  getUtcTimeWithoutFormat
+} from '../utils';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 import {
@@ -210,7 +214,7 @@ const SupplierBiddingItemComponent = ({
               )}
               {!closed &&
                 !isInvitation &&
-                new Date(auctionStartTime) <= Date.now() && (
+                new Date(auctionStartTime) <= new Date(Date.now()) && (
                   <Space>
                     <Button
                       style={styles.buttonAction}

@@ -254,8 +254,11 @@ export const getBadgeAuctionLabel = (
   auctionStatus
 ) => {
   let text = 'A next few days';
-  const dateBetween =
-    new Date(auctionStartTime).getDate() - new Date().getDate();
+  const auctionTime = new Date(auctionStartTime);
+  const currentTime = new Date();
+  const dateBetween = auctionTime.getDate() - currentTime.getDate();
+  const hoursBetween = auctionTime.getHours() - currentTime.getHours();
+  const minutesBetween = auctionTime.getMinutes() - currentTime.getMinutes();
   if (isClosed) {
     const getLabelByStatus = (status) => {
       switch (status) {
@@ -273,7 +276,15 @@ export const getBadgeAuctionLabel = (
     };
     text = getLabelByStatus(auctionStatus);
   } else if (dateBetween <= 0) {
-    text = 'Happening';
+    if (hoursBetween <= 0) {
+      if (minutesBetween <= 0) {
+        text = 'Happening';
+      } else if (minutesBetween > 0) {
+        text = 'A few minutes';
+      }
+    } else if (hoursBetween > 0) {
+      text = 'A few hours';
+    }
   } else if (dateBetween === 1) {
     text = 'Tomorrow';
   } else if (dateBetween >= 7) {

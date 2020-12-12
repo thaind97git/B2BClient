@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { Empty, Row, Statistic, Tabs, Tag, Typography } from 'antd';
 import { ADMIN, SUPPLIER } from '../enums/accountRoles';
 import BiddingOverviewComponent from './BiddingOverviewComponent';
@@ -12,7 +12,7 @@ import {
 import Router, { useRouter } from 'next/router';
 import { getUtcTime } from '../utils';
 import SignalR from '../libs/signalR';
-import { B_CANCELED, B_FEATURE } from '../enums/biddingStatus';
+import { B_ACTIVE, B_CANCELED, B_FEATURE } from '../enums/biddingStatus';
 const { TabPane } = Tabs;
 const { Countdown } = Statistic;
 const { Title } = Typography;
@@ -97,9 +97,10 @@ const SupplierBiddingDetailsComponent = ({
   getAuctionDetails
 }) => {
   const [firstTime, setFirstTime] = useState(true);
-  const [duration, setDuration] = useState(null);
+  const [minimumDuration, setMinimumDuration] = useState(null);
   const [deadline, setDeadLine] = useState(null);
   const router = useRouter();
+  const [isAnimation, setIsAnimation] = useState(false);
   const { id: auctionId } = router.query;
   useEffect(() => {
     if (auctionId && firstTime) {
@@ -107,14 +108,18 @@ const SupplierBiddingDetailsComponent = ({
       setFirstTime(false);
     }
   }, [auctionId, firstTime, getAuctionDetails]);
-
+  useEffect(() => {
+    if (isAnimation === true) {
+      setIsAnimation(false);
+    }
+  }, [isAnimation]);
   useEffect(() => {
     if (
       auctionDetailsData &&
       auctionDetailsData.actualDuration &&
       auctionDetailsData.auctionStartTime
     ) {
-      // setDuration(auctionDetailsData.actualDuration)
+      setMinimumDuration(auctionDetailsData.minimumDuration);
       setDeadLine(
         new Date(getUtcTime(auctionDetailsData.auctionStartTime)).getTime() +
           1000 * 60 * auctionDetailsData.actualDuration
@@ -123,11 +128,21 @@ const SupplierBiddingDetailsComponent = ({
   }, [auctionDetailsData]);
 
   useEffect(() => {
-    signalR.onListen('NewBid', (history) => {});
+    signalR.onListen('NewBid', (history) => {
+      if (history.actualDuration) {
+        setDeadLine(
+          new Date(getUtcTime(auctionDetailsData.auctionStartTime)).getTime() +
+            1000 * 60 * history?.actualDuration
+        );
+        if (minimumDuration !== history.actualDuration) {
+          setIsAnimation(true);
+        }
+      }
+    });
     return () => {
       signalR.stopConnection();
     };
-  }, []);
+  }, [auctionDetailsData, minimumDuration]);
   if (!auctionDetailsData) {
     return <Empty description="Can not find any event" />;
   }
@@ -155,10 +170,10 @@ const SupplierBiddingDetailsComponent = ({
               )}
             </Row>
           </Tag>
-          <AnimationTime time={dynamicClosePeriod} />
+          {isAnimation ? <AnimationTime time={dynamicClosePeriod} /> : null}
         </div>
       </Row>
-      <Tabs defaultActiveKey="1">
+      <Tabs defaultActiveKey="3">
         <TabPane
           className="bidding-over-view"
           tab={<span>Overview</span>}
@@ -171,7 +186,20 @@ const SupplierBiddingDetailsComponent = ({
             Participants
           </TabPane>
         )}
-        <TabPane tab={<span>Reverse Auction</span>} key="5">
+        <TabPane
+          tab={
+            <div>
+              {reverseAuctionStatus?.id === B_ACTIVE && (
+                <Fragment>
+                  <img src="/static/images/live.png" alt="live" width={32} />
+                  <span>&nbsp;</span>
+                </Fragment>
+              )}
+              <span>Live Reverse Auction</span>
+            </div>
+          }
+          key="3"
+        >
           <BiddingAuctionComponent
             signalR={signalR}
             auction={auctionDetailsData}
