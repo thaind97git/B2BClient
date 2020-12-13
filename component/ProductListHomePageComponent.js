@@ -9,10 +9,8 @@ import {
   Empty,
   Popover,
   Spin,
-  Modal
+  Input
 } from 'antd';
-import { WarningTwoTone } from '@ant-design/icons';
-import Search from 'antd/lib/input/Search';
 import Router from 'next/router';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
@@ -37,6 +35,7 @@ import {
   CheckDuplicateResetter
 } from '../stores/RequestState';
 const { Meta } = Card;
+const { Search } = Input;
 
 const connectToRedux = connect(
   createStructuredSelector({
@@ -56,7 +55,7 @@ const connectToRedux = connect(
   })
 );
 
-const ProductCard = ({ product, checkDuplicate, setCurrentProductId }) => {
+const ProductCard = ({ product }) => {
   return (
     <Popover
       id="popover-product-card"
@@ -107,8 +106,7 @@ const ProductCard = ({ product, checkDuplicate, setCurrentProductId }) => {
           <span>Unit: {product.unitOfMeasure.description}</span>
           <Button
             onClick={() => {
-              checkDuplicate(product.id);
-              setCurrentProductId(product.id);
+              Router.push(`/buyer/rfq/create?productId=${product.id}`);
             }}
             size="small"
             type="primary"
@@ -128,50 +126,38 @@ const ProductListHomePageComponent = ({
   getProductSuggest,
   getProductSuggestError,
   getProductSuggestData,
-  duplicateData,
-  checkDuplicateRFQ,
-  resetCheckDuplicate
+  checkDuplicateRFQ
 }) => {
   const [currentCategorySelected, setCurrentCategorySelected] = useState({});
   const [pageIndex, setPageIndex] = useState(1);
   const [loading, setLoading] = useState(true);
   const [searchValue, setSearchValue] = useState('');
   const [isCategorySelected, setIsCategorySelected] = useState(false);
-  const [currentProductId, setCurrentProductId] = useState(null);
-  const [openConfirm, setOpenConfirm] = useState(false);
-
-  useEffect(() => {
-    if (!!duplicateData) {
-      if (duplicateData?.isExisted) {
-        setOpenConfirm(true);
-      } else if (!duplicateData?.isExisted) {
-        currentProductId &&
-          Router.push(`/buyer/rfq/create?productId=${currentProductId}`);
-      }
-    }
-  }, [duplicateData, currentProductId]);
-
-  useEffect(() => {
-    return () => {
-      resetCheckDuplicate();
-    };
-  }, [resetCheckDuplicate]);
+  const [isLoadSuggest, setIsLoadSuggest] = useState(true);
 
   const onSelect = (selectedKeys, info) => {
+    setIsLoadSuggest(false);
+    setSearchValue('');
     setIsCategorySelected(true);
     setCurrentCategorySelected({
       name: info.node.title,
       id: info.node.key
     });
-    getProductByCategory(info.node.key, pageSize, 1, searchValue);
+    getProductByCategory(info.node.key, pageSize, 1, '');
     setLoading(true);
   };
 
   useEffect(() => {
-    if (!isCategorySelected) {
+    if (isLoadSuggest) {
       getProductSuggest(pageIndex, pageSize);
     }
-  }, [isCategorySelected, getProductSuggest, pageIndex]);
+  }, [isLoadSuggest, pageIndex, getProductSuggest]);
+
+  // useEffect(() => {
+  //   if (!isCategorySelected) {
+  //     getProductSuggest(pageIndex, pageSize);
+  //   }
+  // }, [isCategorySelected, getProductSuggest, pageIndex]);
 
   useEffect(() => {
     if (
@@ -197,6 +183,10 @@ const ProductListHomePageComponent = ({
   useEffect(() => {
     setPageIndex(1);
   }, [currentCategorySelected]);
+
+  // useEffect(() => {
+  //   debounceLoadData(searchValue);
+  // }, [searchValue, debounceLoadData]);
 
   useEffect(() => {
     if (
@@ -226,7 +216,7 @@ const ProductListHomePageComponent = ({
   };
   let productData = [],
     count = 0;
-  if (!isCategorySelected) {
+  if (isLoadSuggest) {
     if (getProductSuggestData) {
       productData = getProductSuggestData.data;
       count = getProductSuggestData.total;
@@ -239,32 +229,6 @@ const ProductListHomePageComponent = ({
   }
   return (
     <div>
-      <Modal
-        title={
-          <WarningTwoTone
-            twoToneColor="#fa8c16"
-            style={{ width: 32, fontSize: 24 }}
-          />
-        }
-        visible={openConfirm}
-        onOk={() => {
-          Router.push(`/buyer/rfq/update?id=${duplicateData?.id}`);
-        }}
-        onCancel={() => {
-          setOpenConfirm(false);
-        }}
-        okText="Yes, Update"
-        cancelText="No, Create New RFQ"
-        cancelButtonProps={{
-          onClick: () => {
-            currentProductId &&
-              Router.push(`/buyer/rfq/create?productId=${currentProductId}`);
-          }
-        }}
-      >
-        There is an RFQ with the same Product in Your RFQ list, do you want to
-        update that RFQ?
-      </Modal>
       <Row>
         <Col
           span={5}
@@ -295,17 +259,18 @@ const ProductListHomePageComponent = ({
                     value={searchValue || ''}
                     onChange={(event) => setSearchValue(event.target.value)}
                     onSearch={(value) => {
+                      setIsLoadSuggest(false);
+                      // setSearchValue(value);
                       setPageIndex(DEFAULT_PAGING_INFO.page);
-                      !!value &&
-                        getProductByCategory(
-                          (currentCategorySelected || {}).id,
-                          pageSize,
-                          pageIndex,
-                          value
-                        );
+                      getProductByCategory(
+                        (currentCategorySelected || {}).id,
+                        pageSize,
+                        pageIndex,
+                        value
+                      );
                     }}
                     placeholder={`Search in ${
-                      (currentCategorySelected || {}).name || 'Suggestion'
+                      (currentCategorySelected || {}).name || 'All Category'
                     }`}
                   />
                 </Col>
@@ -328,7 +293,6 @@ const ProductListHomePageComponent = ({
                   <ProductCard
                     product={product}
                     checkDuplicate={checkDuplicateRFQ}
-                    setCurrentProductId={setCurrentProductId}
                   />
                 </Col>
               ))

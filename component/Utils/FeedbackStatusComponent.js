@@ -1,17 +1,14 @@
-import { Tag } from "antd";
-import React from "react";
-import {
-  F_OPEN,
-  F_CLOSED
-} from "../../enums/feedbackStatus";
+import { Tag } from 'antd';
+import React from 'react';
+import { F_OPEN, F_CLOSED } from '../../enums/feedbackStatus';
 
 const FeedingStatusComponent = ({ status }) => {
   const getColorByStatus = (status) => {
     switch (status) {
       case F_OPEN:
-        return "#2db7f5";
+        return '#2db7f5';
       case F_CLOSED:
-        return "#f50";
+        return 'gray';
       default:
         break;
     }
@@ -19,9 +16,9 @@ const FeedingStatusComponent = ({ status }) => {
   const getLabelByStatus = (status) => {
     switch (status) {
       case F_OPEN:
-        return "Opening";
+        return 'Opening';
       case F_CLOSED:
-        return "Closed";
+        return 'Closed';
       default:
         break;
     }

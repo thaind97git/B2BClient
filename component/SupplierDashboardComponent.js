@@ -9,7 +9,11 @@ const SupplierDashboardComponent = () => {
     <Row justify="space-around">
       <Col span={24}>
         <Card
-          title={<Title level={4}>Leaderboard Product</Title>}
+          title={
+            <Row justify="space-between" align="middle">
+              <Title level={4}>Leaderboard Product</Title>
+            </Row>
+          }
           style={{ width: '98%' }}
           bordered={false}
         >

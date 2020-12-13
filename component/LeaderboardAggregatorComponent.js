@@ -1,5 +1,5 @@
 import { Skeleton, Table } from 'antd';
-import {displayCurrency} from '../utils'
+import { displayCurrency } from '../utils';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 import React, { useEffect, useState } from 'react';
@@ -96,7 +96,7 @@ const LeaderboardAggregatorComponent = ({
       pagination={false}
       bordered
       columns={columns}
-      dataSource={ getTopAggregatorTable(topAggregatorData) || []}
+      dataSource={getTopAggregatorTable(topAggregatorData) || []}
     />
   );
 };

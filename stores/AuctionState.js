@@ -13,6 +13,35 @@ export const PLACE_NEW_BID = 'PlaceNewBidAPI';
 const GET_HISTORY_AUCTION = 'GetHistoryAuctionAPI';
 const GET_SUPPLIER_INVITATION = 'GetSupplierInvitationAPI';
 export const REMOVE_SUPPLIER_AUCTION = 'RemoveSupplierAuctionAPI';
+const GET_COUNT_AUCTION = 'GetCountAuctionAPI';
+const GET_WINNING = 'GetWinningAPI';
+
+const GetWinningAPI = makeFetchAction(GET_WINNING, (auctionId) =>
+  nfetch({
+    endpoint: `/api/ReverseAuction/WinnerInformation/${auctionId}`,
+    method: 'GET'
+  })()
+);
+export const getWinning = (auctionId) =>
+  respondToSuccess(GetWinningAPI.actionCreator(auctionId));
+export const GetWinningData = GetWinningAPI.dataSelector;
+export const GetWinningError = GetWinningAPI.errorSelector;
+export const GetWinningResetter = getResetter(GetWinningAPI);
+
+const GetCountAuctionAPI = makeFetchAction(
+  GET_COUNT_AUCTION,
+  nfetch({
+    endpoint: '/api/ReverseAuction/CountEventSupplier',
+    method: 'GET'
+  })
+);
+
+export const getCountAuction = () =>
+  respondToSuccess(GetCountAuctionAPI.actionCreator());
+
+export const GetCountAuctionData = GetCountAuctionAPI.dataSelector;
+export const GetCountAuctionError = GetCountAuctionAPI.errorSelector;
+export const GetCountAuctionResetter = getResetter(GetCountAuctionAPI);
 
 const CreateReverseAuctionAPI = makeFetchAction(
   CREATE_REVERSE_AUCTION,
@@ -41,7 +70,7 @@ const AuctionFilterAPI = makeFetchAction(
     toDate,
     pageIndex,
     pageSize,
-    orderByDateDescending
+    orderByDateDescending = true
   }) =>
     nfetch({
       endpoint: `/api/ReverseAuction/Filter${generateQuery({
@@ -137,7 +166,8 @@ export const responseAuctionInvitation = (
 ) =>
   respondToSuccess(
     ResponseAuctionInvitationAPI.actionCreator(reverseAuctionId, isAccept),
-    () => {
+    (_, __, store) => {
+      store.dispatch(getCountAuction());
       typeof callback === 'function' && callback();
     }
   );

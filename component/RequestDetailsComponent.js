@@ -219,8 +219,12 @@ const RequestDetailsComponent = ({
     }
     return result;
   };
-
-  const leadTimeDisplay = `Ship in ${leadTime} day(s) after supplier receives the initial payment`;
+  let leadTimeDisplay;
+  if (!!leadTime) {
+    leadTimeDisplay = `Ship in ${leadTime} day(s) after supplier receives the initial payment`;
+  } else {
+    leadTimeDisplay = 'N/A';
+  }
   return (
     <Row style={{ width: '100%' }}>
       <Modal

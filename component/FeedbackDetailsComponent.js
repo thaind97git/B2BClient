@@ -91,7 +91,8 @@ const FeedbackDetailsComponent = ({
   getFeedbackDetails,
   feedbackDetailsError,
   feedbackId,
-  resetData
+  resetData,
+  isAtOrder = false
 }) => {
   const [loading, setLoading] = useState(true);
   useEffect(() => {
@@ -157,15 +158,19 @@ const FeedbackDetailsComponent = ({
       <Col span={24}>
         <Row justify="end">
           {isAdmin ? (
-            <Button type="link" size="small">
-              <a
-                href={`/admin/order/details?id=${orderId}`}
-                target="_blank"
-                rel="noreferrer"
-              >
-                Go to Order Details <RightOutlined />
-              </a>
-            </Button>
+            !isAtOrder ? (
+              <Button type="link" size="small">
+                <a
+                  href={`/admin/order/details?id=${orderId}`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Go to Order Details <RightOutlined />
+                </a>
+              </Button>
+            ) : (
+              ''
+            )
           ) : (
             <Alert
               message="Thanks for your feedback !"
@@ -183,7 +188,7 @@ const FeedbackDetailsComponent = ({
           </Col>
           <DescriptionItem title="Email" content={buyer.email} />
           <DescriptionItem
-            title="FullName"
+            title="Full Name"
             content={`${buyer.firstName} ${buyer.lastName}`}
           />
           <DescriptionItem title="Phone Number" content={buyer.phoneNumber} />
@@ -198,7 +203,7 @@ const FeedbackDetailsComponent = ({
       </Col>
       <DescriptionItem title="Email" content={supplier.email} />
       <DescriptionItem
-        title="FullName"
+        title="Full Name"
         content={`${supplier.firstName} ${supplier.lastName}`}
       />
       <DescriptionItem title="Phone Number" content={supplier.phoneNumber} />

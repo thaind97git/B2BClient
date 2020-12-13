@@ -5,6 +5,7 @@ import nfetch from '../libs/nfetch';
 import { generateQuery, getResetter } from '../libs';
 
 export const CREATE_NEW_ORDER = 'CreateNewOrderAPI';
+export const CREATE_NEW_ORDER_AUCTION = 'CreateNewOrderForAuctionAPI';
 export const GET_ORDER_PAGING = 'GetOrderPagingAPI';
 export const GET_ORDER_DETAILS = 'GetOrderDetailsAPI';
 export const DELIVERED_ORDER = 'DeliveredOrderAPI';
@@ -27,6 +28,29 @@ export const createNewOrder = ({ unitPrice, groupId, supplierId }, callback) =>
 export const CreateNewOrderData = CreateNewOrderAPI.dataSelector;
 export const CreateNewOrderError = CreateNewOrderAPI.errorSelector;
 export const CreateNewOrderResetter = getResetter(CreateNewOrderAPI);
+
+// Order Auction
+const CreateNewOrderAuctionAPI = makeFetchAction(
+  CREATE_NEW_ORDER_AUCTION,
+  ({ reverseAuctionId }) =>
+    nfetch({
+      endpoint: '/api/Order/ReverseAuction'
+    })({ id: reverseAuctionId })
+);
+
+export const createNewOrderAuction = ({ reverseAuctionId }, callback) =>
+  respondToSuccess(
+    CreateNewOrderAuctionAPI.actionCreator({ reverseAuctionId }),
+    () => {
+      typeof callback === 'function' && callback();
+    }
+  );
+export const CreateNewOrderAuctionData = CreateNewOrderAuctionAPI.dataSelector;
+export const CreateNewOrderAuctionError =
+  CreateNewOrderAuctionAPI.errorSelector;
+export const CreateNewOrderAuctionResetter = getResetter(
+  CreateNewOrderAuctionAPI
+);
 
 //Get order by filter
 const GetOrderPagingAPI = makeFetchAction(

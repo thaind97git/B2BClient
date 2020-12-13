@@ -54,6 +54,7 @@ import { R_DONE } from '../enums/requestStatus';
 import FeedbackSubmitComponent from './FeedbackSubmitComponent';
 import { CreateFeedbackData } from '../stores/FeedbackState';
 import FeedbackDetailsComponent from './FeedbackDetailsComponent';
+import DisplayStarComponent from './Utils/DisplayStarComponent';
 const { Title, Text } = Typography;
 
 const connectToRedux = connect(
@@ -111,8 +112,8 @@ const OrderDetailsComponent = ({
   const router = useRouter();
   const [openFeedback, setOpenFeedback] = useState(false);
   const [openFeedbackDetails, setOpenFeedbackDetails] = useState(false);
+  const [currentFeedbackId, setCurrentFeedbackId] = useState(null);
   const { id: orderId } = router.query;
-
   useEffect(() => {
     if (createFeedbackData) {
       message.success('Thank for your feedback!');
@@ -172,6 +173,13 @@ const OrderDetailsComponent = ({
       title: 'Is Delivered',
       dataIndex: 'delivered',
       key: 'delivered'
+    });
+  }
+  if (role === ADMIN) {
+    groupRequestColumns.splice(4, 0, {
+      title: 'Rating',
+      dataIndex: 'rating',
+      key: 'rating'
     });
   }
   const {
@@ -281,7 +289,11 @@ const OrderDetailsComponent = ({
         key={'right'}
       >
         {openFeedbackDetails ? (
-          <FeedbackDetailsComponent feedbackId={feedbackId} />
+          <FeedbackDetailsComponent
+            isAtOrder={true}
+            isAdmin={role === ADMIN}
+            feedbackId={feedbackId || currentFeedbackId}
+          />
         ) : null}
       </Drawer>
       <Col span={24}>
@@ -540,21 +552,43 @@ const OrderDetailsComponent = ({
                           {getUtcTime(dateCreated)}
                         </Moment>
                       ),
+                      rating: request?.feedback?.rating ? (
+                        <DisplayStarComponent
+                          star={request?.feedback?.rating}
+                        />
+                      ) : (
+                        'N/A'
+                      ),
                       status: (
                         <RequestStatusComponent
                           status={get('requestStatus.id')(request)}
                         />
                       ),
                       actions: (
-                        <Button
-                          onClick={() => {
-                            setCurrentRequestSelected(request);
-                            setOpenRequestDetails(true);
-                          }}
-                          type="link"
-                        >
-                          View
-                        </Button>
+                        <Space>
+                          <Button
+                            onClick={() => {
+                              setCurrentRequestSelected(request);
+                              setOpenRequestDetails(true);
+                            }}
+                            type="link"
+                          >
+                            RFQ
+                          </Button>
+                          {request?.feedback?.feedbackId && role === ADMIN && (
+                            <Button
+                              onClick={() => {
+                                setCurrentFeedbackId(
+                                  request?.feedback?.feedbackId
+                                );
+                                setOpenFeedbackDetails(true);
+                              }}
+                              type="link"
+                            >
+                              Feedback
+                            </Button>
+                          )}
+                        </Space>
                       ),
                       delivered:
                         get('requestStatus.id')(request) === R_DONE ? (

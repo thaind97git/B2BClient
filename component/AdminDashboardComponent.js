@@ -8,7 +8,7 @@ import {
   Tabs,
   Typography
 } from 'antd';
-import React, { useState , useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import LeaderboardAggregatorComponent from './LeaderboardAggregatorComponent';
 import LeaderboardBuyerComponent from './LeaderboardBuyerComponent';
 import LeaderboardProductComponent from './LeaderboardProductComponent';
@@ -75,7 +75,6 @@ const getAuctionStatisticDataPie = (dataAuction = []) => {
   );
 };
 
-
 const AdminDashBoardComponent = ({
   rfqStatictic,
   rfqStaticticError,
@@ -91,8 +90,12 @@ const AdminDashBoardComponent = ({
 
   useEffect(() => {
     setLoading(true);
-    getRFQStatistic(null);
-    getAuctionStatistic(null);
+    getRFQStatistic(
+      moment(moment()).subtract(0, 'months').format('YYYY-MM-DD')
+    );
+    getAuctionStatistic(
+      moment(moment()).subtract(0, 'months').format('YYYY-MM-DD')
+    );
   }, [getRFQStatistic, getAuctionStatistic]);
 
   useEffect(() => {
@@ -133,7 +136,7 @@ const AdminDashBoardComponent = ({
     innerRadius: 0,
     meta: {
       value: {
-        formatter: (v) => v>1?`${v} RFQs`:`${v} RFQ`
+        formatter: (v) => (v > 1 ? `${v} RFQs` : `${v} RFQ`)
       }
     },
     label: {
@@ -209,7 +212,7 @@ const AdminDashBoardComponent = ({
                 picker="month"
                 onChange={onRFQChange}
                 defaultValue={moment(moment(), 'YYYY-MM-DD').subtract(
-                  1,
+                  0,
                   'months'
                 )}
               />
@@ -240,7 +243,7 @@ const AdminDashBoardComponent = ({
                 picker="month"
                 onChange={onAuctionChange}
                 defaultValue={moment(moment(), 'YYYY-MM-DD').subtract(
-                  1,
+                  0,
                   'months'
                 )}
               />
@@ -266,12 +269,12 @@ const AdminDashBoardComponent = ({
         <Card
           title={
             <Row justify="space-between">
-              <Title level={4}>Leaderboard Top 10</Title>
+              <Title level={4}>Leaderboard</Title>
               <DatePicker
                 picker="month"
                 onChange={onDateChange}
                 defaultValue={moment(moment(), 'YYYY-MM-DD').subtract(
-                  1,
+                  0,
                   'months'
                 )}
               />

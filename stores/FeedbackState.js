@@ -120,14 +120,15 @@ export const GetFeedbackDetailsResetter = getResetter(GetFeedbackDetailsAPI);
 //get feedback reported for supplier
 const GetFeedbackReportedForSupplierAPI = makeFetchAction(
   GET_FEEDBACK_REPORTED_FOR_SUPPLIER,
-  ({ supplierId, pageIndex, pageSize, fromDate, toDate }) =>
+  ({ supplierId, pageIndex, pageSize, fromDate, toDate, sortBy }) =>
     nfetch({
       endpoint: `/api/Feedback/FeedbackSupplier${generateQuery({
         supplierId,
         pageIndex,
         pageSize,
         fromDate,
-        toDate
+        toDate,
+        sortBy
       })}`,
       method: 'GET'
     })()
@@ -138,7 +139,8 @@ export const getFeedbackReportedForSupplier = ({
   pageIndex,
   pageSize,
   fromDate,
-  toDate
+  toDate,
+  sortBy
 }) =>
   respondToSuccess(
     GetFeedbackReportedForSupplierAPI.actionCreator({
@@ -146,7 +148,8 @@ export const getFeedbackReportedForSupplier = ({
       pageIndex,
       pageSize,
       fromDate,
-      toDate
+      toDate,
+      sortBy
     })
   );
 export const GetFeedbackReportedForSupplierData =

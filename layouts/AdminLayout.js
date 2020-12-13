@@ -35,7 +35,7 @@ import SignalR from '../libs/signalR';
 import NotifyItem from './NotifyItem';
 import { ADMIN } from '../enums/accountRoles';
 import { CurrentUserData } from '../stores/UserState';
-
+import Head from 'next/head';
 const { Header, Content, Sider } = Layout;
 
 const ADMIN_MENU = [
@@ -219,6 +219,10 @@ const AdminLayout = ({
         position: 'relative'
       }}
     >
+      <Head>
+        <title>Negotium | Admin</title>
+        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+      </Head>
       <div className="">
         <Layout>
           <Sider
@@ -283,7 +287,7 @@ const AdminLayout = ({
                     )}
                   </Dropdown>
                   <Divider type="vertical" />
-                  <Dropdown overlay={PROFILE_MENU}>
+                  <Dropdown trigger={['click']} overlay={PROFILE_MENU}>
                     <a
                       className="ant-dropdown-link"
                       onClick={(e) => e.preventDefault()}

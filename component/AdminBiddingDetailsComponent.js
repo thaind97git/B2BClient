@@ -12,6 +12,7 @@ import {
   GetAuctionDetailsData
 } from '../stores/AuctionState';
 import { useRouter } from 'next/router';
+import { B_ACTIVE } from '../enums/biddingStatus';
 const { Title } = Typography;
 
 const connectToRedux = connect(
@@ -69,7 +70,17 @@ const AdminBiddingDetailsComponent = ({
       )
     },
     {
-      title: 'Reverse Auction',
+      title: (
+        <div>
+          {reverseAuctionStatus?.id === B_ACTIVE && (
+            <Fragment>
+              <img src="/static/images/live.png" alt="live" width={20} />
+              <span>&nbsp;</span>
+            </Fragment>
+          )}
+          <span>Reverse Auction</span>
+        </div>
+      ),
       key: '2',
       content: (
         <BiddingResultListComponent

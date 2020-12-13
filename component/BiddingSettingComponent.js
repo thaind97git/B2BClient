@@ -175,8 +175,8 @@ const BiddingSettingComponent = ({
         initialValues={{
           group: groupName,
           productName: productName,
-          dynamicClosePeriod: 'none',
-          minimumDuration: '10',
+          dynamicClosePeriod: 0,
+          minimumDuration: 10,
           minimumBidChange: minBidChange,
           maximumBidChange: maxBidChange,
           currency: 'VNĐ',
@@ -426,7 +426,7 @@ const BiddingSettingComponent = ({
             <Row>
               <Col span={12}>
                 <Form.Item
-                  label="Minimum Bid Change"
+                  label="Minimum Bid Change (%)"
                   name="minimumBidChange"
                   rules={[
                     {
@@ -446,7 +446,7 @@ const BiddingSettingComponent = ({
               </Col>
               <Col span={12} style={styles.colStyle}>
                 <Form.Item
-                  label="Maximum Bid Change"
+                  label="Maximum Bid Change (%)"
                   name="maximumBidChange"
                   rules={[
                     {

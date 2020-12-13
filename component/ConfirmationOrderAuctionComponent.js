@@ -37,9 +37,16 @@ import {
   getRequestByGroupId,
   getRequestByGroupIdData
 } from '../stores/RequestState';
-import { getUser, getUserData } from '../stores/UserState';
 import Moment from 'react-moment';
-import { createNewOrder, CreateNewOrderData } from '../stores/OrderState';
+import {
+  createNewOrderAuction,
+  CreateNewOrderData
+} from '../stores/OrderState';
+import {
+  getWinning,
+  GetWinningData,
+  GetWinningResetter
+} from '../stores/AuctionState';
 const { Title } = Typography;
 
 const styles = {
@@ -49,21 +56,15 @@ const styles = {
 
 const connectToRedux = connect(
   createStructuredSelector({
-    groupDetailsData: GetGroupDetailsData,
-    groupDetailsError: GetGroupDetailsError,
-    requestByGroupData: getRequestByGroupIdData,
-    supplierData: getUserData,
+    winningData: GetWinningData,
     createOrderData: CreateNewOrderData
   }),
   (dispatch) => ({
-    getGroupDetails: (id) => dispatch(getGroupDetails(id)),
-    getRequestByGroupId: (groupId) =>
-      dispatch(getRequestByGroupId({ groupId, pageIndex: 1, pageSize: 100 })),
-    getSupplier: (supplierId) => dispatch(getUser(supplierId)),
-    createOrder: ({ unitPrice, groupId, supplierId }, callback) =>
-      dispatch(createNewOrder({ unitPrice, groupId, supplierId }, callback)),
+    getWinning: (auctionId) => dispatch(getWinning(auctionId)),
+    createOrder: (reverseAuctionId, callback) =>
+      dispatch(createNewOrderAuction({ reverseAuctionId }, callback)),
     resetData: () => {
-      dispatch(GetGroupDetailsResetter);
+      dispatch(GetWinningResetter);
     }
   })
 );
@@ -76,46 +77,33 @@ const groupRequestColumns = [
   { title: 'View Details', dataIndex: 'actions', key: 'actions' }
 ];
 
-const ConfirmationOrderComponent = ({
+const ConfirmationOrderAuctionComponent = ({
   isNegotiating = false,
-  groupDetailsData,
-  groupDetailsError,
-  getGroupDetails,
-  getRequestByGroupId,
-  requestByGroupData,
-  getSupplier,
-  supplierData,
+  winningData,
+  getWinning,
   createOrder,
   createOrderData
 }) => {
-  const [price, setPrice] = useState(0);
   const [openRequestDetails, setOpenRequestDetails] = useState(false);
   const [currentRequestSelected, setCurrentRequestSelected] = useState({});
   const [form] = Form.useForm();
   const router = useRouter();
-  const { groupId, supplierId } = router.query;
+  const { reverseAuctionId } = router.query;
 
   useEffect(() => {
-    if (groupId) {
-      getGroupDetails(groupId);
-      getRequestByGroupId(groupId);
+    if (reverseAuctionId) {
+      getWinning(reverseAuctionId);
     }
-  }, [groupId, getGroupDetails, getRequestByGroupId]);
+  }, [reverseAuctionId, getWinning]);
 
-  useEffect(() => {
-    if (supplierId) {
-      getSupplier(supplierId);
-    }
-  }, [supplierId, getSupplier]);
-
-  if (!groupDetailsData) {
-    return <Empty description="Can not find any group for this order!" />;
+  if (!winningData) {
+    return (
+      <Empty description="Can not find any reverse auction for this order!" />
+    );
   }
-  if (!supplierData) {
-    return <Empty description="Can not find any supplier for this order!" />;
-  }
-  const { quantity, product = {} } = groupDetailsData;
-  const { unitOfMeasure = {} } = product;
+  const { quantity, supplier, price, group = {} } = winningData;
+  const { product = {}, requests: requestData = [] } = group;
+  const unitOfMeasure = requestData?.[0]?.product?.unitType;
   const productDetailsColumns = [
     { title: 'Product Name', dataIndex: 'productName', key: 'productName' },
     {
@@ -125,13 +113,14 @@ const ConfirmationOrderComponent = ({
       render: (text) => {
         return isNegotiating ? (
           <InputNumber
+            readOnly
+            value={price}
             style={{ width: 150 }}
             min={0}
             formatter={(value) =>
               `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
             }
             parser={(value) => value.replace(/,*/g, '')}
-            onChange={(value) => setPrice(value)}
           />
         ) : (
           text
@@ -144,18 +133,16 @@ const ConfirmationOrderComponent = ({
       key: 'totalQuantity'
     }
   ];
+  const totalQuantity = requestData?.reduce((prev, current) => {
+    return prev + +current.quantity;
+  }, 0);
   const PRODUCT_DETAIL = [
     {
-      productName: product.productName,
+      productName: product.description,
       productPrice: isNegotiating ? price : displayCurrency(1170000),
-      totalQuantity: `${quantity} ${unitOfMeasure.description}`
+      totalQuantity: `${totalQuantity} ${unitOfMeasure}`
     }
   ];
-
-  let requestData = [];
-  if (requestByGroupData) {
-    requestData = requestByGroupData.data;
-  }
 
   const {
     id,
@@ -167,7 +154,7 @@ const ConfirmationOrderComponent = ({
     lastName,
     phoneNumber,
     role
-  } = supplierData;
+  } = supplier || {};
   console.log({ avatar });
   return (
     <div>
@@ -223,10 +210,10 @@ const ConfirmationOrderComponent = ({
                         }
                       />
                       {/* <Avatar
-                        style={{ width: 64 }}
-                        // size={64}
-                        src={getCurrentUserImage(avatar) || fallbackImage}
-                      />{' '} */}
+                          style={{ width: 64 }}
+                          // size={64}
+                          src={getCurrentUserImage(avatar) || fallbackImage}
+                        />{' '} */}
                       <span>&nbsp;</span>
                       <div>
                         Company: {companyName}
@@ -333,23 +320,14 @@ const ConfirmationOrderComponent = ({
               <Col span={6}>
                 <Button
                   onClick={() => {
-                    if (!price) {
-                      openNotification('error', {
-                        message: 'Please input the price for order!'
-                      });
-                      return;
-                    }
                     Modal.confirm({
                       title: 'Are you sure you want to submit order?',
                       okText: 'Submit',
                       cancelText: 'Cancel',
                       onOk: () => {
-                        createOrder(
-                          { unitPrice: price, groupId, supplierId },
-                          () => {
-                            Router.push('/aggregator/order');
-                          }
-                        );
+                        createOrder(reverseAuctionId, () => {
+                          Router.push('/aggregator/order');
+                        });
                       }
                     });
                   }}
@@ -368,4 +346,4 @@ const ConfirmationOrderComponent = ({
     </div>
   );
 };
-export default connectToRedux(ConfirmationOrderComponent);
+export default connectToRedux(ConfirmationOrderAuctionComponent);

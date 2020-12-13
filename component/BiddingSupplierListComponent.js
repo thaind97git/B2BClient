@@ -14,7 +14,14 @@ import {
   removeSupplierAuction,
   RemoveSupplierAuctionResetter
 } from '../stores/AuctionState';
-import { B_ACTIVE, B_FEATURE } from '../enums/biddingStatus';
+import {
+  B_ACTIVE,
+  B_CANCELED,
+  B_CLOSED,
+  B_DONE,
+  B_FAILED,
+  B_FUTURE
+} from '../enums/biddingStatus';
 import { DEFAULT_PAGING_INFO } from '../utils';
 
 const connectToRedux = connect(
@@ -135,16 +142,27 @@ const BiddingSupplierListComponent = ({
   let supplierData = [],
     totalCount = 0;
   let isExistedNotDeleted = false;
+  let isEnd = false;
   if (supplierInvitationData) {
     supplierData = supplierInvitationData.data;
     totalCount = supplierInvitationData.total;
-    for (const supplier of supplierData) {
-      if (supplier.isDeleted === false) {
-        isExistedNotDeleted = true;
-        break;
+    console.log({ reverseAuctionStatus });
+    if (
+      [B_CANCELED, B_CLOSED, B_DONE, B_FAILED].includes(
+        reverseAuctionStatus?.id
+      )
+    ) {
+      isEnd = true;
+    } else {
+      for (const supplier of supplierData) {
+        if (supplier.isDeleted === false) {
+          isExistedNotDeleted = true;
+          break;
+        }
       }
     }
-    if (isExistedNotDeleted) {
+
+    if (isExistedNotDeleted || !isEnd) {
       columns.push({
         title: 'Actions',
         dataIndex: 'actions',

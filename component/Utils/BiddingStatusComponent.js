@@ -6,7 +6,7 @@ import {
   B_CLOSED,
   B_DONE,
   B_FAILED,
-  B_FEATURE
+  B_FUTURE
 } from '../../enums/biddingStatus';
 import {
   ClockCircleOutlined,
@@ -20,14 +20,14 @@ import {
 const BiddingStatusComponent = ({ status }) => {
   const getColorByStatus = (status) => {
     switch (status) {
-      case B_FEATURE:
+      case B_FUTURE:
         return '#108ee9';
       case B_ACTIVE:
         return '#2db7f5';
       case B_DONE:
         return '#87d068';
       case B_CLOSED:
-        return '#f50';
+        return 'gray';
       case B_CANCELED:
         return 'red';
       case B_FAILED:
@@ -38,7 +38,7 @@ const BiddingStatusComponent = ({ status }) => {
   };
   const getLabelByStatus = (status) => {
     switch (status) {
-      case B_FEATURE:
+      case B_FUTURE:
         return 'Waiting';
       case B_ACTIVE:
         return 'Opening';
@@ -56,7 +56,7 @@ const BiddingStatusComponent = ({ status }) => {
   };
   const getIconByStatus = (status) => {
     switch (status) {
-      case B_FEATURE:
+      case B_FUTURE:
         return <ClockCircleOutlined />;
       case B_ACTIVE:
         return <CheckOutlined />;

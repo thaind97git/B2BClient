@@ -89,7 +89,7 @@ const RegisterComponent = ({ userRegisterError, registerUser, resetData }) => {
               </Radio.Group>
             </Row>
           </FormItem>
-          <Row align="middle">
+          <Row align="top">
             <Col style={styles.colStyle} span={12}>
               <div className="label">Email:</div>
               <FormItem
@@ -120,6 +120,10 @@ const RegisterComponent = ({ userRegisterError, registerUser, resetData }) => {
                   {
                     required: true,
                     message: 'Please enter your phone'
+                  },
+                  {
+                    pattern: /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/,
+                    message: 'Please enter the correct phone number'
                   }
                 ]}
               >
@@ -131,7 +135,7 @@ const RegisterComponent = ({ userRegisterError, registerUser, resetData }) => {
               </FormItem>
             </Col>
           </Row>
-          <Row align="middle">
+          <Row align="top">
             <Col style={styles.colStyle} span={12}>
               <div className="label">First Name:</div>
               <FormItem
@@ -169,7 +173,7 @@ const RegisterComponent = ({ userRegisterError, registerUser, resetData }) => {
               </FormItem>
             </Col>
           </Row>
-          <Row align="middle">
+          <Row align="top">
             <Col style={styles.colStyle} span={12}>
               <div className="label">Password:</div>
               <FormItem
@@ -222,7 +226,7 @@ const RegisterComponent = ({ userRegisterError, registerUser, resetData }) => {
               </FormItem>
             </Col>
           </Row>
-          <Row align="middle">
+          <Row align="top">
             <Col style={styles.colStyle} span={24}>
               <div className="label">Company Name:</div>
               <FormItem
@@ -260,7 +264,7 @@ const RegisterComponent = ({ userRegisterError, registerUser, resetData }) => {
               </FormItem>
             </Col>
           </Row>
-          <Row align="middle">
+          <Row align="top">
             <Col span={12}>
               <Row justify="center">
                 Existing Account? <span>&nbsp;</span>
