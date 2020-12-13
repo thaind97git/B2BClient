@@ -61,13 +61,13 @@ const CategoryHomePageComponent = ({
           CATEGORIES
         </Title>
       </Row>
-      <Row>
+      <Row id="category-home">
         {tree.length === 0 ? (
           <Skeleton active />
         ) : (
           <DirectoryTree
             icon={false}
-            style={{ height: '100%' }}
+            style={{ height: '100%', width: '100%' }}
             // defaultCheckedKeys={get('[0].id')(categoryData)}
             // defaultSelectedKeys={[get('[0].id')(categoryData)]}
             onSelect={onSelect}
