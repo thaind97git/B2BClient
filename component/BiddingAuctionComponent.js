@@ -171,7 +171,7 @@ const BiddingAuctionComponent = ({
           (+miniPercentageChange * +auction.currentPrice) / 100 || 0
       );
     }
-  }, [lowestBid, miniPercentageChange.maxPercentageChange]);
+  }, [lowestBid, miniPercentageChange, maxPercentageChange]);
 
   // Set history total lot at the first load
   useEffect(() => {
