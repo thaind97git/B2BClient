@@ -237,6 +237,9 @@ const UserProfileComponent = ({
   const handleAvatarChange = (info) => {
     let fileList = [...info.fileList];
     fileList = fileList.slice(-1);
+    if (fileList.length > 0) {
+      fileList[fileList.length - 1].status = 'done';
+    }
     uploadAvatar(fileList);
     setList(fileList);
   };

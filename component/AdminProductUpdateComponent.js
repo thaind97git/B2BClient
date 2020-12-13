@@ -24,29 +24,33 @@ import {
 } from "../stores/SupportRequestState";
 import ImgCrop from "antd-img-crop";
 import MarkdownEditorComponent from "./MarkdownEditorComponent";
-import { acceptFileMimes, acceptFileTypes, openNotification } from "../utils";
+import { acceptFileMimes, acceptFileTypes, getProductImage, openNotification } from "../utils";
 import {
   getProductDetails,
   GetProductDetailsData,
   GetProductDetailsError,
+  updateProduct,
+  deleteProductImage
 } from "../stores/ProductState";
-import { useRouter } from "next/router";
+import { useRouter } from 'next/router';
+import AllCategoryComponent from "./AllCategoryComponent";
 
 const { Title } = Typography;
 const { Option } = Select;
 const FormItem = Form.Item;
 const connectToRedux = connect(
   createStructuredSelector({
-    categorySelected: (state) => state.categorySelected,
     unitData: GetUnitOfMeasureData,
     productDetailData: GetProductDetailsData,
-    productDetailError: GetProductDetailsError,
+    productDetailError: GetProductDetailsError
   }),
   (dispatch) => ({
-    removeCategorySelected: () =>
-      dispatch({ type: SET_CATEGORY_SELECTED, payload: [] }),
     getUnit: () => dispatch(getUnitOfMeasure()),
+    deleteProductImage: (deleteFileList) =>
+      dispatch(deleteProductImage(deleteFileList)),
     getProduct: (id) => dispatch(getProductDetails(id)),
+    updateProduct: (product, newFileList, deleteFileList) =>
+      dispatch(updateProduct(product, newFileList, deleteFileList))
   })
 );
 const styles = {
@@ -67,23 +71,24 @@ function getBase64(file) {
 }
 
 const AdminProductUpdateComponent = ({
-  removeCategorySelected,
-  categorySelected,
   getUnit,
   unitData,
   getProduct,
   productDetailData,
   productDetailError,
+  updateProduct,
+  deleteProductImage
 }) => {
-  const [openCategory, setOpenCategory] = useState(false);
   const [fileList, setFileList] = useState([]);
+  const [category, setCategory] = useState('all');
   const [preview, setPreview] = useState({
     previewVisible: false,
-    previewImage: "",
-    previewTitle: "",
+    previewImage: '',
+    previewTitle: ''
   });
   const router = useRouter();
   const [initForm, setInitForm] = useState({});
+  const [deleteFileList, setDeleteFileList] = useState([]);
 
   let productID = router.query.id;
   useEffect(() => {
@@ -105,29 +110,51 @@ const AdminProductUpdateComponent = ({
     let initForm = {};
     initForm.productName = (productDetailData || {}).productName;
     initForm.description = (productDetailData || {}).description;
+    initForm.unitOfMeasureId = (productDetailData || {})?.unitOfMeasure?.id;
+    setCategory((productDetailData || {})?.category?.id);
+    let newFileList = [];
+    (productDetailData || { images: [] }).images.map((image = '') => {
+      newFileList.push({
+        uid: image,
+        name: null,
+        status: 'done',
+        url: getProductImage(image)
+      });
+    });
     setInitForm(initForm);
+    setFileList(newFileList);
   }, [productDetailData]);
-  
+
   if (loading) {
     return <Skeleton active />;
   }
   if (!productDetailData) {
     return (
       <Empty
-        style={{ padding: "180px 0px" }}
+        style={{ padding: '180px 0px' }}
         description="Can not find any product !"
       />
     );
   }
+
   const onFinish = (values) => {
-    if (!categorySelected || categorySelected.length === 0) {
-      openNotification("error", { message: "Please select category" });
-    } else if (!fileList || fileList.length === 0) {
-      openNotification("error", { message: "Please upload product image" });
+    if (!fileList || fileList.length === 0) {
+      openNotification('error', { message: 'Please upload product image' });
     } else {
-      values.categoryId = categorySelected[categorySelected.length - 1].id;
-      values.description = values.description.value;
-      removeCategorySelected();
+      const product = {
+        id: productDetailData?.id,
+        categoryId: category,
+        productName: values?.productName,
+        description: values.description.value,
+        unitOfMeasureId: values.unitOfMeasureId
+      };
+      const newFileList = fileList.filter((file) => file.name !== null);
+      if (deleteFileList !== null) {
+        if (deleteFileList.length > 0) {
+          deleteProductImage(deleteFileList)
+        }
+      }
+      updateProduct(product, newFileList);
     }
   };
 
@@ -136,11 +163,22 @@ const AdminProductUpdateComponent = ({
       return Promise.resolve();
     }
 
-    return Promise.reject("Please enter the product description !");
+    return Promise.reject('Please enter the product description !');
   };
 
-  const onChange = ({ fileList: newFileList }) => {
+  const onChangeImage = ({ fileList: newFileList }) => {
+    if (newFileList.length > 0) {
+      newFileList[newFileList.length - 1].status = 'done';
+    }
     setFileList(newFileList);
+  };
+
+  const onRemoveImage = (file) => {
+    const newDeleteFileList = [...deleteFileList];
+    if (file?.name === null) {
+      newDeleteFileList.push(file.uid);
+    }
+    setDeleteFileList(newDeleteFileList);
   };
 
   const onCancel = () => setPreview({ previewVisible: false });
@@ -153,34 +191,12 @@ const AdminProductUpdateComponent = ({
       previewImage: file.url || file.preview,
       previewVisible: true,
       previewTitle:
-        file.name || file.url.substring(file.url.lastIndexOf("/") + 1),
+        file.name || file.url.substring(file.url.lastIndexOf('/') + 1)
     });
   };
 
   return (
     <Row align="middle" justify="center">
-      <Modal
-        title="Choose Category"
-        centered
-        visible={openCategory}
-        onOk={() => setOpenCategory(false)}
-        onCancel={() => setOpenCategory(false)}
-        width={1000}
-      >
-        <BuyerRequestCategoryComponent
-          doneFunc={() => setOpenCategory(false)}
-        />
-        <Row>
-          {!!categorySelected.length && (
-            <Title level={4}>
-              Category selected:
-              {getCategorySelected(
-                categorySelected.map((cate) => cate.description)
-              ).substring(3)}
-            </Title>
-          )}
-        </Row>
-      </Modal>
       <Col sm={20} md={18}>
         <Form
           {...formItemLayout}
@@ -198,9 +214,9 @@ const AdminProductUpdateComponent = ({
             bordered={false}
             title={<b>Product Basic Information</b>}
             style={{
-              width: "100%",
-              boxShadow: "2px 2px 14px 0 rgba(0,0,0,.1)",
-              marginTop: 16,
+              width: '100%',
+              boxShadow: '2px 2px 14px 0 rgba(0,0,0,.1)',
+              marginTop: 16
             }}
           >
             <Row align="middle">
@@ -211,34 +227,30 @@ const AdminProductUpdateComponent = ({
                   rules={[
                     {
                       required: true,
-                      message: "Please Enter Product Name",
-                    },
+                      message: 'Please Enter Product Name'
+                    }
                   ]}
                 >
                   <Input />
                 </FormItem>
               </Col>
               <Col style={styles.colStyle} span={24}>
-                <FormItem
-                  label={
-                    <span>
-                      <span style={{ color: "red" }}>*</span> Category
-                    </span>
-                  }
-                  name="category"
-                >
-                  {!!categorySelected.length && (
-                    <div>
-                      Category selected:
-                      {getCategorySelected(
-                        categorySelected.map((cate) => cate.description)
-                      ).substring(3)}
-                    </div>
-                  )}
-                  <Button onClick={() => setOpenCategory(true)}>
-                    Select Category
-                  </Button>
-                </FormItem>
+                <div class="ant-row ant-form-item">
+                  <div class="ant-col ant-col-4 ant-form-item-label">
+                    <label class="ant-form-item-required">Category</label>
+                  </div>
+                  <div class="ant-col ant-col-16 ant-form-item-control">
+                    <AllCategoryComponent
+                      defaultValue={(productDetailData || {})?.categorySequence}
+                      changeOnSelect={false}
+                      onGetLastValue={(value) => {
+                        setCategory(value);
+                      }}
+                      size="large"
+                      isSearchStyle={false}
+                    />
+                  </div>
+                </div>
               </Col>
               <Col style={styles.colStyle} span={24}>
                 <FormItem
@@ -247,14 +259,14 @@ const AdminProductUpdateComponent = ({
                   rules={[
                     {
                       required: true,
-                      message: "Please select unit",
-                    },
+                      message: 'Please select unit'
+                    }
                   ]}
                 >
                   <Select
                     showSearch
                     style={{
-                      width: "50%",
+                      width: '50%'
                     }}
                     placeholder="Select a unit"
                     optionFilterProp="children"
@@ -263,6 +275,7 @@ const AdminProductUpdateComponent = ({
                         .toLowerCase()
                         .indexOf(input.toLowerCase()) >= 0
                     }
+                    defaultValue={initForm?.unitOfMeasureId}
                   >
                     {!!unitData &&
                       unitData.map((type) => (
@@ -282,11 +295,13 @@ const AdminProductUpdateComponent = ({
                   rules={[
                     {
                       required: true,
-                      validator: checkDescription,
-                    },
+                      validator: checkDescription
+                    }
                   ]}
                 >
-                  <MarkdownEditorComponent />
+                  <MarkdownEditorComponent
+                    defaultValue={initForm?.description}
+                  />
                 </FormItem>
               </Col>
               <Col style={styles.colStyle} span={24}>
@@ -294,7 +309,7 @@ const AdminProductUpdateComponent = ({
                   name="imageList"
                   label={
                     <span>
-                      <span style={{ color: "red" }}>*</span> Image List
+                      <span style={{ color: 'red' }}>*</span> Image List
                     </span>
                   }
                 >
@@ -304,31 +319,20 @@ const AdminProductUpdateComponent = ({
                       action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
                       listType="picture-card"
                       fileList={fileList}
-                      onChange={onChange}
+                      onChange={onChangeImage}
+                      onRemove={onRemoveImage}
                       onPreview={onPreview}
                       beforeUpload={(file) => {
                         if (acceptFileMimes.includes(file.type)) {
                           return true;
                         }
-                        openNotification("error", {
-                          message: `We just accept file type for ${acceptFileTypes}`,
+                        openNotification('error', {
+                          message: `We just accept file type for ${acceptFileTypes}`
                         });
                         return false;
                       }}
                     >
-                      {fileList.length < 5 && "+ Upload"}
-                      <Modal
-                        visible={preview.previewVisible}
-                        title={preview.previewTitle}
-                        footer={null}
-                        onCancel={onCancel}
-                      >
-                        <img
-                          alt="example"
-                          style={{ width: "100%" }}
-                          src={preview.previewImage}
-                        />
-                      </Modal>
+                      {fileList.length < 5 && '+ Upload'}
                     </Upload>
                   </ImgCrop>
                 </FormItem>
@@ -350,6 +354,18 @@ const AdminProductUpdateComponent = ({
           </Row>
         </Form>
       </Col>
+      <Modal
+        visible={preview.previewVisible}
+        title={preview.previewTitle}
+        footer={null}
+        onCancel={onCancel}
+      >
+        <img
+          alt="example"
+          style={{ width: '100%' }}
+          src={preview.previewImage}
+        />
+      </Modal>
     </Row>
   );
 };

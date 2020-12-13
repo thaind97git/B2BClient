@@ -99,6 +99,9 @@ const AdminProductCreateComponent = ({
   };
 
   const onChange = ({ fileList: newFileList }) => {
+    if (newFileList.length > 0) {
+      newFileList[newFileList.length - 1].status = 'done';
+    }
     setFileList(newFileList);
   };
 
@@ -275,18 +278,6 @@ const AdminProductCreateComponent = ({
                       }}
                     >
                       {fileList.length < 5 && '+ Upload'}
-                      <Modal
-                        visible={preview.previewVisible}
-                        title={preview.previewTitle}
-                        footer={null}
-                        onCancel={onCancel}
-                      >
-                        <img
-                          alt="example"
-                          style={{ width: '100%' }}
-                          src={preview.previewImage}
-                        />
-                      </Modal>
                     </Upload>
                   </ImgCrop>
                 </FormItem>
@@ -308,6 +299,18 @@ const AdminProductCreateComponent = ({
           </Row>
         </Form>
       </Col>
+      <Modal
+        visible={preview.previewVisible}
+        title={preview.previewTitle}
+        footer={null}
+        onCancel={onCancel}
+      >
+        <img
+          alt="example"
+          style={{ width: '100%' }}
+          src={preview.previewImage}
+        />
+      </Modal>
     </Row>
   );
 };
