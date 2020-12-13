@@ -14,6 +14,19 @@ const GET_HISTORY_AUCTION = 'GetHistoryAuctionAPI';
 const GET_SUPPLIER_INVITATION = 'GetSupplierInvitationAPI';
 export const REMOVE_SUPPLIER_AUCTION = 'RemoveSupplierAuctionAPI';
 const GET_COUNT_AUCTION = 'GetCountAuctionAPI';
+const GET_WINNING = 'GetWinningAPI';
+
+const GetWinningAPI = makeFetchAction(GET_WINNING, (auctionId) =>
+  nfetch({
+    endpoint: `/api/ReverseAuction/WinnerInformation/${auctionId}`,
+    method: 'GET'
+  })()
+);
+export const getWinning = (auctionId) =>
+  respondToSuccess(GetWinningAPI.actionCreator(auctionId));
+export const GetWinningData = GetWinningAPI.dataSelector;
+export const GetWinningError = GetWinningAPI.errorSelector;
+export const GetWinningResetter = getResetter(GetWinningAPI);
 
 const GetCountAuctionAPI = makeFetchAction(
   GET_COUNT_AUCTION,

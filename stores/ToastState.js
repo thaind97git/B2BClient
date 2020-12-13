@@ -14,7 +14,7 @@ import {
   CREATE_NEW_GROUP,
   REMOVE_REQUEST_FROM_GROUP
 } from './GroupState';
-import { CREATE_NEW_ORDER } from './OrderState';
+import { CREATE_NEW_ORDER, CREATE_NEW_ORDER_AUCTION } from './OrderState';
 import { CANCEL_REQUEST, REJECT_REQUEST } from './RequestState';
 import {
   ACTIVE_SUPPLIER_PRODUCT,
@@ -106,6 +106,7 @@ export default {
           msgNotify = 'Reject account successfully';
           break;
         case CREATE_NEW_ORDER:
+        case CREATE_NEW_ORDER_AUCTION:
           msgNotify = 'Create new order successfully';
           break;
         case USER_UPDATE_PASSWORD:
@@ -191,6 +192,7 @@ export default {
           msgNotify = 'Reject account fail';
           break;
         case CREATE_NEW_ORDER:
+        case CREATE_NEW_ORDER_AUCTION:
           msgNotify = 'Create new order fail';
           break;
         case USER_UPDATE_PASSWORD:

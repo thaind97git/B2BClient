@@ -27,7 +27,7 @@ const BiddingStatusComponent = ({ status }) => {
       case B_DONE:
         return '#87d068';
       case B_CLOSED:
-        return '#f50';
+        return 'gray';
       case B_CANCELED:
         return 'red';
       case B_FAILED:

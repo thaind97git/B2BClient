@@ -27,7 +27,7 @@ const GroupStatusComponent = ({ status }) => {
       case G_BIDDING:
         return 'cyan';
       case G_DONE:
-        return 'success';
+        return '#87d068';
       case G_FAILED:
         return 'red';
       case G_NEGOTIATING:
@@ -35,7 +35,7 @@ const GroupStatusComponent = ({ status }) => {
       case G_WAIT_FOR_AUCTION:
         return 'processing';
       case G_ORDERED:
-        return '#87d068';
+        return 'success';
       default:
         break;
     }

@@ -13,7 +13,7 @@ import {
 import { get } from 'lodash/fp';
 import moment from 'moment';
 import ScrollToBottom from 'react-scroll-to-bottom';
-import { B_CLOSED } from '../enums/biddingStatus';
+import { B_CLOSED, B_FAILED, B_FUTURE } from '../enums/biddingStatus';
 const { Panel } = Collapse;
 const { Link } = Typography;
 
@@ -216,7 +216,7 @@ const BiddingResultListComponent = ({
           type="primary"
           onClick={() => {
             Router.push(
-              `/aggregator/order/confirmation?reverseAuctionId=${reverseAuctionId}`
+              `/aggregator/order/confirmation-auction?reverseAuctionId=${reverseAuctionId}`
             );
           }}
         >
