@@ -35,6 +35,7 @@ import {
 import SignalR from '../libs/signalR';
 import NotifyItem from './NotifyItem';
 import { CurrentUserData } from '../stores/UserState';
+import Head from 'next/head';
 
 const { Header, Content, Sider } = Layout;
 
@@ -207,6 +208,10 @@ const AggregatorLayout = ({
         position: 'relative'
       }}
     >
+      <Head>
+        <title>Negotium | Aggregator</title>
+        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+      </Head>
       <div className="">
         <Layout>
           <Sider

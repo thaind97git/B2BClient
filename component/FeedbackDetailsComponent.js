@@ -91,7 +91,8 @@ const FeedbackDetailsComponent = ({
   getFeedbackDetails,
   feedbackDetailsError,
   feedbackId,
-  resetData
+  resetData,
+  isAtOrder = false
 }) => {
   const [loading, setLoading] = useState(true);
   useEffect(() => {
@@ -157,15 +158,19 @@ const FeedbackDetailsComponent = ({
       <Col span={24}>
         <Row justify="end">
           {isAdmin ? (
-            <Button type="link" size="small">
-              <a
-                href={`/admin/order/details?id=${orderId}`}
-                target="_blank"
-                rel="noreferrer"
-              >
-                Go to Order Details <RightOutlined />
-              </a>
-            </Button>
+            !isAtOrder ? (
+              <Button type="link" size="small">
+                <a
+                  href={`/admin/order/details?id=${orderId}`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Go to Order Details <RightOutlined />
+                </a>
+              </Button>
+            ) : (
+              ''
+            )
           ) : (
             <Alert
               message="Thanks for your feedback !"

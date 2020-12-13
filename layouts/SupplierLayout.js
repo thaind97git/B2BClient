@@ -34,6 +34,7 @@ import {
 import { SUPPLIER } from '../enums/accountRoles';
 import NotifyItem from './NotifyItem';
 import { CurrentUserData } from '../stores/UserState';
+import Head from 'next/head';
 
 const { Header, Content, Sider } = Layout;
 
@@ -219,6 +220,10 @@ const SupplierLayout = ({
         position: 'relative'
       }}
     >
+      <Head>
+        <title>Negotium | Supplier</title>
+        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+      </Head>
       <div className="">
         <Layout>
           <Sider
