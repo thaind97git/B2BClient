@@ -15,6 +15,7 @@ const UPDATE_PRODUCT = 'UpdateProductAPI';
 const GET_PRODUCT_BY_SUPPLIER = 'GetProductBySupplierAPI';
 const GET_PRODUCT_FOR_SUPPLIER = 'GetProductForSupplierAPI';
 const GET_PRODUCT_SUGGEST = 'GetProductSuggestAPI';
+const DELETE_PRODUCT_IMAGES = 'DeleteProductImagesAPI';
 
 const GetProductByCategoryAPI = makeFetchAction(
   GET_PRODUCT_BY_CATEGORY,
@@ -144,27 +145,6 @@ export const GetSupplierProductDetailsResetter = getResetter(
 );
 
 // Create product
-const onUploadImage = (productId, fileList) => {
-  const listFileOrigin = fileList.map((file) => file.originFileObj);
-  const formData = new FormData();
-  for (let file of listFileOrigin) {
-    formData.append('files', file);
-  }
-
-  var myHeaders = new Headers();
-  myHeaders.append('Authorization', `Bearer ${getToken()}`);
-  var requestOptions = {
-    method: 'PUT',
-    headers: myHeaders,
-    body: formData
-  };
-
-  fetch(
-    `${process.env.API_SERVER_URL}/api/Product/ProductImage/${productId}`,
-    requestOptions
-  );
-};
-
 const CreateProductAPI = makeFetchAction(CREATE_PRODUCT, (product) =>
   nfetch({
     endpoint: '/api/Product'
@@ -194,13 +174,19 @@ const UpdateProductAPI = makeFetchAction(UPDATE_PRODUCT, (object) =>
   })(object)
 );
 
-export const updateProduct = (object) =>
-  respondToSuccess(UpdateProductAPI.actionCreator(object), (resp) => {
-    if (resp) {
-      openNotification('success', { message: 'Update product success!' });
-      Router.push('/admin/product');
+export const updateProduct = (product, newFileList, deleteFileList) =>
+  respondToSuccess(
+    UpdateProductAPI.actionCreator(product),
+    (resp) => {
+      if (resp) {
+        openNotification('success', { message: 'Update product success!' });
+        if (newFileList !== null) {
+          if (newFileList.length > 0) onUploadImage(resp, newFileList);
+        }
+        Router.push('/admin/product');
+      }
     }
-  });
+  );
 export const UpdateProductData = UpdateProductAPI.dataSelector;
 export const UpdateProductError = UpdateProductAPI.errorSelector;
 export const UpdateProductResetter = getResetter(UpdateProductAPI);
@@ -283,3 +269,40 @@ export const GetProductForSupplierError =
 export const GetProductForSupplierResetter = getResetter(
   GetProductForSupplierAPI
 );
+//Add image
+const onUploadImage = (productId, fileList) => {
+  const listFileOrigin = fileList.map((file) => file.originFileObj);
+  const formData = new FormData();
+  for (let file of listFileOrigin) {
+    formData.append('files', file);
+  }
+
+  var myHeaders = new Headers();
+  myHeaders.append('Authorization', `Bearer ${getToken()}`);
+  var requestOptions = {
+    method: 'PUT',
+    headers: myHeaders,
+    body: formData
+  };
+
+  fetch(
+    `${process.env.API_SERVER_URL}/api/Product/ProductImage/${productId}`,
+    requestOptions
+  );
+};
+
+//Delete image
+const DeleteProductImageAPI = makeFetchAction(
+  DELETE_PRODUCT_IMAGES,
+  (deleteFileList) =>
+    nfetch({
+      endpoint: '/api/Product/DeleteProductImage',
+      method: 'PUT'
+    })({ ids: deleteFileList })
+);
+
+export const deleteProductImage = (deleteFileList) =>
+  respondToSuccess(
+    DeleteProductImageAPI.actionCreator(deleteFileList),
+    (resp) => {}
+  );

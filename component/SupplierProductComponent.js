@@ -207,6 +207,15 @@ const SupplierProductComponent = ({
                       pageIndex
                     });
                   }
+                  else {
+                    setLoading(true);
+                    getProductForSupplier({
+                      category: category,
+                      productName: '',
+                      pageSize,
+                      pageIndex
+                    });
+                  }
                   setSearchMessage(value);
                 }}
               />

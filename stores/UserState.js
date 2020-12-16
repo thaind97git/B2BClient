@@ -12,6 +12,7 @@ const GET_CURRENT_USER = 'GetCurrentUserAPI';
 export const USER_LOGIN = 'UserLoginAPI';
 export const USER_REGISTER = 'UserRegisterAPI';
 export const USER_UPLOAD_AVATAR = 'UserUploadAvatarAPI';
+export const USER_UPDATE_ACCOUNT = 'UserUpdateAccountAPI';
 export const USER_UPDATE_PASSWORD = 'UserUpdatePasswordAPI';
 export const USER_ACTIVE_CODE = 'UserActiveCodeAPI';
 export const USER_UPDATE_PASSWORD_BY_CODE = 'UserUpdatePasswordByCodeAPI';
@@ -211,6 +212,37 @@ export const userUpdatePassword = ({ oldPassword, newPassword }) =>
 export const UserUpdatePasswordData = UserUpdatePasswordAPI.dataSelector;
 export const UserUpdatePasswordError = UserUpdatePasswordAPI.errorSelector;
 export const UserUpdatePasswordResetter = getResetter(UserUpdatePasswordAPI);
+
+//Update Password
+const UserUpdateAccountAPI = makeFetchAction(
+  USER_UPDATE_ACCOUNT,
+  ({ companyName, firstName, lastName, address, phone }) =>
+    nfetch({
+      endpoint: '/api/Account',
+      method: 'PUT'
+    })({ companyName, firstName, lastName, address, phone })
+);
+
+export const userUpdateAccount = ({
+  companyName,
+  firstName,
+  lastName,
+  address,
+  phone
+}) =>
+  respondToSuccess(
+    UserUpdateAccountAPI.actionCreator({
+      companyName,
+      firstName,
+      lastName,
+      address,
+      phone
+    }),
+    (resp) => {}
+  );
+export const UserUpdateAccountData = UserUpdateAccountAPI.dataSelector;
+export const UserUpdateAccountError = UserUpdateAccountAPI.errorSelector;
+export const UserUpdateAccountResetter = getResetter(UserUpdateAccountAPI);
 
 //Get Activate Code
 const UserActiveCodeAPI = makeFetchAction(USER_ACTIVE_CODE, (email) =>

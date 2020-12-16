@@ -12,10 +12,11 @@ import {
   Form,
   Button,
   Skeleton,
-  Input
+  Input,
+  Space
 } from 'antd';
 import { UploadOutlined, LockOutlined } from '@ant-design/icons';
-// import UserProfileEditComponent from "./UserProfileEditComponent";
+import UserProfileEditComponent from "./UserProfileEditComponent";
 import { createStructuredSelector } from 'reselect';
 import {
   CurrentUserData,
@@ -26,7 +27,13 @@ import {
   UserUpdatePasswordError,
   getUser,
   getUserData,
-  getUserResetter
+  getUserResetter,
+  userUpdateAccount,
+  UserUpdateAccountData,
+  UserUpdateAccountError,
+  UserUpdateAccountResetter,
+  getCurrentUser,
+  CurrentUserResetter,
 } from '../stores/UserState';
 import {
   acceptFileMimes,
@@ -67,15 +74,29 @@ const connectToRedux = connect(
   createStructuredSelector({
     currentUser: CurrentUserData,
     getUserData: getUserData,
-    updatePasswordData: UserUpdatePasswordData
+    updatePasswordData: UserUpdatePasswordData,
+    updateAccountData: UserUpdateAccountData
   }),
   (dispatch) => ({
     uploadAvatar: (fileList) => dispatch(userUploadAvatar(fileList)),
     updatePassword: ({ oldPassword, newPassword }) =>
       dispatch(userUpdatePassword({ oldPassword, newPassword })),
+    updateAccount: ({ firstName, lastName, phone, address, companyName }) =>
+      dispatch(
+        userUpdateAccount({
+          firstName,
+          lastName,
+          phone,
+          address,
+          companyName
+        })
+      ),
+    getCurrentUser: () => dispatch(getCurrentUser({})),
     getUser: (id) => dispatch(getUser(id)),
+    resetCurrentUser: () => dispatch(CurrentUserResetter),
     resetGetUser: () => dispatch(getUserResetter),
-    resetUpdatePassword: () => dispatch(UserUpdatePasswordResetter)
+    resetUpdatePassword: () => dispatch(UserUpdatePasswordResetter),
+    resetUpdateAccount: () => dispatch(UserUpdateAccountResetter)
   })
 );
 
@@ -91,9 +112,16 @@ const UserProfileComponent = ({
   isAdmin = false,
   updatePasswordData,
   resetUpdatePassword,
+  updateAccount,
+  updateAccountData,
+  resetUpdateAccount,
+  resetCurrentUser,
+  getCurrentUser,
   role = BUYER
 }) => {
   const [changePasswordVisible, setChangePasswordVisible] = useState(false);
+  const [updateProfileVisible, setUpdateProfileVisible] = useState(false);
+  const [updateProfile, setUpdateProfile] = useState({});
   const [imageUrl, setImageUrl] = useState(
     currentUser.avatar
       ? getCurrentUserImage(currentUser.id)
@@ -127,6 +155,10 @@ const UserProfileComponent = ({
   }, [getUserData]);
 
   useEffect(() => {
+    getCurrentUser();
+  }, [getCurrentUser]);
+
+  useEffect(() => {
     if (updatePasswordData) {
       resetUpdatePassword();
       setChangePasswordVisible(false);
@@ -136,8 +168,21 @@ const UserProfileComponent = ({
     }
   }, [updatePasswordData]);
 
+  useEffect(() => {
+    if (updateAccountData) {
+      resetUpdateAccount();
+      //resetCurrentUser();
+      getCurrentUser();
+      setUpdateProfileVisible(false);
+    }
+  }, [updateAccountData]);
+
   const showChangePasswordModal = () => {
     setChangePasswordVisible(true);
+  };
+
+  const showUpdateProfileModal = () => {
+    setUpdateProfileVisible(true);
   };
 
   useEffect(() => {
@@ -152,10 +197,22 @@ const UserProfileComponent = ({
     };
   }, [resetUpdatePassword]);
 
+  useEffect(() => {
+    return () => {
+      resetUpdateAccount();
+    };
+  }, [resetUpdateAccount]);
+
+  useEffect(() => {
+    return () => {
+      resetCurrentUser();
+    };
+  }, [resetCurrentUser]);
+
   const handleChangePasswordOk = () => {
     updatePasswordRef.current.submit();
   };
-  //handle User Profile Edit Cancel
+  //handle User Password Edit Cancel
   const handleChangePasswordCancel = () => {
     setChangePasswordVisible(false);
   };
@@ -180,6 +237,9 @@ const UserProfileComponent = ({
   const handleAvatarChange = (info) => {
     let fileList = [...info.fileList];
     fileList = fileList.slice(-1);
+    if (fileList.length > 0) {
+      fileList[fileList.length - 1].status = 'done';
+    }
     uploadAvatar(fileList);
     setList(fileList);
   };
@@ -197,6 +257,16 @@ const UserProfileComponent = ({
       previewTitle:
         file.name || file.url.substring(file.url.lastIndexOf('/') + 1)
     });
+  };
+
+  //handle User Profile Edit Cancel
+  const handleUpdateCancel = () => {
+    setUpdateProfileVisible(false);
+  };
+
+  //handle User Profile Edit OK
+  const handleUpdateOK = () => {
+    updateAccount(updateProfile);
   };
 
   if (isDrawer) {
@@ -341,9 +411,14 @@ const UserProfileComponent = ({
             <Descriptions
               title={firstName + ' ' + lastName}
               extra={
-                <Button type="primary" onClick={showChangePasswordModal}>
-                  Change Password
-                </Button>
+                <Space>
+                  <Button type="primary" onClick={showUpdateProfileModal}>
+                    Update Profile
+                  </Button>
+                  <Button type="primary" onClick={showChangePasswordModal}>
+                    Change Password
+                  </Button>
+                </Space>
               }
               column={1}
             >
@@ -372,6 +447,7 @@ const UserProfileComponent = ({
           visible={changePasswordVisible}
           onOk={handleChangePasswordOk}
           onCancel={handleChangePasswordCancel}
+          destroyOnClose={true}
         >
           <Form
             autoComplete="new-password"
@@ -454,6 +530,19 @@ const UserProfileComponent = ({
             alt="example"
             style={{ width: '100%' }}
             src={preview.previewImage}
+          />
+        </Modal>
+        <Modal
+          visible={updateProfileVisible}
+          title={'Update Profile'}
+          onCancel={handleUpdateCancel}
+          destroyOnClose={true}
+          onOk={handleUpdateOK}
+        >
+          <UserProfileEditComponent
+            setUpdateProfileForm={(updateProfile = {}) => {
+              setUpdateProfile(updateProfile);
+            }}
           />
         </Modal>
         <style jsx global>{`
