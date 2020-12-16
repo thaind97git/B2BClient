@@ -1,4 +1,4 @@
-import { HubConnectionBuilder } from '@microsoft/signalr';
+import { HubConnectionBuilder, HttpTransportType } from '@microsoft/signalr';
 import { getToken } from './localStorage';
 const API_SERVER_URL =
   process.env.API_SERVER_URL || 'http://35.240.230.138:5555';
@@ -8,6 +8,7 @@ class SignalR {
     this.serverSignalR = API_SERVER_URL;
     this.connection = new HubConnectionBuilder()
       .withUrl(`${API_SERVER_URL}/${hubDomain}`, {
+        transport: HttpTransportType.LongPolling,
         accessTokenFactory: () => {
           return `${getToken()}`;
         }
