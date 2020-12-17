@@ -52,7 +52,9 @@ const UserProfileEditComponent = ({currentUser, setUpdateProfileForm }) => {
         >
           <Row align="middle">
             <Col style={styles.colStyle} span={12}>
-              <div className="label">First Name:</div>
+              <div className="label">
+                <span style={{ color: 'red' }}>*</span> First Name:
+              </div>
               <FormItem
                 name="firstName"
                 rules={[
@@ -70,7 +72,9 @@ const UserProfileEditComponent = ({currentUser, setUpdateProfileForm }) => {
               </FormItem>
             </Col>
             <Col style={styles.colStyle} span={12}>
-              <div className="label">Last Name:</div>
+              <div className="label">
+                <span style={{ color: 'red' }}>*</span> Last Name:
+              </div>
               <FormItem
                 name="lastName"
                 rules={[
@@ -91,7 +95,9 @@ const UserProfileEditComponent = ({currentUser, setUpdateProfileForm }) => {
 
           <Row align="middle">
             <Col style={styles.colStyle} span={24}>
-              <div className="label">Phone Number:</div>
+              <div className="label">
+                <span style={{ color: 'red' }}>*</span> Phone Number:
+              </div>
               <FormItem
                 name="phoneNumber"
                 rules={[
@@ -111,7 +117,9 @@ const UserProfileEditComponent = ({currentUser, setUpdateProfileForm }) => {
           </Row>
           <Row align="middle">
             <Col style={styles.colStyle} span={24}>
-              <div className="label">Company Name:</div>
+              <div className="label">
+                <span style={{ color: 'red' }}>*</span> Company Name:
+              </div>
               <FormItem
                 name="companyName"
                 rules={[
@@ -129,7 +137,9 @@ const UserProfileEditComponent = ({currentUser, setUpdateProfileForm }) => {
               </FormItem>
             </Col>
             <Col style={styles.colStyle} span={24}>
-              <div className="label">Address:</div>
+              <div className="label">
+                <span style={{ color: 'red' }}>*</span> Address:
+              </div>
               <FormItem
                 name="address"
                 rules={[
