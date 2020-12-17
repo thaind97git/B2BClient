@@ -38,11 +38,11 @@ const getCategoryItem = (categories = []) => {
     <Menu>
       {categories.map((category) => {
         return category?.subCategories ? (
-          <SubMenu title={category.description}>
+          <SubMenu key={category.id} title={category.description}>
             {getCategoryItem(category?.subCategories)}
           </SubMenu>
         ) : (
-          <Menu.Item>{category.description}</Menu.Item>
+          <Menu.Item key={category.id}>{category.description}</Menu.Item>
         );
       })}
     </Menu>

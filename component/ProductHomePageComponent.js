@@ -12,7 +12,11 @@ import {
   GetProductSuggestData,
   GetProductSuggestError
 } from '../stores/ProductState';
-import { getDefaultProductImage, getProductImage } from '../utils';
+import {
+  getDefaultProductImage,
+  getNounQuantity,
+  getProductImage
+} from '../utils';
 import {
   checkDuplicate,
   CheckDuplicateData,
@@ -22,7 +26,6 @@ import {
   getCategories,
   GetCategoriesDataSelector
 } from '../stores/CategoryState';
-
 const connectToRedux = connect(
   createStructuredSelector({
     getProductByCategoryData: GetProductByCategoryData,
@@ -226,7 +229,7 @@ const ProductListHomePageComponent = ({
 
       <section className="padding-bottom-sm">
         <header className="section-heading heading-line">
-          <h4 className="title-section text-uppercase">Recommended items</h4>
+          <h4 className="title-section text-uppercase">Top Ordering Item</h4>
         </header>
 
         <div className="row row-sm">
@@ -260,10 +263,12 @@ const ProductListHomePageComponent = ({
                       className="d-flex justify-content-between"
                     >
                       <div className="price mt-1">
-                        {product.orderingRFQ ? (
+                        {product?.orderingRFQ ? (
                           <Tooltip title="Ordering RFQs">
-                            {`${product.orderingRFQ} ${product?.unitOfMeasure?.description}` ||
-                              'New'}
+                            {`${product.orderingQuantity} ${getNounQuantity(
+                              product?.orderingQuantity,
+                              product?.unitOfMeasure?.description
+                            )}`}
                           </Tooltip>
                         ) : (
                           <span className="badge badge-danger"> NEW </span>

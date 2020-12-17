@@ -1,13 +1,4 @@
-import {
-  Col,
-  Divider,
-  Row,
-  Typography,
-  Button,
-  Empty,
-  Tag,
-  Skeleton
-} from 'antd';
+import { Col, Row, Button, Empty, Tag, Skeleton } from 'antd';
 import { ProfileOutlined } from '@ant-design/icons';
 import Router, { useRouter } from 'next/router';
 import React, { Fragment, useEffect, useState } from 'react';
@@ -20,9 +11,7 @@ import {
   GetProductDetailsError
 } from '../stores/ProductState';
 import { get } from 'lodash/fp';
-import { getDefaultProductImage, getProductImage } from '../utils';
-
-const { Title } = Typography;
+import { getNounQuantity, getProductImage } from '../utils';
 
 const connectToRedux = connect(
   createStructuredSelector({
@@ -33,20 +22,6 @@ const connectToRedux = connect(
     getProduct: (id) => dispatch(getProductDetails(id))
   })
 );
-
-const DescriptionItem = ({ title, content }) => (
-  <Col span={24}>
-    <Row className="site-description-item-profile-wrapper">
-      <Col span={5}>
-        <p className="site-description-item-profile-p-label">{title}:</p>
-      </Col>
-      <Col span={19}>
-        <b>{content}</b>
-      </Col>
-    </Row>
-  </Col>
-);
-
 const BuyerProductDetailsComponent = ({
   getProduct,
   productDetailData,
@@ -56,16 +31,7 @@ const BuyerProductDetailsComponent = ({
   const id = router.query.id;
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    // const mobileNav = document.getElementById("mobile-nav");
-    // if (mobileNav) {
-    //   document.body.removeChild(mobileNav);
-    // }
-    // const mobileNavToggle = document.getElementById("mobile-nav-toggle");
-    // if (mobileNavToggle) {
-    //   document.body.removeChild(mobileNavToggle);
-    // }
-  }, []);
+  console.log({ productDetailData });
 
   useEffect(() => {
     getProduct(id);
@@ -97,15 +63,15 @@ const BuyerProductDetailsComponent = ({
   return (
     <Fragment>
       <section
-        class="section-content bg-white padding-y"
+        className="section-content bg-white padding-y"
         style={{ paddingTop: 32, paddingBottom: 160 }}
       >
-        <div class="container">
-          <div class="row">
-            <aside class="col-md-6">
-              <div class="card">
-                <article class="gallery-wrap">
-                  <div class="img-big-wrap">
+        <div className="container">
+          <div className="row">
+            <aside className="col-md-6">
+              <div className="card">
+                <article className="gallery-wrap">
+                  <div className="img-big-wrap">
                     <div>
                       {' '}
                       <a href="#">
@@ -116,8 +82,8 @@ const BuyerProductDetailsComponent = ({
                       </a>
                     </div>
                   </div>
-                  <div class="thumbs-wrap">
-                    <a href="#" class="item-thumb">
+                  <div className="thumbs-wrap">
+                    <a href="#" className="item-thumb">
                       <img
                         alt=""
                         src={getProductImage(productDetailData?.images?.[0])}
@@ -127,24 +93,30 @@ const BuyerProductDetailsComponent = ({
                 </article>
               </div>
             </aside>
-            <main class="col-md-6">
-              <article class="product-info-aside">
-                <h2 class="title mt-3">{productDetailData?.productName} </h2>
+            <main className="col-md-6">
+              <article className="product-info-aside">
+                <h2 className="title mt-3">
+                  {productDetailData?.productName}{' '}
+                </h2>
 
-                <div class="rating-wrap my-3">
-                  <span class="text-muted d-flex align-items-center">
-                    <ProfileOutlined /> <span>&nbsp;</span>154
+                <div className="rating-wrap my-3">
+                  <span className="text-muted d-flex align-items-center">
+                    <ProfileOutlined /> <span>&nbsp;</span>
+                    {productDetailData?.orderingQuantity}
                     <span>&nbsp;</span>
                     <span>
-                      {productDetailData?.unitOfMeasure?.description} Ordering
-                      in the system
+                      {getNounQuantity(
+                        productDetailData?.orderingQuantity,
+                        productDetailData?.unitOfMeasure?.description
+                      )}{' '}
+                      Ordering in the system
                     </span>
                   </span>
                 </div>
 
-                <dl class="row">
-                  <dt class="col-sm-3">Category</dt>
-                  <dd class="col-sm-9">
+                <dl className="row">
+                  <dt className="col-sm-3">Category</dt>
+                  <dd className="col-sm-9">
                     <a href="#">
                       <Tag color="processing">
                         {(productDetailData || {}).category.description}
@@ -152,21 +124,21 @@ const BuyerProductDetailsComponent = ({
                     </a>
                   </dd>
 
-                  <dt class="col-sm-3">Unit</dt>
-                  <dd class="col-sm-9">
+                  <dt className="col-sm-3">Unit</dt>
+                  <dd className="col-sm-9">
                     {get('unitOfMeasure.description')(productDetailData)}
                   </dd>
                 </dl>
-                <p>
+                <div>
                   <div
                     dangerouslySetInnerHTML={{
                       __html: (productDetailData || {}).description
                     }}
                   />
-                </p>
+                </div>
 
-                <div class="form-row  mt-4">
-                  <div class="form-group col-md">
+                <div className="form-row  mt-4">
+                  <div className="form-group col-md">
                     <Button
                       onClick={() => {
                         Router.push(
