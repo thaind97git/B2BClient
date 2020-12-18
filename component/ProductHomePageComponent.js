@@ -69,7 +69,7 @@ const ProductListHomePageComponent = ({
               <aside className="col-lg col-md-3 flex-lg-grow-0">
                 <nav className="nav-home-aside">
                   <h6 className="title-category">
-                    MY MARKETS{' '}
+                    CATEGORIES{' '}
                     <i className="d-md-none icon fa fa-chevron-down"></i>
                   </h6>
                   <ul className="menu-category">
