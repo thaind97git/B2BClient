@@ -1,7 +1,7 @@
 import { HubConnectionBuilder, HttpTransportType } from '@microsoft/signalr';
 import { getToken } from './localStorage';
 const API_SERVER_URL =
-  process.env.API_SERVER_URL || 'http://35.240.230.138:5555';
+  process.env.API_SERVER_URL || 'https://api.negotium.space';
 
 class SignalR {
   constructor({ hubDomain = 'chatHub' }) {

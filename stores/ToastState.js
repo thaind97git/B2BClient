@@ -115,7 +115,7 @@ export default {
           msgNotify = 'Create new order successfully';
           break;
         case USER_UPDATE_PASSWORD:
-          msgNotify = 'Create new password successfully';
+          msgNotify = 'Update password successfully';
           break;
         case REMOVE_SUPPLIER_AUCTION:
           msgNotify = 'Remove Supplier from Auction successfully';
@@ -204,7 +204,7 @@ export default {
           msgNotify = 'Create new order fail';
           break;
         case USER_UPDATE_PASSWORD:
-          msgNotify = 'Create new password fail';
+          msgNotify = 'Update password fail';
           break;
         case REMOVE_SUPPLIER_AUCTION:
           msgNotify = 'Remove Supplier from Auction fail';
