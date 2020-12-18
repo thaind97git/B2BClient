@@ -16,7 +16,7 @@ import {
   Space
 } from 'antd';
 import { UploadOutlined, LockOutlined } from '@ant-design/icons';
-import UserProfileEditComponent from "./UserProfileEditComponent";
+import UserProfileEditComponent from './UserProfileEditComponent';
 import { createStructuredSelector } from 'reselect';
 import {
   CurrentUserData,
@@ -24,16 +24,13 @@ import {
   userUpdatePassword,
   UserUpdatePasswordData,
   UserUpdatePasswordResetter,
-  UserUpdatePasswordError,
   getUser,
   getUserData,
   getUserResetter,
   userUpdateAccount,
   UserUpdateAccountData,
-  UserUpdateAccountError,
   UserUpdateAccountResetter,
-  getCurrentUser,
-  CurrentUserResetter,
+  getCurrentUser
 } from '../stores/UserState';
 import {
   acceptFileMimes,
@@ -93,7 +90,6 @@ const connectToRedux = connect(
       ),
     getCurrentUser: () => dispatch(getCurrentUser({})),
     getUser: (id) => dispatch(getUser(id)),
-    resetCurrentUser: () => dispatch(CurrentUserResetter),
     resetGetUser: () => dispatch(getUserResetter),
     resetUpdatePassword: () => dispatch(UserUpdatePasswordResetter),
     resetUpdateAccount: () => dispatch(UserUpdateAccountResetter)
@@ -115,7 +111,6 @@ const UserProfileComponent = ({
   updateAccount,
   updateAccountData,
   resetUpdateAccount,
-  resetCurrentUser,
   getCurrentUser,
   role = BUYER
 }) => {
@@ -202,12 +197,6 @@ const UserProfileComponent = ({
       resetUpdateAccount();
     };
   }, [resetUpdateAccount]);
-
-  useEffect(() => {
-    return () => {
-      resetCurrentUser();
-    };
-  }, [resetCurrentUser]);
 
   const handleChangePasswordOk = () => {
     updatePasswordRef.current.submit();

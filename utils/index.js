@@ -19,6 +19,7 @@ import {
 import { ADMIN, BUYER, MODERATOR, SUPPLIER } from '../enums/accountRoles';
 import { Fragment } from 'react';
 import momentTimeZone from 'moment-timezone';
+import pluralize from 'pluralize';
 export const currentPath = () => !isServer && Router.route;
 
 export const isServer = !process.browser;
@@ -415,4 +416,12 @@ export const getLabelNotify = ({ type, role = BUYER, id, title }) => {
 
 export const getRangeDateLabel = (date = 30) => {
   return `From: ${moment().add(-date, 'days').format(DATE_FORMAT)} - To: Today`;
+};
+
+export const getNounQuantity = (quantity = 0, label) => {
+  if (quantity <= 1) {
+    return pluralize.singular(label);
+  } else {
+    return label;
+  }
 };
