@@ -1,4 +1,13 @@
-import { Col, Row, Button, Empty, Tag, Skeleton } from 'antd';
+import {
+  Col,
+  Row,
+  Button,
+  Empty,
+  Tag,
+  Skeleton,
+  Breadcrumb,
+  Tooltip
+} from 'antd';
 import { ProfileOutlined } from '@ant-design/icons';
 import Router, { useRouter } from 'next/router';
 import React, { Fragment, useEffect, useState } from 'react';
@@ -11,7 +20,7 @@ import {
   GetProductDetailsError
 } from '../stores/ProductState';
 import { get } from 'lodash/fp';
-import { getNounQuantity, getProductImage } from '../utils';
+import { getNounQuantity, getProductImage, getShortContent } from '../utils';
 
 const connectToRedux = connect(
   createStructuredSelector({
@@ -22,6 +31,20 @@ const connectToRedux = connect(
     getProduct: (id) => dispatch(getProductDetails(id))
   })
 );
+const renderBreadcrumb = (categories = []) => {
+  return [categories]?.map((category) => {
+    return (
+      <Fragment>
+        <Breadcrumb.Item key={category.id}>
+          <a href={`/home-category?categoryId=${category.id}`}>
+            {category.description}
+          </a>
+        </Breadcrumb.Item>{' '}
+        {category?.subCategory && renderBreadcrumb(category?.subCategory)}
+      </Fragment>
+    );
+  });
+};
 const BuyerProductDetailsComponent = ({
   getProduct,
   productDetailData,
@@ -30,8 +53,6 @@ const BuyerProductDetailsComponent = ({
   const router = useRouter();
   const id = router.query.id;
   const [loading, setLoading] = useState(true);
-
-  console.log({ productDetailData });
 
   useEffect(() => {
     getProduct(id);
@@ -51,7 +72,6 @@ const BuyerProductDetailsComponent = ({
       </Row>
     );
   }
-
   if (!productDetailData) {
     return (
       <Empty
@@ -62,6 +82,22 @@ const BuyerProductDetailsComponent = ({
   }
   return (
     <Fragment>
+      <section className="py-3">
+        <div className="container">
+          <Breadcrumb>
+            <Breadcrumb.Item>
+              <a href="/">Home</a>
+            </Breadcrumb.Item>
+            {renderBreadcrumb(productDetailData.rootCategory || [])}
+            <Breadcrumb.Item>
+              <Tooltip title={productDetailData?.productName}>
+                {getShortContent(productDetailData?.productName, 80)}
+              </Tooltip>
+            </Breadcrumb.Item>
+          </Breadcrumb>
+        </div>
+      </section>
+
       <section
         className="section-content bg-white padding-y"
         style={{ paddingTop: 32, paddingBottom: 160 }}

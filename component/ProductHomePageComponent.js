@@ -1,13 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Button, Tooltip } from 'antd';
 import Router from 'next/router';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 
 import {
-  getProductByCategory,
-  GetProductByCategoryData,
-  GetProductByCategoryError,
   getProductSuggest,
   GetProductSuggestData,
   GetProductSuggestError
@@ -17,32 +14,17 @@ import {
   getNounQuantity,
   getProductImage
 } from '../utils';
-import {
-  checkDuplicate,
-  CheckDuplicateData,
-  CheckDuplicateResetter
-} from '../stores/RequestState';
-import {
-  getCategories,
-  GetCategoriesDataSelector
-} from '../stores/CategoryState';
+
+import { GetCategoriesDataSelector } from '../stores/CategoryState';
 const connectToRedux = connect(
   createStructuredSelector({
-    getProductByCategoryData: GetProductByCategoryData,
-    getProductByCategoryError: GetProductByCategoryError,
     getProductSuggestData: GetProductSuggestData,
     getProductSuggestError: GetProductSuggestError,
-    duplicateData: CheckDuplicateData,
     categoryData: GetCategoriesDataSelector
   }),
   (dispatch) => ({
-    getProductByCategory: (id, pageSize, pageIndex, name) =>
-      dispatch(getProductByCategory(id, pageSize, pageIndex, name)),
     getProductSuggest: (pageIndex, pageSize) =>
-      dispatch(getProductSuggest({ pageIndex, pageSize })),
-    checkDuplicateRFQ: (productId) => dispatch(checkDuplicate(productId)),
-    resetCheckDuplicate: () => dispatch(CheckDuplicateResetter),
-    getCategories: () => dispatch(getCategories())
+      dispatch(getProductSuggest({ pageIndex, pageSize }))
   })
 );
 
@@ -50,13 +32,10 @@ const pageSize = 12;
 const getCategoryItem = (categories = []) => {
   return categories.map((category) => {
     return (
-      <li
-        onClick={() => {
-          Router.push(`/home-category?id=${category.id}`);
-        }}
-        className={category?.subCategories ? 'has-submenu' : ''}
-      >
-        <a href="#">{category.description}</a>
+      <li className={category?.subCategories ? 'has-submenu' : ''}>
+        <a href={`/home-category?categoryId=${category.id}`}>
+          {category.description}
+        </a>
         {category?.subCategories && (
           <ul className="submenu">
             {getCategoryItem(category?.subCategories)}
@@ -66,78 +45,21 @@ const getCategoryItem = (categories = []) => {
     );
   });
 };
+const pageIndex = 1;
 const ProductListHomePageComponent = ({
-  getProductByCategory,
-  getProductByCategoryData,
-  getProductByCategoryError,
   getProductSuggest,
-  getProductSuggestError,
   getProductSuggestData,
   categoryData
 }) => {
-  const [currentCategorySelected, setCurrentCategorySelected] = useState({});
-  const [pageIndex, setPageIndex] = useState(1);
-  const [loading, setLoading] = useState(true);
-  const [searchValue, setSearchValue] = useState('');
-  const [isCategorySelected, setIsCategorySelected] = useState(false);
-  const [isLoadSuggest, setIsLoadSuggest] = useState(true);
-
   useEffect(() => {
-    if (isLoadSuggest) {
-      getProductSuggest(pageIndex, pageSize);
-    }
-  }, [isLoadSuggest, pageIndex, getProductSuggest]);
-
-  useEffect(() => {
-    if (
-      (currentCategorySelected || {}).id &&
-      (currentCategorySelected || {}).id !== 'all' &&
-      isCategorySelected
-    ) {
-      getProductByCategory(
-        (currentCategorySelected || {}).id,
-        pageSize,
-        pageIndex
-      );
-      setLoading(true);
-    }
-  }, [
-    pageIndex,
-    currentCategorySelected,
-    getProductByCategory,
-    isCategorySelected
-  ]);
-
-  useEffect(() => {
-    setPageIndex(1);
-  }, [currentCategorySelected]);
-
-  useEffect(() => {
-    if (
-      getProductByCategoryError ||
-      getProductByCategoryData ||
-      getProductSuggestData ||
-      getProductSuggestError
-    ) {
-      setLoading(false);
-    }
-  }, [
-    getProductByCategoryData,
-    getProductByCategoryError,
-    getProductSuggestData,
-    getProductSuggestError
-  ]);
+    getProductSuggest(pageIndex, pageSize);
+  }, [getProductSuggest]);
 
   let productData = [];
-  if (isLoadSuggest) {
-    if (getProductSuggestData) {
-      productData = getProductSuggestData.data;
-    }
-  } else {
-    if (!!getProductByCategoryData) {
-      productData = getProductByCategoryData.data;
-    }
+  if (getProductSuggestData) {
+    productData = getProductSuggestData.data;
   }
+
   return (
     <div>
       <section className="section-main padding-y">

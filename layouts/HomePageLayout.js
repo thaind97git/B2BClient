@@ -21,6 +21,8 @@ import {
   CurrentUserResetter,
   getCurrentUser
 } from '../stores/UserState';
+import Router from 'next/router';
+import { doFunctionWithEnter } from '../utils';
 const { SubMenu } = Menu;
 const connectToRedux = connect(
   createStructuredSelector({
@@ -34,19 +36,28 @@ const connectToRedux = connect(
   })
 );
 const getCategoryItem = (categories = []) => {
-  return (
-    <Menu>
-      {categories.map((category) => {
-        return category?.subCategories ? (
-          <SubMenu key={category.id} title={category.description}>
-            {getCategoryItem(category?.subCategories)}
-          </SubMenu>
-        ) : (
-          <Menu.Item key={category.id}>{category.description}</Menu.Item>
-        );
-      })}
-    </Menu>
-  );
+  return categories.map((category) => {
+    return category?.subCategories ? (
+      <SubMenu
+        onTitleClick={() => {
+          Router.push(`/home-category?categoryId=${category.id}`);
+        }}
+        key={category.id}
+        title={category.description}
+      >
+        {getCategoryItem(category?.subCategories)}
+      </SubMenu>
+    ) : (
+      <Menu.Item
+        onClick={() => {
+          Router.push(`/home-category?categoryId=${category.id}`);
+        }}
+        key={category.id}
+      >
+        {category.description}
+      </Menu.Item>
+    );
+  });
 };
 const HomePageLayout = ({
   children,
@@ -54,9 +65,11 @@ const HomePageLayout = ({
   getCurrentUser,
   resetData,
   getCategories,
-  categoryData
+  categoryData,
+  isCategory = false
 }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [searchMessage, setSearchMessage] = useState('');
   useEffect(() => {
     getCategories();
   }, [getCategories]);
@@ -154,34 +167,51 @@ const HomePageLayout = ({
                 </a>
               </div>
               <div className="col-1">
-                <Dropdown overlay={getCategoryItem(categoryData || [])}>
-                  <a
-                    className="ant-dropdown-link d-flex flex-direction-row align-items-center"
-                    onClick={(e) => e.preventDefault()}
+                {isCategory && (
+                  <Dropdown
+                    overlay={<Menu>{getCategoryItem(categoryData || [])}</Menu>}
                   >
-                    <UnorderedListOutlined />
-                    <span>&nbsp;</span> Categories<span>&nbsp;</span>
-                    <DownOutlined />
-                    <span>&nbsp;&nbsp;</span>
-                  </a>
-                </Dropdown>
+                    <a
+                      className="ant-dropdown-link d-flex flex-direction-row align-items-center"
+                      onClick={(e) => e.preventDefault()}
+                    >
+                      <UnorderedListOutlined />
+                      <span>&nbsp;</span> Categories<span>&nbsp;</span>
+                      <DownOutlined />
+                      <span>&nbsp;&nbsp;</span>
+                    </a>
+                  </Dropdown>
+                )}
               </div>
               <div className="col-xl-7 col-lg-7 col-md-8">
-                <form action="#" className="search-header">
+                <div className="search-header">
                   <div className="input-group w-100">
                     <input
                       type="text"
                       className="form-control"
                       placeholder="Search"
+                      value={searchMessage}
+                      onChange={(event) => setSearchMessage(event.target.value)}
+                      onKeyPress={(event) => {
+                        doFunctionWithEnter(event, () =>
+                          Router.push(`/home-category?q=${searchMessage}`)
+                        );
+                      }}
                     />
 
                     <div className="input-group-append">
-                      <button className="btn btn-primary" type="submit">
+                      <button
+                        onClick={() => {
+                          Router.push(`/home-category?q=${searchMessage}`);
+                        }}
+                        className="btn btn-primary"
+                        type="submit"
+                      >
                         <i className="fa fa-search"></i> Search
                       </button>
                     </div>
                   </div>
-                </form>
+                </div>
               </div>
               <div className="col-xl-2 col-lg-2 col-md-4">
                 <div className="widgets-wrap float-md-right">
