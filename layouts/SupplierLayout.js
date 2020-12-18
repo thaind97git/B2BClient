@@ -55,7 +55,7 @@ const SUPPLIER_MENU = [
   {
     key: '2',
     icon: <PicLeftOutlined />,
-    label: 'Product Registered',
+    label: 'Registered Product',
     link: '/supplier/product/listing'
   },
   {

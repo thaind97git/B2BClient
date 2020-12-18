@@ -49,26 +49,26 @@ const ADMIN_MENU = [
   {
     key: '2',
     icon: <ProfileOutlined />,
-    label: 'Requests',
+    label: 'RFQ',
     link: '/aggregator/request'
   },
   {
     key: '3',
     icon: <FallOutlined />,
-    label: 'Reverse auctions',
+    label: 'Reverse Auction',
     link: '/aggregator/bidding'
   },
   {
     key: '4',
     icon: <DiffOutlined />,
-    label: 'Groups',
+    label: 'Group RFQ',
     link: '/aggregator/group',
     subMenu: []
   },
   {
     key: '5',
     icon: <MessageOutlined />,
-    label: 'Chats',
+    label: 'Chat',
     link: '/aggregator/group/chat',
     subMenu: []
   },
