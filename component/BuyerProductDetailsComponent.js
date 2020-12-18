@@ -150,7 +150,11 @@ const BuyerProductDetailsComponent = ({
                         productDetailData?.orderingQuantity,
                         productDetailData?.unitOfMeasure?.description
                       )}{' '}
-                      Ordering in the system
+                      <small className="text-muted">
+                        | {productDetailData?.orderingRFQ} RFQ
+                        {productDetailData?.orderingRFQ > 1 ? 's' : ''}
+                      </small>{' '}
+                      ordering in the system
                     </span>
                   </span>
                 </div>

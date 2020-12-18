@@ -234,6 +234,10 @@ const ProductHomeByCategoryComponent = ({
                                       product?.orderingQuantity,
                                       product?.unitOfMeasure?.description
                                     )}`}</span>
+                                    <small className="text-muted">
+                                      | {product.orderingRFQ} RFQ
+                                      {product.orderingRFQ > 1 ? 's' : ''}
+                                    </small>
                                   </div>
                                 </Tooltip>
                               ) : (
