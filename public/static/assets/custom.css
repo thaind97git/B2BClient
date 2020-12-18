@@ -157,3 +157,25 @@ ul {
   border-color: #141414;
   background: #141414;
 }
+
+.offer-rankicon {
+  z-index: 2;
+  position: absolute;
+  top: 0;
+  left: 12px;
+  width: 25px;
+  height: 26px;
+}
+.offer-rankicon .rank-icon {
+  width: 25px;
+  height: 26px;
+}
+.offer-rankicon .rank-txt {
+  position: absolute;
+  width: 25px;
+  text-align: center;
+  line-height: 26px;
+  color: #fff;
+  top: 0;
+  left: 0;
+}

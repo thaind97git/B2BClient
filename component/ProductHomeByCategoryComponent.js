@@ -1,6 +1,5 @@
 import React, { Fragment, useEffect, useState } from 'react';
 import { Breadcrumb, Button, Empty, Pagination, Tooltip } from 'antd';
-import { FormOutlined } from '@ant-design/icons';
 import Router, { useRouter } from 'next/router';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
@@ -13,11 +12,7 @@ import {
   GetProductSuggestData,
   GetProductSuggestError
 } from '../stores/ProductState';
-import {
-  getDefaultProductImage,
-  getNounQuantity,
-  getProductImage
-} from '../utils';
+import { getNounQuantity, getProductImage } from '../utils';
 import {
   checkDuplicate,
   CheckDuplicateData,
@@ -25,7 +20,9 @@ import {
 } from '../stores/RequestState';
 import {
   getCategories,
-  GetCategoriesDataSelector
+  GetCategoriesDataSelector,
+  getRootCategoryById,
+  GetRootCategoryByIdDataSelector
 } from '../stores/CategoryState';
 const connectToRedux = connect(
   createStructuredSelector({
@@ -34,7 +31,8 @@ const connectToRedux = connect(
     getProductSuggestData: GetProductSuggestData,
     getProductSuggestError: GetProductSuggestError,
     duplicateData: CheckDuplicateData,
-    categoryData: GetCategoriesDataSelector
+    categoryData: GetCategoriesDataSelector,
+    rootCategoryData: GetRootCategoryByIdDataSelector
   }),
   (dispatch) => ({
     getProductByCategory: (id, pageSize, pageIndex, name) =>
@@ -43,69 +41,51 @@ const connectToRedux = connect(
       dispatch(getProductSuggest({ pageIndex, pageSize })),
     checkDuplicateRFQ: (productId) => dispatch(checkDuplicate(productId)),
     resetCheckDuplicate: () => dispatch(CheckDuplicateResetter),
-    getCategories: () => dispatch(getCategories())
+    getCategories: () => dispatch(getCategories()),
+    getRootCategoryById: (id) => dispatch(getRootCategoryById(id))
   })
 );
 
 const pageSize = 12;
-const getCategoryItem = (categories = []) => {
-  return categories.map((category) => {
-    return (
-      <li
-        // onClick={() => {
-        //   Router.push(`/home-category?categoryId=${category.id}`);
-        // }}
-        className={category?.subCategories ? 'has-submenu' : ''}
-      >
-        <a href={`/home-category?categoryId=${category.id}`}>
-          {category.description}
-        </a>
-        {category?.subCategories && (
-          <ul className="submenu">
-            {getCategoryItem(category?.subCategories)}
-          </ul>
-        )}
-      </li>
-    );
-  });
-};
 const renderBreadcrumb = (categories = []) => {
-  return [categories]?.map((category) => {
-    return (
-      <Fragment>
-        <Breadcrumb.Item key={category.id}>
-          <a href={`/home-category?categoryId=${category.id}`}>
-            {category.description}
-          </a>
-        </Breadcrumb.Item>{' '}
-        {category?.subCategory && renderBreadcrumb(category?.subCategory)}
-      </Fragment>
-    );
-  });
+  return !!categories
+    ? [categories]?.map((category) => {
+        return (
+          <span key={category.id}>
+            <Breadcrumb.Item key={category.id}>
+              <a href={`/home-category?categoryId=${category.id}`}>
+                {category.description}
+              </a>
+            </Breadcrumb.Item>{' '}
+            {category?.subCategory && renderBreadcrumb(category?.subCategory)}
+          </span>
+        );
+      })
+    : null;
 };
 const ProductHomeByCategoryComponent = ({
   getProductByCategory,
   getProductByCategoryData,
-  getProductByCategoryError,
-
-  getProductSuggestError,
-  getProductSuggestData,
-  categoryData
+  rootCategoryData,
+  getRootCategoryById
 }) => {
-  const [currentCategorySelected, setCurrentCategorySelected] = useState({});
   const [pageIndex, setPageIndex] = useState(1);
   const [loading, setLoading] = useState(true);
-  const [searchValue, setSearchValue] = useState('');
 
   const router = useRouter();
-  const categoryId = router.query.categoryId;
+  const { categoryId, q: querySearch } = router.query;
 
   useEffect(() => {
-    if (categoryId) {
-      getProductByCategory(categoryId, pageSize, pageIndex);
+    if (categoryId || querySearch) {
+      getProductByCategory(categoryId, pageSize, pageIndex, querySearch);
       setLoading(true);
     }
-  }, [pageIndex, getProductByCategory, categoryId]);
+  }, [pageIndex, getProductByCategory, categoryId, querySearch]);
+  useEffect(() => {
+    if (categoryId) {
+      getRootCategoryById(categoryId);
+    }
+  }, [categoryId, getRootCategoryById]);
 
   let productData = [],
     totalCount = 0;
@@ -114,7 +94,7 @@ const ProductHomeByCategoryComponent = ({
     productData = getProductByCategoryData.data;
     totalCount = getProductByCategoryData.total;
   }
-  if (!categoryId || !productData?.length) {
+  if (!productData?.length) {
     return (
       <Fragment>
         <section className="section-content padding-y">
@@ -125,23 +105,10 @@ const ProductHomeByCategoryComponent = ({
                   <div className="row">
                     <div className="col-md-2"> Your are here: </div>
                     <nav className="col-md-8">
-                      <ol className="breadcrumb">
-                        <li className="breadcrumb-item">
-                          <a href="#">Home</a>
-                        </li>
-                        <li className="breadcrumb-item">
-                          <a href="#">Category name</a>
-                        </li>
-                        <li className="breadcrumb-item">
-                          <a href="#">Sub category</a>
-                        </li>
-                        <li
-                          className="breadcrumb-item active"
-                          aria-current="page"
-                        >
-                          Items
-                        </li>
-                      </ol>
+                      <Breadcrumb.Item>
+                        <a href="/">Home</a>
+                      </Breadcrumb.Item>
+                      {renderBreadcrumb(rootCategoryData)}
                     </nav>
                   </div>
                 </div>
@@ -173,29 +140,21 @@ const ProductHomeByCategoryComponent = ({
         <div className="container">
           <div className="card mb-3">
             <div className="card-body">
-              <div className="row">
-                <div className="col-md-2">
-                  <nav className="col-md-8">
-                    <ol className="breadcrumb">
-                      <li className="breadcrumb-item">
-                        <a href="#">Home</a>
-                      </li>
-                      <li className="breadcrumb-item">
-                        <a href="#">Category name</a>
-                      </li>
-                      <li className="breadcrumb-item">
-                        <a href="#">Sub category</a>
-                      </li>
-                      <li
-                        className="breadcrumb-item active"
-                        aria-current="page"
-                      >
-                        Items
-                      </li>
-                    </ol>
-                  </nav>
+              {categoryId && (
+                <div className="card mb-3">
+                  <div className="card-body">
+                    <div className="row">
+                      <div className="col-md-2"> Your are here: </div>
+                      <nav className="col-md-8">
+                        <Breadcrumb.Item>
+                          <a href="/">Home</a>
+                        </Breadcrumb.Item>
+                        {renderBreadcrumb(rootCategoryData)}
+                      </nav>
+                    </div>
+                  </div>
                 </div>
-              </div>
+              )}
               <hr />
 
               <header className="mb-3">
@@ -233,19 +192,21 @@ const ProductHomeByCategoryComponent = ({
                             {product.productName}
                           </a>
                           <div className="price-wrap">
-                            <span className="price">$32.00-$40.00</span>
-                            <small className="text-muted">/per item</small>
+                            <span className="price">
+                              Unit: {product?.unitOfMeasure.description}
+                            </span>
+                            {/* <small className="text-muted">/per item</small> */}
                           </div>
 
-                          <p className="mb-2">
+                          {/* <p className="mb-2">
                             {' '}
                             2 Pieces{' '}
                             <small className="text-muted">(Min Order)</small>
-                          </p>
+                          </p> */}
 
-                          <p className="text-muted ">
+                          {/* <p className="text-muted ">
                             Guangzhou Yichuang Electronic Co
-                          </p>
+                          </p> */}
 
                           <hr />
                           <div
@@ -255,18 +216,28 @@ const ProductHomeByCategoryComponent = ({
                             <div className="price mt-1">
                               {product?.orderingRFQ ? (
                                 <Tooltip title="Ordering RFQs">
-                                  {`${
-                                    product.orderingQuantity
-                                  } ${getNounQuantity(
-                                    product?.orderingQuantity,
-                                    product?.unitOfMeasure?.description
-                                  )}`}
+                                  <div
+                                    style={{
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'center'
+                                    }}
+                                  >
+                                    <img
+                                      src="/static/images/grouping.png"
+                                      alt="ordering"
+                                      width={18}
+                                    />
+                                    <span>{`${
+                                      product.orderingQuantity
+                                    } ${getNounQuantity(
+                                      product?.orderingQuantity,
+                                      product?.unitOfMeasure?.description
+                                    )}`}</span>
+                                  </div>
                                 </Tooltip>
                               ) : (
-                                <span className="badge badge-danger">
-                                  {' '}
-                                  NEW{' '}
-                                </span>
+                                <span className=""></span>
                               )}
                             </div>
                             <Button

@@ -23,6 +23,7 @@ import {
 } from '../stores/UserState';
 import Router from 'next/router';
 import { doFunctionWithEnter } from '../utils';
+import Head from 'next/head';
 const { SubMenu } = Menu;
 const connectToRedux = connect(
   createStructuredSelector({
@@ -110,6 +111,10 @@ const HomePageLayout = ({
   }
   return (
     <Fragment>
+      <Head>
+        <title>Negotium</title>
+        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+      </Head>
       <link
         href="/static/homepage/images/favicon.ico"
         rel="shortcut icon"

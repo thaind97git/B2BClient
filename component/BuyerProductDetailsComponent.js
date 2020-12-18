@@ -137,7 +137,12 @@ const BuyerProductDetailsComponent = ({
 
                 <div className="rating-wrap my-3">
                   <span className="text-muted d-flex align-items-center">
-                    <ProfileOutlined /> <span>&nbsp;</span>
+                    <img
+                      src="/static/images/grouping.png"
+                      alt="ordering"
+                      width={18}
+                    />{' '}
+                    <span>&nbsp;</span>
                     {productDetailData?.orderingQuantity}
                     <span>&nbsp;</span>
                     <span>

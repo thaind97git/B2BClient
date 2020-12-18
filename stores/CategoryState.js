@@ -13,6 +13,7 @@ export const ADD_NEW_CATEGORY = 'ADD_NEW_CATEGORY';
 export const DELETE_CATEGORY = 'DELETE_CATEGORY';
 export const UPDATE_CATEGORY = 'UPDATE_CATEGORY';
 export const GET_CATEGORY_BY_ID = 'GET_CATEGORY_BY_ID';
+const GET_ROOT_CATEGORY = 'GET_ROOT_CATEGORY';
 
 // Service
 export const ADD_NEW_SERVICE = 'ADD_NEW_SERVICE';
@@ -41,6 +42,19 @@ export const getCategoryById = (id) =>
   respondToSuccess(GetCategoryByIdAPI.actionCreator(id), () => {});
 export const GetCategoryByIdDataSelector = GetCategoryByIdAPI.dataSelector;
 export const GetCategoryByIdResetter = getResetter(GetCategoryByIdAPI);
+
+//Get categoryById
+const GetRootCategoryByIdAPI = makeFetchAction(GET_ROOT_CATEGORY, (id) =>
+  nfetch({
+    endpoint: `/api/Category/FullCategorySequence?id=${id}`,
+    method: 'GET'
+  })()
+);
+export const getRootCategoryById = (id) =>
+  respondToSuccess(GetRootCategoryByIdAPI.actionCreator(id), () => {});
+export const GetRootCategoryByIdDataSelector =
+  GetRootCategoryByIdAPI.dataSelector;
+export const GetRootCategoryByIdResetter = getResetter(GetRootCategoryByIdAPI);
 
 // GET PARENT CATEGORY
 const GetParentCategoryAPI = makeFetchAction(

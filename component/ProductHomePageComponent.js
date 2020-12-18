@@ -151,7 +151,12 @@ const ProductListHomePageComponent = ({
 
       <section className="padding-bottom-sm">
         <header className="section-heading heading-line">
-          <h4 className="title-section text-uppercase">Top Ordering Item</h4>
+          <h4
+            className="title-section text-uppercase"
+            style={{ background: '#f0f2f5' }}
+          >
+            Recommend Items
+          </h4>
         </header>
 
         <div className="row row-sm">
@@ -163,6 +168,9 @@ const ProductListHomePageComponent = ({
                     href={`/product-details?id=${product.id}`}
                     className="img-wrap"
                   >
+                    {product.orderingQuantity > 0 && (
+                      <span className="badge badge-danger"> HOT </span>
+                    )}
                     <img
                       aria-hidden
                       alt="product-image"
@@ -187,13 +195,34 @@ const ProductListHomePageComponent = ({
                       <div className="price mt-1">
                         {product?.orderingRFQ ? (
                           <Tooltip title="Ordering RFQs">
-                            {`${product.orderingQuantity} ${getNounQuantity(
-                              product?.orderingQuantity,
-                              product?.unitOfMeasure?.description
-                            )}`}
+                            <div
+                              style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center'
+                              }}
+                            >
+                              <img
+                                src="/static/images/grouping.png"
+                                alt="ordering"
+                                width={18}
+                              />
+                              <span>{`${
+                                product.orderingQuantity
+                              } ${getNounQuantity(
+                                product?.orderingQuantity,
+                                product?.unitOfMeasure?.description
+                              )}`}</span>
+                            </div>
                           </Tooltip>
                         ) : (
-                          <span className="badge badge-danger"> NEW </span>
+                          <Tooltip title="Recommend for you">
+                            <img
+                              src="/static/images/recommend.png"
+                              alt="ordering"
+                              width={24}
+                            />
+                          </Tooltip>
                         )}
                       </div>
                       <Button
