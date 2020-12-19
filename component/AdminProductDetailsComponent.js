@@ -9,7 +9,8 @@ import {
   Typography,
   Image,
   Divider,
-  Tag
+  Tag,
+  message
 } from 'antd';
 import {
   getProductBySupplier,
@@ -26,7 +27,12 @@ import { get } from 'lodash/fp';
 import { connect } from 'react-redux';
 import Router from 'next/router';
 import { createStructuredSelector } from 'reselect';
-import { fallbackImage, getProductImage } from '../utils';
+import {
+  checkErrorQuotations,
+  displayCurrency,
+  fallbackImage,
+  getProductImage
+} from '../utils';
 import QuotationDisplayComponent from './Utils/QuotationDisplayComponent';
 import Modal from 'antd/lib/modal/Modal';
 import SupplierProductOptionComponent from './SupplierProductOptionComponent';
@@ -71,6 +77,7 @@ const connectToRedux = connect(
       )
   })
 );
+
 const DescriptionItem = ({ title, content }) => (
   <Col span={24}>
     <Row className="site-description-item-profile-wrapper">
@@ -167,6 +174,17 @@ const AdminProductDetailsComponent = ({
         centered
         visible={openQuotation}
         onOk={() => {
+          const { error, errorCurrent } = checkErrorQuotations(
+            quotationsUpdate
+          );
+          if (error) {
+            message.error(
+              `The format for quotations error. Please Check for the record "${
+                errorCurrent.quantity
+              } : ${displayCurrency(errorCurrent.price)}"`
+            );
+            return;
+          }
           supplierUpdateQuotation({
             productId: productID,
             description: quotationsUpdate,

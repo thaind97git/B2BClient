@@ -103,7 +103,6 @@ const ProductHomeByCategoryComponent = ({
               <div className="card mb-3">
                 <div className="card-body">
                   <div className="row">
-                    <div className="col-md-2"> Your are here: </div>
                     <nav className="col-md-8">
                       <Breadcrumb.Item>
                         <a href="/">Home</a>
@@ -144,7 +143,6 @@ const ProductHomeByCategoryComponent = ({
                 <div className="card mb-3">
                   <div className="card-body">
                     <div className="row">
-                      <div className="col-md-2"> Your are here: </div>
                       <nav className="col-md-8">
                         <Breadcrumb.Item>
                           <a href="/">Home</a>

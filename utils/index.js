@@ -425,3 +425,51 @@ export const getNounQuantity = (quantity = 0, label) => {
     return label;
   }
 };
+
+export const getRange = (quotations = [], quantity, key) => {
+  let dataSource = quotations;
+  if (key) {
+    dataSource = dataSource.filter((quotation) => quotation.key !== key);
+  }
+  const min =
+    dataSource.filter((quotation) => quotation.quantity >= quantity) || [];
+  const max =
+    dataSource.filter((quotation) => quotation.quantity < quantity) || [];
+  const minSort = min.sort((a, b) => a.quantity - b.quantity);
+  const maxSort = max.sort((a, b) => b.quantity - a.quantity);
+  return {
+    minSort,
+    maxSort,
+    minPrice: (minSort[0] || {}).price || 0,
+    maxPrice: (maxSort[0] || {}).price || Infinity
+  };
+};
+export const checkErrorQuotations = (quotations = []) => {
+  let error = false,
+    errorCurrent = {};
+  quotations.sort((a, b) => b.quantity - a.quantity);
+
+  const currentCheck = [];
+
+  for (let i = 0; i < quotations.length; i++) {
+    const currentQuotation = quotations[i];
+    const nextQuotation = quotations[i + 1];
+    const { minPrice } = getRange(currentCheck, currentQuotation.quantity);
+    if (currentQuotation.quantity === nextQuotation.quantity) {
+      error = true;
+      errorCurrent = nextQuotation;
+      break;
+    }
+    if (currentQuotation.price < minPrice) {
+      error = true;
+      errorCurrent = currentQuotation;
+    }
+
+    currentCheck.push(currentQuotation);
+  }
+
+  return {
+    error,
+    errorCurrent
+  };
+};

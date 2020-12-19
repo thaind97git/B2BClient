@@ -5,6 +5,7 @@ import {
   Drawer,
   Image,
   List,
+  message,
   Modal,
   Pagination,
   Row,
@@ -22,7 +23,9 @@ import {
 } from '../stores/ProductState';
 import SupplierProductOptionComponent from './SupplierProductOptionComponent';
 import {
+  checkErrorQuotations,
   DEFAULT_PAGING_INFO,
+  displayCurrency,
   doFunctionWithEnter,
   fallbackImage,
   getProductImage
@@ -59,6 +62,7 @@ const connectToRedux = connect(
       dispatch(supplierUpdateQuotation({ id, description, callback }))
   })
 );
+
 const SupplierProductComponent = ({
   getProductForSupplier,
   getProductForSupplierData,
@@ -127,6 +131,15 @@ const SupplierProductComponent = ({
         centered
         visible={openOption}
         onOk={() => {
+          const { error, errorCurrent } = checkErrorQuotations(quotations);
+          if (error) {
+            message.error(
+              `The format for quotations error. Please Check for the record "${
+                errorCurrent.quantity
+              } : ${displayCurrency(errorCurrent.price)}"`
+            );
+            return;
+          }
           supplierRegisterProduct({
             productId: (currentProductSelected || {}).id,
             description: quotations,
@@ -206,8 +219,7 @@ const SupplierProductComponent = ({
                       pageSize,
                       pageIndex
                     });
-                  }
-                  else {
+                  } else {
                     setLoading(true);
                     getProductForSupplier({
                       category: category,
