@@ -455,7 +455,7 @@ export const checkErrorQuotations = (quotations = []) => {
     const currentQuotation = quotations[i];
     const nextQuotation = quotations[i + 1];
     const { minPrice } = getRange(currentCheck, currentQuotation.quantity);
-    if (currentQuotation.quantity === nextQuotation.quantity) {
+    if (nextQuotation && currentQuotation.quantity === nextQuotation.quantity) {
       error = true;
       errorCurrent = nextQuotation;
       break;

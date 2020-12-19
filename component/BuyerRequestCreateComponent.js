@@ -391,7 +391,6 @@ const BuyerRequestCreateComponent = ({
       resetData();
     };
   }, [createRequestError, resetData]);
-  console.log({ duplicateData });
 
   const onFinish = (values) => {
     values.productId = productId + '';
