@@ -8,7 +8,7 @@ class SignalR {
     this.serverSignalR = API_SERVER_URL;
     this.connection = new HubConnectionBuilder()
       .withUrl(`${API_SERVER_URL}/${hubDomain}`, {
-        transport: HttpTransportType.LongPolling,
+        // transport: HttpTransportType.LongPolling,
         accessTokenFactory: () => {
           return `${getToken()}`;
         }
@@ -32,14 +32,12 @@ class SignalR {
 
   async onListen(eventName, callback) {
     if (this.connection && this.connection.connectionStarted) {
-      console.log({ eventName });
       this.connection.on(eventName, (data) => {
         typeof callback === 'function' && callback(data);
       });
     } else {
       const connectionTimer = setInterval(() => {
         if (this.connection && this.connection.connectionStarted) {
-          console.log({ eventNameTimeOut: eventName });
           this.connection.on(eventName, (data) => {
             typeof callback === 'function' && callback(data);
           });

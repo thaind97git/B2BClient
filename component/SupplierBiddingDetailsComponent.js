@@ -7,7 +7,8 @@ import {
   Tag,
   Typography,
   Modal,
-  Button
+  Button,
+  message
 } from 'antd';
 import { ExclamationCircleOutlined, LeftOutlined } from '@ant-design/icons';
 import { ADMIN, SUPPLIER } from '../enums/accountRoles';
@@ -151,8 +152,11 @@ const SupplierBiddingDetailsComponent = ({
           new Date(getUtcTime(auctionDetailsData.auctionStartTime)).getTime() +
             1000 * 60 * history?.actualDuration
         );
-        if (minimumDuration !== history.actualDuration) {
+        if (auctionDetailsData?.actualDuration !== history.actualDuration) {
           setIsAnimation(true);
+          message.warn(
+            `This auction has new bid inside dynamic closing. The duration time will added ${auctionDetailsData?.dynamicClosePeriod} Minutes`
+          );
         }
       }
     });
@@ -198,34 +202,6 @@ const SupplierBiddingDetailsComponent = ({
         </div>
         {reverseAuctionStatus?.id === B_ACTIVE ? (
           <div style={{ position: 'relative' }}>
-            {/* <Tag color="blue">
-            {reverseAuctionStatus?.id === B_ACTIVE ? (
-              <Fragment>
-                <Row align="middle">
-                  <Title style={{ fontWeight: 500, marginBottom: 0 }} level={5}>
-                    Time Remaining:{' '}
-                  </Title>
-                  <span>&nbsp;</span>
-                  {deadline && (
-                    <Countdown title="" value={deadline} onFinish={onFinish} />
-                  )}
-                </Row>
-                {isAnimation ? (
-                  <AnimationTime time={dynamicClosePeriod} />
-                ) : null}
-              </Fragment>
-            ) : reverseAuctionStatus?.id === B_FUTURE ? (
-              <Title style={{ fontWeight: 500, marginBottom: 0 }} level={5}>
-                Event has not started yet!
-              </Title>
-            ) : (
-              [B_DONE, B_CLOSED].includes(reverseAuctionStatus?.id) && (
-                <Title style={{ fontWeight: 500, marginBottom: 0 }} level={5}>
-                  Event has been closed!
-                </Title>
-              )
-            )}
-          </Tag> */}
             <Tag color="blue">
               <Row align="middle">
                 <Title style={{ fontWeight: 500, marginBottom: 0 }} level={5}>
