@@ -73,6 +73,8 @@ const AggregatorDashBoardComponent = ({
   resetDataGroup
 }) => {
   const [loading, setLoading] = useState(true);
+  const [totalGroup, setTotalGroup] = useState(0);
+  const [totalAuction, setTotalAuction] = useState(0);
 
   useEffect(() => {
     setLoading(true);
@@ -91,6 +93,14 @@ const AggregatorDashBoardComponent = ({
       groupStatictic ||
       groupStaticticError
     ) {
+      const totalGroup = (groupStatictic || []).reduce((prev, current) => {
+        return prev + current?.total;
+      }, 0);
+      const totalAuction = (auctionStatictic || []).reduce((prev, current) => {
+        return prev + current?.total;
+      }, 0);
+      setTotalGroup(totalGroup);
+      setTotalAuction(totalAuction);
       setLoading(false);
     }
   }, [
@@ -201,7 +211,11 @@ const AggregatorDashBoardComponent = ({
           style={{ width: '98%' }}
           bordered={false}
         >
-          <Row justify="center">
+          <Row align="middle">
+            <Col span={24}>
+              {totalGroup > 0 ? <Title level={4}>Total groups you manage of this month: {totalGroup}</Title> : ''}
+            </Col>
+            <Col span={24} align="middle">
             {groupStatictic ? (
               groupStatictic.length === 0 ? (
                 <Empty description="No group created in this month"></Empty>
@@ -211,6 +225,7 @@ const AggregatorDashBoardComponent = ({
             ) : (
               <Empty description="No group created in this month"></Empty>
             )}
+            </Col>
           </Row>
         </Card>
       </Col>
@@ -232,7 +247,11 @@ const AggregatorDashBoardComponent = ({
           style={{ width: '98%' }}
           bordered={false}
         >
-          <Row justify="center">
+          <Row align="middle">
+            <Col span={24}>
+              {totalAuction > 0 ? <Title level={4}>Total auctions you hold of this month: {totalAuction}</Title> : ''}
+            </Col>
+            <Col span={24} align="middle">
             {auctionStatictic ? (
               auctionStatictic.length === 0 ? (
                 <Empty description="No auction of this month"></Empty>
@@ -242,6 +261,7 @@ const AggregatorDashBoardComponent = ({
             ) : (
               <Empty description="No auction of this month"></Empty>
             )}
+            </Col>
           </Row>
         </Card>
       </Col>
