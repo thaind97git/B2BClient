@@ -257,9 +257,12 @@ export const getBadgeAuctionLabel = (
   let text = 'A next few days';
   const auctionTime = new Date(auctionStartTime);
   const currentTime = new Date();
-  const dateBetween = auctionTime.getDate() - currentTime.getDate();
-  const hoursBetween = auctionTime.getHours() - currentTime.getHours();
-  const minutesBetween = auctionTime.getMinutes() - currentTime.getMinutes();
+  const duration = moment.duration(
+    moment(auctionTime).diff(moment(currentTime))
+  );
+  const dateBetween = duration.asDays();
+  const hoursBetween = duration.asHours();
+  const minutesBetween = duration.asMinutes();
   if (isClosed) {
     const getLabelByStatus = (status) => {
       switch (status) {
