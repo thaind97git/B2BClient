@@ -36,6 +36,8 @@ import {
   USER_UPDATE_ACCOUNT
 } from './UserState';
 
+import { CREATE_NEW_AGGREGATOR } from './BuyerState';
+
 export default {
   displayNotify(state = {}, { type, payload = {} }) {
     const { name } = payload;
@@ -129,6 +131,9 @@ export default {
           break;
         case UPDATE_CATEGORY:
           msgNotify = 'Update category successfully';
+          break;
+        case CREATE_NEW_AGGREGATOR:
+          msgNotify = 'Create new aggregator successfully';
           break;
         default:
           break;
@@ -224,6 +229,9 @@ export default {
           break;
         case UPDATE_CATEGORY:
           msgNotify = 'Update category fail';
+          break;
+        case CREATE_NEW_AGGREGATOR:
+          msgNotify = 'Create new aggregator fail';
           break;
         default:
           break;

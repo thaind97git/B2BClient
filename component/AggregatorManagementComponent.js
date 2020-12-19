@@ -280,6 +280,9 @@ const AggregatorManagementComponent = ({
           ) : null}
         </Drawer>
         <Title level={4}>Aggregator Management</Title>
+        <Button onClick={() => {}} type="primary">
+          <a href="/admin/aggregator/create">Create new aggregator</a>
+        </Button>
       </Row>
       <ReactTableLayout
         totalCount={totalCount}
