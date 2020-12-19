@@ -241,7 +241,7 @@ const SupplierBiddingItemComponent = ({
               )}
               {!closed &&
                 !isInvitation &&
-                new Date(auctionStartTime) <= new Date(Date.now()) && (
+                reverseAuctionStatus?.id === B_ACTIVE && (
                   <Space>
                     <Button
                       style={styles.buttonAction}
