@@ -7,6 +7,7 @@ import {
   REMOVE_SUPPLIER_AUCTION,
   RESPONSE_AUCTION_INVITATION
 } from './AuctionState';
+import { ADD_NEW_CATEGORY, UPDATE_CATEGORY } from './CategoryState';
 import { UPDATE_FEEDBACK_RATE } from './FeedbackState';
 import {
   ADD_REQUEST_TO_GROUP,
@@ -123,6 +124,12 @@ export default {
         case USER_UPDATE_ACCOUNT:
           msgNotify = 'Update account successfully';
           break;
+        case ADD_NEW_CATEGORY:
+          msgNotify = 'Add new category successfully';
+          break;
+        case UPDATE_CATEGORY:
+          msgNotify = 'Update category successfully';
+          break;
         default:
           break;
       }
@@ -211,6 +218,12 @@ export default {
           break;
         case USER_UPDATE_ACCOUNT:
           msgNotify = 'Update account failed';
+          break;
+        case ADD_NEW_CATEGORY:
+          msgNotify = 'Add new category fail';
+          break;
+        case UPDATE_CATEGORY:
+          msgNotify = 'Update category fail';
           break;
         default:
           break;

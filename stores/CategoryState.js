@@ -121,3 +121,20 @@ export const createCategory = (object, callback) =>
 export const CreateCategoryData = CreateCategoryAPI.dataSelector;
 export const CreateCategoryError = CreateCategoryAPI.errorSelector;
 export const CreateCategoryResetter = getResetter(CreateCategoryAPI);
+
+// Update Category
+const UpdateCategoryAPI = makeFetchAction(UPDATE_CATEGORY, (object) =>
+  nfetch({
+    endpoint: '/api/Category',
+    method: 'PUT'
+  })(object)
+);
+
+export const updateCategory = (object, callback) =>
+  respondToSuccess(UpdateCategoryAPI.actionCreator(object), () => {
+    typeof callback === 'function' && callback();
+  });
+
+export const UpdateCategoryData = UpdateCategoryAPI.dataSelector;
+export const UpdateCategoryError = UpdateCategoryAPI.errorSelector;
+export const UpdateCategoryResetter = getResetter(UpdateCategoryAPI);

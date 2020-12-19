@@ -1,28 +1,13 @@
-import {
-  Col,
-  Divider,
-  Row,
-  Typography,
-  List,
-  Space,
-  Button,
-  Skeleton,
-  Modal,
-  Input,
-  Checkbox
-} from 'antd';
-import { LeftOutlined } from '@ant-design/icons';
-import React, { Fragment, useEffect, useState } from 'react';
+import { Col, Divider, Row, List, Button, Skeleton, Modal } from 'antd';
+import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 import {
   childCategoryDataSelector,
   childCategoryErrorSelector,
-  createCategory,
   CreateCategoryData,
   getCategoryById,
   GetCategoryByIdDataSelector,
-  GetCategoryByIdResetter,
   getChildCategory,
   getChildCategoryResetter,
   getParentCategory,
@@ -30,9 +15,9 @@ import {
   parentCategoryDataSelector,
   parentCategoryErrorSelector
 } from '../stores/CategoryState';
-import { openNotification } from '../utils';
 import AllCategoryComponent from './AllCategoryComponent';
-import { get } from 'lodash/fp';
+import CategoryUpdateComponent from './CategoryUpdateComponent';
+import CategoryAddNewComponent from './CategoryAddNewComponent';
 
 const connectToRedux = connect(
   createStructuredSelector({
@@ -48,50 +33,23 @@ const connectToRedux = connect(
     getChildCategory: (id) => dispatch(getChildCategory(id)),
     resetParent: () => dispatch(getParentCategoryResetter),
     resetChild: () => dispatch(getChildCategoryResetter),
-    createCategory: ({ name, parentId, isItem }, callback) =>
-      dispatch(
-        createCategory(
-          {
-            description: name,
-            parentCategoryId: parentId,
-            isItem
-          },
-          callback
-        )
-      ),
-    getCategoryById: (id) => dispatch(getCategoryById(id)),
-    resetDetails: () => dispatch(GetCategoryByIdResetter)
+    getCategoryById: (id) => dispatch(getCategoryById(id))
   })
 );
 const CategoryManagementComponent = ({
   parentCategoryData,
   getParentCategory,
   resetChild,
-  resetParent,
   getChildCategory,
   childCategoryData,
-  createCategory,
-  createCategoryData,
   parentCategoryError,
-  childCategoryError,
-  categoryDetails,
-  getCategoryById,
-  resetDetails
+  childCategoryError
 }) => {
   const [currentCategoryData, setCurrentCategoryData] = useState([]);
   const [firstTime, setFirstTime] = useState(true);
   const [loading, setLoading] = useState(true);
   const [openCreate, setOpenCreate] = useState(false);
   const [openUpdate, setOpenUpdate] = useState(false);
-  const [category, setCategory] = useState('');
-  const [isItem, setIsItem] = useState(false);
-  const [categoryUpdate, setCategoryUpdate] = useState(
-    get('[0].description')(categoryDetails)
-  );
-  const [isItemUpdate, setIsItemUpdate] = useState(
-    get('[0].isItem')(categoryDetails)
-  );
-
   const [categoryId, setCategoryId] = useState(null);
   const [categoryLabel, setCategoryLabel] = useState('Root Category');
   const [categoryLastLabel, setCategoryLastLabel] = useState('Root Category');
@@ -103,14 +61,6 @@ const CategoryManagementComponent = ({
       setFirstTime(false);
     }
   }, [getParentCategory, firstTime]);
-
-  useEffect(() => {
-    if (createCategoryData) {
-      setOpenCreate(false);
-      setCategory('');
-      setIsItem(false);
-    }
-  }, [createCategoryData]);
 
   useEffect(() => {
     if (parentCategoryData) {
@@ -140,27 +90,6 @@ const CategoryManagementComponent = ({
     }
   }, [getChildCategory, categoryId, getParentCategory]);
 
-  useEffect(() => {
-    if (categoryIdUpdate) {
-      getCategoryById(categoryIdUpdate);
-    }
-  }, [categoryIdUpdate, getCategoryById]);
-  useEffect(() => {
-    console.log({
-      categoryDetails,
-      x: get('[0].description')(categoryDetails),
-      y: get('[0].isItem')(categoryDetails)
-    });
-  }, [categoryDetails]);
-
-  useEffect(() => {
-    if (!openUpdate) {
-      resetDetails();
-      setCategoryUpdate('');
-      setIsItemUpdate(false);
-    }
-  }, [openUpdate, resetDetails]);
-
   return (
     <div>
       <Modal
@@ -168,96 +97,35 @@ const CategoryManagementComponent = ({
           categoryLastLabel || 'Root Category'
         }`}
         visible={openCreate}
-        onOk={() => {
-          if (!category) {
-            openNotification('error', {
-              message: 'Please input the category name'
-            });
-            return;
-          }
-          createCategory(
-            {
-              name: category,
-              parentId: categoryId,
-              isItem
-            },
-            () => {
+        footer={false}
+      >
+        {openCreate ? (
+          <CategoryAddNewComponent
+            setOpenAdd={setOpenCreate}
+            onCallbackSuccess={() => {
               if (categoryId) {
                 getChildCategory(categoryId);
               } else {
                 getParentCategory();
               }
-            }
-          );
-        }}
-        onCancel={() => {
-          setOpenCreate(false);
-        }}
-      >
-        <Input
-          value={category}
-          onChange={(event) => setCategory(event.target.value)}
-          placeholder="Enter the category name"
-        />
-        <Checkbox
-          checked={isItem}
-          style={{ marginTop: 24 }}
-          onChange={(e) => {
-            setIsItem(e.target.checked);
-          }}
-        >
-          Is last category
-        </Checkbox>
+            }}
+            parentCategoryId={categoryId}
+          />
+        ) : null}
       </Modal>
-      <Modal
-        title={`Update category`}
-        visible={openUpdate}
-        onOk={() => {
-          if (!category) {
-            openNotification('error', {
-              message: 'Please input the category name'
-            });
-            return;
-          }
-          console.log(categoryUpdate);
-          // createCategory(
-          //   {
-          //     name: category,
-          //     parentId: categoryId,
-          //     isItem
-          //   },
-          //   () => {
-          //     if (categoryId) {
-          //       getChildCategory(categoryId);
-          //     } else {
-          //       getParentCategory();
-          //     }
-          //   }
-          // );
-        }}
-        onCancel={() => {
-          setOpenUpdate(false);
-        }}
-      >
-        {openUpdate && categoryDetails ? (
-          <Fragment>
-            <Input
-              defaultValue={get('[0].description')(categoryDetails)}
-              value={categoryUpdate}
-              onChange={(event) => setCategoryUpdate(event.target.value)}
-              placeholder="Enter the category name"
-            />
-            <Checkbox
-              defaultChecked={get('[0].isItem')(categoryDetails)}
-              // checked={isItem}
-              style={{ marginTop: 24 }}
-              onChange={(e) => {
-                setIsItemUpdate(e.target.checked);
-              }}
-            >
-              Is last category
-            </Checkbox>
-          </Fragment>
+      <Modal footer={false} title={`Update category`} visible={openUpdate}>
+        {openUpdate ? (
+          <CategoryUpdateComponent
+            onCallbackSuccess={() => {
+              if (categoryId) {
+                getChildCategory(categoryId);
+              } else {
+                getParentCategory();
+              }
+            }}
+            setOpenDetails={setOpenUpdate}
+            categoryId={categoryIdUpdate}
+          />
         ) : null}
       </Modal>
       <Row justify="center" align="middle">
@@ -269,7 +137,6 @@ const CategoryManagementComponent = ({
             style={{ width: '100%' }}
             onGetLastValue={(value) => {
               resetChild();
-              // resetParent();
               setCategoryId(value);
             }}
             onGetLabel={(value) => setCategoryLabel(value)}
