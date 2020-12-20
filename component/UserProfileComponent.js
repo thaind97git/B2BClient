@@ -458,6 +458,7 @@ const UserProfileComponent = ({
                 >
                   <Input
                     autoComplete="old-password"
+                    minLength={6}
                     size="large"
                     prefix={<LockOutlined className="site-form-item-icon" />}
                     type="password"
@@ -478,6 +479,7 @@ const UserProfileComponent = ({
                 >
                   <Input
                     autoComplete="new-password"
+                    minLength={6}
                     size="large"
                     prefix={<LockOutlined className="site-form-item-icon" />}
                     type="password"
@@ -499,6 +501,7 @@ const UserProfileComponent = ({
                 >
                   <Input
                     autoComplete="re-password"
+                    minLength={6}
                     size="large"
                     prefix={<LockOutlined className="site-form-item-icon" />}
                     type="password"

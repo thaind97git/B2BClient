@@ -33,7 +33,9 @@ import {
   USER_LOGIN,
   USER_REGISTER,
   USER_UPDATE_PASSWORD,
-  USER_UPDATE_ACCOUNT
+  USER_UPDATE_ACCOUNT,
+  USER_UPDATE_PASSWORD_BY_CODE,
+  USER_ACTIVE_CODE
 } from './UserState';
 
 import { CREATE_NEW_AGGREGATOR } from './BuyerState';
@@ -142,6 +144,12 @@ export default {
         case UPDATE_CONFIG_SETTING:
           msgNotify = 'Update configs setting successfully';
           break;
+        case USER_UPDATE_PASSWORD_BY_CODE:
+          msgNotify = 'Update password successfully';
+          break;
+        case USER_ACTIVE_CODE:
+          msgNotify = 'Send active code successfully';
+          break;
         default:
           break;
       }
@@ -242,6 +250,12 @@ export default {
           break;
         case UPDATE_CONFIG_SETTING:
           msgNotify = 'Update configs setting fail';
+          break;
+        case USER_UPDATE_PASSWORD_BY_CODE:
+          msgNotify = 'Update password fail';
+          break;
+        case USER_ACTIVE_CODE:
+          msgNotify = 'Send active code fail';
           break;
         default:
           break;

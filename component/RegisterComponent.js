@@ -190,6 +190,7 @@ const RegisterComponent = ({ userRegisterError, registerUser, resetData }) => {
                 <Input.Password
                   minLength={6}
                   autoComplete="new-password"
+                  minLength={6}
                   size="large"
                   prefix={<LockOutlined className="site-form-item-icon" />}
                   placeholder="Please set login password"
@@ -220,6 +221,7 @@ const RegisterComponent = ({ userRegisterError, registerUser, resetData }) => {
               >
                 <Input.Password
                   autoComplete="new-password"
+                  minLength={6}
                   size="large"
                   prefix={<LockOutlined className="site-form-item-icon" />}
                   placeholder="Please confirm your password"

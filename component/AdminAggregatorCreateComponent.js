@@ -169,6 +169,7 @@ const AdminAggregatorCreateComponent = ({ createAggregator, resetData }) => {
                 >
                   <Input.Password
                     autoComplete="new-password"
+                    minLength={6}
                     size="large"
                     prefix={<LockOutlined className="site-form-item-icon" />}
                     placeholder="Please set the aggregator's login password"
@@ -201,6 +202,7 @@ const AdminAggregatorCreateComponent = ({ createAggregator, resetData }) => {
                 >
                   <Input.Password
                     autoComplete="new-password"
+                    minLength={6}
                     size="large"
                     prefix={<LockOutlined className="site-form-item-icon" />}
                     placeholder="Please confirm the aggregator's password"
