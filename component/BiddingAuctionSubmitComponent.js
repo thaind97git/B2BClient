@@ -15,7 +15,7 @@ import { displayCurrency } from '../utils';
 import { connect } from 'react-redux';
 import { placeNewBid, PlaceNewBidData } from '../stores/AuctionState';
 import { createStructuredSelector } from 'reselect';
-import { useEffect } from 'react/cjs/react.development';
+import { useEffect } from 'react';
 const connectToRedux = connect(
   createStructuredSelector({
     placeBidData: PlaceNewBidData
