@@ -212,19 +212,25 @@ const AggregatorDashBoardComponent = ({
           bordered={false}
         >
           <Row align="middle">
-            <Col span={24}>
-              {totalGroup > 0 ? <Title level={4}>Total groups you manage of this month: {totalGroup}</Title> : ''}
-            </Col>
             <Col span={24} align="middle">
-            {groupStatictic ? (
-              groupStatictic.length === 0 ? (
-                <Empty description="No group created in this month"></Empty>
+              {groupStatictic ? (
+                groupStatictic.length === 0 ? (
+                  <Empty description="No group created in this month"></Empty>
+                ) : (
+                  G2Plot && <G2Plot.Pie {...configRequest} />
+                )
               ) : (
-                G2Plot && <G2Plot.Pie {...configRequest} />
-              )
-            ) : (
-              <Empty description="No group created in this month"></Empty>
-            )}
+                <Empty description="No group created in this month"></Empty>
+              )}
+            </Col>
+            <Col span={24}>
+              {totalGroup > 0 ? (
+                <Title level={4}>
+                  Total groups you manage of this month: {totalGroup}
+                </Title>
+              ) : (
+                ''
+              )}
             </Col>
           </Row>
         </Card>
@@ -248,19 +254,25 @@ const AggregatorDashBoardComponent = ({
           bordered={false}
         >
           <Row align="middle">
-            <Col span={24}>
-              {totalAuction > 0 ? <Title level={4}>Total auctions you hold of this month: {totalAuction}</Title> : ''}
-            </Col>
             <Col span={24} align="middle">
-            {auctionStatictic ? (
-              auctionStatictic.length === 0 ? (
-                <Empty description="No auction of this month"></Empty>
+              {auctionStatictic ? (
+                auctionStatictic.length === 0 ? (
+                  <Empty description="No auction of this month"></Empty>
+                ) : (
+                  G2Plot && <G2Plot.Pie {...configAuction} />
+                )
               ) : (
-                G2Plot && <G2Plot.Pie {...configAuction} />
-              )
-            ) : (
-              <Empty description="No auction of this month"></Empty>
-            )}
+                <Empty description="No auction of this month"></Empty>
+              )}
+            </Col>
+            <Col span={24}>
+              {totalAuction > 0 ? (
+                <Title level={4}>
+                  Total auctions you hold of this month: {totalAuction}
+                </Title>
+              ) : (
+                ''
+              )}
             </Col>
           </Row>
         </Card>

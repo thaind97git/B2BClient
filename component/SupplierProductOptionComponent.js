@@ -70,6 +70,7 @@ const EditableCell = ({
 
   let childNode = children;
   if (editable) {
+    
     childNode = editing ? (
       <Form.Item
         style={{
@@ -88,6 +89,7 @@ const EditableCell = ({
           ref={inputRef}
           onPressEnter={save}
           onBlur={save}
+          min={dataIndex==="quantity"? 1:1000}
         />
       </Form.Item>
     ) : (

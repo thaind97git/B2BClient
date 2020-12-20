@@ -463,7 +463,7 @@ export const checkErrorQuotations = (quotations = []) => {
       errorCurrent = nextQuotation;
       break;
     }
-    if (currentQuotation.price < minPrice) {
+    if (currentQuotation.price <= minPrice) {
       error = true;
       errorCurrent = currentQuotation;
     }

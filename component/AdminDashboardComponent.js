@@ -233,9 +233,6 @@ const AdminDashBoardComponent = ({
           bordered={false}
         >
           <Row align="middle">
-            <Col span={24}>
-              {totalRFQ > 0 ? <Title level={4}>Total RFQs of this month: {totalRFQ}</Title> : ''}
-            </Col>
             <Col span={24} align="middle">
               {rfqStatictic ? (
                 rfqStatictic.length === 0 ? (
@@ -245,6 +242,13 @@ const AdminDashBoardComponent = ({
                 )
               ) : (
                 <Empty description="No RFQ of this month"></Empty>
+              )}
+            </Col>
+            <Col span={24}>
+              {totalRFQ > 0 ? (
+                <Title level={4}>Total RFQs of this month: {totalRFQ}</Title>
+              ) : (
+                ''
               )}
             </Col>
           </Row>
@@ -269,19 +273,25 @@ const AdminDashBoardComponent = ({
           bordered={false}
         >
           <Row align="middle">
-            <Col span={24}>
-              {totalAuction > 0 ? <Title level={4}>Total auctions of this month: {totalAuction}</Title> : ''}
-            </Col>
             <Col span={24} align="middle">
-            {auctionStatictic ? (
-              auctionStatictic.length === 0 ? (
-                <Empty description="No auction of this month"></Empty>
+              {auctionStatictic ? (
+                auctionStatictic.length === 0 ? (
+                  <Empty description="No auction of this month"></Empty>
+                ) : (
+                  G2Plot && <G2Plot.Pie {...configAuction} />
+                )
               ) : (
-                G2Plot && <G2Plot.Pie {...configAuction} />
-              )
-            ) : (
-              <Empty description="No auction of this month"></Empty>
-            )}
+                <Empty description="No auction of this month"></Empty>
+              )}
+            </Col>
+            <Col span={24}>
+              {totalAuction > 0 ? (
+                <Title level={4}>
+                  Total auctions of this month: {totalAuction}
+                </Title>
+              ) : (
+                ''
+              )}
             </Col>
           </Row>
         </Card>
