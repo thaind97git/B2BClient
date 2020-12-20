@@ -73,6 +73,8 @@ const AggregatorDashBoardComponent = ({
   resetDataGroup
 }) => {
   const [loading, setLoading] = useState(true);
+  const [totalGroup, setTotalGroup] = useState(0);
+  const [totalAuction, setTotalAuction] = useState(0);
 
   useEffect(() => {
     setLoading(true);
@@ -91,6 +93,14 @@ const AggregatorDashBoardComponent = ({
       groupStatictic ||
       groupStaticticError
     ) {
+      const totalGroup = (groupStatictic || []).reduce((prev, current) => {
+        return prev + current?.total;
+      }, 0);
+      const totalAuction = (auctionStatictic || []).reduce((prev, current) => {
+        return prev + current?.total;
+      }, 0);
+      setTotalGroup(totalGroup);
+      setTotalAuction(totalAuction);
       setLoading(false);
     }
   }, [
@@ -201,16 +211,27 @@ const AggregatorDashBoardComponent = ({
           style={{ width: '98%' }}
           bordered={false}
         >
-          <Row justify="center">
-            {groupStatictic ? (
-              groupStatictic.length === 0 ? (
-                <Empty description="No group created in this month"></Empty>
+          <Row align="middle">
+            <Col span={24} align="middle">
+              {groupStatictic ? (
+                groupStatictic.length === 0 ? (
+                  <Empty description="No group created in this month"></Empty>
+                ) : (
+                  G2Plot && <G2Plot.Pie {...configRequest} />
+                )
               ) : (
-                G2Plot && <G2Plot.Pie {...configRequest} />
-              )
-            ) : (
-              <Empty description="No group created in this month"></Empty>
-            )}
+                <Empty description="No group created in this month"></Empty>
+              )}
+            </Col>
+            <Col span={24}>
+              {totalGroup > 0 ? (
+                <Title level={4}>
+                  Total groups you manage of this month: {totalGroup}
+                </Title>
+              ) : (
+                ''
+              )}
+            </Col>
           </Row>
         </Card>
       </Col>
@@ -232,16 +253,27 @@ const AggregatorDashBoardComponent = ({
           style={{ width: '98%' }}
           bordered={false}
         >
-          <Row justify="center">
-            {auctionStatictic ? (
-              auctionStatictic.length === 0 ? (
-                <Empty description="No auction of this month"></Empty>
+          <Row align="middle">
+            <Col span={24} align="middle">
+              {auctionStatictic ? (
+                auctionStatictic.length === 0 ? (
+                  <Empty description="No auction of this month"></Empty>
+                ) : (
+                  G2Plot && <G2Plot.Pie {...configAuction} />
+                )
               ) : (
-                G2Plot && <G2Plot.Pie {...configAuction} />
-              )
-            ) : (
-              <Empty description="No auction of this month"></Empty>
-            )}
+                <Empty description="No auction of this month"></Empty>
+              )}
+            </Col>
+            <Col span={24}>
+              {totalAuction > 0 ? (
+                <Title level={4}>
+                  Total auctions you hold of this month: {totalAuction}
+                </Title>
+              ) : (
+                ''
+              )}
+            </Col>
           </Row>
         </Card>
       </Col>

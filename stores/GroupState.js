@@ -83,9 +83,10 @@ const AddSupplierToGroupAPI = makeFetchAction(
 export const addSupplierToGroup = ({ groupId, supplierIds, callback }) =>
   respondToSuccess(
     AddSupplierToGroupAPI.actionCreator({ groupId, supplierIds }),
-    (resp) => {
+    (resp, header, store) => {
       if (resp) {
         typeof callback === 'function' && callback();
+        store.dispatch(getGroupDetails(groupId));
       }
     }
   );
