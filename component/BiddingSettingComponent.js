@@ -26,7 +26,8 @@ import {
 } from '../stores/GroupState';
 import {
   createReverseAuction,
-  CreateReverseAuctionData
+  CreateReverseAuctionData,
+  CreateReverseAuctionResetter
 } from '../stores/AuctionState';
 const { Title } = Typography;
 const { Option } = Select;
@@ -39,7 +40,8 @@ const connectToRedux = connect(
   }),
   (dispatch) => ({
     getGroupDetails: (id) => dispatch(getGroupDetails(id)),
-    submitAuction: (values) => dispatch(createReverseAuction(values))
+    submitAuction: (values) => dispatch(createReverseAuction(values)),
+    resetSubmitAuction: () => dispatch(CreateReverseAuctionResetter)
   })
 );
 
@@ -95,7 +97,8 @@ const BiddingSettingComponent = ({
   groupDetailsData,
   groupDetailsError,
   submitAuction,
-  submitAuctionData
+  submitAuctionData,
+  resetSubmitAuction
 }) => {
   const [brief, setBrief] = useState(null);
   const [currentPrice, setCurrentPrice] = useState(0);
@@ -105,6 +108,12 @@ const BiddingSettingComponent = ({
   const [quantity, setQuantity] = useState(0);
   const router = useRouter();
   const { groupId } = router.query;
+
+  useEffect(() => {
+    return () => {
+      resetSubmitAuction();
+    };
+  }, [resetSubmitAuction]);
 
   useEffect(() => {
     if (groupId) {

@@ -5,7 +5,7 @@ import withAuth from '../../../component/HOC/AuthenHOC';
 
 function Page() {
   return (
-    <AdminLayout>
+    <AdminLayout hasBackground={false}>
       <AdminAggregatorCreateComponent />
     </AdminLayout>
   );

@@ -13,7 +13,8 @@ import {
   DashboardOutlined,
   BellOutlined,
   FileDoneOutlined,
-  UserSwitchOutlined
+  UserSwitchOutlined,
+  SettingOutlined
 } from '@ant-design/icons';
 import MemberNavComponent from '../component/MemberNavComponent';
 import { currentPath } from '../utils';
@@ -94,6 +95,12 @@ const ADMIN_MENU = [
     ),
     label: 'Feedback',
     link: '/admin/feedback'
+  },
+  {
+    key: '8',
+    icon: <SettingOutlined />,
+    label: 'Configs Setting',
+    link: '/admin/config-setting'
   }
 ];
 

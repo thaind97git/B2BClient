@@ -1,5 +1,5 @@
-import { Button, Input, Row, Space } from 'antd';
-import React, { Fragment, useEffect, useState } from 'react';
+import { Button, Input, message, Row, Space } from 'antd';
+import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 import {
@@ -8,10 +8,9 @@ import {
   GetCategoryByIdResetter,
   updateCategory,
   UpdateCategoryData,
-  UpdateCategoryError
+  UpdateCategoryError,
+  UpdateCategoryResetter
 } from '../stores/CategoryState';
-import { get } from 'lodash/fp';
-import { openNotification } from '../utils';
 
 const connectToRedux = connect(
   createStructuredSelector({
@@ -23,7 +22,8 @@ const connectToRedux = connect(
     getCategoryById: (id) => dispatch(getCategoryById(id)),
     resetDetails: () => dispatch(GetCategoryByIdResetter),
     updateCategory: ({ description, id }) =>
-      dispatch(updateCategory({ description, id }))
+      dispatch(updateCategory({ description, id })),
+    resetUpdateCategory: () => dispatch(UpdateCategoryResetter)
   })
 );
 const CategoryUpdateComponent = ({
@@ -34,14 +34,16 @@ const CategoryUpdateComponent = ({
   setOpenDetails,
   updateCategory,
   updateCategoryData,
-  onCallbackSuccess
+  onCallbackSuccess,
+  resetUpdateCategory
 }) => {
   const [category, setCategory] = useState();
   useEffect(() => {
     return () => {
       resetDetails();
+      resetUpdateCategory();
     };
-  }, [resetDetails]);
+  }, [resetDetails, resetUpdateCategory]);
 
   useEffect(() => {
     if (categoryId) {
@@ -77,9 +79,7 @@ const CategoryUpdateComponent = ({
           <Button
             onClick={() => {
               if (!category) {
-                openNotification('error', {
-                  message: 'Please input the category name'
-                });
+                message.error('Please input the category name');
                 return;
               }
               updateCategory({

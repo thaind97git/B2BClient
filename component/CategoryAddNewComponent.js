@@ -1,4 +1,4 @@
-import { Button, Input, Row, Space } from 'antd';
+import { Button, Input, message, Row, Space } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
@@ -64,9 +64,7 @@ const CategoryAddNewComponent = ({
           <Button
             onClick={() => {
               if (!category) {
-                openNotification('error', {
-                  message: 'Please input the category name'
-                });
+                message.error('Please input the category name');
                 return;
               }
               createCategory({

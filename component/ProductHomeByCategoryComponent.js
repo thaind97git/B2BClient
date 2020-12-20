@@ -74,12 +74,9 @@ const ProductHomeByCategoryComponent = ({
 
   const router = useRouter();
   const { categoryId, q: querySearch } = router.query;
-
   useEffect(() => {
-    if (categoryId || querySearch) {
-      getProductByCategory(categoryId, pageSize, pageIndex, querySearch);
-      setLoading(true);
-    }
+    getProductByCategory(categoryId, pageSize, pageIndex, querySearch);
+    setLoading(true);
   }, [pageIndex, getProductByCategory, categoryId, querySearch]);
   useEffect(() => {
     if (categoryId) {

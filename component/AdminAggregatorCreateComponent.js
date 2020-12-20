@@ -21,15 +21,10 @@ const styles = {
   titleStyle: { fontWeight: 500 }
 };
 
-const connectToRedux = connect(
-  createStructuredSelector({
-    
-  }),
-  (dispatch) => ({
-    createAggregator: (values) => dispatch(createNewAggregator(values)),
-    resetData: () => dispatch(CreateNewAggregatorResetter)
-  })
-);
+const connectToRedux = connect(createStructuredSelector({}), (dispatch) => ({
+  createAggregator: (values) => dispatch(createNewAggregator(values)),
+  resetData: () => dispatch(CreateNewAggregatorResetter)
+}));
 
 const AdminAggregatorCreateComponent = ({ createAggregator, resetData }) => {
   useEffect(() => {
@@ -44,7 +39,7 @@ const AdminAggregatorCreateComponent = ({ createAggregator, resetData }) => {
 
   return (
     <Row align="middle" justify="center">
-      <Col sm={24} md={12}>
+      <Col sm={24} md={18}>
         <Form
           autoComplete="new-password"
           className="register-form"

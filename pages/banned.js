@@ -23,7 +23,7 @@ const Exception500 = ({ seftError, getCurrentUser }) => {
   }, [getCurrentUser]);
   let message =
     'Your account have been banned. Please contact support for help.';
-  if (seftError && seftError.includes('banned')) {
+  if (seftError && (seftError?.errorMessage || '').includes('banned')) {
     message = seftError;
   }
   return (

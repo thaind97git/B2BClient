@@ -37,6 +37,10 @@ import {
 } from './UserState';
 
 import { CREATE_NEW_AGGREGATOR } from './BuyerState';
+import { get } from 'lodash/fp';
+import { UPDATE_CONFIG_SETTING } from './SettingState';
+
+const hasError = get('json.errorMessage');
 
 export default {
   displayNotify(state = {}, { type, payload = {} }) {
@@ -135,6 +139,9 @@ export default {
         case CREATE_NEW_AGGREGATOR:
           msgNotify = 'Create new aggregator successfully';
           break;
+        case UPDATE_CONFIG_SETTING:
+          msgNotify = 'Update configs setting successfully';
+          break;
         default:
           break;
       }
@@ -143,10 +150,10 @@ export default {
     } else if (type === ACTIONS.FAILURE) {
       switch (name) {
         case USER_LOGIN:
-          msgNotify = 'Login fail';
+          msgNotify = hasError(payload) || 'Login fail';
           break;
         case USER_REGISTER:
-          msgNotify = 'Register fail';
+          msgNotify = hasError(payload) || 'Register fail';
           break;
         case ADD_REQUEST_TO_GROUP:
           msgNotify = 'Add Request to Group fail';
@@ -232,6 +239,9 @@ export default {
           break;
         case CREATE_NEW_AGGREGATOR:
           msgNotify = 'Create new aggregator fail';
+          break;
+        case UPDATE_CONFIG_SETTING:
+          msgNotify = 'Update configs setting fail';
           break;
         default:
           break;

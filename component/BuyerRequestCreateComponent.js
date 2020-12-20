@@ -75,6 +75,7 @@ import {
   GetRequestDetailsDataSelector,
   GetRequestDetailsErrorSelector
 } from '../stores/RequestState';
+import { getConfigSetting, GetConfigSettingData } from '../stores/SettingState';
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -99,7 +100,8 @@ const connectToRedux = connect(
     createRequestError: CreateRequestError,
     requestDetailsData: GetRequestDetailsDataSelector,
     requestDetailsError: GetRequestDetailsErrorSelector,
-    duplicateData: CheckDuplicateData
+    duplicateData: CheckDuplicateData,
+    configSettingData: GetConfigSettingData
   }),
   (dispatch) => ({
     removeCategorySelected: () =>
@@ -119,6 +121,7 @@ const connectToRedux = connect(
     createRequest: (object) => dispatch(createRequest(object)),
     getRequestDetails: (id) => dispatch(getRequestDetails(id)),
     checkDuplicateRFQ: (productId) => dispatch(checkDuplicate(productId)),
+    getConfigSetting: () => dispatch(getConfigSetting()),
     resetData: () => {
       dispatch(GetSourcingTypeResetter);
       dispatch(GetSourcingPurposeResetter);
@@ -150,7 +153,8 @@ const PriceInput = ({
   onChange,
   price,
   setPrice,
-  currencyData = []
+  currencyData = [],
+  maxPrice
 }) => {
   const currency = ((currencyData && currencyData[0]) || {}).id;
 
@@ -184,6 +188,7 @@ const PriceInput = ({
         placeholder="Enter the preferred unit price"
         onChange={onNumberChange}
         min={0}
+        max={maxPrice}
         style={{ width: '50%' }}
         formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
         parser={(value) => value.replace(/,*/g, '')}
@@ -200,7 +205,12 @@ const PriceInput = ({
   );
 };
 
-const QuantityInput = ({ value = {}, onChange, unitOfMeasure }) => {
+const QuantityInput = ({
+  value = {},
+  onChange,
+  unitOfMeasure,
+  maxQuantity
+}) => {
   const number = null;
   const triggerChange = (changedValue) => {
     if (onChange) {
@@ -231,7 +241,7 @@ const QuantityInput = ({ value = {}, onChange, unitOfMeasure }) => {
         onChange={onNumberChange}
         style={{ width: '50%' }}
         min={0}
-        max={1000000}
+        max={maxQuantity}
         placeholder="Enter the product quantity"
       />
       <Input
@@ -313,14 +323,31 @@ const BuyerRequestCreateComponent = ({
   resetData,
   isUpdate = false,
   checkDuplicateRFQ,
-  duplicateData
+  duplicateData,
+  getConfigSetting,
+  configSettingData
 }) => {
   const [price, setPrice] = useState(0);
   const router = useRouter();
   const [loadingRFQ, setLoadingRFQ] = useState(false);
   const [form] = Form.useForm();
   const [openConfirm, setOpenConfirm] = useState(false);
+  const [maxPrice, setMaxPrice] = useState(1000000000);
+  const [maxQuantity, setMaxQuantity] = useState(1000000);
+
   let productId = router.query.productId;
+
+  useEffect(() => {
+    getConfigSetting();
+  }, [getConfigSetting]);
+
+  useEffect(() => {
+    if (!!configSettingData) {
+      setMaxPrice(configSettingData?.maxPrice);
+      setMaxQuantity(configSettingData?.maxQuantity);
+    }
+  }, [configSettingData]);
+
   useEffect(() => {
     if (productId) {
       checkDuplicateRFQ(productId);
@@ -364,24 +391,11 @@ const BuyerRequestCreateComponent = ({
     }
   }, [getProductDetails, productId]);
 
-  // useEffect(() => {
-  //   if (!!requestId) {
-  //     getRequestDetails(requestId);
-  //     setLoadingRFQ(true);
-  //   }
-  // }, [getRequestDetails, requestId]);
-
   useEffect(() => {
     if (productDetailsData || productDetailsError) {
       setLoadingRFQ(false);
     }
   }, [productDetailsError, productDetailsData]);
-
-  // useEffect(() => {
-  //   if (requestDetailsError || requestDetailsData) {
-  //     setLoadingRFQ(false);
-  //   }
-  // }, [requestDetailsData, requestDetailsError]);
 
   useEffect(() => {
     if (!!createRequestError) {
@@ -572,6 +586,7 @@ const BuyerRequestCreateComponent = ({
                       ]}
                     >
                       <QuantityInput
+                        maxQuantity={maxQuantity}
                         unitOfMeasure={get('unitOfMeasure')(productDetailsData)}
                       />
                     </FormItem>
@@ -599,6 +614,7 @@ const BuyerRequestCreateComponent = ({
                       ]}
                     >
                       <PriceInput
+                        maxPrice={maxPrice}
                         price={price}
                         setPrice={setPrice}
                         currencyData={currencyData}

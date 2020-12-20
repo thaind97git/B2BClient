@@ -15,7 +15,7 @@ import { createLink } from '../libs';
 import TabsLayout from '../layouts/TabsLayout';
 import GroupRequestDetailsTabComponent from './GroupRequestDetailsTabComponent';
 import GroupRequestSuppliersTabComponent from './GroupRequestSuppliersTabComponent';
-import { G_NEGOTIATING, G_PENDING } from '../enums/groupStatus';
+import { G_PENDING } from '../enums/groupStatus';
 
 const { Title } = Typography;
 
@@ -111,7 +111,7 @@ const GroupRequestDetailsComponent = ({
         <Space>
           <Button
             disabled={
-              groupStatus.id !== G_NEGOTIATING && groupStatus.id !== G_PENDING || groupDetailsData?.quantity === 0
+              groupStatus.id !== G_PENDING || groupDetailsData?.quantity === 0
             }
             danger
             type="primary"

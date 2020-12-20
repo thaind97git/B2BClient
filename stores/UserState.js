@@ -22,8 +22,8 @@ export const checkMessageLogin = (errorSelector) => {
   console.log({ errorSelector });
   if (
     errorSelector &&
-    isString(errorSelector) &&
-    errorSelector.includes('banned')
+    isString(errorSelector?.errorMessage) &&
+    errorSelector?.errorMessage.includes('banned')
   ) {
     Router.push('/banned');
   }
@@ -200,14 +200,13 @@ const UserUpdatePasswordAPI = makeFetchAction(
     nfetch({
       endpoint: '/api/Account/Password',
       method: 'PUT'
-    })({ oldPassword: oldPassword, newPassword:newPassword })
+    })({ oldPassword: oldPassword, newPassword: newPassword })
 );
 
 export const userUpdatePassword = ({ oldPassword, newPassword }) =>
   respondToSuccess(
     UserUpdatePasswordAPI.actionCreator({ oldPassword, newPassword }),
-    (resp) => {
-    }
+    (resp) => {}
   );
 export const UserUpdatePasswordData = UserUpdatePasswordAPI.dataSelector;
 export const UserUpdatePasswordError = UserUpdatePasswordAPI.errorSelector;
