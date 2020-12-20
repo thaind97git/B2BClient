@@ -31,7 +31,7 @@ const RefreshPasswordComponent = ({ updatePassword, userUpdateError, resetData }
     const router = useRouter();
     const email = router.query.email;
     const onFinish = (values) => {
-        let object = {email:email,password:values.newPassword,code:values.activeCode};
+        let object = {email:email,password:values.password,code:values.activeCode};
         console.log(object);
         updatePassword(object);
     };
@@ -48,82 +48,106 @@ const RefreshPasswordComponent = ({ updatePassword, userUpdateError, resetData }
     }, [userUpdateError]);
 
     return (
-        <Form
-            name="normal_login"
-            className="login-form"
-            initialValues={{
-                remember: true,
-            }}
-            autoComplete="new-password"
-            onFinish={onFinish}
+      <Form
+        name="normal_login"
+        className="login-form"
+        autoComplete="new-password"
+        onFinish={onFinish}
+      >
+        <div className="label" style={{ color: 'green' }}>
+          We sent an email with Refesh Code to your account!
+        </div>
+        <br />
+        <div className="label">
+          <span style={{ color: 'red' }}>*</span> Code
+        </div>
+        <FormItem
+          name="activeCode"
+          rules={[
+            {
+              required: true,
+              message: 'Please enter your active code'
+            }
+          ]}
         >
-            <div className="label" style={{ color: "green" }}>
-                We sent an email with Refesh Code to your account!
-                </div>
-            <br />
-            <div className="label" >
-                <span style={{ color: "red" }}>*</span> Code
-                </div>
-            <FormItem
-                name="activeCode"
-                rules={[
-                    {
-                        required: true,
-                        message: "Please enter your active code",
-                    },
-                ]}
-            >
-                <Input size="large" prefix={<UserOutlined />} placeholder="Type your code received from your email" />
-            </FormItem>
-            <div className="label" >
-                <span style={{ color: "red" }}>*</span> New Password
-                </div>
-            <FormItem
-                name="newPassword"
-                rules={[
-                    {
-                        required: true,
-                        message: "Please enter your new password",
-                    },
-                ]}
-            >
-                <Input size="large" prefix={<UserOutlined />} placeholder="Type your password" />
-            </FormItem>
-            <div className="label" >
-                <span style={{ color: "red" }}>*</span> Re-password
-                </div>
-            <FormItem
-                name="rePassword"
-                rules={[
-                    {
-                        required: true,
-                        message: "Please enter your re-password",
-                    },
-                ]}
-            >
-                <Input size="large" prefix={<UserOutlined />} placeholder="Type your password again" />
-            </FormItem>
+          <Input
+            size="large"
+            type="password"
+            prefix={<UserOutlined />}
+            placeholder="Type your code received from your email"
+          />
+        </FormItem>
+        <div className="label">
+          <span style={{ color: 'red' }}>*</span> New Password
+        </div>
+        <FormItem
+          name="password"
+          rules={[
+            {
+              required: true,
+              message: 'Please enter your new password'
+            }
+          ]}
+        >
+          <Input.Password
+            autoComplete="new-password"
+            size="large"
+            prefix={<UserOutlined />}
+            minLength={6}
+            placeholder="Type your password"
+          />
+        </FormItem>
+        <div className="label">
+          <span style={{ color: 'red' }}>*</span> Re-password
+        </div>
+        <FormItem
+          name="re-password"
+          rules={[
+            {
+              required: true,
+              message: 'Please enter your re-password'
+            },
+            ({ getFieldValue }) => ({
+              validator(rule, value) {
+                if (!value || getFieldValue('password') === value) {
+                  return Promise.resolve();
+                }
+                return Promise.reject(
+                  'The two passwords that you entered do not match!'
+                );
+              }
+            })
+          ]}
+        >
+          <Input.Password
+            autoComplete="new-password"
+            size="large"
+            minLength={6}
+            prefix={<UserOutlined />}
+            placeholder="Please confirm your password"
+          />
+        </FormItem>
 
-            <FormItem>
-                <Button
-                    size="large"
-                    type="primary"
-                    htmlType="submit"
-                    className="login-form-button"
-                >
-                    Next
-                </Button>
-            </FormItem>
-            <FormItem>
-                <div className="other">
-                    Don't have an account? Sign-up here
-                    <br />
-                    <Link className="register" href="/register">
-                        SIGN-UP
-                    </Link>
-                </div>
-            </FormItem>
-        </Form>
+        <FormItem>
+          <Button
+            size="large"
+            type="primary"
+            htmlType="submit"
+            className="login-form-button"
+          >
+            Next
+          </Button>
+        </FormItem>
+        <FormItem>
+          <div className="other">
+            Don't have an account? Sign-up here
+            <br />
+            <Link className="register" href="/register">
+              SIGN-UP
+            </Link>
+          </div>
+        </FormItem>
+      </Form>
     );
 };
 export default enhance(RefreshPasswordComponent);
