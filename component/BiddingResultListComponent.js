@@ -13,7 +13,7 @@ import {
 import { get } from 'lodash/fp';
 import moment from 'moment';
 import ScrollToBottom from 'react-scroll-to-bottom';
-import { B_CLOSED, B_FAILED, B_FUTURE } from '../enums/biddingStatus';
+import { B_CLOSED } from '../enums/biddingStatus';
 const { Panel } = Collapse;
 const { Link } = Typography;
 
@@ -114,6 +114,7 @@ const BiddingResultListComponent = ({
   const [biddingHistory, setBiddingHistory] = useState([]);
   const [result, setResult] = useState({});
   const [firstTime, setFirstTime] = useState(true);
+  const [newHistory, setNewHistory] = useState(null);
   useEffect(() => {
     if (auction && firstTime) {
       const { id } = auction;
@@ -153,25 +154,32 @@ const BiddingResultListComponent = ({
   }, [biddingHistory, firstTime, auction.currentPrice]);
 
   useEffect(() => {
-    signalR.onListen('NewBid', (history) => {
-      console.log('----------');
-      console.log('[Aggregator] Received new bid');
-      console.log('----------');
-      if (
-        history &&
-        history.price &&
-        biddingHistory &&
-        biddingHistory.length > 0
+    if (!!newHistory) {
+      const lastHistory = !!biddingHistory
+        ? biddingHistory?.[biddingHistory?.length - 1]
+        : null;
+      if (!lastHistory) {
+        console.log('Empty history');
+        setBiddingHistory([newHistory]);
+      } else if (
+        lastHistory.reverseAuctionHistoryId !==
+          newHistory.reverseAuctionHistoryId &&
+        newHistory.reverseAuctionId === auction.id
       ) {
-        if (
-          biddingHistory[biddingHistory.length - 1].reverseAuctionHistoryId !==
-            history.reverseAuctionHistoryId &&
-          history.reverseAuctionId === auction.id
-        ) {
-          const cloneHistory = [...biddingHistory];
-          cloneHistory.push(history);
-          setBiddingHistory([...cloneHistory]);
-        }
+        const cloneHistory = [...biddingHistory];
+        setBiddingHistory([...cloneHistory, newHistory]);
+      }
+      setNewHistory(null);
+      console.log('-----End-----');
+    }
+  }, [newHistory, setNewHistory]);
+
+  useEffect(() => {
+    signalR.onListen('NewBid', (history) => {
+      console.log('-----Start-----');
+      console.log('[Aggregator] Received new bid ');
+      if (!!history) {
+        setNewHistory(history);
       }
     });
   }, []);

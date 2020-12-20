@@ -54,9 +54,6 @@ const BiddingAuctionComponent = ({
 
   const [biddingHistory, setBiddingHistory] = useState([]);
   const [lowestBid, setLowestBid] = useState(0);
-  const [isFirstTime, setIsFirstTime] = useState(true);
-
-  // const [newHistory, setNewHistory] = useState(null);
 
   useEffect(() => {
     return () => {
@@ -110,17 +107,6 @@ const BiddingAuctionComponent = ({
       setNewHistory(null);
     }
   }, [newHistory, setNewHistory]);
-
-  // useEffect(() => {
-  //   signalR.onListen('NewBid', (history) => {
-  //     console.log('----------');
-  //     console.log('[Supplier] Received new bid');
-  //     if (!!history?.price) {
-  //       console.log('Have new price: ', history.price);
-  //       setNewHistory(history);
-  //     }
-  //   });
-  // }, [signalR]);
 
   if (!auction) {
     return null;
