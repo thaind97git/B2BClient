@@ -45,8 +45,10 @@ const BiddingAuctionComponent = ({
   getAuctionHistory,
   auctionHistoryData,
   isAggregator = false,
-  signalR,
-  resetHistory
+  // signalR,
+  resetHistory,
+  newHistory,
+  setNewHistory
 }) => {
   const [totalLot, setTotalLot] = useState(0);
 
@@ -54,7 +56,7 @@ const BiddingAuctionComponent = ({
   const [lowestBid, setLowestBid] = useState(0);
   const [isFirstTime, setIsFirstTime] = useState(true);
 
-  const [newHistory, setNewHistory] = useState(null);
+  // const [newHistory, setNewHistory] = useState(null);
 
   useEffect(() => {
     return () => {
@@ -88,6 +90,7 @@ const BiddingAuctionComponent = ({
 
   useEffect(() => {
     if (!!newHistory) {
+      console.log('-----Start Child-----');
       console.log('Have new history ');
       const lastHistory = !!biddingHistory
         ? biddingHistory?.[biddingHistory?.length - 1]
@@ -103,19 +106,21 @@ const BiddingAuctionComponent = ({
         const cloneHistory = [...biddingHistory];
         setBiddingHistory([...cloneHistory, newHistory]);
       }
-
+      console.log('-----End Child-----');
       setNewHistory(null);
     }
-  }, [newHistory]);
+  }, [newHistory, setNewHistory]);
 
-  useEffect(() => {
-    signalR.onListen('NewBid', (history) => {
-      if (!!history?.price) {
-        console.log('Have new price: ', history.price);
-        setNewHistory(history);
-      }
-    });
-  }, [signalR]);
+  // useEffect(() => {
+  //   signalR.onListen('NewBid', (history) => {
+  //     console.log('----------');
+  //     console.log('[Supplier] Received new bid');
+  //     if (!!history?.price) {
+  //       console.log('Have new price: ', history.price);
+  //       setNewHistory(history);
+  //     }
+  //   });
+  // }, [signalR]);
 
   if (!auction) {
     return null;

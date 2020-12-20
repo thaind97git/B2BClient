@@ -114,7 +114,6 @@ const BiddingResultListComponent = ({
   const [biddingHistory, setBiddingHistory] = useState([]);
   const [result, setResult] = useState({});
   const [firstTime, setFirstTime] = useState(true);
-  console.log({ auction });
   useEffect(() => {
     if (auction && firstTime) {
       const { id } = auction;
@@ -155,6 +154,9 @@ const BiddingResultListComponent = ({
 
   useEffect(() => {
     signalR.onListen('NewBid', (history) => {
+      console.log('----------');
+      console.log('[Aggregator] Received new bid');
+      console.log('----------');
       if (
         history &&
         history.price &&
@@ -172,7 +174,7 @@ const BiddingResultListComponent = ({
         }
       }
     });
-  }, [biddingHistory, auction.id]);
+  }, []);
   return (
     <Row style={{ width: '100%' }}>
       <Collapse
