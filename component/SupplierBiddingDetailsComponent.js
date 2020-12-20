@@ -149,7 +149,7 @@ const SupplierBiddingDetailsComponent = ({
     signalR.onListen('NewBid', (history) => {
       if (history.actualDuration) {
         setDeadLine(
-          new Date(getUtcTime(auctionDetailsData.auctionStartTime)).getTime() +
+          new Date(getUtcTime(auctionDetailsData?.auctionStartTime)).getTime() +
             1000 * 60 * history?.actualDuration
         );
         if (auctionDetailsData?.actualDuration !== history.actualDuration) {
