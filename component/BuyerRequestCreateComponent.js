@@ -589,7 +589,7 @@ const BuyerRequestCreateComponent = ({
                       label={
                         <span>
                           <span style={{ color: 'red' }}>*</span> Preferred Unit
-                          Price:
+                          Price
                         </span>
                       }
                       rules={[

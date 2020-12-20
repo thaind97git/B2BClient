@@ -33,48 +33,49 @@ const getRecordHistory = ({ auctionData = [], isAggregator = false, unit }) => {
   );
 };
 
-const BiddingAuctionHistoryAllComponent = React.memo(
-  ({ isAggregator, biddingHistory = [], unitOfMeasure = {} }) => {
-    return (
-      <Collapse
-        bordered={false}
-        defaultActiveKey={['1']}
-        expandIcon={({ isActive }) => (
-          <CaretRightOutlined rotate={isActive ? 90 : 0} />
-        )}
-        className="site-collapse-custom-collapse"
+const BiddingAuctionHistoryAllComponent = ({
+  isAggregator,
+  biddingHistory = [],
+  unitOfMeasure = {}
+}) => {
+  return (
+    <Collapse
+      bordered={false}
+      defaultActiveKey={['1']}
+      expandIcon={({ isActive }) => (
+        <CaretRightOutlined rotate={isActive ? 90 : 0} />
+      )}
+      className="site-collapse-custom-collapse"
+    >
+      <Panel
+        header="Live Reverse Auction Feed"
+        key="1"
+        className="site-collapse-custom-panel"
       >
-        <Panel
-          header="Live Reverse Auction Feed"
-          key="1"
-          className="site-collapse-custom-panel"
-        >
-          {biddingHistory && biddingHistory.length > 0 ? (
-            <ScrollToBottom>
-              <div style={{ height: 200 }}>
-                <List
-                  size="small"
-                  dataSource={
-                    getRecordHistory({
-                      auctionData: biddingHistory,
-                      isAggregator,
-                      unit: unitOfMeasure.description
-                    }) || []
-                  }
-                  renderItem={(item) => <List.Item>{item}</List.Item>}
-                />
-              </div>
-            </ScrollToBottom>
-          ) : (
-            <p>
-              The Live Auction Feed will provide real-time notifications of
-              messages and changes to the auction settings
-            </p>
-          )}
-        </Panel>
-      </Collapse>
-    );
-  }
-);
-
+        {biddingHistory && biddingHistory.length > 0 ? (
+          <ScrollToBottom>
+            <div style={{ height: 200 }}>
+              <List
+                size="small"
+                dataSource={
+                  getRecordHistory({
+                    auctionData: biddingHistory,
+                    isAggregator,
+                    unit: unitOfMeasure.description
+                  }) || []
+                }
+                renderItem={(item) => <List.Item>{item}</List.Item>}
+              />
+            </div>
+          </ScrollToBottom>
+        ) : (
+          <p>
+            The Live Auction Feed will provide real-time notifications of
+            messages and changes to the auction settings
+          </p>
+        )}
+      </Panel>
+    </Collapse>
+  );
+};
 export default BiddingAuctionHistoryAllComponent;
