@@ -1,4 +1,9 @@
-import { HubConnectionBuilder, HttpTransportType } from '@microsoft/signalr';
+import {
+  HubConnectionBuilder,
+  HttpTransportType,
+  JsonHubProtocol,
+  LogLevel
+} from '@microsoft/signalr';
 import { getToken } from './localStorage';
 const API_SERVER_URL =
   process.env.API_SERVER_URL || 'https://api.negotium.space';
@@ -8,11 +13,13 @@ class SignalR {
     this.serverSignalR = API_SERVER_URL;
     this.connection = new HubConnectionBuilder()
       .withUrl(`${API_SERVER_URL}/${hubDomain}`, {
-        // transport: HttpTransportType.LongPolling,
+        transport: HttpTransportType.LongPolling,
         accessTokenFactory: () => {
           return `${getToken()}`;
         }
       })
+      .withHubProtocol(new JsonHubProtocol())
+      .configureLogging(LogLevel.Information)
       .withAutomaticReconnect()
       .build();
   }

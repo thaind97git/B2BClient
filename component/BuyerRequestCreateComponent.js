@@ -271,7 +271,7 @@ const LeadTimeInput = ({ value = {}, onChange }) => {
   return (
     <span>
       Ship in <span>&nbsp;</span>
-      <InputNumber onChange={onNumberChange} min={0} style={{ width: 100 }} />
+      <InputNumber onChange={onNumberChange} min={1} style={{ width: 100 }} />
       <span>&nbsp;</span>
       day(s) after supplier receives the initial payment
     </span>
@@ -399,7 +399,7 @@ const BuyerRequestCreateComponent = ({
     values.dueDate = new Date(values.dueDate);
     values.currencyId = get('[0].id')(currencyData) || 1;
     values.certifications = values.certifications || [];
-    values.leadTime = values.leadTime.number;
+    values.leadTime = values?.leadTime?.number;
     createRequest(values);
   };
 

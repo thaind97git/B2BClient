@@ -120,6 +120,9 @@ const SupplierBiddingDetailsComponent = ({
   const [isAnimation, setIsAnimation] = useState(false);
   const { id: auctionId } = router.query;
   const [isEnd, setIsEnd] = useState(false);
+
+  const [newHistory, setNewHistory] = useState(null);
+
   useEffect(() => {
     if (auctionId && firstTime) {
       getAuctionDetails(auctionId);
@@ -146,24 +149,38 @@ const SupplierBiddingDetailsComponent = ({
   }, [auctionDetailsData]);
 
   useEffect(() => {
-    signalR.onListen('NewBid', (history) => {
-      if (history.actualDuration) {
+    if (!!newHistory) {
+      if (newHistory.actualDuration) {
         setDeadLine(
-          new Date(getUtcTime(auctionDetailsData.auctionStartTime)).getTime() +
-            1000 * 60 * history?.actualDuration
+          new Date(getUtcTime(auctionDetailsData?.auctionStartTime)).getTime() +
+            1000 * 60 * newHistory?.actualDuration
         );
-        if (auctionDetailsData?.actualDuration !== history.actualDuration) {
+        if (
+          !!auctionDetailsData &&
+          auctionDetailsData?.actualDuration !== newHistory.actualDuration
+        ) {
           setIsAnimation(true);
           message.warn(
             `This auction has new bid inside dynamic closing. The duration time will added ${auctionDetailsData?.dynamicClosePeriod} Minutes`
           );
         }
       }
+    }
+  }, [newHistory]);
+
+  useEffect(() => {
+    signalR.onListen('NewBid', (history) => {
+      console.log('-----Start root-----');
+      console.log('[Supplier - root] Received new bid');
+      if (!!history) {
+        setNewHistory(history);
+      }
+      console.log('-----End root-----');
     });
     return () => {
       signalR.stopConnection();
     };
-  }, [auctionDetailsData, minimumDuration]);
+  }, []);
   useEffect(() => {
     signalR.onListen('AuctionClosed', (id) => {
       if (id === auctionDetailsData?.id) {
@@ -261,8 +278,10 @@ const SupplierBiddingDetailsComponent = ({
           key="3"
         >
           <BiddingAuctionComponent
-            signalR={signalR}
+            newHistory={newHistory}
+            // signalR={signalR}
             auction={auctionDetailsData}
+            setNewHistory={setNewHistory}
           />
         </TabPane>
       </Tabs>

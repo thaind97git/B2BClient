@@ -260,9 +260,9 @@ export const getBadgeAuctionLabel = (
   const duration = moment.duration(
     moment(auctionTime).diff(moment(currentTime))
   );
-  const dateBetween = duration.asDays();
-  const hoursBetween = duration.asHours();
-  const minutesBetween = duration.asMinutes();
+  const dateBetween = Math.floor(duration.asDays());
+  const hoursBetween = Math.floor(duration.asHours());
+  const minutesBetween = Math.floor(duration.asMinutes());
   if (isClosed) {
     const getLabelByStatus = (status) => {
       switch (status) {
