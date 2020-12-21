@@ -25,6 +25,7 @@ import {
   DATE_TIME_FORMAT,
   DEFAULT_DATE_RANGE,
   DEFAULT_PAGING_INFO,
+  getUtcTime,
   timeConvert
 } from '../utils';
 import AllCategoryComponent from './AllCategoryComponent';
@@ -132,7 +133,9 @@ const AdminBiddingManagementComponent = ({
           name: auctionName,
           duration: timeConvert(minimumDuration),
           dateStart: (
-            <Moment format={DATE_TIME_FORMAT}>{auctionStartTime}</Moment>
+            <Moment format={DATE_TIME_FORMAT}>
+              {getUtcTime(auctionStartTime)}
+            </Moment>
           ),
           createdBy: `${aggregator.firstName} ${aggregator.lastName}`,
           status: <BiddingStatusComponent status={reverseAuctionStatus.id} />,

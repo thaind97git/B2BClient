@@ -1,7 +1,12 @@
 import React, { Fragment } from 'react';
 import { Card, Col, Empty, Row } from 'antd';
 import Moment from 'react-moment';
-import { DATE_TIME_FORMAT, displayCurrency, timeConvert } from '../utils';
+import {
+  DATE_TIME_FORMAT,
+  displayCurrency,
+  getUtcTime,
+  timeConvert
+} from '../utils';
 const { Meta } = Card;
 const BiddingOverviewComponent = ({ isSupplier = true, auction }) => {
   if (!auction) {
@@ -109,7 +114,9 @@ const BiddingOverviewComponent = ({ isSupplier = true, auction }) => {
               <Col span={24}>
                 Auction Start Time:{' '}
                 <span className="info">
-                  <Moment format={DATE_TIME_FORMAT}>{auctionStartTime}</Moment>
+                  <Moment format={DATE_TIME_FORMAT}>
+                    {getUtcTime(auctionStartTime)}
+                  </Moment>
                 </span>
               </Col>
               <Col span={24}>

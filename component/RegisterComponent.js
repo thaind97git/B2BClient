@@ -148,6 +148,7 @@ const RegisterComponent = ({ userRegisterError, registerUser, resetData }) => {
                 ]}
               >
                 <Input
+                  minLength={20}
                   size="large"
                   prefix={<UserOutlined className="site-form-item-icon" />}
                   placeholder="Please enter your first name"
@@ -166,6 +167,7 @@ const RegisterComponent = ({ userRegisterError, registerUser, resetData }) => {
                 ]}
               >
                 <Input
+                  minLength={20}
                   size="large"
                   prefix={<UserOutlined className="site-form-item-icon" />}
                   placeholder="Please enter your last name"
