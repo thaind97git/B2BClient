@@ -264,7 +264,7 @@ const RequestDetailsComponent = ({
         />
       )}
       <Col style={{ padding: '12px 0px' }} span={24}>
-        Status: <RequestStatusComponent status={requestStatus.id} />
+        Status: <RequestStatusComponent status={requestStatus?.id} />
       </Col>
       {requestStatus.id === R_CANCELED && (
         <Col style={{ padding: '12px 0px' }} span={24}>
@@ -273,7 +273,7 @@ const RequestDetailsComponent = ({
       )}
       <Col style={{ padding: '12px 0px' }} span={24}>
         <Space>
-          {(getButtonActionsByStatus(requestStatus.id) || []).map(
+          {(getButtonActionsByStatus(requestStatus?.id) || []).map(
             (button, index) => (
               <Button
                 key={index}
@@ -296,27 +296,27 @@ const RequestDetailsComponent = ({
         title="Product Name"
         content={
           <a
-            href={`/product-details?id=${product.id}`}
+            href={`/product-details?id=${product?.id}`}
             target="_blank"
             rel="noreferrer"
           >
-            {product.description}
+            {product?.description}
           </a>
         }
       />
       <DescriptionItem
         title="Sourcing Type"
-        content={sourcingType.description}
+        content={sourcingType?.description}
       />
       <DescriptionItem
         title="Sourcing Purpose"
-        content={sourcingPurpose.description || 'N/A'}
+        content={sourcingPurpose?.description || 'N/A'}
       />
       <DescriptionItem
         title="Quantity"
-        content={`${quantity} ${product.unitType}`}
+        content={`${quantity} ${product?.unitType}`}
       />
-      <DescriptionItem title="Trade Term" content={tradeTerm.description} />
+      <DescriptionItem title="Trade Term" content={tradeTerm?.description} />
       <DescriptionItem
         title="Preferred Unit Price"
         content={displayCurrency(preferredUnitPrice)}
@@ -334,7 +334,7 @@ const RequestDetailsComponent = ({
         title="Certifications"
         content={certifications.map((cer, index) => (
           <Tag key={index} color="processing">
-            {cer.description}
+            {cer?.description}
           </Tag>
         ))}
       />
@@ -348,7 +348,7 @@ const RequestDetailsComponent = ({
       </Col>
       <DescriptionItem
         title="Shipping Method"
-        content={shippingMethod.description}
+        content={shippingMethod?.description}
       />
       <DescriptionItem
         title="Destination"

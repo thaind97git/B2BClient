@@ -395,6 +395,7 @@ const AdminRequestDrawerManagement = ({
             setOpenDetails={setOpenDetails}
             requestId={(currentRequestSelected || {}).id}
             isSupplier={false}
+            isAggregator={true}
           />
         ) : null}
       </Drawer>
