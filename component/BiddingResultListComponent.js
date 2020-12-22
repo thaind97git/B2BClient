@@ -2,13 +2,14 @@ import { Collapse, Row, Table, Typography, List, Button } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { CaretRightOutlined } from '@ant-design/icons';
 import { DATE_TIME_FORMAT, displayCurrency } from '../utils';
-import Router from 'next/router';
+import Router, { useRouter } from 'next/router';
 import SignalR from '../libs/signalR';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 import {
   GetAuctionHistoryData,
-  GetAuctionHistory
+  GetAuctionHistory,
+  getAuctionDetails
 } from '../stores/AuctionState';
 import { get } from 'lodash/fp';
 import moment from 'moment';
@@ -27,7 +28,8 @@ const connectToRedux = connect(
     auctionHistoryData: GetAuctionHistoryData
   }),
   (dispatch) => ({
-    getAuctionHistory: (id) => dispatch(GetAuctionHistory(id))
+    getAuctionHistory: (id) => dispatch(GetAuctionHistory(id)),
+    getAuctionDetails: (id) => dispatch(getAuctionDetails(id))
   })
 );
 
@@ -109,12 +111,16 @@ const BiddingResultListComponent = ({
   getAuctionHistory,
   auctionHistoryData,
   auction,
-  reverseAuctionId
+  reverseAuctionId,
+  getAuctionDetails
 }) => {
   const [biddingHistory, setBiddingHistory] = useState([]);
   const [result, setResult] = useState({});
   const [firstTime, setFirstTime] = useState(true);
   const [newHistory, setNewHistory] = useState(null);
+  const [isEnd, setIsEnd] = useState(false);
+  const router = useRouter();
+  const { id: auctionId } = router.query;
   useEffect(() => {
     if (auction && firstTime) {
       const { id } = auction;
@@ -183,6 +189,17 @@ const BiddingResultListComponent = ({
       }
     });
   }, []);
+  useEffect(() => {
+    signalR.onListen('AuctionClosed', (id) => {
+      if (id === auction?.id) {
+        setIsEnd(true);
+      }
+    });
+  }, [auction]);
+  if (isEnd) {
+    getAuctionDetails(auctionId);
+    setIsEnd(false);
+  }
   return (
     <Row style={{ width: '100%' }}>
       <Collapse

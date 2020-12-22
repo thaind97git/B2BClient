@@ -197,6 +197,7 @@ const SupplierBiddingDetailsComponent = ({
     Router.push('/supplier/bidding');
   }
   if (isEnd) {
+    getAuctionDetails(auctionId);
     Modal.info({
       keyboard: false,
       title: 'Reverse Auction has ended',
@@ -208,6 +209,7 @@ const SupplierBiddingDetailsComponent = ({
         Router.push('/supplier/bidding');
       }
     });
+    setIsEnd(false);
   }
   return (
     <div>

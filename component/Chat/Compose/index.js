@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Button, Input, Upload, message as Message } from 'antd';
 import { SendOutlined, PaperClipOutlined } from '@ant-design/icons';
 const { Search } = Input;
@@ -17,6 +17,11 @@ function Compose({ sendMessage }) {
       return file;
     });
 
+    const isLt5M = fileList?.[0]?.originFileObj.size / 1024 / 1024 < 5;
+    if (!isLt5M) {
+      Message.error('File must smaller than 5MB!');
+      return;
+    }
     setFile(fileList[0]);
   };
   const props = {
