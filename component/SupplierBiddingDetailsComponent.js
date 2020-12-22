@@ -66,13 +66,24 @@ const SupplierBiddingDetailsComponent = ({
 
   function onFinish() {
     console.log('finished!');
+    Modal.info({
+      keyboard: false,
+      title: 'Reverse Auction has ended',
+      icon: <ExclamationCircleOutlined />,
+      content: 'You will be notified for Order if you won this bid.',
+      okText: 'Go to bidding list',
+      cancelText: false,
+      onOk: () => {
+        Router.push('/supplier/bidding');
+      }
+    });
   }
 
-  useEffect(() => {
-    return () => {
-      resetAuctionDetails();
-    };
-  }, [resetAuctionDetails]);
+  // useEffect(() => {
+  //   return () => {
+  //     resetAuctionDetails();
+  //   };
+  // }, [resetAuctionDetails]);
   useEffect(() => {
     if (auctionId && firstTime) {
       getAuctionDetails(auctionId);
@@ -133,29 +144,30 @@ const SupplierBiddingDetailsComponent = ({
 
   useEffect(() => {
     signalR.onListen('AuctionClosed', (id) => {
+      console.log('Closed ne: ', id, auctionDetailsData?.id);
       if (id === auctionDetailsData?.id) {
         setIsEnd(true);
       }
     });
   }, [auctionDetailsData]);
 
-  useEffect(() => {
-    if (isEnd) {
-      getAuctionDetails(auctionId);
-      Modal.info({
-        keyboard: false,
-        title: 'Reverse Auction has ended',
-        icon: <ExclamationCircleOutlined />,
-        content: 'You will be notified for Order if you won this bid.',
-        okText: 'Go to bidding list',
-        cancelText: false,
-        onOk: () => {
-          Router.push('/supplier/bidding');
-        }
-      });
-      setIsEnd(false);
-    }
-  }, [isEnd]);
+  // useEffect(() => {
+  //   if (isEnd) {
+  //     getAuctionDetails(auctionId);
+  //     Modal.info({
+  //       keyboard: false,
+  //       title: 'Reverse Auction has ended',
+  //       icon: <ExclamationCircleOutlined />,
+  //       content: 'You will be notified for Order if you won this bid.',
+  //       okText: 'Go to bidding list',
+  //       cancelText: false,
+  //       onOk: () => {
+  //         Router.push('/supplier/bidding');
+  //       }
+  //     });
+  //     setIsEnd(false);
+  //   }
+  // }, [isEnd]);
 
   if (!auctionDetailsData) {
     return <Empty description="Can not find any event" />;

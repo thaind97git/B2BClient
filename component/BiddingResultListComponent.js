@@ -138,6 +138,17 @@ const BiddingResultListComponent = ({
   const [deadline, setDeadLine] = useState(null);
   function onFinish() {
     console.log('finished');
+    Modal.info({
+      keyboard: false,
+      title: 'Reverse Auction has ended',
+      icon: <ExclamationCircleOutlined />,
+      // content: 'Click  re',
+      okText: 'Refresh',
+      cancelText: false,
+      onOk: () => {
+        getAuctionDetails(auctionId);
+      }
+    });
   }
   useEffect(() => {
     if (auction && firstTime) {
@@ -224,29 +235,29 @@ const BiddingResultListComponent = ({
   }, []);
   useEffect(() => {
     signalR.onListen('AuctionClosed', (id) => {
+      console.log('Closed ne: ', id, auction?.id);
       if (id === auction?.id) {
         setIsEnd(true);
       }
     });
   }, [auction]);
 
-  useEffect(() => {
-    if (isEnd) {
-      getAuctionDetails(auctionId);
-      Modal.info({
-        keyboard: false,
-        title: 'Reverse Auction has ended',
-        icon: <ExclamationCircleOutlined />,
-        // content: 'Click  re',
-        okText: 'Refresh',
-        cancelText: false,
-        onOk: () => {
-          getAuctionDetails(auctionId);
-        }
-      });
-      setIsEnd(false);
-    }
-  }, [isEnd]);
+  // useEffect(() => {
+  //   if (isEnd) {
+  //     Modal.info({
+  //       keyboard: false,
+  //       title: 'Reverse Auction has ended',
+  //       icon: <ExclamationCircleOutlined />,
+  //       // content: 'Click  re',
+  //       okText: 'Refresh',
+  //       cancelText: false,
+  //       onOk: () => {
+  //         getAuctionDetails(auctionId);
+  //       }
+  //     });
+  //     setIsEnd(false);
+  //   }
+  // }, [isEnd]);
   return (
     <Row style={{ width: '100%' }}>
       <Row justify="end" style={{ width: '100%', marginBottom: 8 }}>
