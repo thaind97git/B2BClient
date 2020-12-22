@@ -1,14 +1,20 @@
-import React, { useEffect } from "react";
-import { Form, Input, Row, Col, Spin, Skeleton } from "antd";
-import { connect } from "react-redux";
-import { createStructuredSelector } from "reselect";
-import { createNewGroup, CreateNewGroupData } from "../stores/GroupState";
+import React, { useEffect } from 'react';
+import { Form, Input, Row, Col, Spin, Skeleton } from 'antd';
+import { connect } from 'react-redux';
+import { createStructuredSelector } from 'reselect';
+import { createNewGroup, CreateNewGroupData } from '../stores/GroupState';
 import {
   getProductDetails,
   GetProductDetailsData,
   GetProductDetailsError,
-  GetProductDetailsResetter,
-} from "../stores/ProductState";
+  GetProductDetailsResetter
+} from '../stores/ProductState';
+import {
+  getRequestPaging,
+  getRequestPagingByProduct
+} from '../stores/RequestState';
+import { DEFAULT_PAGING_INFO } from '../utils';
+import { R_PENDING } from '../enums/requestStatus';
 
 const FormItem = Form.Item;
 
@@ -16,29 +22,56 @@ const connectToRedux = connect(
   createStructuredSelector({
     createNewGroupData: CreateNewGroupData,
     productDetailsData: GetProductDetailsData,
-    productDetailsError: GetProductDetailsError,
+    productDetailsError: GetProductDetailsError
   }),
   (dispatch) => ({
-    createNewGroup: ({ groupName, requestIds, description }) =>
-      dispatch(createNewGroup({ groupName, requestIds, description })),
+    createNewGroup: ({ groupName, requestIds, description }, callback) =>
+      dispatch(
+        createNewGroup({ groupName, requestIds, description }, callback)
+      ),
     getProduct: (id) => dispatch(getProductDetails(id)),
     resetData: () => {
       dispatch(GetProductDetailsResetter);
     },
+    getRequestByProduct: (
+      pageIndex,
+      pageSize,
+      searchMessage,
+      dateRange,
+      status,
+      category,
+      productId
+    ) => {
+      if (!productId) {
+        return;
+      }
+      dispatch(
+        getRequestPagingByProduct({
+          pageSize,
+          pageIndex,
+          fromDate: dateRange.fromDate,
+          toDate: dateRange.toDate,
+          productTitle: searchMessage,
+          status,
+          category,
+          productId
+        })
+      );
+    }
   })
 );
 
 const styles = {
-  colStyle: { padding: "0 8px" },
-  titleStyle: { fontWeight: 500 },
+  colStyle: { padding: '0 8px' },
+  titleStyle: { fontWeight: 500 }
 };
 const formItemLayout = {
   labelCol: {
-    span: 24,
+    span: 24
   },
   wrapperCol: {
-    span: 24,
-  },
+    span: 24
+  }
 };
 const GroupCreateComponent = ({
   createNewGroupData,
@@ -50,6 +83,7 @@ const GroupCreateComponent = ({
   productDetailsError,
   requestIds = [],
   resetData,
+  getRequestByProduct
 }) => {
   useEffect(() => {
     if (!!createNewGroupData) {
@@ -72,7 +106,17 @@ const GroupCreateComponent = ({
   const onFinish = (values) => {
     values.requestIds = requestIds;
     console.log({ values });
-    createNewGroup(values);
+    createNewGroup(values, () =>
+      getRequestByProduct(
+        DEFAULT_PAGING_INFO.page,
+        DEFAULT_PAGING_INFO.pageSize,
+        '',
+        {},
+        [R_PENDING],
+        null,
+        productId
+      )
+    );
   };
 
   if (!productDetailsData || productDetailsError) {
@@ -89,7 +133,7 @@ const GroupCreateComponent = ({
           className="register-form"
           onFinish={onFinish}
           initialValues={{
-            productName: (productDetailsData || {}).productName,
+            productName: (productDetailsData || {}).productName
           }}
         >
           <Row align="middle">
@@ -100,8 +144,8 @@ const GroupCreateComponent = ({
                 rules={[
                   {
                     required: true,
-                    message: "Please enter the group name",
-                  },
+                    message: 'Please enter the group name'
+                  }
                 ]}
               >
                 <Input size="large" placeholder="Enter the group name" />
@@ -114,8 +158,8 @@ const GroupCreateComponent = ({
                 rules={[
                   {
                     required: true,
-                    message: "Please enter the product title",
-                  },
+                    message: 'Please enter the product title'
+                  }
                 ]}
               >
                 <Input.TextArea

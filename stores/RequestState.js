@@ -8,6 +8,7 @@ import { openNotification } from '../utils';
 
 const CREATE_REQUEST = 'CreateRequestAPI';
 const GET_REQUEST_PAGING = 'GetRequestPagingAPI';
+const GET_REQUEST_PAGING_BY_PRODUCT = 'GetRequestPagingByProductAPI';
 const GET_REQUEST_DETAILS = 'GetRequestDetailsAPI';
 export const CANCEL_REQUEST = 'CancelRequestAPI';
 export const REJECT_REQUEST = 'RejectRequestAPI';
@@ -106,6 +107,68 @@ export const getRequestPaging = ({
 export const GetRequestPagingData = GetRequestPagingAPI.dataSelector;
 export const GetRequestPagingError = GetRequestPagingAPI.errorSelector;
 export const GetRequestPagingResetter = getResetter(GetRequestPagingAPI);
+
+// Get Request Paging By Product
+const GetRequestPagingByProductAPI = makeFetchAction(
+  GET_REQUEST_PAGING_BY_PRODUCT,
+  ({
+    status = [],
+    productTitle,
+    fromDate,
+    toDate,
+    pageIndex,
+    pageSize,
+    category,
+    productId
+  }) => {
+    return nfetch({
+      endpoint: `/api/Request/Filter${generateQuery({
+        statuses: status,
+        productName: productTitle,
+        fromDate,
+        toDate,
+        pageIndex,
+        pageSize,
+        dateDescending: true,
+        categoryId: category,
+        productId
+      })}`,
+      method: 'GET'
+    })();
+  }
+);
+
+export const getRequestPagingByProduct = ({
+  status = [],
+  productTitle,
+  fromDate,
+  toDate,
+  pageIndex,
+  pageSize,
+  category,
+  productId
+}) =>
+  respondToSuccess(
+    GetRequestPagingByProductAPI.actionCreator({
+      status,
+      productTitle,
+      fromDate,
+      toDate,
+      pageIndex,
+      pageSize,
+      category,
+      productId
+    }),
+    () => {}
+  );
+
+export const GetRequestPagingByProductData =
+  GetRequestPagingByProductAPI.dataSelector;
+export const GetRequestPagingByProductError =
+  GetRequestPagingByProductAPI.errorSelector;
+export const GetRequestPagingByProductResetter = getResetter(
+  GetRequestPagingByProductAPI
+);
 
 // Get Request Canceled By User
 const GetRequestCanceledByUserAPI = makeFetchAction(

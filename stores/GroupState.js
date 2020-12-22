@@ -23,7 +23,10 @@ const CreateNewGroupAPI = makeFetchAction(
     })({ groupName, requestIds, description })
 );
 
-export const createNewGroup = ({ groupName, requestIds, description }) =>
+export const createNewGroup = (
+  { groupName, requestIds, description },
+  callback
+) =>
   respondToSuccess(
     CreateNewGroupAPI.actionCreator({ groupName, requestIds, description }),
     (resp, _, store) => {
@@ -38,6 +41,7 @@ export const createNewGroup = ({ groupName, requestIds, description }) =>
             pageSize: 10
           })
         );
+        typeof callback === 'function' && callback();
       }
     }
   );

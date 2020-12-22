@@ -17,14 +17,13 @@ import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 import {
   getRequestGroupBy,
-  getRequestPaging,
-  GetRequestPagingData,
-  GetRequestPagingError,
+  getRequestPagingByProduct,
+  GetRequestPagingByProductData,
+  GetRequestPagingByProductError,
   GetRequestPagingResetter
 } from '../stores/RequestState';
 import Moment from 'react-moment';
 import { get } from 'lodash/fp';
-import AllCategoryComponent from './AllCategoryComponent';
 import ListingGroupByProductComponent from './ListingGroupByProductComponent';
 import {
   addRequestToGroup,
@@ -37,15 +36,15 @@ import {
 import { CreateNewProductError } from '../stores/ProductState';
 const connectToRedux = connect(
   createStructuredSelector({
-    requestPagingData: GetRequestPagingData,
-    requestPagingError: GetRequestPagingError,
+    requestPagingData: GetRequestPagingByProductData,
+    requestPagingError: GetRequestPagingByProductError,
     addRequestData: AddRequestToGroupData,
     addRequestError: AddRequestToGroupError,
     createNewGroupData: CreateNewGroupData,
     createNewGroupError: CreateNewProductError
   }),
   (dispatch) => ({
-    getRequest: (
+    getRequestByProduct: (
       pageIndex,
       pageSize,
       searchMessage,
@@ -58,7 +57,7 @@ const connectToRedux = connect(
         return;
       }
       dispatch(
-        getRequestPaging({
+        getRequestPagingByProduct({
           pageSize,
           pageIndex,
           fromDate: dateRange.fromDate,
@@ -130,7 +129,7 @@ const statusFilter = [R_PENDING];
 const AdminRequestDrawerManagement = ({
   requestPagingData,
   requestPagingError,
-  getRequest,
+  getRequestByProduct,
   addRequest,
   addRequestData,
   createNewGroupData,
@@ -159,7 +158,7 @@ const AdminRequestDrawerManagement = ({
     if (addRequestData) {
       setOpenListGroup(false);
       setRecordSelected([]);
-      getRequest(
+      getRequestByProduct(
         DEFAULT_PAGING_INFO.page,
         DEFAULT_PAGING_INFO.pageSize,
         searchMessage,
@@ -185,7 +184,7 @@ const AdminRequestDrawerManagement = ({
       setOpenCreateGroup(false);
       setOpenListGroup(false);
       setRecordSelected([]);
-      getRequest(
+      getRequestByProduct(
         DEFAULT_PAGING_INFO.page,
         DEFAULT_PAGING_INFO.pageSize,
         searchMessage,
@@ -361,7 +360,7 @@ const AdminRequestDrawerManagement = ({
         </Button>
       </Row>
       <ReactTableLayout
-        dispatchAction={getRequest}
+        dispatchAction={getRequestByProduct}
         rowSelection={{
           type: 'checkbox',
           ...rowSelection
