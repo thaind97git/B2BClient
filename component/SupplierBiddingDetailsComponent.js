@@ -18,7 +18,8 @@ import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 import {
   getAuctionDetails,
-  GetAuctionDetailsData
+  GetAuctionDetailsData,
+  GetAuctionDetailsResetter
 } from '../stores/AuctionState';
 import Router, { useRouter } from 'next/router';
 import { getUtcTime } from '../utils';
@@ -33,16 +34,14 @@ import {
 const { TabPane } = Tabs;
 const { Countdown } = Statistic;
 const { Title } = Typography;
-function onFinish() {
-  console.log('finished!');
-}
 
 const connectToRedux = connect(
   createStructuredSelector({
     auctionDetailsData: GetAuctionDetailsData
   }),
   (dispatch) => ({
-    getAuctionDetails: (id) => dispatch(getAuctionDetails(id))
+    getAuctionDetails: (id) => dispatch(getAuctionDetails(id)),
+    resetAuctionDetails: () => dispatch(GetAuctionDetailsResetter)
   })
 );
 const signalR = new SignalR({
@@ -50,71 +49,13 @@ const signalR = new SignalR({
 });
 signalR.startConnection();
 
-const AnimationTime = ({ time }) => {
-  return (
-    <div style={{ position: 'absolute', top: 0, left: -46 }}>
-      <div style={{ position: 'relative' }}>
-        <span
-          style={{ color: 'green', fontSize: 28, position: 'relative' }}
-          className="flash"
-        >
-          + {time}
-        </span>
-      </div>
-      <style jsx>{`
-        .flash {
-          -webkit-animation: flash linear 1.5s;
-          animation: flash linear 1.5s;
-          animation-fill-mode: forwards;
-        }
-        @-webkit-keyframes flash {
-          0% {
-            opacity: 0;
-            bottom: 0px;
-          }
-          50% {
-            opacity: 0.5;
-            bottom: 10px;
-          }
-          90% {
-            opacity: 1;
-            bottom: 25px;
-          }
-          100% {
-            opacity: 0;
-            bottom: 25px;
-          }
-        }
-        @keyframes flash {
-          0% {
-            opacity: 0;
-            bottom: 0px;
-          }
-          50% {
-            opacity: 0.5;
-            bottom: 10px;
-          }
-          90% {
-            opacity: 1;
-            bottom: 25px;
-          }
-          100% {
-            opacity: 0;
-            bottom: 25px;
-          }
-        }
-      `}</style>
-    </div>
-  );
-};
-
 const SupplierBiddingDetailsComponent = ({
   role = SUPPLIER,
   auctionDetailsData,
-  getAuctionDetails
+  getAuctionDetails,
+  resetAuctionDetails
 }) => {
   const [firstTime, setFirstTime] = useState(true);
-  const [minimumDuration, setMinimumDuration] = useState(null);
   const [deadline, setDeadLine] = useState(null);
   const router = useRouter();
   const [isAnimation, setIsAnimation] = useState(false);
@@ -123,6 +64,15 @@ const SupplierBiddingDetailsComponent = ({
 
   const [newHistory, setNewHistory] = useState(null);
 
+  function onFinish() {
+    console.log('finished!');
+  }
+
+  useEffect(() => {
+    return () => {
+      resetAuctionDetails();
+    };
+  }, [resetAuctionDetails]);
   useEffect(() => {
     if (auctionId && firstTime) {
       getAuctionDetails(auctionId);
@@ -140,7 +90,6 @@ const SupplierBiddingDetailsComponent = ({
       auctionDetailsData.actualDuration &&
       auctionDetailsData.auctionStartTime
     ) {
-      setMinimumDuration(auctionDetailsData.minimumDuration);
       setDeadLine(
         new Date(getUtcTime(auctionDetailsData.auctionStartTime)).getTime() +
           1000 * 60 * auctionDetailsData.actualDuration
@@ -181,6 +130,7 @@ const SupplierBiddingDetailsComponent = ({
       signalR.stopConnection();
     };
   }, []);
+
   useEffect(() => {
     signalR.onListen('AuctionClosed', (id) => {
       if (id === auctionDetailsData?.id) {
@@ -188,6 +138,25 @@ const SupplierBiddingDetailsComponent = ({
       }
     });
   }, [auctionDetailsData]);
+
+  useEffect(() => {
+    if (isEnd) {
+      getAuctionDetails(auctionId);
+      Modal.info({
+        keyboard: false,
+        title: 'Reverse Auction has ended',
+        icon: <ExclamationCircleOutlined />,
+        content: 'You will be notified for Order if you won this bid.',
+        okText: 'Go to bidding list',
+        cancelText: false,
+        onOk: () => {
+          Router.push('/supplier/bidding');
+        }
+      });
+      setIsEnd(false);
+    }
+  }, [isEnd]);
+
   if (!auctionDetailsData) {
     return <Empty description="Can not find any event" />;
   }
@@ -195,21 +164,6 @@ const SupplierBiddingDetailsComponent = ({
     auctionDetailsData || {};
   if (isBeingRemoved || [B_CANCELED].includes(reverseAuctionStatus?.id)) {
     Router.push('/supplier/bidding');
-  }
-  if (isEnd) {
-    getAuctionDetails(auctionId);
-    Modal.info({
-      keyboard: false,
-      title: 'Reverse Auction has ended',
-      icon: <ExclamationCircleOutlined />,
-      content: 'You will be notified for Order if you won this bid.',
-      okText: 'Go to bidding list',
-      cancelText: false,
-      onOk: () => {
-        Router.push('/supplier/bidding');
-      }
-    });
-    setIsEnd(false);
   }
   return (
     <div>
@@ -232,7 +186,6 @@ const SupplierBiddingDetailsComponent = ({
                 )}
               </Row>
             </Tag>
-            {isAnimation ? <AnimationTime time={dynamicClosePeriod} /> : null}
           </div>
         ) : reverseAuctionStatus?.id === B_FUTURE ? (
           <Tag

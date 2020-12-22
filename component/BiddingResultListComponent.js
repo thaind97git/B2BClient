@@ -1,7 +1,20 @@
-import { Collapse, Row, Table, Typography, List, Button } from 'antd';
+import {
+  Collapse,
+  Row,
+  Table,
+  Typography,
+  List,
+  Button,
+  Col,
+  Tag,
+  Modal
+} from 'antd';
 import React, { useEffect, useState } from 'react';
-import { CaretRightOutlined } from '@ant-design/icons';
-import { DATE_TIME_FORMAT, displayCurrency } from '../utils';
+import {
+  CaretRightOutlined,
+  ExclamationCircleOutlined
+} from '@ant-design/icons';
+import { DATE_TIME_FORMAT, displayCurrency, getUtcTime } from '../utils';
 import Router, { useRouter } from 'next/router';
 import SignalR from '../libs/signalR';
 import { connect } from 'react-redux';
@@ -14,9 +27,10 @@ import {
 import { get } from 'lodash/fp';
 import moment from 'moment';
 import ScrollToBottom from 'react-scroll-to-bottom';
-import { B_CLOSED } from '../enums/biddingStatus';
+import { B_ACTIVE, B_CLOSED, B_DONE, B_FUTURE } from '../enums/biddingStatus';
+import Countdown from 'antd/lib/statistic/Countdown';
 const { Panel } = Collapse;
-const { Link } = Typography;
+const { Link, Title } = Typography;
 
 const signalR = new SignalR({
   hubDomain: 'reverseAuctionHub'
@@ -121,6 +135,10 @@ const BiddingResultListComponent = ({
   const [isEnd, setIsEnd] = useState(false);
   const router = useRouter();
   const { id: auctionId } = router.query;
+  const [deadline, setDeadLine] = useState(null);
+  function onFinish() {
+    console.log('finished');
+  }
   useEffect(() => {
     if (auction && firstTime) {
       const { id } = auction;
@@ -161,6 +179,12 @@ const BiddingResultListComponent = ({
 
   useEffect(() => {
     if (!!newHistory) {
+      if (newHistory.actualDuration) {
+        setDeadLine(
+          new Date(getUtcTime(auction?.auctionStartTime)).getTime() +
+            1000 * 60 * newHistory?.actualDuration
+        );
+      }
       const lastHistory = !!biddingHistory
         ? biddingHistory?.[biddingHistory?.length - 1]
         : null;
@@ -178,7 +202,16 @@ const BiddingResultListComponent = ({
       setNewHistory(null);
       console.log('-----End-----');
     }
-  }, [newHistory, setNewHistory]);
+  }, [newHistory]);
+
+  useEffect(() => {
+    if (auction && auction.actualDuration && auction.auctionStartTime) {
+      setDeadLine(
+        new Date(getUtcTime(auction.auctionStartTime)).getTime() +
+          1000 * 60 * auction.actualDuration
+      );
+    }
+  }, [auction]);
 
   useEffect(() => {
     signalR.onListen('NewBid', (history) => {
@@ -196,12 +229,58 @@ const BiddingResultListComponent = ({
       }
     });
   }, [auction]);
-  if (isEnd) {
-    getAuctionDetails(auctionId);
-    setIsEnd(false);
-  }
+
+  useEffect(() => {
+    if (isEnd) {
+      getAuctionDetails(auctionId);
+      Modal.info({
+        keyboard: false,
+        title: 'Reverse Auction has ended',
+        icon: <ExclamationCircleOutlined />,
+        // content: 'Click  re',
+        okText: 'Refresh',
+        cancelText: false,
+        onOk: () => {
+          getAuctionDetails(auctionId);
+        }
+      });
+      setIsEnd(false);
+    }
+  }, [isEnd]);
   return (
     <Row style={{ width: '100%' }}>
+      <Row justify="end" style={{ width: '100%', marginBottom: 8 }}>
+        <Col>
+          {auction?.reverseAuctionStatus?.id === B_ACTIVE ? (
+            <div style={{ position: 'relative' }}>
+              <Tag color="blue">
+                <Row align="middle">
+                  <Title style={{ fontWeight: 500, marginBottom: 0 }} level={5}>
+                    Time Remaining:{' '}
+                  </Title>
+                  <span>&nbsp;</span>
+                  {deadline && (
+                    <Countdown title="" value={deadline} onFinish={onFinish} />
+                  )}
+                </Row>
+              </Tag>
+            </div>
+          ) : auction?.reverseAuctionStatus?.id === B_FUTURE ? (
+            <Tag
+              style={{ display: 'flex', alignItems: 'center' }}
+              color="warning"
+            >
+              Event has not started yet!
+            </Tag>
+          ) : (
+            [B_DONE, B_CLOSED].includes(auction?.reverseAuctionStatus?.id) && (
+              <Tag style={{ display: 'flex', alignItems: 'center' }}>
+                Event has been closed!
+              </Tag>
+            )
+          )}
+        </Col>
+      </Row>
       <Collapse
         style={{ width: '100%', marginBottom: 40 }}
         bordered={false}
