@@ -104,15 +104,15 @@ const SupplierBiddingDetailsComponent = ({
           new Date(getUtcTime(auctionDetailsData?.auctionStartTime)).getTime() +
             1000 * 60 * newHistory?.actualDuration
         );
-        if (
-          !!auctionDetailsData &&
-          auctionDetailsData?.actualDuration !== newHistory.actualDuration
-        ) {
-          setIsAnimation(true);
-          message.warn(
-            `This auction has new bid inside dynamic closing. The duration time will added ${auctionDetailsData?.dynamicClosePeriod} Minutes`
-          );
-        }
+        // console.log({ auctionDetailsData, newHistory });
+        // if (
+        //   !!auctionDetailsData &&
+        //   auctionDetailsData?.actualDuration !== newHistory.actualDuration
+        // ) {
+        //   message.warn(
+        //     `This auction has new bid inside dynamic closing. The duration time will added ${auctionDetailsData?.dynamicClosePeriod} Minutes`
+        //   );
+        // }
       }
     }
   }, [newHistory]);
