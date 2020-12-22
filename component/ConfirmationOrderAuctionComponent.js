@@ -78,7 +78,6 @@ const groupRequestColumns = [
 ];
 
 const ConfirmationOrderAuctionComponent = ({
-  isNegotiating = false,
   winningData,
   getWinning,
   createOrder,
@@ -109,23 +108,7 @@ const ConfirmationOrderAuctionComponent = ({
     {
       title: 'Unit Price',
       dataIndex: 'productPrice',
-      key: 'productPrice',
-      render: (text) => {
-        return isNegotiating ? (
-          <InputNumber
-            readOnly
-            value={price}
-            style={{ width: 150 }}
-            min={0}
-            formatter={(value) =>
-              `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-            }
-            parser={(value) => value.replace(/,*/g, '')}
-          />
-        ) : (
-          text
-        );
-      }
+      key: 'productPrice'
     },
     {
       title: 'Total Quantity',
@@ -139,7 +122,7 @@ const ConfirmationOrderAuctionComponent = ({
   const PRODUCT_DETAIL = [
     {
       productName: product.description,
-      productPrice: isNegotiating ? price : displayCurrency(1170000),
+      productPrice: displayCurrency(price),
       totalQuantity: `${totalQuantity} ${unitOfMeasure}`
     }
   ];
@@ -259,10 +242,7 @@ const ConfirmationOrderAuctionComponent = ({
                 footer={() => (
                   <div align="right" style={{ height: '20px' }}>
                     <p style={{ color: '#199eb8', fontSize: 18 }}>
-                      Total{' '}
-                      {isNegotiating
-                        ? displayCurrency(price * quantity)
-                        : displayCurrency(257400000)}
+                      Total {displayCurrency(price * totalQuantity)}
                     </p>
                   </div>
                 )}
