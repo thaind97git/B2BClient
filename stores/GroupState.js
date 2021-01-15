@@ -11,8 +11,11 @@ export const ADD_REQUEST_TO_GROUP = 'AddRequestToGroupAPI';
 export const REMOVE_REQUEST_FROM_GROUP = 'RemoveRequestFromGroupAPI';
 const GET_GROUP_BY_PRODUCT_ID = 'GetGroupByProductIdAPI';
 const GET_GROUP_PAGING = 'GetGroupPagingAPI';
+const GET_GROUP_NOT_HAVING_SUPPLIER = 'GetGroupNotHavingSupplierAPI';
+const GET_GROUP_HAVING_SUPPLIER = 'GetGroupHavingSupplierAPI';
 const GET_GROUP_DETAILS = 'GetGroupDetailsAPI';
 export const ADD_SUPPLIER_TO_GROUP = 'AddSupplierToGroupAPI';
+export const ACCEPT_GROUP = 'AcceptGroupAPI';
 
 // Create new group
 const CreateNewGroupAPI = makeFetchAction(
@@ -170,6 +173,152 @@ export const getGroupPaging = ({
 export const GetGroupPagingData = GetGroupPagingAPI.dataSelector;
 export const GetGroupPagingError = GetGroupPagingAPI.errorSelector;
 export const GetGroupPagingResetter = getResetter(GetGroupPagingAPI);
+
+// Get Group Not Having Supplier Paging
+const GetGroupNotHavingSupplierPagingAPI = makeFetchAction(
+  GET_GROUP_NOT_HAVING_SUPPLIER,
+  ({
+    categoryId,
+    productName,
+    fromDate,
+    toDate,
+    pageIndex,
+    pageSize,
+    status,
+    productId
+  }) => {
+    return nfetch({
+      endpoint: `/api/Group/FilterByNotHavingSuitableSupplier${generateQuery({
+        categoryId,
+        groupNameOrProductName: productName,
+        productId,
+        fromDate,
+        toDate,
+        pageSize,
+        pageIndex,
+        orderByDateDescending: 'true',
+        status
+      })}`,
+      method: 'GET'
+    })();
+  }
+);
+
+export const getGroupNotHavingSupplierPaging = ({
+  categoryId,
+  productName,
+  fromDate,
+  toDate,
+  pageIndex,
+  pageSize,
+  status,
+  productId
+}) =>
+  respondToSuccess(
+    GetGroupNotHavingSupplierPagingAPI.actionCreator({
+      categoryId,
+      productName,
+      fromDate,
+      toDate,
+      pageIndex,
+      pageSize,
+      status,
+      productId
+    }),
+    () => {}
+  );
+
+export const GetGroupNotHavingSupplierPagingData =
+  GetGroupNotHavingSupplierPagingAPI.dataSelector;
+export const GetGroupNotHavingSupplierPagingError =
+  GetGroupNotHavingSupplierPagingAPI.errorSelector;
+export const GetGroupNotHavingSupplierPagingResetter = getResetter(
+  GetGroupNotHavingSupplierPagingAPI
+);
+
+// Get Group Having Supplier Paging
+const GetGroupHavingSupplierPagingAPI = makeFetchAction(
+  GET_GROUP_HAVING_SUPPLIER,
+  ({
+    categoryId,
+    productName,
+    fromDate,
+    toDate,
+    pageIndex,
+    pageSize,
+    status,
+    productId
+  }) => {
+    return nfetch({
+      endpoint: `/api/Group/FilterByHavingSuitableSupplier${generateQuery({
+        categoryId,
+        groupNameOrProductName: productName,
+        productId,
+        fromDate,
+        toDate,
+        pageSize,
+        pageIndex,
+        orderByDateDescending: 'true',
+        status
+      })}`,
+      method: 'GET'
+    })();
+  }
+);
+
+export const getGroupHavingSupplierPaging = ({
+  categoryId,
+  productName,
+  fromDate,
+  toDate,
+  pageIndex,
+  pageSize,
+  status,
+  productId
+}) =>
+  respondToSuccess(
+    GetGroupHavingSupplierPagingAPI.actionCreator({
+      categoryId,
+      productName,
+      fromDate,
+      toDate,
+      pageIndex,
+      pageSize,
+      status,
+      productId
+    }),
+    () => {}
+  );
+
+export const GetGroupHavingSupplierPagingData =
+  GetGroupHavingSupplierPagingAPI.dataSelector;
+export const GetGroupHavingSupplierPagingError =
+  GetGroupHavingSupplierPagingAPI.errorSelector;
+export const GetGroupHavingSupplierPagingResetter = getResetter(
+  GetGroupHavingSupplierPagingAPI
+);
+
+// Aggregator accept group
+const AcceptGroupAPI = makeFetchAction(ACCEPT_GROUP, ({ groupId, groupName }) =>
+  nfetch({
+    endpoint: '/api/Group/AggregatorAcceptedGroup',
+    method: 'PUT'
+  })({ groupId, groupName })
+);
+
+export const acceptGroup = ({ groupId, groupName, callback }) =>
+  respondToSuccess(
+    AcceptGroupAPI.actionCreator({ groupId, groupName }),
+    (resp) => {
+      if (resp) {
+        typeof callback === 'function' && callback();
+      }
+    }
+  );
+
+export const AcceptGroupData = AcceptGroupAPI.dataSelector;
+export const AcceptGroupError = AcceptGroupAPI.errorSelector;
+export const AcceptGroupResetter = getResetter(AcceptGroupAPI);
 
 // Group details
 const GetGroupDetailsAPI = makeFetchAction(GET_GROUP_DETAILS, (id) =>

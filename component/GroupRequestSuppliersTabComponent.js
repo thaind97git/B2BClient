@@ -26,6 +26,7 @@ import { createLink } from '../libs';
 import { G_NEGOTIATING, G_PENDING } from '../enums/groupStatus';
 import { get } from 'lodash/fp';
 import { MODERATOR } from '../enums/accountRoles';
+import QuotationListDisplayComponent from './Utils/QuotationListDisplayComponent';
 
 const { Title } = Typography;
 
@@ -68,6 +69,12 @@ const getSupplierTable = ({
       ),
       phone: supplier.phoneNumber,
       email: supplier.email,
+      quotations: (
+        <QuotationListDisplayComponent
+          isTooltip
+          quotations={supplier.description}
+        />
+      ),
       isIgnore: !supplier.flag ? (
         <span style={{ color: 'green' }}>Negotiating</span>
       ) : (
@@ -121,7 +128,8 @@ const GroupRequestSuppliersTabComponent = ({
   const SUPPLIER_CONTACT = [
     { title: 'Name', dataIndex: 'name', key: 'name' },
     { title: 'Email', dataIndex: 'email', key: 'email' },
-    { title: 'Phone', dataIndex: 'phone', key: 'phone' }
+    { title: 'Phone', dataIndex: 'phone', key: 'phone' },
+    { title: 'Quotations', dataIndex: 'quotations', key: 'quotations' }
   ];
 
   const [isOpenContact, setIsOpenContact] = useState(false);
@@ -204,14 +212,18 @@ const GroupRequestSuppliersTabComponent = ({
             })}
             columns={SUPPLIER_CONTACT}
             totalCount={totalSupplier}
-            footer={() =>
-              groupStatus.id !== G_PENDING &&
-              groupStatus.id !== G_NEGOTIATING ? null : (
-                <Button disabled={group?.quantity === 0} type="primary" onClick={() => setIsOpenContact(true)}>
-                  Add Suppliers
-                </Button>
-              )
-            }
+            // footer={() =>
+            //   groupStatus.id !== G_PENDING &&
+            //   groupStatus.id !== G_NEGOTIATING ? null : (
+            //     <Button
+            //       disabled={group?.quantity === 0}
+            //       type="primary"
+            //       onClick={() => setIsOpenContact(true)}
+            //     >
+            //       Add Suppliers
+            //     </Button>
+            //   )
+            // }
           />
         </div>
       </Card>

@@ -103,8 +103,8 @@ const BiddingSettingComponent = ({
   const [brief, setBrief] = useState(null);
   const [currentPrice, setCurrentPrice] = useState(0);
   const [currentValue, setCurrentValue] = useState(0);
-  const [minBidChange, setMinBidChange] = useState(0.5);
-  const [maxBidChange, setMaxBidChange] = useState(10);
+  // const [minBidChange, setMinBidChange] = useState(0.5);
+  // const [maxBidChange, setMaxBidChange] = useState(10);
   const [quantity, setQuantity] = useState(0);
   const router = useRouter();
   const { groupId } = router.query;
@@ -132,9 +132,9 @@ const BiddingSettingComponent = ({
     values.quantity = values.quantity + '';
     values.currentPrice = values.currentPrice + '';
     values.minimumDuration = +values.minimumDuration;
-    values.dynamicClosePeriod = +values.dynamicClosePeriod;
-    values.minimumBidChange = +values.minimumBidChange;
-    values.maximumBidChange = +values.maximumBidChange;
+    // values.dynamicClosePeriod = +values.dynamicClosePeriod;
+    // values.minimumBidChange = +values.minimumBidChange;
+    // values.maximumBidChange = +values.maximumBidChange;
     values.groupId = groupId;
     values.description = (values.brief || {}).value;
     values.auctionStartTime = new Date(values.auctionStartTime);
@@ -186,8 +186,8 @@ const BiddingSettingComponent = ({
           productName: productName,
           dynamicClosePeriod: 0,
           minimumDuration: 10,
-          minimumBidChange: minBidChange,
-          maximumBidChange: maxBidChange,
+          // minimumBidChange: minBidChange,
+          // maximumBidChange: maxBidChange,
           currency: 'VNĐ',
           units: unitOfMeasure.description,
           quantity: groupDetailsData.quantity
@@ -409,7 +409,7 @@ const BiddingSettingComponent = ({
             </Form.Item>
           </Col>
         </Row>
-        <Row>
+        {/* <Row>
           <Col md={12} sm={20} style={styles.colStyle}>
             <Form.Item
               label="Dynamic Close Period"
@@ -477,7 +477,7 @@ const BiddingSettingComponent = ({
               </Col>
             </Row>
           </Col>
-        </Row>
+        </Row> */}
 
         <Form.Item>
           <Row style={{ padding: 24 }} justify="end">

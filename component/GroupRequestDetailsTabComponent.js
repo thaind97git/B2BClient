@@ -273,16 +273,16 @@ const GroupRequestDetailsTabComponent = ({
               })}
               columns={groupRequestColumns}
               totalCount={totalRequest}
-              footer={() =>
-                status !== G_PENDING && status !== G_NEGOTIATING ? null : (
-                  <Button
-                    type="primary"
-                    onClick={() => setIsOpenAddRequest(true)}
-                  >
-                    Add Requests
-                  </Button>
-                )
-              }
+              // footer={() =>
+              //   status !== G_PENDING && status !== G_NEGOTIATING ? null : (
+              //     <Button
+              //       type="primary"
+              //       onClick={() => setIsOpenAddRequest(true)}
+              //     >
+              //       Add Requests
+              //     </Button>
+              //   )
+              // }
             />
           </div>
         </Card>
