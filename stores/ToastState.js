@@ -10,6 +10,7 @@ import {
 import { ADD_NEW_CATEGORY, UPDATE_CATEGORY } from './CategoryState';
 import { UPDATE_FEEDBACK_RATE } from './FeedbackState';
 import {
+  ACCEPT_GROUP,
   ADD_REQUEST_TO_GROUP,
   ADD_SUPPLIER_TO_GROUP,
   CREATE_NEW_GROUP,
@@ -150,6 +151,9 @@ export default {
         case USER_ACTIVE_CODE:
           msgNotify = 'Send active code successfully';
           break;
+        case ACCEPT_GROUP:
+          msgNotify = 'Receive group successfully';
+          break;
         default:
           break;
       }
@@ -256,6 +260,9 @@ export default {
           break;
         case USER_ACTIVE_CODE:
           msgNotify = 'Send active code fail';
+          break;
+        case ACCEPT_GROUP:
+          msgNotify = 'Receive group fail';
           break;
         default:
           break;
