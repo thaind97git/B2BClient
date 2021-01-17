@@ -70,8 +70,8 @@ const connectToRedux = connect(
           status
         })
       ),
-    acceptGroup: ({ groupName, groupId, callback }) =>
-      dispatch(acceptGroup({ groupId, groupName, callback })),
+    acceptGroup: ({ groupName, groupId, description, callback }) =>
+      dispatch(acceptGroup({ groupId, groupName, description, callback })),
     resetAcceptGroup: () => dispatch(AcceptGroupResetter)
   })
 );
@@ -132,6 +132,7 @@ const GroupRequestHavingSupplierComponent = ({
   const [currentGroupSelected, setCurrentGroupSelected] = useState(null);
 
   const [openGroupDetails, setOpenGroupDetails] = useState(false);
+  const [desc, setDesc] = useState('');
 
   useEffect(() => {
     if (!!acceptGroupData) {
@@ -228,6 +229,7 @@ const GroupRequestHavingSupplierComponent = ({
             acceptGroup({
               groupName,
               groupId: currentGroupSelected.id,
+              description: desc,
               callback: () => {
                 getGroupHavingSupplierPaging(
                   0,
@@ -247,6 +249,13 @@ const GroupRequestHavingSupplierComponent = ({
           placeholder="Enter the group name"
           value={groupName}
           onChange={(event) => setGroupName(event.target.value)}
+        />
+        <br />
+        <br />
+        <Input.TextArea
+          placeholder="Enter the group description"
+          value={desc}
+          onChange={(event) => setDesc(event.target.value)}
         />
       </Modal>
 

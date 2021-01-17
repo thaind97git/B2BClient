@@ -129,7 +129,7 @@ const BiddingOverviewComponent = ({ isSupplier = true, auction }) => {
                 Minimum Duration:{' '}
                 <span className="info">{timeConvert(minimumDuration)}</span>
               </Col>
-              <Col span={24}>
+              {/* <Col span={24}>
                 Dynamic Close Period:{' '}
                 <span className="info">
                   {dynamicClosePeriod ? dynamicClosePeriod : 0}{' '}
@@ -148,7 +148,7 @@ const BiddingOverviewComponent = ({ isSupplier = true, auction }) => {
                     <span className="info">{maximumBidChange} %</span>
                   </Col>
                 </Fragment>
-              )}
+              )} */}
             </Row>
           }
         />

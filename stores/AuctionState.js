@@ -124,8 +124,9 @@ const GetAuctionDetailsAPI = makeFetchAction(GET_AUCTION_DETAILS, (auctionId) =>
   })()
 );
 
-export const getAuctionDetails = (auctionId) =>
-  respondToSuccess(GetAuctionDetailsAPI.actionCreator(auctionId));
+export const getAuctionDetails = (auctionId) => {
+  return respondToSuccess(GetAuctionDetailsAPI.actionCreator(auctionId));
+};
 export const GetAuctionDetailsData = GetAuctionDetailsAPI.dataSelector;
 export const GetAuctionDetailsError = GetAuctionDetailsAPI.errorSelector;
 export const GetAuctionDetailsResetter = getResetter(GetAuctionDetailsAPI);
@@ -201,15 +202,34 @@ export const PlaceNewBidError = PlaceNewBidAPI.errorSelector;
 export const PlaceNewBidResetter = getResetter(PlaceNewBidAPI);
 
 // Get Auctions History
-const GetAuctionHistoryAPI = makeFetchAction(GET_HISTORY_AUCTION, (auctionId) =>
-  nfetch({
-    endpoint: `/api/ReverseAuction/History/${auctionId}`,
-    method: 'GET'
-  })()
+const GetAuctionHistoryAPI = makeFetchAction(
+  GET_HISTORY_AUCTION,
+  ({ reverseAuctionId, priceDescending = true, pageIndex, pageSize }) =>
+    nfetch({
+      endpoint: `/api/ReverseAuctionHistory${generateQuery({
+        reverseAuctionId,
+        priceDescending,
+        pageIndex,
+        pageSize
+      })}`,
+      method: 'GET'
+    })()
 );
 
-export const GetAuctionHistory = (auctionId) =>
-  respondToSuccess(GetAuctionHistoryAPI.actionCreator(auctionId));
+export const GetAuctionHistory = ({
+  reverseAuctionId,
+  priceDescending = true,
+  pageIndex,
+  pageSize
+}) =>
+  respondToSuccess(
+    GetAuctionHistoryAPI.actionCreator({
+      reverseAuctionId,
+      priceDescending,
+      pageIndex,
+      pageSize
+    })
+  );
 export const GetAuctionHistoryData = GetAuctionHistoryAPI.dataSelector;
 export const GetAuctionHistoryError = GetAuctionHistoryAPI.errorSelector;
 export const GetAuctionHistoryResetter = getResetter(GetAuctionHistoryAPI);

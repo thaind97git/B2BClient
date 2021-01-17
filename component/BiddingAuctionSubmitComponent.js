@@ -128,10 +128,10 @@ const BiddingAuctionSubmitComponent = ({
       <Descriptions.Item label="QUANTITY x UNIT MEASURE (UOM)" span={3}>
         {quantity} x {unitOfMeasure.description}
       </Descriptions.Item>
-      <Descriptions.Item label="BID RANGE" span={3}>
+      {/* <Descriptions.Item label="BID RANGE" span={3}>
         {displayCurrency(Math.floor(minimumChange))} -{' '}
         {displayCurrency(Math.floor(maximumChange))}
-      </Descriptions.Item>
+      </Descriptions.Item> */}
       <Descriptions.Item label="YOUR BID PER UOM" span={3}>
         {isPlaceBid ? (
           <InputNumber
@@ -153,7 +153,7 @@ const BiddingAuctionSubmitComponent = ({
           <b>{displayCurrency(Math.floor(yourLastedBid))} </b>
         )}
       </Descriptions.Item>
-      <Descriptions.Item label="YOUR RANK" span={3}>
+      {/* <Descriptions.Item label="YOUR RANK" span={3}>
         {lowestBid !== 0 && isFirstRank ? (
           <Rank rank={1} />
         ) : (
@@ -161,7 +161,7 @@ const BiddingAuctionSubmitComponent = ({
             You are not rank 1
           </Tag>
         )}
-      </Descriptions.Item>
+      </Descriptions.Item> */}
       <Descriptions.Item label="TOTAL LOT VALUE PLACED" span={3}>
         {`${displayCurrency(totalLot)}`}
       </Descriptions.Item>
