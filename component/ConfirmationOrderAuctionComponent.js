@@ -61,8 +61,13 @@ const connectToRedux = connect(
   }),
   (dispatch) => ({
     getWinning: (auctionId) => dispatch(getWinning(auctionId)),
-    createOrder: (reverseAuctionId, callback) =>
-      dispatch(createNewOrderAuction({ reverseAuctionId }, callback)),
+    createOrder: (reverseAuctionId, reverseAuctionHistoryId, callback) =>
+      dispatch(
+        createNewOrderAuction(
+          { reverseAuctionId, reverseAuctionHistoryId },
+          callback
+        )
+      ),
     resetData: () => {
       dispatch(GetWinningResetter);
     }
@@ -81,19 +86,23 @@ const ConfirmationOrderAuctionComponent = ({
   winningData,
   getWinning,
   createOrder,
-  createOrderData
+  createOrderData,
+  resetData
 }) => {
   const [openRequestDetails, setOpenRequestDetails] = useState(false);
   const [currentRequestSelected, setCurrentRequestSelected] = useState({});
   const [form] = Form.useForm();
   const router = useRouter();
-  const { reverseAuctionId } = router.query;
+  const { reverseAuctionId, bidId } = router.query;
 
   useEffect(() => {
-    if (reverseAuctionId) {
-      getWinning(reverseAuctionId);
+    if (bidId) {
+      getWinning(bidId);
     }
-  }, [reverseAuctionId, getWinning]);
+    return () => {
+      resetData();
+    };
+  }, [bidId, getWinning, resetData]);
 
   if (!winningData) {
     return (
@@ -121,7 +130,7 @@ const ConfirmationOrderAuctionComponent = ({
   }, 0);
   const PRODUCT_DETAIL = [
     {
-      productName: product.description,
+      productName: product?.description,
       productPrice: displayCurrency(price),
       totalQuantity: `${totalQuantity} ${unitOfMeasure}`
     }
@@ -305,7 +314,7 @@ const ConfirmationOrderAuctionComponent = ({
                       okText: 'Submit',
                       cancelText: 'Cancel',
                       onOk: () => {
-                        createOrder(reverseAuctionId, () => {
+                        createOrder(reverseAuctionId, bidId, () => {
                           Router.push('/aggregator/order');
                         });
                       }

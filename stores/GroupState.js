@@ -306,9 +306,9 @@ const AcceptGroupAPI = makeFetchAction(ACCEPT_GROUP, ({ groupId, groupName }) =>
   })({ groupId, groupName })
 );
 
-export const acceptGroup = ({ groupId, groupName, callback }) =>
+export const acceptGroup = ({ groupId, groupName, description, callback }) =>
   respondToSuccess(
-    AcceptGroupAPI.actionCreator({ groupId, groupName }),
+    AcceptGroupAPI.actionCreator({ groupId, groupName, description }),
     (resp) => {
       if (resp) {
         typeof callback === 'function' && callback();

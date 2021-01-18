@@ -7,8 +7,7 @@ import {
   Tag,
   Typography,
   Modal,
-  Button,
-  message
+  Button
 } from 'antd';
 import { ExclamationCircleOutlined, LeftOutlined } from '@ant-design/icons';
 import { ADMIN, SUPPLIER } from '../enums/accountRoles';
@@ -23,7 +22,6 @@ import {
 } from '../stores/AuctionState';
 import Router, { useRouter } from 'next/router';
 import { getUtcTime } from '../utils';
-import SignalR from '../libs/signalR';
 import {
   B_ACTIVE,
   B_CANCELED,
@@ -44,10 +42,6 @@ const connectToRedux = connect(
     resetAuctionDetails: () => dispatch(GetAuctionDetailsResetter)
   })
 );
-const signalR = new SignalR({
-  hubDomain: 'reverseAuctionHub'
-});
-signalR.startConnection();
 
 const SupplierBiddingDetailsComponent = ({
   role = SUPPLIER,
@@ -55,12 +49,10 @@ const SupplierBiddingDetailsComponent = ({
   getAuctionDetails,
   resetAuctionDetails
 }) => {
-  const [firstTime, setFirstTime] = useState(true);
   const [deadline, setDeadLine] = useState(null);
   const router = useRouter();
   const [isAnimation, setIsAnimation] = useState(false);
   const { id: auctionId } = router.query;
-  const [isEnd, setIsEnd] = useState(false);
 
   const [newHistory, setNewHistory] = useState(null);
 
@@ -78,102 +70,29 @@ const SupplierBiddingDetailsComponent = ({
       }
     });
   }
-
-  // useEffect(() => {
-  //   return () => {
-  //     resetAuctionDetails();
-  //   };
-  // }, [resetAuctionDetails]);
   useEffect(() => {
-    if (auctionId && firstTime) {
+    if (auctionId) {
       getAuctionDetails(auctionId);
-      setFirstTime(false);
     }
-  }, [auctionId, firstTime, getAuctionDetails]);
+  }, [auctionId, getAuctionDetails]);
   useEffect(() => {
     if (isAnimation === true) {
       setIsAnimation(false);
     }
   }, [isAnimation]);
   useEffect(() => {
-    if (
-      auctionDetailsData &&
-      auctionDetailsData.actualDuration &&
-      auctionDetailsData.auctionStartTime
-    ) {
+    if (auctionDetailsData && auctionDetailsData.auctionStartTime) {
       setDeadLine(
         new Date(getUtcTime(auctionDetailsData.auctionStartTime)).getTime() +
-          1000 * 60 * auctionDetailsData.actualDuration
+          1000 * 60 * auctionDetailsData.minimumDuration
       );
     }
   }, [auctionDetailsData]);
 
-  useEffect(() => {
-    if (!!newHistory) {
-      if (newHistory.actualDuration) {
-        setDeadLine(
-          new Date(getUtcTime(auctionDetailsData?.auctionStartTime)).getTime() +
-            1000 * 60 * newHistory?.actualDuration
-        );
-        // console.log({ auctionDetailsData, newHistory });
-        // if (
-        //   !!auctionDetailsData &&
-        //   auctionDetailsData?.actualDuration !== newHistory.actualDuration
-        // ) {
-        //   message.warn(
-        //     `This auction has new bid inside dynamic closing. The duration time will added ${auctionDetailsData?.dynamicClosePeriod} Minutes`
-        //   );
-        // }
-      }
-    }
-  }, [newHistory]);
-
-  useEffect(() => {
-    signalR.onListen('NewBid', (history) => {
-      console.log('-----Start root-----');
-      console.log('[Supplier - root] Received new bid');
-      if (!!history) {
-        setNewHistory(history);
-      }
-      console.log('-----End root-----');
-    });
-    return () => {
-      signalR.stopConnection();
-    };
-  }, []);
-
-  useEffect(() => {
-    signalR.onListen('AuctionClosed', (id) => {
-      console.log('Closed ne: ', id, auctionDetailsData?.id);
-      if (id === auctionDetailsData?.id) {
-        setIsEnd(true);
-      }
-    });
-  }, [auctionDetailsData]);
-
-  // useEffect(() => {
-  //   if (isEnd) {
-  //     getAuctionDetails(auctionId);
-  //     Modal.info({
-  //       keyboard: false,
-  //       title: 'Reverse Auction has ended',
-  //       icon: <ExclamationCircleOutlined />,
-  //       content: 'You will be notified for Order if you won this bid.',
-  //       okText: 'Go to bidding list',
-  //       cancelText: false,
-  //       onOk: () => {
-  //         Router.push('/supplier/bidding');
-  //       }
-  //     });
-  //     setIsEnd(false);
-  //   }
-  // }, [isEnd]);
-
   if (!auctionDetailsData) {
     return <Empty description="Can not find any event" />;
   }
-  const { dynamicClosePeriod, isBeingRemoved, reverseAuctionStatus } =
-    auctionDetailsData || {};
+  const { isBeingRemoved, reverseAuctionStatus } = auctionDetailsData || {};
   if (isBeingRemoved || [B_CANCELED].includes(reverseAuctionStatus?.id)) {
     Router.push('/supplier/bidding');
   }

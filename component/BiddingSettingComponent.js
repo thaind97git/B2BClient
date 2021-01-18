@@ -8,22 +8,15 @@ import {
   Row,
   Select,
   Typography,
-  Form,
-  Empty,
-  Modal
+  Form
 } from 'antd';
 import React, { useEffect, useState } from 'react';
 import moment from 'moment';
 import MarkdownEditorComponent from './MarkdownEditorComponent';
 import { displayCurrency, openNotification } from '../utils';
-import Router, { useRouter } from 'next/router';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
-import {
-  getGroupDetails,
-  GetGroupDetailsData,
-  GetGroupDetailsError
-} from '../stores/GroupState';
+
 import {
   createReverseAuction,
   CreateReverseAuctionData,
@@ -34,12 +27,9 @@ const { Option } = Select;
 
 const connectToRedux = connect(
   createStructuredSelector({
-    groupDetailsData: GetGroupDetailsData,
-    groupDetailsError: GetGroupDetailsError,
     submitAuctionData: CreateReverseAuctionData
   }),
   (dispatch) => ({
-    getGroupDetails: (id) => dispatch(getGroupDetails(id)),
     submitAuction: (values) => dispatch(createReverseAuction(values)),
     resetSubmitAuction: () => dispatch(CreateReverseAuctionResetter)
   })
@@ -93,33 +83,26 @@ const styles = {
   }
 };
 const BiddingSettingComponent = ({
-  getGroupDetails,
-  groupDetailsData,
-  groupDetailsError,
-  submitAuction,
-  submitAuctionData,
-  resetSubmitAuction
+  resetSubmitAuction,
+  groupDetails,
+  groupId,
+  setDefaultTab,
+  setValues,
+  values: valuesForm
 }) => {
-  const [brief, setBrief] = useState(null);
+  console.log({ groupDetails });
+  const [brief, setBrief] = useState(valuesForm?.brief || null);
   const [currentPrice, setCurrentPrice] = useState(0);
   const [currentValue, setCurrentValue] = useState(0);
   // const [minBidChange, setMinBidChange] = useState(0.5);
   // const [maxBidChange, setMaxBidChange] = useState(10);
   const [quantity, setQuantity] = useState(0);
-  const router = useRouter();
-  const { groupId } = router.query;
 
   useEffect(() => {
     return () => {
       resetSubmitAuction();
     };
   }, [resetSubmitAuction]);
-
-  useEffect(() => {
-    if (groupId) {
-      getGroupDetails(groupId);
-    }
-  }, [groupId, getGroupDetails]);
 
   const onFinish = (values) => {
     console.log('Received values of form: ', values);
@@ -129,44 +112,38 @@ const BiddingSettingComponent = ({
       });
       return;
     }
-    values.quantity = values.quantity + '';
-    values.currentPrice = values.currentPrice + '';
-    values.minimumDuration = +values.minimumDuration;
-    // values.dynamicClosePeriod = +values.dynamicClosePeriod;
-    // values.minimumBidChange = +values.minimumBidChange;
-    // values.maximumBidChange = +values.maximumBidChange;
     values.groupId = groupId;
-    values.description = (values.brief || {}).value;
-    values.auctionStartTime = new Date(values.auctionStartTime);
-    Modal.confirm({
-      title: 'Are you sure you want to create auction?',
-      okText: 'Submit',
-      cancelText: 'Cancel',
-      onOk: () => {
-        submitAuction(values);
-      }
-    });
+    // Modal.confirm({
+    //   title: 'Are you sure you want to create auction?',
+    //   okText: 'Submit',
+    //   cancelText: 'Cancel',
+    //   onOk: () => {
+    //     submitAuction(values);
+    //   }
+    // });
+    setValues(values);
+    setDefaultTab('1');
   };
 
-  useEffect(() => {
-    if (submitAuctionData) {
-      Router.push('/aggregator/bidding');
-    }
-  }, [submitAuctionData]);
+  // useEffect(() => {
+  //   if (submitAuctionData) {
+  //     Router.push('/aggregator/bidding');
+  //   }
+  // }, [submitAuctionData]);
 
   useEffect(() => {
     setCurrentValue(quantity * currentPrice);
   }, [currentPrice, quantity]);
 
   useEffect(() => {
-    if (groupDetailsData) {
-      setQuantity(groupDetailsData.quantity);
+    if (groupDetails) {
+      setQuantity(groupDetails.quantity);
     }
-  }, [groupDetailsData]);
+  }, [groupDetails]);
 
-  if (!groupDetailsData || groupDetailsError) {
-    return <Empty description="Can not find any group!" />;
-  }
+  // if (!groupDetails || groupDetails) {
+  //   return <Empty description="Can not find any group!" />;
+  // }
 
   const {
     groupName,
@@ -174,7 +151,7 @@ const BiddingSettingComponent = ({
     averagePrice,
     maxPrice,
     minPrice
-  } = groupDetailsData;
+  } = groupDetails;
   const { productName, unitOfMeasure = {}, id } = product;
   return (
     <div>
@@ -190,7 +167,11 @@ const BiddingSettingComponent = ({
           // maximumBidChange: maxBidChange,
           currency: 'VNĐ',
           units: unitOfMeasure.description,
-          quantity: groupDetailsData.quantity
+          quantity: groupDetails.quantity,
+          auctionName: valuesForm?.auctionName,
+          currentPrice: valuesForm?.currentPrice,
+          brief: valuesForm?.brief,
+          auctionStartTime: valuesForm?.auctionStartTime
         }}
       >
         <Row>
@@ -345,7 +326,11 @@ const BiddingSettingComponent = ({
                 }
               ]}
             >
-              <MarkdownEditorComponent value={brief} setValue={setBrief} />
+              <MarkdownEditorComponent
+                defaultValue={valuesForm?.brief}
+                value={brief}
+                setValue={setBrief}
+              />
             </Form.Item>
           </Col>
         </Row>
@@ -409,80 +394,16 @@ const BiddingSettingComponent = ({
             </Form.Item>
           </Col>
         </Row>
-        {/* <Row>
-          <Col md={12} sm={20} style={styles.colStyle}>
-            <Form.Item
-              label="Dynamic Close Period"
-              name="dynamicClosePeriod"
-              rules={[
-                {
-                  required: true,
-                  message: 'Please enter the dynamic close period'
-                }
-              ]}
-            >
-              <Select onChange={handleChange} style={{ width: '100%' }}>
-                <Option value={0}>None</Option>
-                <Option value={1}>Last minute</Option>
-                <Option value={2}>Last 2 minutes</Option>
-                <Option value={5}>Last 5 minutes</Option>
-                <Option value={10}>Last 10 minutes</Option>
-                <Option value={15}>Last 15 minutes</Option>
-              </Select>
-            </Form.Item>
-          </Col>
-          <Col md={12} sm={20} style={styles.colStyle}>
-            <Row>
-              <Col span={12}>
-                <Form.Item
-                  label="Minimum Bid Change (%)"
-                  name="minimumBidChange"
-                  rules={[
-                    {
-                      required: true,
-                      message: 'Please enter the minimum bid change'
-                    }
-                  ]}
-                >
-                  <InputNumber
-                    style={{ width: '100%' }}
-                    onChange={(value) => setMinBidChange(value)}
-                    min={0}
-                    max={maxBidChange}
-                    suffix="%"
-                  />
-                </Form.Item>
-              </Col>
-              <Col span={12} style={styles.colStyle}>
-                <Form.Item
-                  label="Maximum Bid Change (%)"
-                  name="maximumBidChange"
-                  rules={[
-                    {
-                      required: true,
-                      message: 'Please enter the maximum bid change'
-                    }
-                  ]}
-                >
-                  <InputNumber
-                    style={{ width: '100%' }}
-                    min={minBidChange}
-                    max={100}
-                    onChange={(value) => {
-                      setMaxBidChange(value);
-                    }}
-                    suffix="%"
-                  />
-                </Form.Item>
-              </Col>
-            </Row>
-          </Col>
-        </Row> */}
 
         <Form.Item>
           <Row style={{ padding: 24 }} justify="end">
-            <Button htmlType="submit" size="large" type="primary">
-              Create Auction
+            <Button
+              // onClick={() => setDefaultTab('1')}
+              htmlType="submit"
+              size="large"
+              type="primary"
+            >
+              Save and go to next step
             </Button>
           </Row>
         </Form.Item>

@@ -231,6 +231,11 @@ export const getCurrentUserImage = (image) =>
 
 export const getFileMessage = (image) =>
   image ? `${process.env.API_SERVER_URL}/api/Message/File/${image}` : null;
+
+export const getFileAttach = (fileId) =>
+  fileId
+    ? `${process.env.API_SERVER_URL}/api/ReverseAuctionHistory/File/${fileId}`
+    : null;
 export const getDefaultProductImage = () =>
   '/static/images/default_product_img.jpg';
 

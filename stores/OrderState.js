@@ -32,15 +32,21 @@ export const CreateNewOrderResetter = getResetter(CreateNewOrderAPI);
 // Order Auction
 const CreateNewOrderAuctionAPI = makeFetchAction(
   CREATE_NEW_ORDER_AUCTION,
-  ({ reverseAuctionId }) =>
+  ({ reverseAuctionId, reverseAuctionHistoryId }) =>
     nfetch({
       endpoint: '/api/Order/ReverseAuction'
-    })({ id: reverseAuctionId })
+    })({ reverseAuctionId, reverseAuctionHistoryId })
 );
 
-export const createNewOrderAuction = ({ reverseAuctionId }, callback) =>
+export const createNewOrderAuction = (
+  { reverseAuctionId, reverseAuctionHistoryId },
+  callback
+) =>
   respondToSuccess(
-    CreateNewOrderAuctionAPI.actionCreator({ reverseAuctionId }),
+    CreateNewOrderAuctionAPI.actionCreator({
+      reverseAuctionId,
+      reverseAuctionHistoryId
+    }),
     () => {
       typeof callback === 'function' && callback();
     }
