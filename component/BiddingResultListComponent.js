@@ -8,17 +8,20 @@ import { createStructuredSelector } from 'reselect';
 import {
   GetAuctionHistoryData,
   GetAuctionHistory,
-  getAuctionDetails
+  getAuctionDetails,
+  GetAuctionDetailsData
 } from '../stores/AuctionState';
 import ReactTableLayout from '../layouts/ReactTableLayout';
 import { B_CLOSED, B_DONE } from '../enums/biddingStatus';
 import UserProfileComponent from './UserProfileComponent';
+import BiddingDocumentDetailsComponent from './BiddingDocumentDetailsComponent';
 import { SUPPLIER } from '../enums/accountRoles';
 const { Option } = Select;
 
 const connectToRedux = connect(
   createStructuredSelector({
-    auctionHistoryData: GetAuctionHistoryData
+    auctionHistoryData: GetAuctionHistoryData,
+    auctionDetailsData: GetAuctionDetailsData
   }),
   (dispatch) => ({
     getAuctionHistory: (
@@ -49,7 +52,9 @@ const BiddingResultListComponent = ({
   const router = useRouter();
   const { id: auctionId } = router.query;
   const [openDetailsSupplier, setOpenDetailsSupplier] = useState(false);
+  const [openBiddingDetails, setOpenBiddingDetails] = useState(false);
   const [currentSupplier, setCurrentSupplier] = useState({});
+  const [currentDocument, setCurrentDocument] = useState({});
   const [isDescending, setIsDescending] = useState(false);
 
   const COLUMNS = [
@@ -71,6 +76,7 @@ const BiddingResultListComponent = ({
       dataIndex: 'actions'
     }
   ];
+
   const renderData = (histories) => {
     return histories?.map((history) => {
       return {
@@ -113,7 +119,14 @@ const BiddingResultListComponent = ({
                 Closing deal
               </Button>
             )}
-            <Button type="link" size="small">
+            <Button
+              type="link"
+              size="small"
+              onClick={() => {
+                setOpenBiddingDetails(true);
+                setCurrentDocument(history);
+              }}
+            >
               View
             </Button>
           </Space>
@@ -132,7 +145,7 @@ const BiddingResultListComponent = ({
     <div>
       <Drawer
         width={640}
-        title="Aggregator Details"
+        title="Supplier Details"
         placement={'right'}
         closable={true}
         onClose={() => setOpenDetailsSupplier(false)}
@@ -145,6 +158,21 @@ const BiddingResultListComponent = ({
             userId={(currentSupplier || {}).id}
             isAdmin
             role={SUPPLIER}
+          />
+        ) : null}
+      </Drawer>
+      <Drawer
+        width={640}
+        title="Supplier Bidding Documents"
+        placement={'right'}
+        closable={true}
+        onClose={() => setOpenBiddingDetails(false)}
+        visible={openBiddingDetails}
+        key={'aggregator-drawer'}
+      >
+        {openBiddingDetails ? (
+          <BiddingDocumentDetailsComponent
+            document={currentDocument}
           />
         ) : null}
       </Drawer>

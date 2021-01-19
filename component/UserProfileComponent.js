@@ -78,14 +78,15 @@ const connectToRedux = connect(
     uploadAvatar: (fileList) => dispatch(userUploadAvatar(fileList)),
     updatePassword: ({ oldPassword, newPassword }) =>
       dispatch(userUpdatePassword({ oldPassword, newPassword })),
-    updateAccount: ({ firstName, lastName, phone, address, companyName }) =>
+    updateAccount: ({ firstName, lastName, phone, address, companyName, fax }) =>
       dispatch(
         userUpdateAccount({
           firstName,
           lastName,
           phone,
           address,
-          companyName
+          companyName,
+          fax
         })
       ),
     getCurrentUser: () => dispatch(getCurrentUser({})),
@@ -266,10 +267,12 @@ const UserProfileComponent = ({
       email,
       firstName,
       lastName,
+      fax,
       phoneNumber,
       userStatus = {},
       bannedReason,
-      avatar
+      avatar,
+      taxIdentificationNumber
     } = getUserData || {};
     if (loading) {
       return <Skeleton active />;
@@ -288,6 +291,9 @@ const UserProfileComponent = ({
               <Descriptions.Item label="at">{companyName}</Descriptions.Item>
             )}
             <Descriptions.Item label="Email">{email}</Descriptions.Item>
+            <Descriptions.Item label="Tax Identification Number">
+              {taxIdentificationNumber? taxIdentificationNumber:"None"}
+            </Descriptions.Item>
             {isAdmin && (
               <Fragment>
                 <Descriptions.Item label="Account Status">
@@ -316,6 +322,7 @@ const UserProfileComponent = ({
         <DescriptionItem title="Email" content={email} />
         <DescriptionItem title="Mobile" content={phoneNumber} />
         <DescriptionItem title="Address" content={address} />
+        <DescriptionItem title="Fax" content={fax ? fax : 'None'} />
         <Divider />
 
         <style jsx global>{`
@@ -363,6 +370,8 @@ const UserProfileComponent = ({
       firstName,
       lastName,
       phoneNumber,
+      fax,
+      taxIdentificationNumber,
       userStatus = {}
     } = currentUser || {};
     return (
@@ -417,6 +426,9 @@ const UserProfileComponent = ({
               <Descriptions.Item label="Email">
                 {email || 'None'}
               </Descriptions.Item>
+              <Descriptions.Item label="Tax Identification Number">
+                {taxIdentificationNumber || 'None'}
+              </Descriptions.Item>
             </Descriptions>
           </Col>
         </Row>
@@ -426,6 +438,7 @@ const UserProfileComponent = ({
           <Descriptions.Item label="Mobile">
             {phoneNumber || 'None'}
           </Descriptions.Item>
+          <Descriptions.Item label="Fax">{fax || 'None'}</Descriptions.Item>
           <Descriptions.Item label="Address">
             {address || 'None'}
           </Descriptions.Item>

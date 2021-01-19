@@ -202,6 +202,7 @@ const RequestDetailsForSupplierComponent = ({ requestDetailsData }) => {
         <DescriptionItem title="Created by" content={(buyer || {}).fullName} />
         <DescriptionItem title="Email" content={(buyer || {}).email} />
         <DescriptionItem title="Phone" content={(buyer || {}).phoneNumber} />
+        <DescriptionItem title="Fax" content={(buyer || {}).fax? (buyer || {}).fax :"None"} />
         {/* <DescriptionItem
           title="Company Name"
           content={(buyer || {}).companyName}

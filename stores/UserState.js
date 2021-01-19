@@ -215,11 +215,11 @@ export const UserUpdatePasswordResetter = getResetter(UserUpdatePasswordAPI);
 //Update Password
 const UserUpdateAccountAPI = makeFetchAction(
   USER_UPDATE_ACCOUNT,
-  ({ companyName, firstName, lastName, address, phone }) =>
+  ({ companyName, firstName, lastName, address, phone, fax }) =>
     nfetch({
       endpoint: '/api/Account',
       method: 'PUT'
-    })({ companyName, firstName, lastName, address, phone })
+    })({ companyName, firstName, lastName, address, phone, fax })
 );
 
 export const userUpdateAccount = ({
@@ -227,7 +227,8 @@ export const userUpdateAccount = ({
   firstName,
   lastName,
   address,
-  phone
+  phone,
+  fax
 }) =>
   respondToSuccess(
     UserUpdateAccountAPI.actionCreator({
@@ -235,7 +236,8 @@ export const userUpdateAccount = ({
       firstName,
       lastName,
       address,
-      phone
+      phone,
+      fax
     }),
     (resp) => {}
   );

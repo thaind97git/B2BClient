@@ -13,7 +13,7 @@ import {
   Empty,
   Avatar
 } from 'antd';
-import { PhoneOutlined, MailOutlined } from '@ant-design/icons';
+import { PhoneOutlined, MailOutlined, PrinterOutlined } from '@ant-design/icons';
 import React, { useEffect, useState } from 'react';
 import RequestDetailsComponent from './RequestDetailsComponent';
 import {
@@ -166,6 +166,8 @@ const ConfirmationOrderComponent = ({
     firstName,
     lastName,
     phoneNumber,
+    fax,
+    taxIdentificationNumber,
     role
   } = supplierData;
   console.log({ avatar });
@@ -232,6 +234,11 @@ const ConfirmationOrderComponent = ({
                         Company: {companyName}
                         <br />
                         Address: {address}
+                        <br />
+                        Tax Identification Number:
+                        {taxIdentificationNumber
+                          ? taxIdentificationNumber
+                          : 'N/A'}
                       </div>
                     </div>
                   </Card>
@@ -248,6 +255,13 @@ const ConfirmationOrderComponent = ({
                         {phoneNumber}
                         <PhoneOutlined />
                       </Space>
+                      <br />
+                      {fax ? (
+                        <Space>
+                          {fax}
+                          <PrinterOutlined />
+                        </Space>
+                      ) : null}
                       <br />
                     </div>
                   </Card>

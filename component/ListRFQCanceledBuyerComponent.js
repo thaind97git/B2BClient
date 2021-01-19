@@ -1,4 +1,13 @@
-import { Button, Col, Drawer, Input, Modal, Row, Typography } from 'antd';
+import {
+  Button,
+  Col,
+  Drawer,
+  Input,
+  Modal,
+  Row,
+  Space,
+  Typography
+} from 'antd';
 import { get } from 'lodash/fp';
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
@@ -18,7 +27,13 @@ import {
   BanUserResetter,
   unBanUser,
   UnBanUserData,
-  UnBanUserResetter
+  UnBanUserResetter,
+  ApproveBuyerResetter,
+  RejectBuyerResetter,
+  ApproveBuyerData,
+  RejectBuyerData,
+  approveBuyer,
+  rejectBuyer
 } from '../stores/SupplierState';
 import { getUser, getUserData } from '../stores/UserState';
 import {
@@ -42,7 +57,9 @@ const connectToRedux = connect(
     requestError: GetRequestCanceledByUserError,
     getUserData: getUserData,
     banUserData: BanUserData,
-    unBanUserData: UnBanUserData
+    unBanUserData: UnBanUserData,
+    approveData: ApproveBuyerData,
+    rejectData: RejectBuyerData
   }),
   (dispatch) => ({
     getRFQCanceled: (
@@ -64,11 +81,15 @@ const connectToRedux = connect(
     banUser: ({ id, description }) =>
       dispatch(banUser({ id, description, isSupplier: false })),
     unBanUser: ({ id }) => dispatch(unBanUser({ id, isSupplier: false })),
-    resetBanAndUnBan: () => {
+    resetAccountData: () => {
       dispatch(BanUserResetter);
       dispatch(UnBanUserResetter);
+      dispatch(ApproveBuyerResetter);
+      dispatch(RejectBuyerResetter);
     },
-    getUser: (id) => dispatch(getUser(id))
+    getUser: (id) => dispatch(getUser(id)),
+    approveUser: ({ id }) => dispatch(approveBuyer({ id })),
+    rejectUser: ({ id }) => dispatch(rejectBuyer({ id }))
   })
 );
 const columns = [
@@ -110,8 +131,12 @@ const ListRFQCanceledBuyerComponent = ({
   getUserData,
   banUserData,
   unBanUserData,
-  resetBanAndUnBan,
-  getUser
+  resetAccountData,
+  getUser,
+  approveData,
+  rejectData,
+  approveUser,
+  rejectUser
 }) => {
   const [loading, setLoading] = useState(true);
   const [banReason, setBanReason] = useState('');
@@ -125,23 +150,40 @@ const ListRFQCanceledBuyerComponent = ({
   }, [requestData, requestError]);
 
   useEffect(() => {
-    if (banUserData) {
-      setBanReason('');
-      setOpenBan(false);
-      resetBanAndUnBan();
+    if (approveData) {
+      resetAccountData();
       getRFQCanceled(0, 10, '', {}, buyerId);
       getUser(buyerId);
     }
-  }, [banUserData, resetBanAndUnBan, getRFQCanceled, buyerId, getUser]);
+  }, [approveData, resetAccountData, getRFQCanceled, buyerId, getUser]);
+
+  useEffect(() => {
+    if (rejectData) {
+      resetAccountData();
+      getRFQCanceled(0, 10, '', {}, buyerId);
+      getUser(buyerId);
+    }
+  }, [rejectData, resetAccountData, getRFQCanceled, buyerId, getUser]);
+  
+  useEffect(() => {
+    if (banUserData) {
+      setBanReason('');
+      setOpenBan(false);
+      resetAccountData();
+      getRFQCanceled(0, 10, '', {}, buyerId);
+      getUser(buyerId);
+    }
+  }, [banUserData, resetAccountData, getRFQCanceled, buyerId, getUser]);
 
   useEffect(() => {
     if (unBanUserData) {
       setBanReason('');
-      resetBanAndUnBan();
+      resetAccountData();
       getRFQCanceled(0, 10, '', {}, buyerId);
       getUser(buyerId);
     }
-  }, [unBanUserData, resetBanAndUnBan, buyerId, getRFQCanceled, getUser]);
+  }, [unBanUserData, resetAccountData, buyerId, getRFQCanceled, getUser]);
+
 
   useEffect(() => {
     return () => {
@@ -250,8 +292,45 @@ const ListRFQCanceledBuyerComponent = ({
               Ban Account
             </Button>
           )}
-          {(get('userStatus.id')(getUserData) === U_PENDING ||
-            get('userStatus.id')(getUserData) === U_BANNED) && (
+          {get('userStatus.id')(getUserData) === U_PENDING && (
+            <Space>
+              <Button
+                type="primary"
+                onClick={() => {
+                  Modal.confirm({
+                    title: 'Are you sure you want to approve this account?',
+                    icon: <ExclamationCircleOutlined />,
+                    okText: 'Approve',
+                    cancelText: 'Cancel',
+                    onOk: () => {
+                      approveUser({ id: buyerId });
+                    }
+                  });
+                }}
+                size="small"
+              >
+                Approve Account
+              </Button>
+              <Button
+                danger
+                onClick={() => {
+                  Modal.confirm({
+                    title: 'Are you sure you want to reject this account?',
+                    icon: <ExclamationCircleOutlined />,
+                    okText: 'Reject',
+                    cancelText: 'Cancel',
+                    onOk: () => {
+                      rejectUser({ id: buyerId });
+                    }
+                  });
+                }}
+                size="small"
+              >
+                Reject Account
+              </Button>
+            </Space>
+          )}
+          {get('userStatus.id')(getUserData) === U_BANNED && (
             <Button
               type="primary"
               onClick={() => {
