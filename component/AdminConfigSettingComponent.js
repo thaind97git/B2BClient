@@ -106,7 +106,17 @@ const AdminConfigSettingComponent = ({
             {
               required: true,
               message: 'Max Quantity RFQ is required!'
-            }
+            },
+            ({ getFieldValue }) => ({
+              validator(_, value) {
+                if (!value || getFieldValue('minQuantity') < value) {
+                  return Promise.resolve();
+                }
+                return Promise.reject(
+                  'Max quantity RFQ must greater than Min quantity RFQ'
+                );
+              }
+            })
           ]}
           name="maxQuantity"
           label="Max Quantity RFQ"
@@ -118,7 +128,17 @@ const AdminConfigSettingComponent = ({
             {
               required: true,
               message: 'Min Quantity RFQ is required!'
-            }
+            },
+            ({ getFieldValue }) => ({
+              validator(_, value) {
+                if (!value || getFieldValue('maxQuantity') > value) {
+                  return Promise.resolve();
+                }
+                return Promise.reject(
+                  'Min quantity RFQ must lesser than Max quantity RFQ'
+                );
+              }
+            })
           ]}
           name="minQuantity"
           label="Min Quantity RFQ"
@@ -129,8 +149,18 @@ const AdminConfigSettingComponent = ({
           rules={[
             {
               required: true,
-              message: 'Min Quantity RFQ is required!'
-            }
+              message: 'Max price RFQ is required!'
+            },
+            ({ getFieldValue }) => ({
+              validator(_, value) {
+                if (!value || getFieldValue('minPrice') < value) {
+                  return Promise.resolve();
+                }
+                return Promise.reject(
+                  'Max price RFQ must greater than Min price RFQ'
+                );
+              }
+            })
           ]}
           name="maxPrice"
           label="Max Price RFQ"
@@ -149,7 +179,17 @@ const AdminConfigSettingComponent = ({
             {
               required: true,
               message: 'Min Price RFQ is required!'
-            }
+            },
+            ({ getFieldValue }) => ({
+              validator(_, value) {
+                if (!value || getFieldValue('maxPrice') > value) {
+                  return Promise.resolve();
+                }
+                return Promise.reject(
+                  'Min price RFQ must lesser than Max price RFQ'
+                );
+              }
+            })
           ]}
           name="minPrice"
           label="Min Price RFQ"
