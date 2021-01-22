@@ -63,7 +63,7 @@ const SupplierAddNewBidComponent = ({
       dataIndex: 'description'
     }
   ];
-  console.log(auction)
+  
   const renderData = (histories) => {
     return histories?.map((history) => {
       return {
