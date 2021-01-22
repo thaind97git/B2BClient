@@ -84,7 +84,7 @@ const BiddingAuctionComponent = ({
   const { unitOfMeasure = {} } = product;
   return (
     <div>
-      <SupplierAddNewBidComponent auction={auction}/>
+      <SupplierAddNewBidComponent />
 
       <Row gutter={16}></Row>
     </div>
