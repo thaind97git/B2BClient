@@ -163,9 +163,9 @@ const BiddingSupplierReviewComponent = ({
       <Row>
         <Col span={24}>
           <Button
-            disabled={totalCount <= 2}
+            disabled={totalCount < 2}
             onClick={() => {
-              if (supplierIds?.length <= 2) {
+              if (supplierIds?.length < 2) {
                 openNotification('error', {
                   message: 'Please select at least 2 suppliers'
                 });
