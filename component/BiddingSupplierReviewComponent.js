@@ -94,7 +94,7 @@ const BiddingSupplierReviewComponent = ({
 
   const rowSelection = {
     onChange: (selectedRowKeys, selectedRows) => {
-      setSupplierIds(selectedRows.key);
+      setSupplierIds(selectedRowKeys);
     },
     getCheckboxProps: (record) => ({
       disabled: record.name === 'Disabled User',
