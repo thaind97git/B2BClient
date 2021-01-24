@@ -42,11 +42,12 @@ import {
 import { CREATE_NEW_AGGREGATOR } from './BuyerState';
 import { get } from 'lodash/fp';
 import {
+  ADD_NEW_CONFIG_GROUP_SETTING,
   UPDATE_CONFIG_GROUP_SETTING,
   UPDATE_CONFIG_SETTING
 } from './SettingState';
 
-const hasError = get('json.errorMessage');
+const hasError = get('json.ErrorMessage');
 
 export default {
   displayNotify(state = {}, { type, payload = {} }) {
@@ -150,6 +151,9 @@ export default {
           break;
         case UPDATE_CONFIG_GROUP_SETTING:
           msgNotify = 'Update configs group setting successfully';
+          break;
+        case ADD_NEW_CONFIG_GROUP_SETTING:
+          msgNotify = 'Add New configs group setting successfully';
           break;
         case USER_UPDATE_PASSWORD_BY_CODE:
           msgNotify = 'Update password successfully';
@@ -263,6 +267,9 @@ export default {
           break;
         case UPDATE_CONFIG_GROUP_SETTING:
           msgNotify = hasError(payload) || 'Update configs group setting fail';
+          break;
+        case ADD_NEW_CONFIG_GROUP_SETTING:
+          msgNotify = hasError(payload) || 'Add New configs group setting fail';
           break;
         case USER_UPDATE_PASSWORD_BY_CODE:
           msgNotify = 'Update password fail';

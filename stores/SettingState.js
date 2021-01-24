@@ -8,6 +8,7 @@ const GET_CONFIG_SETTING = 'GET_CONFIG_SETTING';
 export const UPDATE_CONFIG_SETTING = 'UPDATE_CONFIG_SETTING';
 const Get_CONFIG_GROUP_SETTING = 'GetConfigSettingGroupAPI';
 export const UPDATE_CONFIG_GROUP_SETTING = 'UpdateConfigGroupSettingAPI';
+export const ADD_NEW_CONFIG_GROUP_SETTING = 'AddNewConfigGroupSettingAPI';
 
 const GetConfigSettingAPI = makeFetchAction(
   GET_CONFIG_SETTING,
@@ -73,4 +74,27 @@ export const UpdateConfigGroupSettingError =
   UpdateConfigGroupSettingAPI.errorSelector;
 export const UpdateConfigGroupSettingResetter = getResetter(
   UpdateConfigGroupSettingAPI
+);
+
+const AddNewConfigGroupSettingAPI = makeFetchAction(
+  ADD_NEW_CONFIG_GROUP_SETTING,
+  (values) =>
+    nfetch({
+      endpoint: '/api/GroupSetting'
+    })(values)
+);
+export const addNewConfigGroupSetting = (values = {}, callback) =>
+  respondToSuccess(
+    AddNewConfigGroupSettingAPI.actionCreator(values),
+    (_, __, store) => {
+      typeof callback === 'function' && callback();
+      store.dispatch(getConfigGroupSetting());
+    }
+  );
+export const AddNewConfigGroupSettingData =
+  AddNewConfigGroupSettingAPI.dataSelector;
+export const AddNewConfigGroupSettingError =
+  AddNewConfigGroupSettingAPI.errorSelector;
+export const AddNewConfigGroupSettingResetter = getResetter(
+  AddNewConfigGroupSettingAPI
 );

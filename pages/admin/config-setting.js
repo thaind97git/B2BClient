@@ -10,20 +10,20 @@ const Page = () => {
   const [defaultTab, setDefaultTab] = useState('1');
   const GROUP_TABS = [
     {
-      title: 'Request for quotation',
+      title: 'Group',
       key: '1',
       content: (
         <div>
-          <AdminConfigSettingComponent />
+          <AdminConfigSettingGroupComponent />
         </div>
       )
     },
     {
-      title: 'Group',
+      title: 'Request for quotation',
       key: '2',
       content: (
         <div>
-          <AdminConfigSettingGroupComponent />
+          <AdminConfigSettingComponent />
         </div>
       )
     }

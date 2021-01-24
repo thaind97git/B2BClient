@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 import {
+  addNewConfigGroupSetting,
   getConfigGroupSetting,
   GetConfigGroupSettingData,
   updateConfigGroupSetting,
@@ -13,7 +14,10 @@ import {
   Form,
   Skeleton,
   InputNumber,
-  Typography
+  Typography,
+  Button,
+  Row,
+  Modal
 } from 'antd';
 import { displayCurrency } from '../utils';
 
@@ -89,7 +93,9 @@ const connectToRedux = connect(
   (dispatch) => ({
     getConfigGroupSetting: () => dispatch(getConfigGroupSetting()),
     updateConfigGroupSetting: (values) =>
-      dispatch(updateConfigGroupSetting(values))
+      dispatch(updateConfigGroupSetting(values)),
+    addNewConfigGroupSetting: (values, callback) =>
+      dispatch(addNewConfigGroupSetting(values, callback))
   })
 );
 
@@ -113,13 +119,15 @@ const AdminConfigSettingGroupComponent = ({
   configGroupSettingData,
   updateConfigGroupSettingData,
   getConfigGroupSetting,
-  updateConfigGroupSetting
+  updateConfigGroupSetting,
+  addNewConfigGroupSetting
 }) => {
   useEffect(() => {
     getConfigGroupSetting();
   }, [getConfigGroupSetting]);
   const [form] = Form.useForm();
   const [editingKey, setEditingKey] = useState('');
+  const [openAdd, setOpenAdd] = useState(false);
 
   const isEditing = (record) => record.key === editingKey;
 
@@ -236,6 +244,117 @@ const AdminConfigSettingGroupComponent = ({
 
   return (
     <Form form={form} component={false}>
+      <Modal
+        title="Add new group config"
+        visible={openAdd}
+        onOk={() => {}}
+        onCancel={() => setOpenAdd(false)}
+        footer={false}
+      >
+        {openAdd ? (
+          <Form
+            labelCol={{ span: 8 }}
+            wrapperCol={{ span: 12 }}
+            layout="horizontal"
+            onFinish={(values) => {
+              console.log({ values });
+              addNewConfigGroupSetting(values, () => {
+                setOpenAdd(false);
+              });
+            }}
+          >
+            <Form.Item
+              rules={[
+                {
+                  required: true,
+                  message: 'From Price is required!'
+                },
+                ({ getFieldValue }) => ({
+                  validator(_, value) {
+                    if (!value || getFieldValue('toPrice') > value) {
+                      return Promise.resolve();
+                    }
+                    return Promise.reject('From must be less than To Price');
+                  }
+                })
+              ]}
+              name="fromPrice"
+              label="From Price"
+            >
+              <InputNumber
+                formatter={(value) =>
+                  `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+                }
+                parser={(value) => value.replace(/,*/g, '')}
+                style={{ width: '100%' }}
+              />
+            </Form.Item>
+            <Form.Item
+              rules={[
+                {
+                  required: true,
+                  message: 'To Price is required!'
+                },
+                ({ getFieldValue }) => ({
+                  validator(_, value) {
+                    if (!value || getFieldValue('fromPrice') < value) {
+                      return Promise.resolve();
+                    }
+                    return Promise.reject(
+                      'To Price must greater than From Price'
+                    );
+                  }
+                })
+              ]}
+              name="toPrice"
+              label="To Price"
+            >
+              <InputNumber
+                formatter={(value) =>
+                  `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+                }
+                parser={(value) => value.replace(/,*/g, '')}
+                style={{ width: '100%' }}
+              />
+            </Form.Item>
+            <Form.Item
+              rules={[
+                {
+                  required: true,
+                  message: 'Min Margin Percentage is required!'
+                }
+              ]}
+              name="minDifferencePercent"
+              label="Min Margin Percent"
+            >
+              <InputNumber min={0} max={100} style={{ width: '100%' }} />
+            </Form.Item>
+            <Form.Item
+              rules={[
+                {
+                  required: true,
+                  message: 'Max Margin Percentage is required!'
+                }
+              ]}
+              name="maxDifferencePercent"
+              label="Max Margin Percent"
+            >
+              <InputNumber min={100} max={200} style={{ width: '100%' }} />
+            </Form.Item>
+            <Form.Item style={{ textAlign: 'end' }}>
+              <Button type="primary" htmlType="submit">
+                Submit
+              </Button>
+            </Form.Item>
+          </Form>
+        ) : null}
+      </Modal>
+      <Row>
+        <Button onClick={() => setOpenAdd(true)} type="primary">
+          Add new config
+        </Button>
+      </Row>
+      <br />
       <Table
         components={{
           body: {
