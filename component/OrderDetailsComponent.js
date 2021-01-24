@@ -20,7 +20,8 @@ import {
   LeftOutlined,
   CheckOutlined,
   ExclamationCircleOutlined,
-  FormOutlined
+  FormOutlined,
+  PrinterOutlined 
 } from '@ant-design/icons';
 import React, { Fragment, useEffect, useState } from 'react';
 import RequestDetailsComponent from './RequestDetailsComponent';
@@ -230,7 +231,7 @@ const OrderDetailsComponent = ({
     }
   ];
 
-  const { id, email, address, companyName, firstName, lastName, phoneNumber } =
+  const { id, email, address, companyName, firstName, lastName, phoneNumber, fax, taxIdentificationNumber } =
     supplier || {};
 
   return (
@@ -416,6 +417,11 @@ const OrderDetailsComponent = ({
                           Company: {companyName}
                           <br />
                           Address: {address}
+                          <br />
+                          Tax Identification Number:
+                          {taxIdentificationNumber
+                            ? taxIdentificationNumber
+                            : 'N/A'}
                         </div>
                       </div>
                     </Card>
@@ -432,6 +438,13 @@ const OrderDetailsComponent = ({
                           {phoneNumber}
                           <PhoneOutlined />
                         </Space>
+                        <br />
+                        {fax ? (
+                          <Space>
+                            {fax}
+                            <PrinterOutlined />
+                          </Space>
+                        ) : null}
                         <br />
                       </div>
                     </Card>

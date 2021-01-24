@@ -236,6 +236,58 @@ export const RejectSupplierData = RejectSupplierAPI.dataSelector;
 export const RejectSupplierError = RejectSupplierAPI.errorSelector;
 export const RejectSupplierResetter = getResetter(RejectSupplierAPI);
 
+//Approve Buyer
+const ApproveBuyerAPI = makeFetchAction(APPROVE_USER, ({ id }) =>
+  nfetch({
+    endpoint: `/api/Supplier/ApproveSupplier/${id}`,
+    method: 'PUT'
+  })()
+);
+
+export const approveBuyer = ({ id }) =>
+  respondToSuccess(
+    ApproveBuyerAPI.actionCreator({ id }),
+    (resp, _, store) => {
+      if (resp) {
+        store.dispatch(
+          getBuyerPaging({
+            pageIndex: DEFAULT_PAGING_INFO.page,
+            pageSize: DEFAULT_PAGING_INFO.pageSize
+          })
+        );
+      }
+    }
+  );
+export const ApproveBuyerData = ApproveBuyerAPI.dataSelector;
+export const ApproveBuyerError = ApproveBuyerAPI.errorSelector;
+export const ApproveBuyerResetter = getResetter(ApproveBuyerAPI);
+
+//Reject Supplier
+const RejectBuyerAPI = makeFetchAction(REJECT_USER, ({ id }) =>
+  nfetch({
+    endpoint: `/api/Supplier/RejectSupplier/${id}`,
+    method: 'PUT'
+  })()
+);
+
+export const rejectBuyer = ({ id }) =>
+  respondToSuccess(
+    RejectBuyerAPI.actionCreator({ id }),
+    (resp, _, store) => {
+      if (resp) {
+        store.dispatch(
+          getBuyerPaging({
+            pageIndex: DEFAULT_PAGING_INFO.page,
+            pageSize: DEFAULT_PAGING_INFO.pageSize
+          })
+        );
+      }
+    }
+  );
+export const RejectBuyerData = RejectBuyerAPI.dataSelector;
+export const RejectBuyerError = RejectBuyerAPI.errorSelector;
+export const RejectBuyerResetter = getResetter(RejectBuyerAPI);
+
 // Register Product
 const SupplierRegisterProductAPI = makeFetchAction(
   SUPPLIER_REGISTER_PRODUCT,

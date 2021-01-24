@@ -16,31 +16,31 @@ const Page = () => {
   const [groupBy, setGroupBy] = useState(true);
 
   const REQUEST_TABS = [
-    {
-      title: 'Pending Request',
-      key: '1',
-      content: (
-        <div>
-          <Row justify="center">
-            <Radio.Group
-              options={options}
-              onChange={(e) => setGroupBy(e.target.value)}
-              value={groupBy}
-              optionType="button"
-              buttonStyle="solid"
-            />
-          </Row>
-          {groupBy ? (
-            <AdminRequestGroupManagement setDefaultTab={setDefaultTab} />
-          ) : (
-            <AdminRequestPendingComponent setDefaultTab={setDefaultTab} />
-          )}
-        </div>
-      )
-    },
+    // {
+    //   title: 'Pending Request',
+    //   key: '1',
+    //   content: (
+    //     <div>
+    //       <Row justify="center">
+    //         <Radio.Group
+    //           options={options}
+    //           onChange={(e) => setGroupBy(e.target.value)}
+    //           value={groupBy}
+    //           optionType="button"
+    //           buttonStyle="solid"
+    //         />
+    //       </Row>
+    //       {groupBy ? (
+    //         <AdminRequestGroupManagement setDefaultTab={setDefaultTab} />
+    //       ) : (
+    //         <AdminRequestPendingComponent setDefaultTab={setDefaultTab} />
+    //       )}
+    //     </div>
+    //   )
+    // },
     {
       title: 'Processing Request',
-      key: '2',
+      key: '1',
       content: (
         <div>
           <AdminRequestProcessingComponent />
@@ -49,7 +49,7 @@ const Page = () => {
     },
     {
       title: 'Processed Request',
-      key: '3',
+      key: '2',
       content: (
         <div>
           <AdminRequestProcessedComponent />

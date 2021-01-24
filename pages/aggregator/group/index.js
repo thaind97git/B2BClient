@@ -12,16 +12,16 @@ function Group() {
 
   const GROUP_TABS = [
     {
-      title: 'Chưa đủ điều kiện',
+      title: 'Processing group',
       key: '1',
       content: (
         <div>
-          <GroupRequestNotHavingSupplierComponent />
+          <GroupRequestComponent />
         </div>
       )
     },
     {
-      title: 'Đã đủ điều kiện',
+      title: 'Qualified Group',
       key: '2',
       content: (
         <div>
@@ -30,11 +30,11 @@ function Group() {
       )
     },
     {
-      title: 'Processing group',
+      title: 'Unqualified Group',
       key: '3',
       content: (
         <div>
-          <GroupRequestComponent />
+          <GroupRequestNotHavingSupplierComponent />
         </div>
       )
     }

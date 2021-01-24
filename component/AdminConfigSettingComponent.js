@@ -43,8 +43,8 @@ const AdminConfigSettingComponent = ({
 
   useEffect(() => {
     if (!!configSettingData) {
-      // setMinTimeOutOfDate(configSettingData?.minOutOfDateTime);
-      // setMinTimeStartAuction(configSettingData?.minStartAuctionTime);
+      setMinTimeOutOfDate(configSettingData?.minOutOfDateTime);
+      setMinTimeStartAuction(configSettingData?.minStartAuctionTime);
     }
   }, [configSettingData]);
 
@@ -52,16 +52,18 @@ const AdminConfigSettingComponent = ({
   if (configSettingData) {
     initValues.maxPrice = configSettingData?.maxPrice;
     initValues.maxQuantity = configSettingData?.maxQuantity;
-    // initValues.minDayOutOfDateTime = configSettingData?.minOutOfDateTime.days;
-    // initValues.minHourOutOfDateTime = configSettingData?.minOutOfDateTime.hours;
-    // initValues.minMinuteOutOfDateTime =
-    //   configSettingData?.minOutOfDateTime.minutes;
-    // initValues.minDayStartAuctionTime =
-    //   configSettingData?.minStartAuctionTime.days;
-    // initValues.minHourStartAuctionTime =
-    //   configSettingData?.minStartAuctionTime.hours;
-    // initValues.minMinuteStartAuctionTime =
-    //   configSettingData?.minStartAuctionTime.minutes;
+    initValues.minPrice = configSettingData?.minPrice;
+    initValues.minQuantity = configSettingData?.minQuantity;
+    initValues.minDayOutOfDateTime = configSettingData?.minOutOfDateTime.days;
+    initValues.minHourOutOfDateTime = configSettingData?.minOutOfDateTime.hours;
+    initValues.minMinuteOutOfDateTime =
+      configSettingData?.minOutOfDateTime.minutes;
+    initValues.minDayStartAuctionTime =
+      configSettingData?.minStartAuctionTime.days;
+    initValues.minHourStartAuctionTime =
+      configSettingData?.minStartAuctionTime.hours;
+    initValues.minMinuteStartAuctionTime =
+      configSettingData?.minStartAuctionTime.minutes;
   }
   if (!configSettingData) {
     return <Skeleton active />;
@@ -85,12 +87,14 @@ const AdminConfigSettingComponent = ({
           const configClone = { ...configSettingData };
           configClone.maxPrice = values.maxPrice;
           configClone.maxQuantity = values.maxQuantity;
-          // configClone.minOutOfDateTime.days = +values.minDayOutOfDateTime;
-          // configClone.minOutOfDateTime.hours = +values.minHourOutOfDateTime;
-          // configClone.minOutOfDateTime.minutes = +values.minMinuteOutOfDateTime;
-          // configClone.minStartAuctionTime.days = +values.minDayStartAuctionTime;
-          // configClone.minStartAuctionTime.hours = +values.minHourStartAuctionTime;
-          // configClone.minStartAuctionTime.minutes = +values.minMinuteStartAuctionTime;
+          configClone.minPrice = values.minPrice;
+          configClone.minQuantity = values.minQuantity;
+          configClone.minOutOfDateTime.days = +values.minDayOutOfDateTime;
+          configClone.minOutOfDateTime.hours = +values.minHourOutOfDateTime;
+          configClone.minOutOfDateTime.minutes = +values.minMinuteOutOfDateTime;
+          configClone.minStartAuctionTime.days = +values.minDayStartAuctionTime;
+          configClone.minStartAuctionTime.hours = +values.minHourStartAuctionTime;
+          configClone.minStartAuctionTime.minutes = +values.minMinuteStartAuctionTime;
           updateConfigSetting(configClone);
         }}
       >
@@ -102,7 +106,17 @@ const AdminConfigSettingComponent = ({
             {
               required: true,
               message: 'Max Quantity RFQ is required!'
-            }
+            },
+            ({ getFieldValue }) => ({
+              validator(_, value) {
+                if (!value || getFieldValue('minQuantity') < value) {
+                  return Promise.resolve();
+                }
+                return Promise.reject(
+                  'Max quantity RFQ must greater than Min quantity RFQ'
+                );
+              }
+            })
           ]}
           name="maxQuantity"
           label="Max Quantity RFQ"
@@ -114,7 +128,39 @@ const AdminConfigSettingComponent = ({
             {
               required: true,
               message: 'Min Quantity RFQ is required!'
-            }
+            },
+            ({ getFieldValue }) => ({
+              validator(_, value) {
+                if (!value || getFieldValue('maxQuantity') > value) {
+                  return Promise.resolve();
+                }
+                return Promise.reject(
+                  'Min quantity RFQ must lesser than Max quantity RFQ'
+                );
+              }
+            })
+          ]}
+          name="minQuantity"
+          label="Min Quantity RFQ"
+        >
+          <InputNumber min={1} style={{ width: '100%' }} />
+        </Form.Item>
+        <Form.Item
+          rules={[
+            {
+              required: true,
+              message: 'Max price RFQ is required!'
+            },
+            ({ getFieldValue }) => ({
+              validator(_, value) {
+                if (!value || getFieldValue('minPrice') < value) {
+                  return Promise.resolve();
+                }
+                return Promise.reject(
+                  'Max price RFQ must greater than Min price RFQ'
+                );
+              }
+            })
           ]}
           name="maxPrice"
           label="Max Price RFQ"
@@ -128,7 +174,36 @@ const AdminConfigSettingComponent = ({
             style={{ width: '100%' }}
           />
         </Form.Item>
-        {/* <Divider orientation="center" plain>
+        <Form.Item
+          rules={[
+            {
+              required: true,
+              message: 'Min Price RFQ is required!'
+            },
+            ({ getFieldValue }) => ({
+              validator(_, value) {
+                if (!value || getFieldValue('maxPrice') > value) {
+                  return Promise.resolve();
+                }
+                return Promise.reject(
+                  'Min price RFQ must lesser than Max price RFQ'
+                );
+              }
+            })
+          ]}
+          name="minPrice"
+          label="Min Price RFQ"
+        >
+          <InputNumber
+            formatter={(value) =>
+              `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+            }
+            parser={(value) => value.replace(/,*/g, '')}
+            min={1}
+            style={{ width: '100%' }}
+          />
+        </Form.Item>
+        <Divider orientation="center" plain>
           <span>
             Min time for Out Of Date:{' '}
             <b>
@@ -286,7 +361,7 @@ const AdminConfigSettingComponent = ({
             style={{ width: '100%' }}
             min={0}
           />
-        </Form.Item> */}
+        </Form.Item>
         <Form.Item style={{ textAlign: 'end' }}>
           <Button type="primary" htmlType="submit">
             Update

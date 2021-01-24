@@ -135,6 +135,47 @@ const RegisterComponent = ({ userRegisterError, registerUser, resetData }) => {
               </FormItem>
             </Col>
           </Row>
+
+          <Row align="top">
+            <Col style={styles.colStyle} span={12}>
+              <div>&nbsp;&nbsp;Fax:</div>
+              <FormItem
+                name="fax"
+                // rules={[
+                //   {
+                //     required: true,
+                //     message: 'Please enter your fax number'
+                //   }
+                // ]}
+              >
+                <Input
+                  maxLength={20}
+                  size="large"
+                  prefix={<UserOutlined className="site-form-item-icon" />}
+                  placeholder="Please enter your fax number"
+                />
+              </FormItem>
+            </Col>
+            <Col style={styles.colStyle} span={12}>
+              <div className="label">Tax Identification Number:</div>
+              <FormItem
+                name="taxIdentificationNumber"
+                rules={[
+                  {
+                    required: true,
+                    message: 'Please enter your tax identification number'
+                  }
+                ]}
+              >
+                <Input
+                  maxLength={20}
+                  size="large"
+                  prefix={<UserOutlined className="site-form-item-icon" />}
+                  placeholder="Please enter your tax identification number"
+                />
+              </FormItem>
+            </Col>
+          </Row>
           <Row align="top">
             <Col style={styles.colStyle} span={12}>
               <div className="label">First Name:</div>

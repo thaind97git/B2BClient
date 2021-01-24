@@ -10,6 +10,9 @@ import {
 import ReactTableLayout from '../layouts/ReactTableLayout';
 import { useRouter } from 'next/router';
 import { displayCurrency, getFileAttach, getShortContent } from '../utils';
+import {
+  B_ACTIVE
+} from '../enums/biddingStatus';
 const { Option } = Select;
 const connectToRedux = connect(
   createStructuredSelector({
@@ -36,6 +39,7 @@ const connectToRedux = connect(
 );
 
 const SupplierAddNewBidComponent = ({
+  auction,
   getSupplierBiddingHistory,
   historyData
 }) => {
@@ -59,7 +63,7 @@ const SupplierAddNewBidComponent = ({
       dataIndex: 'description'
     }
   ];
-
+  
   const renderData = (histories) => {
     return histories?.map((history) => {
       return {
@@ -105,17 +109,19 @@ const SupplierAddNewBidComponent = ({
           />
         ) : null}
       </Modal>
-      <Button
-        onClick={() => {
-          setOpenSubmitBid(true);
-        }}
-        type="primary"
-        style={{
-          marginBottom: 16
-        }}
-      >
-        Add new bid
-      </Button>
+      {auction?.reverseAuctionStatus?.id === B_ACTIVE ? (
+        <Button
+          onClick={() => {
+            setOpenSubmitBid(true);
+          }}
+          type="primary"
+          style={{
+            marginBottom: 16
+          }}
+        >
+          Add new bid
+        </Button>
+      ) : null}
       <ReactTableLayout
         searchProps={{
           isDateRange: false,

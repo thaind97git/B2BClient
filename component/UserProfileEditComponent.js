@@ -35,7 +35,8 @@ const UserProfileEditComponent = ({currentUser, setUpdateProfileForm }) => {
       lastName: form.getFieldValue('lastName'),
       phone: form.getFieldValue('phoneNumber'),
       address: form.getFieldValue('address'),
-      companyName: form.getFieldValue('companyName')
+      companyName: form.getFieldValue('companyName'),
+      fax: form.getFieldValue('fax')
     };
     setUpdateProfileForm(updateProfile);
   }
@@ -111,6 +112,22 @@ const UserProfileEditComponent = ({currentUser, setUpdateProfileForm }) => {
                   size="large"
                   prefix={<PhoneOutlined className="site-form-item-icon" />}
                   placeholder="Please enter your phone"
+                />
+              </FormItem>
+            </Col>
+          </Row>
+          <Row align="middle">
+            <Col style={styles.colStyle} span={24}>
+              <div className="label">
+                Fax:
+              </div>
+              <FormItem
+                name="fax"
+              >
+                <Input
+                  size="large"
+                  prefix={<PhoneOutlined className="site-form-item-icon" />}
+                  placeholder="Please enter your fax number"
                 />
               </FormItem>
             </Col>
