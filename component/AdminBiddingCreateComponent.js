@@ -30,6 +30,7 @@ const AdminBiddingCreateComponent = ({
   const router = useRouter();
   const { groupId } = router.query;
   const [values, setValues] = useState({});
+  const [isDisabledSup, setIsDisabledSup] = useState(true);
   useEffect(() => {
     if (groupId) {
       getGroupDetails(groupId);
@@ -47,6 +48,7 @@ const AdminBiddingCreateComponent = ({
           setDefaultTab={setDefaultTab}
           setValues={setValues}
           values={values}
+          setIsDisabledSup={setIsDisabledSup}
         />
       )
     },
@@ -59,7 +61,8 @@ const AdminBiddingCreateComponent = ({
           values={values}
           setDefaultTab={setDefaultTab}
         />
-      )
+      ),
+      disabled: isDisabledSup
     }
   ];
   if (!groupDetailsData || groupDetailsError) {

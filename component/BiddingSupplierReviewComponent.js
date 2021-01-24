@@ -160,8 +160,9 @@ const BiddingSupplierReviewComponent = ({
           );
         }}
       />
-      <Row>
-        <Col span={24}>
+      <Col span={24}>
+        <br />
+        <Row justify="end">
           <Button
             disabled={totalCount < 2}
             onClick={() => {
@@ -178,8 +179,8 @@ const BiddingSupplierReviewComponent = ({
           >
             Submit
           </Button>
-        </Col>
-      </Row>
+        </Row>
+      </Col>
     </Row>
   );
 };

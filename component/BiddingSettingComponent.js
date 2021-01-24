@@ -88,7 +88,8 @@ const BiddingSettingComponent = ({
   groupId,
   setDefaultTab,
   setValues,
-  values: valuesForm
+  values: valuesForm,
+  setIsDisabledSup
 }) => {
   console.log({ groupDetails });
   const [brief, setBrief] = useState(valuesForm?.brief || null);
@@ -112,6 +113,7 @@ const BiddingSettingComponent = ({
       });
       return;
     }
+    setIsDisabledSup(false);
     values.groupId = groupId;
     // Modal.confirm({
     //   title: 'Are you sure you want to create auction?',
@@ -140,6 +142,10 @@ const BiddingSettingComponent = ({
       setQuantity(groupDetails.quantity);
     }
   }, [groupDetails]);
+
+  useEffect(() => {
+    setIsDisabledSup(true);
+  }, [setIsDisabledSup]);
 
   // if (!groupDetails || groupDetails) {
   //   return <Empty description="Can not find any group!" />;
