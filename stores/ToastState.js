@@ -262,7 +262,7 @@ export default {
           msgNotify = 'Update configs setting fail';
           break;
         case UPDATE_CONFIG_GROUP_SETTING:
-          msgNotify = 'Update configs group setting fail';
+          msgNotify = hasError(payload) || 'Update configs group setting fail';
           break;
         case USER_UPDATE_PASSWORD_BY_CODE:
           msgNotify = 'Update password fail';
