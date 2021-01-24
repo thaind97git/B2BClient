@@ -34,7 +34,7 @@ const Page = () => {
         <Card
           title={
             <Row justify="space-between" align="middle">
-              <Title level={4}>Configs Setting</Title>
+              <Title level={4}>Configurations</Title>
             </Row>
           }
           style={{ width: '98%' }}

@@ -128,8 +128,8 @@ const GroupRequestNotHavingSupplierComponent = ({
           ),
           status: <GroupStatusComponent status={group.groupStatus.id} />,
           priceRange: `${displayCurrency(
-            Math.min(listPrices)
-          )} - ${displayCurrency(Math.max(listPrices))}`,
+            Math.min(...listPrices)
+          )} - ${displayCurrency(Math.max(...listPrices))}`,
           totalQuantity: `${group?.totalQuantity} ${
             group.requests?.[0]?.product?.unitType
           } / ${totalRFQ} ${totalRFQ > 1 ? 'RFQs' : 'RFQ'}`,
