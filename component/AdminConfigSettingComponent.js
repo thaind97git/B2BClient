@@ -69,15 +69,7 @@ const AdminConfigSettingComponent = ({
     return <Skeleton active />;
   }
   return (
-    <Card
-      title={
-        <Row justify="space-between" align="middle">
-          <Title level={4}>Configs Setting</Title>
-        </Row>
-      }
-      style={{ width: '98%' }}
-      bordered={false}
-    >
+    <Card title={''} style={{ width: '98%' }} bordered={false}>
       <Form
         labelCol={{ span: 6 }}
         wrapperCol={{ span: 12 }}
@@ -98,9 +90,6 @@ const AdminConfigSettingComponent = ({
           updateConfigSetting(configClone);
         }}
       >
-        <Divider orientation="center" plain>
-          <b>Request for Quotation</b>
-        </Divider>
         <Form.Item
           rules={[
             {
@@ -120,28 +109,6 @@ const AdminConfigSettingComponent = ({
           ]}
           name="maxQuantity"
           label="Max Quantity RFQ"
-        >
-          <InputNumber min={1} style={{ width: '100%' }} />
-        </Form.Item>
-        <Form.Item
-          rules={[
-            {
-              required: true,
-              message: 'Min Quantity RFQ is required!'
-            },
-            ({ getFieldValue }) => ({
-              validator(_, value) {
-                if (!value || getFieldValue('maxQuantity') > value) {
-                  return Promise.resolve();
-                }
-                return Promise.reject(
-                  'Min quantity RFQ must lesser than Max quantity RFQ'
-                );
-              }
-            })
-          ]}
-          name="minQuantity"
-          label="Min Quantity RFQ"
         >
           <InputNumber min={1} style={{ width: '100%' }} />
         </Form.Item>
@@ -174,126 +141,8 @@ const AdminConfigSettingComponent = ({
             style={{ width: '100%' }}
           />
         </Form.Item>
-        <Form.Item
-          rules={[
-            {
-              required: true,
-              message: 'Min Price RFQ is required!'
-            },
-            ({ getFieldValue }) => ({
-              validator(_, value) {
-                if (!value || getFieldValue('maxPrice') > value) {
-                  return Promise.resolve();
-                }
-                return Promise.reject(
-                  'Min price RFQ must lesser than Max price RFQ'
-                );
-              }
-            })
-          ]}
-          name="minPrice"
-          label="Min Price RFQ"
-        >
-          <InputNumber
-            formatter={(value) =>
-              `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-            }
-            parser={(value) => value.replace(/,*/g, '')}
-            min={1}
-            style={{ width: '100%' }}
-          />
-        </Form.Item>
-        <Divider orientation="center" plain>
-          <span>
-            Min time for Out Of Date:{' '}
-            <b>
-              {minTimeOutOfDate?.days} day<small>(s)</small> -{' '}
-              {minTimeOutOfDate?.hours} hour<small>(s)</small> -{' '}
-              {minTimeOutOfDate?.minutes} minute<small>(s)</small>
-            </b>
-          </span>
-        </Divider>
-        <Form.Item
-          rules={[
-            {
-              required: true,
-              message: 'Min day(s) for Out Of Date is required!'
-            }
-          ]}
-          label="Min day(s)"
-          name="minDayOutOfDateTime"
-        >
-          <Input
-            onChange={(event) =>
-              setMinTimeOutOfDate({
-                ...minTimeOutOfDate,
-                days: event.target.value
-              })
-            }
-            type="number"
-            suffix="Day(s)"
-            style={{ width: '100%' }}
-            min={0}
-          />
-        </Form.Item>
-        <Form.Item
-          rules={[
-            {
-              required: true,
-              message: 'Min hour(s) for Out Of Date is required!'
-            }
-          ]}
-          label="Min hour(s)"
-          name="minHourOutOfDateTime"
-        >
-          <Input
-            onChange={(event) =>
-              setMinTimeOutOfDate({
-                ...minTimeOutOfDate,
-                hours: event.target.value
-              })
-            }
-            type="number"
-            suffix="Hour(s)"
-            style={{ width: '100%' }}
-            min={0}
-          />
-        </Form.Item>
-        <Form.Item
-          rules={[
-            {
-              required: true,
-              message: 'Min minutes(s) for Out Of Date is required!'
-            }
-          ]}
-          label="Min minute(s)"
-          name="minMinuteOutOfDateTime"
-        >
-          <Input
-            onChange={(event) =>
-              setMinTimeOutOfDate({
-                ...minTimeOutOfDate,
-                minutes: event.target.value
-              })
-            }
-            type="number"
-            suffix="Minute(s)"
-            style={{ width: '100%' }}
-            min={0}
-          />
-        </Form.Item>
 
-        <Divider orientation="center" plain>
-          <span>
-            Min time for start Auction:{' '}
-            <b>
-              {minTimeStartAuction?.days} day<small>(s)</small> -{' '}
-              {minTimeStartAuction?.hours} hour<small>(s)</small> -{' '}
-              {minTimeStartAuction?.minutes} minute<small>(s)</small>
-            </b>
-          </span>
-        </Divider>
-        <Form.Item
+        {/* <Form.Item
           rules={[
             {
               required: true,
@@ -315,8 +164,8 @@ const AdminConfigSettingComponent = ({
             style={{ width: '100%' }}
             min={0}
           />
-        </Form.Item>
-        <Form.Item
+        </Form.Item> */}
+        {/* <Form.Item
           rules={[
             {
               required: true,
@@ -338,8 +187,8 @@ const AdminConfigSettingComponent = ({
             style={{ width: '100%' }}
             min={0}
           />
-        </Form.Item>
-        <Form.Item
+        </Form.Item> */}
+        {/* <Form.Item
           rules={[
             {
               required: true,
@@ -361,7 +210,7 @@ const AdminConfigSettingComponent = ({
             style={{ width: '100%' }}
             min={0}
           />
-        </Form.Item>
+        </Form.Item> */}
         <Form.Item style={{ textAlign: 'end' }}>
           <Button type="primary" htmlType="submit">
             Update

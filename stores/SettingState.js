@@ -6,6 +6,8 @@ import { getResetter } from '../libs';
 
 const GET_CONFIG_SETTING = 'GET_CONFIG_SETTING';
 export const UPDATE_CONFIG_SETTING = 'UPDATE_CONFIG_SETTING';
+const Get_CONFIG_GROUP_SETTING = 'GetConfigSettingGroupAPI';
+export const UPDATE_CONFIG_GROUP_SETTING = 'UpdateConfigGroupSettingAPI';
 
 const GetConfigSettingAPI = makeFetchAction(
   GET_CONFIG_SETTING,
@@ -33,3 +35,42 @@ export const updateConfigSetting = (values = {}) =>
 export const UpdateConfigSettingData = UpdateConfigSettingAPI.dataSelector;
 export const UpdateConfigSettingError = UpdateConfigSettingAPI.errorSelector;
 export const UpdateConfigSettingResetter = getResetter(UpdateConfigSettingAPI);
+
+const GetConfigGroupSettingAPI = makeFetchAction(
+  Get_CONFIG_GROUP_SETTING,
+  nfetch({
+    endpoint: '/api/GroupSetting',
+    method: 'GET'
+  })
+);
+export const getConfigGroupSetting = () =>
+  respondToSuccess(GetConfigGroupSettingAPI.actionCreator());
+export const GetConfigGroupSettingData = GetConfigGroupSettingAPI.dataSelector;
+export const GetConfigGroupSettingError =
+  GetConfigGroupSettingAPI.errorSelector;
+export const GetConfigGroupSettingResetter = getResetter(
+  GetConfigGroupSettingAPI
+);
+
+const UpdateConfigGroupSettingAPI = makeFetchAction(
+  UPDATE_CONFIG_GROUP_SETTING,
+  (values) =>
+    nfetch({
+      endpoint: '/api/GroupSetting',
+      method: 'PUT'
+    })(values)
+);
+export const updateConfigGroupSetting = (values = {}) =>
+  respondToSuccess(
+    UpdateConfigGroupSettingAPI.actionCreator(values),
+    (_, __, store) => {
+      store.dispatch(getConfigGroupSetting());
+    }
+  );
+export const UpdateConfigGroupSettingData =
+  UpdateConfigGroupSettingAPI.dataSelector;
+export const UpdateConfigGroupSettingError =
+  UpdateConfigGroupSettingAPI.errorSelector;
+export const UpdateConfigGroupSettingResetter = getResetter(
+  UpdateConfigGroupSettingAPI
+);

@@ -41,7 +41,10 @@ import {
 
 import { CREATE_NEW_AGGREGATOR } from './BuyerState';
 import { get } from 'lodash/fp';
-import { UPDATE_CONFIG_SETTING } from './SettingState';
+import {
+  UPDATE_CONFIG_GROUP_SETTING,
+  UPDATE_CONFIG_SETTING
+} from './SettingState';
 
 const hasError = get('json.errorMessage');
 
@@ -144,6 +147,9 @@ export default {
           break;
         case UPDATE_CONFIG_SETTING:
           msgNotify = 'Update configs setting successfully';
+          break;
+        case UPDATE_CONFIG_GROUP_SETTING:
+          msgNotify = 'Update configs group setting successfully';
           break;
         case USER_UPDATE_PASSWORD_BY_CODE:
           msgNotify = 'Update password successfully';
@@ -254,6 +260,9 @@ export default {
           break;
         case UPDATE_CONFIG_SETTING:
           msgNotify = 'Update configs setting fail';
+          break;
+        case UPDATE_CONFIG_GROUP_SETTING:
+          msgNotify = 'Update configs group setting fail';
           break;
         case USER_UPDATE_PASSWORD_BY_CODE:
           msgNotify = 'Update password fail';
