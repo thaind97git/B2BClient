@@ -1,5 +1,5 @@
-import { Button, Modal, Row, Space, Tag } from 'antd';
-import React, { useEffect } from 'react';
+import { Button, Drawer, Modal, Row, Space, Tag } from 'antd';
+import React, { useEffect, useState } from 'react';
 import ReactTableLayout from '../layouts/ReactTableLayout';
 import {
   CheckCircleOutlined,
@@ -23,6 +23,7 @@ import {
   B_FUTURE
 } from '../enums/biddingStatus';
 import { DEFAULT_PAGING_INFO } from '../utils';
+import UserProfileComponent from './UserProfileComponent';
 
 const connectToRedux = connect(
   createStructuredSelector({
@@ -53,6 +54,8 @@ const BiddingSupplierListComponent = ({
   resetRemoveSupplier,
   reverseAuctionStatus
 }) => {
+  const [openDetails, setOpenDetails] = useState(false);
+  const [currentSupplierSelected, setCurrentSupplierSelected] = useState({});
   useEffect(() => {
     return () => {
       resetRemoveSupplier();
@@ -89,7 +92,17 @@ const BiddingSupplierListComponent = ({
         const { supplier = {}, isAccepted, isDeleted } = supplierItem || {};
         return {
           key: supplier.id,
-          supplier: `${supplier.firstName} ${supplier.lastName}`,
+          supplier: (
+            <Button
+              onClick={() => {
+                setOpenDetails(true);
+                setCurrentSupplierSelected(supplier);
+              }}
+              type="link"
+            >
+              {`${supplier.firstName} ${supplier.lastName}`}
+            </Button>
+          ),
           email: supplier.email,
           phone: supplier.phoneNumber,
           status: isDeleted ? (
@@ -146,7 +159,6 @@ const BiddingSupplierListComponent = ({
   if (supplierInvitationData) {
     supplierData = supplierInvitationData.data;
     totalCount = supplierInvitationData.total;
-    console.log({ reverseAuctionStatus });
     if (
       [B_CANCELED, B_CLOSED, B_DONE, B_FAILED].includes(
         reverseAuctionStatus?.id
@@ -172,6 +184,23 @@ const BiddingSupplierListComponent = ({
   }
   return (
     <Row>
+      <Drawer
+        width={840}
+        title="Supplier Details"
+        placement={'right'}
+        closable={true}
+        onClose={() => setOpenDetails(false)}
+        visible={openDetails}
+        key={'right'}
+      >
+        {openDetails ? (
+          <UserProfileComponent
+            isAdmin={true}
+            isDrawer
+            userId={(currentSupplierSelected || {}).id}
+          />
+        ) : null}
+      </Drawer>
       <ReactTableLayout
         totalCount={totalCount}
         searchProps={{
