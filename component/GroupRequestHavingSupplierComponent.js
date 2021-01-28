@@ -17,7 +17,8 @@ import {
   DATE_TIME_FORMAT,
   DEFAULT_DATE_RANGE,
   getUtcTime,
-  openNotification
+  openNotification,
+  displayCurrency
 } from '../utils';
 import GroupStatusComponent from './Utils/GroupStatusComponent';
 import { createLink } from '../libs';
@@ -90,7 +91,12 @@ const columns = [
     key: 'product'
   },
   {
-    title: 'Total Quantity',
+    title: 'Price Range',
+    dataIndex: 'priceRange',
+    key: 'priceRange'
+  },
+  {
+    title: 'Total Quantity / RFQs',
     dataIndex: 'totalQuantity',
     key: 'totalQuantity'
   },
@@ -147,6 +153,10 @@ const GroupRequestHavingSupplierComponent = ({
       groupData &&
       groupData.length > 0 &&
       groupData.map((group = {}) => {
+        const listPrices = group?.requests?.map(
+          (request) => +request.preferredUnitPrice
+        );
+        const totalRFQ = group.requests?.length;
         return {
           key: group.id,
           name: group.groupName,
@@ -157,7 +167,12 @@ const GroupRequestHavingSupplierComponent = ({
             </Moment>
           ),
           status: <GroupStatusComponent status={group.groupStatus.id} />,
-          totalQuantity: `${group?.totalQuantity} ${group.requests?.[0]?.product?.unitType}`,
+          priceRange: `${displayCurrency(
+            Math.min(...listPrices)
+          )} - ${displayCurrency(Math.max(...listPrices))}`,
+          totalQuantity: `${group?.totalQuantity} ${
+            group.requests?.[0]?.product?.unitType
+          } / ${totalRFQ} ${totalRFQ > 1 ? 'RFQs' : 'RFQ'}`,
           totalSupplier: group?.totalSuppliers,
           actions: (
             <Space>

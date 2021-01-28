@@ -1,5 +1,5 @@
-import { Button, Col, Row } from 'antd';
-import React, { useEffect, useState } from 'react';
+import { Button, Col, Drawer, Row } from 'antd';
+import React, { Fragment, useEffect, useState } from 'react';
 import ReactTableLayout from '../layouts/ReactTableLayout';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
@@ -17,6 +17,7 @@ import QuotationListDisplayComponent from './Utils/QuotationListDisplayComponent
 import Router from 'next/router';
 import { LeftOutlined } from '@ant-design/icons';
 import { openNotification } from '../utils';
+import UserProfileComponent from './UserProfileComponent';
 const connectToRedux = connect(
   createStructuredSelector({
     supplierByGroupData: GetSupplierByGroupIdData,
@@ -58,6 +59,8 @@ const BiddingSupplierReviewComponent = ({
   setDefaultTab
 }) => {
   const [supplierIds, setSupplierIds] = useState([]);
+  const [openDetails, setOpenDetails] = useState(false);
+  const [currentSupplierSelected, setCurrentSupplierSelected] = useState({});
   useEffect(() => {
     return () => {
       resetRemoveSupplier();
@@ -110,7 +113,18 @@ const BiddingSupplierReviewComponent = ({
       supplierData.map((supplier) => {
         return {
           key: supplier.id,
-          supplier: `${supplier.firstName} ${supplier.lastName}`,
+          supplier: (
+            <Button
+              onClick={() => {
+                setCurrentSupplierSelected(supplier);
+                setOpenDetails(true);
+              }}
+              size="small"
+              type="link"
+            >
+              {supplier.firstName+" "} {supplier.lastName}
+            </Button>
+          ),
           email: supplier.email,
           phone: supplier.phoneNumber,
           quotations: (
@@ -131,6 +145,25 @@ const BiddingSupplierReviewComponent = ({
   }
   return (
     <Row>
+      <Drawer
+        width={840}
+        title="Supplier Details"
+        placement={'right'}
+        closable={true}
+        onClose={() => setOpenDetails(false)}
+        visible={openDetails}
+        key={'right'}
+      >
+        {openDetails ? (
+          <Fragment>
+            <UserProfileComponent
+              isAdmin={true}
+              isDrawer
+              userId={(currentSupplierSelected || {}).id}
+            />
+          </Fragment>
+        ) : null}
+      </Drawer>
       <ReactTableLayout
         rowSelection={{
           type: 'checkbox',
@@ -164,11 +197,11 @@ const BiddingSupplierReviewComponent = ({
         <br />
         <Row justify="end">
           <Button
-            disabled={totalCount < 2}
+            disabled={totalCount < 3}
             onClick={() => {
-              if (supplierIds?.length < 2) {
+              if (supplierIds?.length < 3) {
                 openNotification('error', {
-                  message: 'Please select at least 2 suppliers'
+                  message: 'Please select at least 3 suppliers'
                 });
                 return;
               }
