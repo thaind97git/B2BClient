@@ -1,6 +1,7 @@
 import React from 'react';
 import AggregatorLayout from '../../../layouts/AggregatorLayout';
 import GroupRequestComponent from '../../../component/GroupRequestComponent';
+import GroupRequestProcessedComponent from '../../../component/GroupRequestProcessedComponent';
 import withAuth from '../../../component/HOC/AuthenHOC';
 import { useState } from 'react';
 import TabsLayout from '../../../layouts/TabsLayout';
@@ -21,8 +22,17 @@ function Group() {
       )
     },
     {
-      title: 'Qualified Group',
+      title: 'Processed group',
       key: '2',
+      content: (
+        <div>
+          <GroupRequestProcessedComponent />
+        </div>
+      )
+    },
+    {
+      title: 'Qualified Group',
+      key: '3',
       content: (
         <div>
           <GroupRequestHavingSupplierComponent />
@@ -31,7 +41,7 @@ function Group() {
     },
     {
       title: 'Unqualified Group',
-      key: '3',
+      key: '4',
       content: (
         <div>
           <GroupRequestNotHavingSupplierComponent />

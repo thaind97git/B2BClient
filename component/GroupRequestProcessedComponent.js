@@ -12,10 +12,9 @@ import { getGroupPaging, GetGroupPagingData } from '../stores/GroupState';
 import AllCategoryComponent from './AllCategoryComponent';
 import Moment from 'react-moment';
 import {
-  G_BIDDING,
-  G_NEGOTIATING,
-  G_PENDING,
-  G_WAIT_FOR_AUCTION
+  G_DONE,
+  G_FAILED,
+  G_ORDERED,
 } from '../enums/groupStatus';
 
 const { Title } = Typography;
@@ -43,8 +42,11 @@ const connectToRedux = connect(
           pageIndex,
           pageSize,
           status:
-            status === [] || status === 'all' || status === null || status === ''
-              ? [G_BIDDING, G_NEGOTIATING, G_PENDING, G_WAIT_FOR_AUCTION]
+            status === [] ||
+            status === 'all' ||
+            status === null ||
+            status === ''
+              ? [G_ORDERED,G_FAILED, G_DONE]
               : status
         })
       )
@@ -81,7 +83,10 @@ const columns = [
   }
 ];
 
-const GroupRequestComponent = ({ getGroupPaging, groupPagingData }) => {
+const GroupRequestProcessedComponent = ({
+  getGroupPaging,
+  groupPagingData
+}) => {
   const [searchMessage, setSearchMessage] = useState('');
   const [category, setCategory] = useState('all');
   const [dateRange, setDateRange] = useState(DEFAULT_DATE_RANGE);
@@ -144,10 +149,9 @@ const GroupRequestComponent = ({ getGroupPaging, groupPagingData }) => {
                 defaultValue=""
               >
                 <Option value="">All Status</Option>
-                <Option value={G_PENDING}>Pending</Option>
-                <Option value={G_BIDDING}>Bidding</Option>
-                <Option value={G_NEGOTIATING}>Negotiating</Option>
-                <Option value={G_WAIT_FOR_AUCTION}>Wait for auction</Option>
+                <Option value={G_DONE}>Done</Option>
+                <Option value={G_ORDERED}>Ordered</Option>
+                <Option value={G_FAILED}>Failed</Option>
               </Select>
               <AllCategoryComponent
                 onGetLastValue={(value) => {
@@ -171,4 +175,4 @@ const GroupRequestComponent = ({ getGroupPaging, groupPagingData }) => {
     </div>
   );
 };
-export default enhance(GroupRequestComponent);
+export default enhance(GroupRequestProcessedComponent);
