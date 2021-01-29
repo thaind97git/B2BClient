@@ -195,7 +195,7 @@ const GroupRequestHavingSupplierComponent = ({
               >
                 Receive group
               </Button>
-              <Button
+              {/* <Button
                 onClick={() => {
                   setOpenGroupDetails(true);
                   setCurrentGroupSelected(group);
@@ -206,6 +206,21 @@ const GroupRequestHavingSupplierComponent = ({
                   //     `details?id=${group.id}`
                   //   ])
                   // );
+                }}
+                size="small"
+                type="link"
+              >
+                View
+              </Button> */}
+              <Button
+                onClick={() => {
+                  Router.push(
+                    createLink([
+                      'aggregator',
+                      'group',
+                      `details?id=${group.id}`
+                    ])
+                  );
                 }}
                 size="small"
                 type="link"

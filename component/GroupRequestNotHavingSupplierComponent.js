@@ -91,12 +91,12 @@ const columns = [
     title: 'Date Created',
     dataIndex: 'dateCreated',
     key: 'dateCreated'
+  },
+  {
+    title: 'Actions',
+    dataIndex: 'actions',
+    key: 'actions'
   }
-  // {
-  //   title: 'Actions',
-  //   dataIndex: 'actions',
-  //   key: 'actions'
-  // }
 ];
 
 const GroupRequestNotHavingSupplierComponent = ({
